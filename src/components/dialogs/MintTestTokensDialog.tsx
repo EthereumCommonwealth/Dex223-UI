@@ -170,7 +170,7 @@ export default function MintTestTokensDialog() {
                       setPopoverOpened(false);
                     }}
                     role="button"
-                    className="flex items-center gap-3 bg-tertiary-bg-bg hover:bg-quaternary-bg duration-300 w-full min-w-[250px] px-5 h-10 md:h-12 justify-between"
+                    className="flex items-center gap-3 bg-tertiary-bg-bg hover:bg-quaternary-bg focus:bg-quaternary-bg focus:outline-0 duration-300 w-full min-w-[250px] px-5 h-10 md:h-12 justify-between"
                   >
                     <span
                       className={token.equals(tokenToMint) ? "text-green" : "text-secondary-text"}

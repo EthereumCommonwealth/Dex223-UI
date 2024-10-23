@@ -58,7 +58,7 @@ function PoolPosition({ onClick, positionInfo }: { onClick: any; positionInfo: P
   return (
     <div
       role="button"
-      className="px-4 lg:px-5 py-4 rounded-3 bg-secondary-bg hover:bg-green-bg duration-200 cursor-pointer"
+      className="px-4 lg:px-5 py-4 rounded-3 bg-secondary-bg hover:bg-green-bg focus:outline-0 focus:bg-green-bg duration-200 cursor-pointer"
       onClick={onClick}
     >
       <div className="justify-between flex items-center mb-2 gap-2">

@@ -106,14 +106,14 @@ export default function PriceRangeInput({
           variant={IconButtonVariant.CONTROL}
           iconName="add"
           onClick={handleIncrement}
-          className="rounded-2 bg-primary-bg hover:bg-green-bg duration-200 text-primary-text"
+          className="rounded-2 bg-primary-bg hover:bg-green-bg duration-200 text-primary-text focus:outline-0 focus:bg-green-bg"
           disabled={noLiquidity}
         />
         <IconButton
           variant={IconButtonVariant.CONTROL}
           iconName="minus"
           onClick={handleDecrement}
-          className="rounded-2 bg-primary-bg hover:bg-green-bg duration-200 text-primary-text"
+          className="rounded-2 bg-primary-bg hover:bg-green-bg duration-200 text-primary-text focus:outline-0 focus:bg-green-bg"
           disabled={noLiquidity}
         />
       </div>

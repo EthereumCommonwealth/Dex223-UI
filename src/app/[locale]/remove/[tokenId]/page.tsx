@@ -361,7 +361,10 @@ export default function DecreaseLiquidityPage({
                     Transaction failed due to lack of gas or an internal contract error. Try using
                     higher slippage or gas to ensure your transaction is completed. If you still
                     have issues, click{" "}
-                    <a href="#" className="text-green hover:underline">
+                    <a
+                      href="#"
+                      className="text-green hover:underline focus:outline-0 focus:underline"
+                    >
                       common errors
                     </a>
                     .
@@ -388,7 +391,9 @@ export default function DecreaseLiquidityPage({
                     Tokens have been transferred to your position. You can claim them using the
                     following link:{" "}
                     <Link href={`/pool/${params.tokenId}`}>
-                      <span className="text-green hover:underline">claim tokens</span>
+                      <span className="text-green hover:underline focus:outline-0 focus:underline">
+                        claim tokens
+                      </span>
                     </Link>
                   </span>
                 }

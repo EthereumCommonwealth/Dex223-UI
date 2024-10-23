@@ -27,6 +27,7 @@ export default function Alert({ text, type = "success", withIcon = true }: Props
         relative
         flex
         outline
+        outline-1
         rounded-2
         gap-2
         px-5

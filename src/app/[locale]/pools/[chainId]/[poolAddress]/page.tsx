@@ -89,7 +89,7 @@ export default function ExplorePoolPage({
               href={getExplorerLink(ExplorerLinkType.ADDRESS, pool.id, chainId as any)}
               className="w-max"
             >
-              <div className="flex items-center gap-1 bg-secondary-bg rounded-[8px] px-2 py-1 text-secondary-text hover:text-primary-text">
+              <div className="flex items-center gap-1 bg-secondary-bg rounded-[8px] px-2 py-1 text-secondary-text hover:text-primary-text focus:outline-0 focus:text-primary-text">
                 <span className="text-12">{renderShortAddress(pool.id)}</span>
                 <Svg iconName="forward" size={16} />
               </div>

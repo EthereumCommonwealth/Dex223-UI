@@ -353,7 +353,7 @@ export default function ListTokenPage() {
                         placeholder="Token contract address"
                       />
                       <button
-                        className="flex-shrink-0 p-2 flex items-center border border-transparent gap-1 text-primary-text bg-primary-bg rounded-2 hover:bg-green-bg hover:border-green duration-200 hover:shadow hover:shadow-green/60"
+                        className="flex-shrink-0 p-2 flex items-center border border-transparent gap-1 text-primary-text bg-primary-bg rounded-2 hover:bg-green-bg hover:border-green duration-200 hover:shadow hover:shadow-green/60 focus:bg-green-bg focus:border-green focus:outline-0 focus:shadow focus:shadow-green/60"
                         onClick={() => {
                           setCurrentlyPicking("tokenA");
                           setPickTokenOpened(true);

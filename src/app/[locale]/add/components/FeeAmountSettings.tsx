@@ -66,7 +66,7 @@ function FeeAmountOption({
         "flex flex-col md:flex-row md:justify-between items-start md:items-center px-4 py-3 md:px-5 md:py-2 rounded-2 border cursor-pointer duration-200 gap-2 md:gap-0",
         active
           ? "bg-green-bg shadow shadow-green/60 border-green pointer-events-none"
-          : "border-transparent bg-primary-bg hover:bg-green-bg",
+          : "border-transparent bg-primary-bg hover:bg-green-bg focus:bg-green-bg focus:outline-0",
       )}
     >
       <div className="flex flex-col md:flex-row items-start md:items-center gap-2">
@@ -142,7 +142,7 @@ export default function FeeAmountSettings() {
         }}
         className={clsx(
           "flex justify-between items-center px-4 py-2 md:px-5 md:py-4 rounded-3 duration-200",
-          !isFeeOpened && !isDisabled && "hover:bg-green-bg",
+          !isFeeOpened && !isDisabled && "hover:bg-green-bg focus:bg-green-bg focus:outline-0",
           isDisabled && "cursor-default",
         )}
       >

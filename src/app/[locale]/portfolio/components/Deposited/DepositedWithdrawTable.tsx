@@ -85,7 +85,7 @@ const WithdrawTableItem = ({
           <span>{`${deposite.token.name}`}</span>
         </div>
         <div
-          className="px-2 py-1 text-16 text-secondary-text bg-quaternary-bg rounded-2 flex justify-center items-center hover:bg-green-bg cursor-pointer duration-200"
+          className="px-2 py-1 text-16 text-secondary-text bg-quaternary-bg rounded-2 flex justify-center items-center hover:bg-green-bg focus:outline-0 focus:bg-green-bg cursor-pointer duration-200"
           onClick={() => {
             onDetailsClick();
           }}
@@ -99,7 +99,7 @@ const WithdrawTableItem = ({
       </div>
       <div className={clsx("h-[56px] flex items-center")}>
         <a
-          className="flex gap-2 cursor-pointer hover:text-green-hover"
+          className="flex gap-2 cursor-pointer hover:text-green-hover focus:outline-0 focus:text-green-hover"
           target="_blank"
           href={getExplorerLink(ExplorerLinkType.ADDRESS, deposite.contractAddress, chainId)}
         >
@@ -120,7 +120,7 @@ const WithdrawTableItem = ({
           <>
             <span className="text-14 text-secondary-text">Token owner</span>
             <a
-              className="flex gap-2 cursor-pointer hover:text-green-hover"
+              className="flex gap-2 cursor-pointer hover:text-green-hover focus:outline-0 focus:text-green-hover"
               target="_blank"
               href={getExplorerLink(ExplorerLinkType.ADDRESS, walletAddress, chainId)}
             >
@@ -201,7 +201,7 @@ const WithdrawMobileTableItem = ({
             </div>
           </div>
           <div
-            className="px-2 py-[2px] text-14 text-secondary-text bg-quaternary-bg rounded-1 flex justify-center items-center hover:bg-green-bg cursor-pointer duration-200"
+            className="px-2 py-[2px] text-14 text-secondary-text bg-quaternary-bg rounded-1 flex justify-center items-center hover:bg-green-bg focus:outline-0 focus:bg-green-bg cursor-pointer duration-200"
             onClick={() => {
               onDetailsClick();
             }}
@@ -216,7 +216,7 @@ const WithdrawMobileTableItem = ({
         <div className="flex justify-between items-center rounded-2 bg-quaternary-bg px-4 py-[10px]">
           <span className="text-14 text-secondary-text">Contract address</span>
           <a
-            className="flex gap-2 text-14 cursor-pointer items-center hover:text-green-hover"
+            className="flex gap-2 text-14 cursor-pointer items-center hover:text-green-hover focus:outline-0 focus:text-green-hover"
             target="_blank"
             href={getExplorerLink(ExplorerLinkType.ADDRESS, deposite.contractAddress, chainId)}
           >
@@ -237,7 +237,7 @@ const WithdrawMobileTableItem = ({
             <div className="flex justify-between items-center bg-tertiary-bg px-4 py-[10px] rounded-2">
               <span className="text-14 text-secondary-text">Token owner</span>
               <a
-                className="flex items-center gap-2 cursor-pointer text-14 hover:text-green-hover"
+                className="flex items-center gap-2 cursor-pointer text-14 hover:text-green-hover focus:outline-0 focus:text-green-hover"
                 target="_blank"
                 href={getExplorerLink(ExplorerLinkType.ADDRESS, walletAddress, chainId)}
               >

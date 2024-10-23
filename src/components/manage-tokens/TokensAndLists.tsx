@@ -34,7 +34,7 @@ function ButtonTooltip({ text }: { text: string }) {
           <div
             ref={ref.setReference}
             {...refProps}
-            className="bg-green-bg text-secondary-text border-transparent border hover:border-green hover:bg-green-bg-hover hover:text-primary-text w-12 h-full rounded-r-2 border-r-2 border-primary-bg flex items-center justify-center duration-200 cursor-pointer"
+            className="bg-green-bg text-secondary-text border-transparent border hocus:border-green hocus:bg-green-bg-hover hocus:text-primary-text w-12 h-full rounded-r-2 border-r-2 border-primary-bg flex items-center justify-center duration-200 cursor-pointer"
           >
             <Svg iconName="info" />
           </div>

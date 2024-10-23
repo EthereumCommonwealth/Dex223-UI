@@ -15,6 +15,13 @@ export enum IconSize {
 }
 
 export enum IconButtonSize {
+  EXTRA_SMALL = 24,
+  SMALL = 32,
+  REGULAR = 40,
+  LARGE = 48,
+}
+
+export enum ClickableAreaSize {
   SMALL = 32,
   REGULAR = 40,
   LARGE = 48,
@@ -24,11 +31,13 @@ interface FrameProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   iconName: IconName;
   iconSize?: IconSize;
   buttonSize?: IconButtonSize;
+  clickableAreaSize?: ClickableAreaSize;
   className?: string;
 }
 function IconButtonFrame({
   iconSize = IconSize.REGULAR,
   buttonSize = IconButtonSize.REGULAR,
+  clickableAreaSize = ClickableAreaSize.REGULAR,
   iconName,
   className,
   ...props
@@ -36,10 +45,14 @@ function IconButtonFrame({
   return (
     <button
       className={clsxMerge(
+        buttonSize === IconButtonSize.EXTRA_SMALL && "w-6 h-6",
         buttonSize === IconButtonSize.SMALL && "w-8 h-8",
         buttonSize === IconButtonSize.REGULAR && "w-10 h-10",
         buttonSize === IconButtonSize.LARGE && "w-12 h-12",
-        "flex justify-center items-center disabled:opacity-50 disabled:pointer-events-none",
+        clickableAreaSize === ClickableAreaSize.SMALL && "after:w-8 after:h-8",
+        clickableAreaSize === ClickableAreaSize.REGULAR && "after:w-10 after:h-10",
+        clickableAreaSize === ClickableAreaSize.SMALL && "after:w-12 after:h-12",
+        "flex justify-center items-center disabled:opacity-50 disabled:pointer-events-none relative after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
         className,
       )}
       {...props}
@@ -124,7 +137,7 @@ export default function IconButton(_props: Props) {
         <IconButtonFrame
           iconName={_props.iconName}
           className={clsxMerge(
-            "text-tertiary-text  hover:text-green-hover-icon relative before:opacity-0 before:duration-200 hover:before:opacity-60 before:absolute before:w-4 before:h-4 before:rounded-full before:bg-green-hover-icon before:blur-[9px] duration-200",
+            "text-tertiary-text hocus:text-green-hover-icon relative before:opacity-0 before:duration-200 hocus:before:opacity-60 before:absolute before:w-4 before:h-4 before:rounded-full before:bg-green-hover-icon before:blur-[9px] duration-200",
             active && "text-green",
             className,
           )}

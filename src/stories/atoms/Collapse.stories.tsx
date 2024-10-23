@@ -41,7 +41,7 @@ export const Default: Story = {
       <div className="p-3 rounded-5 bg-quaternary-bg">
         <div
           role="button"
-          className="text-green duration-200 bg-secondary-bg hover:bg-green-bg rounded-t-5 p-3"
+          className="text-green duration-200 bg-secondary-bg hocus:bg-green-bg rounded-t-5 p-3"
           onClick={onChange}
         >
           Toggle collapse

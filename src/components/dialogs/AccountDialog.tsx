@@ -80,7 +80,7 @@ function AccountDialogContent({ setIsOpenedAccount, activeTab, setActiveTab }: a
               setIsOpenedAccount(false);
               disconnect({ connector });
             }}
-            className="flex items-center gap-2 hover:text-green duration-200"
+            className="flex items-center gap-2 hover:text-green focus:text-green focus:outline-0 duration-200"
           >
             {t("disconnect")}
             <Svg iconName="logout" />

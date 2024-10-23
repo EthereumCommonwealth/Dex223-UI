@@ -114,7 +114,7 @@ export default function Zoom({
           resetBrush();
           zoomReset();
         }}
-        className="cursor-pointer rounded-2 hover:bg-green-bg bg-transparent duration-200 text-primary-text px-3 py-1"
+        className="cursor-pointer rounded-2 hover:bg-green-bg focus:outline-0 focus:bg-green-bg bg-transparent duration-200 text-primary-text px-3 py-1"
       >
         {t("refresh")}
       </div>

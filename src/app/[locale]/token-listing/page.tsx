@@ -106,7 +106,7 @@ export default function TokenListingPage() {
                 Tokenlists is a project by Uniswap Labs, visit{" "}
                 <a
                   target="_blank"
-                  className="text-green hover:underline"
+                  className="text-green hover:underline focus:outline-0 focus:underline"
                   href="https://tokenlists.org/"
                 >
                   https://tokenlists.org/

@@ -38,7 +38,7 @@ export const PriceRangeHeader = ({
                 "text-12 h-7 rounded-2 min-w-[60px] px-3 border duration-200",
                 isSorted
                   ? "bg-green-bg border-green text-primary-text"
-                  : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
+                  : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text focus:outline-0 focus:bg-green-bg",
               )}
             >
               {button0Text}
@@ -49,7 +49,7 @@ export const PriceRangeHeader = ({
                 "text-12 h-7 rounded-2 min-w-[60px] px-3 border duration-200",
                 !isSorted
                   ? "bg-green-bg border-green text-primary-text"
-                  : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
+                  : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text focus:outline-0 focus:bg-green-bg",
               )}
             >
               {button1Text}

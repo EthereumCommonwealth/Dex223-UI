@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 /** @type {import('tailwindcss').Config} */
 const config: Config = {
@@ -213,6 +214,10 @@ const config: Config = {
     require("@tailwindcss/container-queries"),
     require("@savvywombat/tailwindcss-grid-areas"),
     require("tailwind-scrollbar")({ preferredStrategy: "pseudoelements", nocompatible: true }),
+    plugin(function ({ addVariant }) {
+      addVariant("hocus", ["&:hover", "&:focus"]);
+      addVariant("group-hocus", ["&:group-hover", "&:group-focus"]);
+    }),
   ],
 };
 export default config;

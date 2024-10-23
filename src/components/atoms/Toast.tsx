@@ -34,14 +34,17 @@ export default function Toast({ text, type = "success", onDismiss }: Props) {
         outline
         rounded-2
         gap-2
-        pl-5
+        pl-4
+        lg:pl-5
         overflow-hidden
         box-border
         py-2
-        px-2
+        lg:py-3
+        pr-2
+        lg:pr-3
         `,
         type === "success" && "outline-green bg-green-bg",
-        type === "error" && "outline-red bg-red-bg",
+        type === "error" && "outline-red-light bg-red-bg",
         type === "warning" && "outline-orange bg-orange-bg",
         type === "info" && "outline-blue bg-blue-bg",
       )}
@@ -51,7 +54,7 @@ export default function Toast({ text, type = "success", onDismiss }: Props) {
           className={clsx(
             "flex items-center justify-center flex-shrink-0",
             type === "success" && "text-green",
-            type === "error" && "text-red",
+            type === "error" && "text-red-light",
             type === "warning" && "text-orange",
             type === "info" && "text-blue",
           )}
@@ -62,7 +65,7 @@ export default function Toast({ text, type = "success", onDismiss }: Props) {
       </div>
 
       <IconButton
-        buttonSize={IconButtonSize.LARGE}
+        buttonSize={IconButtonSize.EXTRA_SMALL}
         variant={IconButtonVariant.CLOSE}
         handleClose={onDismiss}
       />

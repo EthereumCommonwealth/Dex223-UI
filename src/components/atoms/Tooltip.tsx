@@ -92,7 +92,7 @@ export default function Tooltip({ text, iconSize = 24, renderTrigger, customOffs
       <FloatingPortal>
         {isMounted && (
           <div
-            className="py-3 px-5 bg-quaternary-bg border border-secondary-border rounded-2 max-w-[400px] relative z-[100]"
+            className="py-2 px-5 bg-quaternary-bg border border-secondary-border rounded-2 max-w-[400px] relative z-[100] text-14 text-secondary-text"
             ref={refs.setFloating}
             style={{ ...floatingStyles, ...transitionStyles }}
             {...getFloatingProps()}
@@ -102,7 +102,7 @@ export default function Tooltip({ text, iconSize = 24, renderTrigger, customOffs
               ref={arrowRef}
               context={context}
               strokeWidth={1}
-              stroke={"transparent"}
+              stroke={"#383C3A"}
               fill={"#2E2F2F"}
             />
           </div>

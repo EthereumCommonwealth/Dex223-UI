@@ -523,7 +523,7 @@ export default function TradeForm() {
 
                 <button
                   // disabled
-                  className="border border-green flex px-4 rounded-5 hover:bg-green-bg duration-200"
+                  className="border border-green flex px-4 rounded-5 hover:bg-green-bg duration-200 focus:outline-0 focus:bg-green-bg"
                   onClick={(e) => {
                     e.stopPropagation();
                     setIsOpenedFee(true);

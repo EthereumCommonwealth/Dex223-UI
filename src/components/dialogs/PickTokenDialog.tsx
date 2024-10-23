@@ -36,7 +36,7 @@ function FoundInOtherListMarker() {
       renderTrigger={(ref, refProps) => {
         return (
           <div
-            className="rounded-full p-0.5 bg-primary-bg group-hover:bg-tertiary-bg duration-200"
+            className="rounded-full p-0.5 bg-primary-bg group-hover:bg-tertiary-bg group-focus:bg-tertiary-bg group-focus:outline-0 duration-200"
             ref={ref.setReference}
             {...refProps}
           >
@@ -86,7 +86,7 @@ function TokenRow({
     <div
       role="button"
       onClick={() => handlePick(currency)}
-      className="px-10 hover:bg-tertiary-bg duration-200 group pb-2"
+      className="px-10 hover:bg-tertiary-bg focus:bg-tertiary-bg focus:outline-0 duration-200 group pb-2"
     >
       <div className="grid grid-cols-[40px_1fr] gap-2">
         <div className="flex items-center pt-3">
@@ -265,7 +265,7 @@ export default function PickTokenDialog({ isOpen, setIsOpen, handlePick }: Props
                                 handlePick(pinnedToken);
                               }
                             }}
-                            className="items-center justify-center px-4 duration-200 h-10 rounded-1 bg-tertiary-bg hover:bg-green-bg flex gap-2"
+                            className="items-center justify-center px-4 duration-200 h-10 rounded-1 bg-tertiary-bg hover:bg-green-bg focus:bg-green-bg focus:outline-0 flex gap-2"
                           >
                             <Image
                               width={24}
@@ -284,7 +284,7 @@ export default function PickTokenDialog({ isOpen, setIsOpen, handlePick }: Props
                               );
                             }}
                             className={clsxMerge(
-                              "group-hover:opacity-100 opacity-0 duration-200 flex absolute w-5 h-5 items-center justify-center bg-quaternary-bg rounded-full text-secondary-text hover:text-primary-text -right-1 -top-1",
+                              "group-hover:opacity-100 group-focus:opacity-100 group-focus:outline-0 opacity-0 duration-200 flex absolute w-5 h-5 items-center justify-center bg-quaternary-bg rounded-full text-secondary-text hover:text-primary-text focus:text-primary-text focus:outline-0 -right-1 -top-1",
                               isEditActivated && "opacity-100",
                             )}
                           >
@@ -328,7 +328,7 @@ export default function PickTokenDialog({ isOpen, setIsOpen, handlePick }: Props
                     setIsOpen(false);
                     setManageOpened(true);
                   }}
-                  className="w-full text-green hover:text-green-hover rounded-b-5 flex items-center justify-center gap-2 h-[60px] bg-tertiary-bg hover:bg-green-bg hover:shadow hover:shadow-green/60 duration-200"
+                  className="w-full text-green hover:text-green-hover focus:text-green-hover focus:outline-0 rounded-b-5 flex items-center justify-center gap-2 h-[60px] bg-tertiary-bg hover:bg-green-bg hover:shadow hover:shadow-green/60 duration-200"
                 >
                   Manage tokens
                   <Svg iconName="edit" />

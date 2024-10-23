@@ -45,7 +45,7 @@ function ListPopoverOption(props: Props) {
     case ListActionOption.DOWNLOAD:
       return (
         <button
-          className={clsx(commonClassName, "text-primary-text hover:text-green-hover")}
+          className={clsx(commonClassName, "text-primary-text hocus:text-green-hover")}
           onClick={() => props.handleDownload()}
         >
           {t("download")}
@@ -55,7 +55,7 @@ function ListPopoverOption(props: Props) {
     case ListActionOption.REMOVE:
       return (
         <button
-          className={clsx(commonClassName, "text-red hover:text-red-hover")}
+          className={clsx(commonClassName, "text-red hocus:text-red-hover")}
           onClick={() => props.handleRemove()}
         >
           {t("remove")}
@@ -68,7 +68,7 @@ function ListPopoverOption(props: Props) {
           target="_blank"
           className={clsx(
             commonClassName,
-            "text-green hover:text-green-hover",
+            "text-green hover:text-green-hover focus:text-green-hover focus:outline-0",
             props.href === "#" && "opacity-50 pointer-events-none",
           )}
           href={props.href}
@@ -123,7 +123,7 @@ export default function TokenListItem({
               trigger={
                 <button
                   onClick={() => setPopoverOpened(true)}
-                  className="text-secondary-text hover:text-primary-text duration-200 relative"
+                  className="text-secondary-text hover:text-primary-text focus:text-primary-text focus:outline-0 duration-200 relative"
                 >
                   <Svg size={20} iconName="settings" />
                 </button>

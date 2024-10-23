@@ -144,7 +144,7 @@ function InputTotalAmount({
             <Button
               variant={ButtonVariant.CONTAINED}
               size={ButtonSize.EXTRA_SMALL}
-              className="bg-tertiary-bg text-green px-2 hover:bg-secondary-bg"
+              className="bg-tertiary-bg text-green px-2 hover:bg-secondary-bg focus:outline-0 focus:bg-secondary-bg"
               onClick={maxHandler}
             >
               Max
@@ -255,7 +255,7 @@ function InputStandardAmount({
             )}
             {!!currentAllowance ? (
               <span
-                className="text-12 px-2 pt-[1px] pb-[2px] border border-green rounded-3 h-min cursor-pointer hover:text-green duration-200"
+                className="text-12 px-2 pt-[1px] pb-[2px] border border-green rounded-3 h-min cursor-pointer hover:text-green focus:text-green focus:outline-0 duration-200"
                 onClick={() => setIsOpenedRevokeDialog(true)}
               >
                 {standard === Standard.ERC20 ? t("revoke") : t("withdraw")}

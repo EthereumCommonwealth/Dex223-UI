@@ -277,7 +277,7 @@ export default function PoolPage({
                   "text-12 h-7 rounded-1 min-w-[60px] px-3 border duration-200",
                   showFirst
                     ? "bg-green-bg border-green text-primary-text"
-                    : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
+                    : "hover:bg-green-bg focus:outline-0 focus:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
                 )}
               >
                 {token0?.symbol}
@@ -288,7 +288,7 @@ export default function PoolPage({
                   "text-12 h-7 rounded-1 min-w-[60px] px-3 border duration-200",
                   !showFirst
                     ? "bg-green-bg border-green text-primary-text"
-                    : "hover:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
+                    : "hover:bg-green-bg focus:outline-0 focus:bg-green-bg bg-primary-bg border-transparent text-secondary-text",
                 )}
               >
                 {token1?.symbol}
@@ -535,7 +535,10 @@ export default function PoolPage({
                       Transaction failed due to lack of gas or an internal contract error. Try using
                       higher slippage or gas to ensure your transaction is completed. If you still
                       have issues, click{" "}
-                      <a href="#" className="text-green hover:underline">
+                      <a
+                        href="#"
+                        className="text-green hover:underline focus:outline-0 focus:underline"
+                      >
                         common errors
                       </a>
                       .

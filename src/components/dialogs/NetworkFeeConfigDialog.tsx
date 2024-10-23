@@ -487,7 +487,7 @@ function NetworkFeeDialogContent({
                       "w-4 h-4 duration-200 before:duration-200 border bg-secondary-bg rounded-full before:w-2.5 before:h-2.5 before:absolute before:top-1/2 before:rounded-full before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 relative",
                       values.gasPriceOption === _gasOption
                         ? "border-green before:bg-green"
-                        : "border-secondary-border group-hover:border-green",
+                        : "border-secondary-border group-hover:border-green group-focus:border-green group-focus:outline-0",
                     )}
                   />
                   {gasOptionIcon[_gasOption]}
@@ -803,7 +803,7 @@ function NetworkFeeDialogContent({
                               values.gasPriceModel === GasFeeModel.EIP1559
                                 ? "bg-green-bg border-green"
                                 : "bg-primary-bg border-transparent",
-                              "flex flex-col gap-1 justify-center items-center py-3 px-5 border hover:bg-green-bg rounded-3 duration-200",
+                              "flex flex-col gap-1 justify-center items-center py-3 px-5 border hover:bg-green-bg focus:bg-green-bg focus:outline-0 rounded-3 duration-200",
                             )}
                             onClick={() => setFieldValue("gasPriceModel", GasFeeModel.EIP1559)}
                           >
@@ -820,7 +820,7 @@ function NetworkFeeDialogContent({
                               values.gasPriceModel === GasFeeModel.LEGACY
                                 ? "bg-green-bg border-green"
                                 : "bg-primary-bg border-transparent",
-                              "flex flex-col gap-1 justify-center items-center py-3 px-5 border hover:bg-green-bg rounded-3 duration-200",
+                              "flex flex-col gap-1 justify-center items-center py-3 px-5 border hover:bg-green-bg focus:bg-green-bg focus:outline-0 rounded-3 duration-200",
                             )}
                             onClick={() => setFieldValue("gasPriceModel", GasFeeModel.LEGACY)}
                           >

@@ -44,7 +44,7 @@ function SettingsButton({ text, isActive = false, className, ...props }: Setting
         "duration-200 px-6 w-full border flex items-center justify-center rounded-2 text-12 lg:text-16 h-10",
         isActive
           ? "bg-green-bg shadow shadow-green/60 border-green text-primary-text"
-          : "bg-tertiary-bg border-transparent hover:bg-green-bg text-secondary-text",
+          : "bg-tertiary-bg border-transparent hover:bg-green-bg focus:outline-0 focus:bg-green-bg text-secondary-text",
         className,
       )}
     >
@@ -78,12 +78,12 @@ function SettingsInput({ isActive, isError, ...props }: SettingsInputProps) {
         " focus:outline-0  rounded-2 duration-200  py-2.5 px-1.5 md:px-3 text-center placeholder:text-center placeholder:text-secondary-text w-full border text-12 lg:text-16",
         isActive &&
           !isError &&
-          "bg-green-bg shadow shadow-green/60 border-green text-primary-text hover:bg-green-bg ",
+          "bg-green-bg shadow shadow-green/60 border-green text-primary-text hover:bg-green-bg focus:outline-0 focus:bg-green-bg",
         isError &&
-          "bg-secondary-bg shadow shadow-red/60 border-red-light text-primary-text hover:bg-red-bg",
+          "bg-secondary-bg shadow shadow-red/60 border-red-light text-primary-text hover:bg-red-bg focus:outline-0 focus:bg-red-bg",
         !isError &&
           !isActive &&
-          "focus:border-green bg-secondary-bg border-transparent hover:bg-green-bg text-secondary-text focus:bg-green-bg focus::shadow focus::shadow-green/60",
+          "focus:border-green bg-secondary-bg border-transparent hover:bg-green-bg focus:outline-0 focus:bg-green-bg text-secondary-text focus:bg-green-bg focus::shadow focus::shadow-green/60",
       )}
     />
   );
