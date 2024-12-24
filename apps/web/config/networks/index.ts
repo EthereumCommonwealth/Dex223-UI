@@ -1,0 +1,27 @@
+import { DexChainId } from "@/sdk_hybrid/chains";
+
+export const networks: Array<{
+  chainId: DexChainId;
+  name: string;
+  symbol: string;
+  logo: string;
+}> = [
+  {
+    chainId: DexChainId.SEPOLIA,
+    name: "Sepolia",
+    symbol: "SEP",
+    logo: "/images/chains/sepolia.svg",
+  },
+  {
+    chainId: DexChainId.BSC_TESTNET,
+    name: "BSC Testnet",
+    symbol: "BNB",
+    logo: "/images/chains/bsc.svg",
+  },
+  {
+    chainId: DexChainId.EOS,
+    name: "EOS EVM Network",
+    symbol: "EOS",
+    logo: "/images/chains/eos.svg",
+  },
+];
