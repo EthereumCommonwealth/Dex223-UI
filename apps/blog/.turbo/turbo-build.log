@@ -1,0 +1,21 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\WINDOWS\system32\cmd.exe [?25h[K[1myarn run v1.22.22
+[22m[2m$ next build[22m[K
+   [38;2;173;127;168m[1m▲ Next.js 15.1.2
+[m
+ [37m[1m [m Creating an optimized production build ...
+ [32m[1m✓[m Compiled successfully
+ [37m[1m [m Linting and checking validity of types  [36m.[?25l[m[K[162C [37m[1m [m Linting and checking validity of types  [36m..[m[K[162C [37m[1m [m Linting and checking validity of types  [36m...[m[K[162C [37m[1m [m Linting and checking validity of types  [36m.[m[K[162C [37m[1m [m Linting and checking validity of types  [36m..[m[K[162C [37m[1m [m Linting and checking validity of types  [36m...[m[K[162C [37m[1m [m Linting and checking validity of types  [36m.[m[K[162C [37m[1m [m Linting and checking validity of types  [36m..[m[K[162C [37m[1m [m Linting and checking validity of types  [36m...[m[K[162C [37m[1m [m Linting and checking validity of types  [36m.[m[K[162C [37m[1m [m Linting and checking validity of types  [36m..[m[K[162C [37m[1m [m Linting and checking validity of types  [36m...[m[K[162C [37m[1m [m Linting and checking validity of types  [36m.[mnode:internal/process/per_thread:223
+      throw new ErrnoException(err, 'kill');
+      ^
+
+Error: kill ENOSYS[144C
+[90m    at process.kill (node:internal/process/per_thread:223:13)[101C[m
+    at process.listener (C:\Users\vrper\AppData\Roaming\npm\node_modules\[4myarn[24m\lib\cli.js:76945:15)[K[64C
+[90m    at process.emit (node:events:524:28) [m{[K[120C
+  errno: [33m-4054[m,[K[147C
+  code: [32m'ENOSYS'[m,[K[145C
+  syscall: [32m'kill'[K[145C[m
+}[161C
+[162C
+Node.js v22.12.0[146C[?9001l[?1004l
+[?25h

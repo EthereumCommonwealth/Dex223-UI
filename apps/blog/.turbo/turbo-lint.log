@@ -1,0 +1,9 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\WINDOWS\system32\cmd.exe [?25h[K[1myarn run v1.22.22
+[22m[2m$ eslint -c .eslintrc.json --ext .js,.jsx,.ts,.tsx src --quiet --fix[22m[K
+[?25l
+Oops! Something went wrong! :([6;1HESLint: 8.57.1[8;1HFailed to read JSON file at C:\Users\vrper\OneDrive\Desktop\Projects\Dex223-UI\apps\blog\.eslintrc.json:[10;1HCannot read config file: C:\Users\vrper\OneDrive\Desktop\Projects\Dex223-UI\apps\blog\.eslintrc.json[?25h
+Error: ENOENT: no such file or directory, open 'C:\Users\vrper\OneDrive\Desktop\Projects\Dex223-UI\apps\blog\.eslintrc.json'
+
+[31merror [mCommand failed with exit code 2.[K
+[94minfo [mVisit [1mhttps://yarnpkg.com/en/docs/cli/run[22m for documentation about this command.[K
+[?9001l[?1004l

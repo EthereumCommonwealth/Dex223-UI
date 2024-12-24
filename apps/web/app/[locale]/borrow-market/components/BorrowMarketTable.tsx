@@ -9,12 +9,6 @@ import IconButton, {
   IconSize,
 } from "@/components/buttons/IconButton";
 
-export enum SortingType {
-  NONE,
-  ASCENDING,
-  DESCENDING,
-}
-
 export function HeaderItem({
   isFirst = false,
   label,

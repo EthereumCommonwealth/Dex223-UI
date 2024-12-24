@@ -1,0 +1,14 @@
+[?9001h[?1004h[?25l[2J[m[H]0;C:\WINDOWS\system32\cmd.exe [?25h[K[1myarn run v1.22.22
+[22m[2m$ eslint -c .eslintrc.json --ext .js,.jsx,.ts,.tsx src --quiet --fix[22m[K
+[?25lnode:internal/process/per_thread:223
+      throw new ErrnoException(err, 'kill');
+      ^[7;1HError: kill ENOSYS[90m
+    at process.kill (node:internal/process/per_thread:223:13)[m
+    at process.listener (C:\Users\vrper\AppData\Roaming\npm\node_modules\[4myarn[24m\lib\cli.js:76945:15)[90m
+    at process.emit (node:events:524:28) [m{[?25h
+  errno: [33m-4054[m,[K
+  code: [32m'ENOSYS'[m,[K
+  syscall: [32m'kill'[K[m
+}
+
+Node.js v22.12.0[?9001l[?1004l

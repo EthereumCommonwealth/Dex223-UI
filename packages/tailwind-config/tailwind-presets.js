@@ -5,9 +5,10 @@ const emptyImagePath = "/images/empty-large";
 /** @type {import('tailwindcss').Config} */
 const config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "../../apps/web/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "../../apps/web/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "../../apps/blog/app/**/*.{js,ts,jsx,tsx,mdx}",
+    "../../apps/blog/components/**/*.{js,ts,jsx,tsx,mdx}"
   ],
   theme: {
     extend: {
@@ -274,7 +275,7 @@ const config = {
       addVariant("group-hocus", [".group:hover &", ".group:focus-visible &"]);
       addVariant("peer-hocus", [".peer:hover ~ &", ".peer:focus-visible ~ &"]);
     }),
-    function ({ addUtilities }: any) {
+    function ({ addUtilities }) {
       const newUtilities = {
         ".text-shadow": {
           textShadow: "0px 0px 8px var(--tw-shadow-color)",
