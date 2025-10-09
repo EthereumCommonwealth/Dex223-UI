@@ -13,10 +13,10 @@ const marginModuleUrlMap: Record<DexChainId, string> = {
   [DexChainId.BSC_TESTNET]:
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",
+  [DexChainId.APE_CHAIN]: "",
 };
 
 const authLink = setContext((_, { headers }) => {
-  // return the headers to the context so httpLink can read them
   return {
     headers: {
       ...headers,
