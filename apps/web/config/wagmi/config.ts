@@ -88,8 +88,8 @@ export const config = createConfig({
     ]),
     [eos.id]: http("https://api.evm.eosnetwork.com"),
     [apeChain.id]: fallback([
-      webSocket("wss://apechain.drpc.org"),
-      http("https://apechain.drpc.org"),
+      webSocket("wss://lb.drpc.live/apechain/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),
+      http("https://lb.drpc.live/apechain/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),
     ]),
   },
 });
