@@ -32,6 +32,8 @@ const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
   // [DexChainId.CALLISTO]: "",
   [DexChainId.BSC_TESTNET]: "https://api.studio.thegraph.com/query/56540/dex223-v1-chapel/1.0.82",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-eosevm",
+  [DexChainId.APE_CHAIN]:
+    "https://api.studio.thegraph.com/query/56540/dex-223-v-1-apechain/version/latest",
 };
 
 const httpLink = new HttpLink({ uri: CHAIN_SUBGRAPH_URL[DexChainId.MAINNET] });
@@ -107,6 +109,10 @@ export const chainToApolloClient: Record<DexChainId, ApolloClient<NormalizedCach
   [DexChainId.EOS]: new ApolloClient({
     cache: new InMemoryCache(),
     uri: CHAIN_SUBGRAPH_URL[DexChainId.EOS],
+  }),
+  [DexChainId.APE_CHAIN]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.APE_CHAIN],
   }),
   // [DexChainId.CALLISTO]: new ApolloClient({
   //   cache: new InMemoryCache(),

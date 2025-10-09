@@ -13,6 +13,7 @@ const explorerMap: Record<DexChainId, string> = {
   [DexChainId.SEPOLIA]: "https://sepolia.etherscan.io",
   [DexChainId.BSC_TESTNET]: "https://testnet.bscscan.com",
   [DexChainId.EOS]: "https://explorer.evm.eosnetwork.com/",
+  [DexChainId.APE_CHAIN]: "https://apescan.io/",
 };
 export default function getExplorerLink(
   type: ExplorerLinkType,

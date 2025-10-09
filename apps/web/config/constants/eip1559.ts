@@ -5,6 +5,7 @@ export const eip1559SupportMap: Record<DexChainId, boolean> = {
   [DexChainId.SEPOLIA]: true,
   [DexChainId.BSC_TESTNET]: false,
   [DexChainId.EOS]: false,
+  [DexChainId.APE_CHAIN]: true,
 };
 
 export function isEip1559Supported(chainId: DexChainId) {

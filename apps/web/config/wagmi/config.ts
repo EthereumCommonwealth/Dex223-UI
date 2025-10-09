@@ -1,5 +1,6 @@
 import { fallback, http, webSocket } from "viem";
 import { bscTestnet, mainnet } from "viem/chains";
+import { apeChain } from "viem/chains";
 import { createConfig, createStorage, parseCookie } from "wagmi";
 import { coinbaseWallet, injected, metaMask, walletConnect } from "wagmi/connectors";
 
@@ -24,7 +25,9 @@ const cookieStorage = {
 
 export const config = createConfig({
   chains:
-    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
+    process.env.NEXT_PUBLIC_ENV === "production"
+      ? [mainnet]
+      : [mainnet, sepolia, bscTestnet, eos, apeChain],
   connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
@@ -84,5 +87,9 @@ export const config = createConfig({
       http(),
     ]),
     [eos.id]: http("https://api.evm.eosnetwork.com"),
+    [apeChain.id]: fallback([
+      webSocket("wss://apechain.drpc.org"),
+      http("https://apechain.drpc.org"),
+    ]),
   },
 });

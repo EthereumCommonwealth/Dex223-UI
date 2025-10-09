@@ -1,3 +1,4 @@
+import { ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 
 import { Token } from "./token";
@@ -38,5 +39,13 @@ export const wrappedTokens: Record<DexChainId, Token> = {
     18,
     "WEOS",
     "Wrapped EOS",
+  ),
+  [DexChainId.APE_CHAIN]: new Token(
+    DexChainId.APE_CHAIN,
+    "0x9295E8B6ef438EbD2D8F2F277ebC9c86E2483bCA",
+    ZERO_ADDRESS,
+    18,
+    "WAPE",
+    "Wrapped APE",
   ),
 };

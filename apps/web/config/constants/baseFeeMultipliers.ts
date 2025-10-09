@@ -20,6 +20,10 @@ export const baseFeeMultipliers: Record<DexChainId, Record<GasOptionWithoutCusto
     [GasOption.CHEAP]: BigInt(120),
     [GasOption.FAST]: BigInt(200),
   },
+  [DexChainId.APE_CHAIN]: {
+    [GasOption.CHEAP]: BigInt(120),
+    [GasOption.FAST]: BigInt(200),
+  },
 };
 
 export const SCALING_FACTOR = BigInt(100);

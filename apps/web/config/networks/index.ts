@@ -40,4 +40,10 @@ export const networks: Array<{
           symbol: "EOS",
           logo: "/images/chains/eos.svg",
         },
+        {
+          chainId: DexChainId.APE_CHAIN,
+          name: "ApeChain",
+          symbol: "APE",
+          logo: "/images/chains/rsz_apechain.webp",
+        },
       ];

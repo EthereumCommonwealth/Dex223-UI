@@ -467,6 +467,10 @@ export default function TradeForm() {
   const { price } = useUSDPrice(wrappedTokens[chainId]?.address0);
   const { setIsOpen: setConfirmConvertDialogOpen } = useConfirmConvertDialogStore();
 
+  console.log(tokenA);
+  console.log(tokenB);
+  console.log(tokenB && tokenA?.equals(tokenB));
+
   return (
     <div className="card-spacing pt-2.5 bg-primary-bg rounded-5">
       <div className="flex justify-between items-center mb-2.5">
@@ -597,7 +601,7 @@ export default function TradeForm() {
             standard === tokenBStandard &&
             tokenA &&
             tokenB &&
-            tokenA.wrapped.equals(tokenB.wrapped)
+            !tokenA.wrapped.equals(tokenB.wrapped)
           ) {
             setTokenBStandard(standard === Standard.ERC20 ? Standard.ERC223 : Standard.ERC20);
           }
@@ -642,7 +646,7 @@ export default function TradeForm() {
             standard === tokenAStandard &&
             tokenA &&
             tokenB &&
-            tokenA.wrapped.equals(tokenB.wrapped)
+            !tokenA.wrapped.equals(tokenB.wrapped)
           ) {
             setTokenAStandard(standard === Standard.ERC20 ? Standard.ERC223 : Standard.ERC20);
           }

@@ -32,6 +32,11 @@ const nativeCurrenciesMap: Record<DexChainId, { symbol: string; name: string; lo
     name: "EOS",
     logoURI: "/images/coins/EOS.svg",
   },
+  [DexChainId.APE_CHAIN]: {
+    symbol: "APE",
+    name: "ApeChain",
+    logoURI: "/images/chains/rsz_apechain.webp",
+  },
 };
 
 export class NativeCoin extends NativeCurrency {

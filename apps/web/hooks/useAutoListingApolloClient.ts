@@ -13,6 +13,8 @@ const autoListingUrlMap: Record<DexChainId, string> = {
   [DexChainId.BSC_TESTNET]:
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",
+  [DexChainId.APE_CHAIN]:
+    "https://api.studio.thegraph.com/query/56540/dex-223-auto-listing-apechain/0.0.1",
 };
 
 const authLink = setContext((_, { headers }) => {

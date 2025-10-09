@@ -7,6 +7,7 @@ export const CONVERTER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0x5847f5C0E09182d9e75fE8B1617786F62fee0D9F",
   [DexChainId.BSC_TESTNET]: "0x18EEdef5d3D21C2828Ca8557BeF7210Bfa481bC2",
   [DexChainId.EOS]: "0xDd90b13bcb92950CA9b6b3e0407d439533eA0df2",
+  [DexChainId.APE_CHAIN]: "0xF72E090f47eB6cDE0f9Eec6BDe3e6BfB91E75280",
 };
 
 export const FACTORY_ADDRESS: Record<DexChainId, Address> = {
@@ -14,6 +15,7 @@ export const FACTORY_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0x5D63230470AB553195dfaf794de3e94C69d150f9",
   [DexChainId.BSC_TESTNET]: "0x8524c3bD49Cd455EA0102BF194AdD2F21165E049",
   [DexChainId.EOS]: "0x9f3118af733Ea3Fe4f9Ed71033F25B6bcF7F49e9",
+  [DexChainId.APE_CHAIN]: "0xB8536128e0d79a997b3b1fa44A805c0CF5982346",
 };
 
 export const ROUTER_ADDRESS: Record<DexChainId, Address> = {
@@ -21,6 +23,7 @@ export const ROUTER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0x99504dbaa0f9368e9341c15f67377d55ed4ac690",
   [DexChainId.BSC_TESTNET]: "0xb130D5e318898718C1Efa27Abe634294B0a4C4c8",
   [DexChainId.EOS]: "0x1937f00296267c2bA4Effa1122D944F33de46891",
+  [DexChainId.APE_CHAIN]: "0xDA7F211Ca0CE092db9f300b7133636C49f123321",
 };
 
 export const NONFUNGIBLE_POSITION_MANAGER_ADDRESS: Record<DexChainId, Address> = {
@@ -28,6 +31,7 @@ export const NONFUNGIBLE_POSITION_MANAGER_ADDRESS: Record<DexChainId, Address> =
   [DexChainId.SEPOLIA]: "0x068754a9fd1923d5c7b2da008c56ba0ef0958d7e",
   [DexChainId.BSC_TESTNET]: "0x9cCF60dDE926FB2579209bb0D6C00C8Cc873A458",
   [DexChainId.EOS]: "0xcB53086f8D8532CD2253A02052314D07ec8D5B76",
+  [DexChainId.APE_CHAIN]: "0x203f1f8c7332E3f1C8dEc94d58f70C98bA38Da60",
 };
 
 export const POOL_INIT_CODE_HASH: Record<DexChainId, Address> = {
@@ -35,6 +39,7 @@ export const POOL_INIT_CODE_HASH: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0xf381c67d48673ceb8a17b53722647aee43310f100cd97f25bfcc628958372b8b",
   [DexChainId.BSC_TESTNET]: "0xf0d7ddf29422ea801b9317d66d14a1055d17fd476a9da81c3c985fb2d8e49281",
   [DexChainId.EOS]: "0xf0d7ddf29422ea801b9317d66d14a1055d17fd476a9da81c3c985fb2d8e49281",
+  [DexChainId.APE_CHAIN]: "0x0",
 };
 
 export const CORE_AUTO_LISTING_ADDRESS: Record<DexChainId, Address> = {
@@ -42,6 +47,7 @@ export const CORE_AUTO_LISTING_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0x8a1839E6b7b4538a15de8865891FcE6e24a27ddA",
   [DexChainId.BSC_TESTNET]: "0xD9EAC1C424554499322FECCb673fC62Ea92cF810",
   [DexChainId.EOS]: "0x39491101f7d46e9f0c3217d2eb91c016f761ad59",
+  [DexChainId.APE_CHAIN]: "0x47fEBb84BbF29CC858432e63d2B91a2D2497Cfb8",
 };
 
 export const FREE_AUTO_LISTING_ADDRESS: Record<DexChainId, Address> = {
@@ -49,6 +55,7 @@ export const FREE_AUTO_LISTING_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0xBC5fC0bbd73DF985Cc28c9367407f9FfB1FD4CC3",
   [DexChainId.BSC_TESTNET]: "0xde839Df421dA5B5a4b34d872D90517C90B511b57",
   [DexChainId.EOS]: "0x5bf0FD2874B54CD42a7b7F19E98a2AdA8c9A756d",
+  [DexChainId.APE_CHAIN]: "0x47fEBb84BbF29CC858432e63d2B91a2D2497Cfb8",
 };
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -58,6 +65,7 @@ export const MARGIN_TRADING_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0xa64c8C9e13185e54dF846a7AC3265b9Be4E96104",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
+  [DexChainId.APE_CHAIN]: ZERO_ADDRESS,
 };
 
 export const ORACLE_ADDRESS: Record<DexChainId, Address> = {
@@ -65,6 +73,7 @@ export const ORACLE_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0xa5632c08676D4138E0f6765f57055Dcf9Cb00cca",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
+  [DexChainId.APE_CHAIN]: ZERO_ADDRESS,
 };
 
 export const ERC223_TOKEN_DEPLOYER_ADDRESS: Record<DexChainId, Address> = {
@@ -72,4 +81,5 @@ export const ERC223_TOKEN_DEPLOYER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.SEPOLIA]: "0x9ab7225B9f22DEcB9A9216C83f01776702c4B80B",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
+  [DexChainId.APE_CHAIN]: ZERO_ADDRESS,
 };
