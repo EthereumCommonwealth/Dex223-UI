@@ -261,8 +261,20 @@ function NavigationMoreDropdown() {
               title={t("partners")}
               links={[
                 {
+                  text: "BlockzHub",
                   href: "https://blockzhub.io/",
-                  text: t("partners_eos_support"),
+                },
+                {
+                  text: "CLS Global",
+                  href: "https://www.cls.global",
+                },
+                {
+                  text: "Beosin",
+                  href: "https://beosin.com",
+                },
+                {
+                  text: "Roro Technology",
+                  href: "https://rorotechnology.io/",
                 },
               ]}
             />
