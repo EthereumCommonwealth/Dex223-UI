@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
-  const API_URL = `https://api.simpleswap.io/get_exchange?api_key=${process.env.NEXT_PUBLIC_SIMPLE_SWAP_API_KEY}&id=${exchangeId}`;
+  const API_URL = `https://api.simpleswap.io/get_exchange?api_key=${process.env.SIMPLE_SWAP_API_KEY}&id=${exchangeId}`;
 
   try {
     const response = await fetch(API_URL, {

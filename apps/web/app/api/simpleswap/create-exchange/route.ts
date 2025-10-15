@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
-  const API_URL = `https://api.simpleswap.io/create_exchange?api_key=${process.env.NEXT_PUBLIC_SIMPLE_SWAP_API_KEY}`;
+  const API_URL = `https://api.simpleswap.io/create_exchange?api_key=${process.env.SIMPLE_SWAP_API_KEY}`;
 
   const body = await request.json();
 

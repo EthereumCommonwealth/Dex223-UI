@@ -6,7 +6,7 @@ export default async function BuyCryptoPage({
   searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
   const res = await fetch(
-    `https://api.simpleswap.io/get_all_currencies?api_key=${process.env.NEXT_PUBLIC_SIMPLE_SWAP_API_KEY}`,
+    `https://api.simpleswap.io/get_all_currencies?api_key=${process.env.SIMPLE_SWAP_API_KEY}`,
     {
       next: { revalidate: 60 },
     },
@@ -25,7 +25,7 @@ export default async function BuyCryptoPage({
 
   try {
     const resExchange = await fetch(
-      `https://api.simpleswap.io/get_exchange?id=${exchangeId}&api_key=${process.env.NEXT_PUBLIC_SIMPLE_SWAP_API_KEY}`,
+      `https://api.simpleswap.io/get_exchange?id=${exchangeId}&api_key=${process.env.SIMPLE_SWAP_API_KEY}`,
     );
 
     if (resExchange.ok) {
