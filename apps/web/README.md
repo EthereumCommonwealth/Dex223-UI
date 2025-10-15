@@ -59,7 +59,8 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 7. Add default tokenlist in src/db/lists/index.ts
 8. Add subrgaph url in src/graphql/thegraph/apollo.ts
 9. Add autolisting subgraph in src/hooks/useAutolistingAppoloClient.ts
-10. Add allowanceGasLimit on src/hooks/useAllowance.ts
-11. Modify baseFeeMultipliers and eip1559SupportMap in src/config/constants/baseFeeMultilpiers.ts
-12. Add explorer links in src/functions/getExplorerLink.ts
-13. Add baseGasLimit for useDeposit, unwrapGasLimitMap,  hook
+10. Add margin-module subgraph in src/hooks/[useMarginModuleApolloClient.ts](hooks/useMarginModuleApolloClient.ts)
+11. Add allowanceGasLimit on src/hooks/useAllowance.ts
+12. Modify baseFeeMultipliers and eip1559SupportMap in src/config/constants/baseFeeMultilpiers.ts
+13. Add explorer links in src/functions/getExplorerLink.ts
+14. Add baseGasLimit for useDeposit, unwrapGasLimitMap hooks

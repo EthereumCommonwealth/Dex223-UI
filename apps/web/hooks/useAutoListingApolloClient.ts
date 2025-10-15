@@ -14,7 +14,7 @@ const autoListingUrlMap: Record<DexChainId, string> = {
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",
   [DexChainId.APE_CHAIN]:
-    "https://api.studio.thegraph.com/query/56540/dex-223-auto-listing-apechain/0.0.1",
+    "https://gateway.thegraph.com/api/subgraphs/id/DYyX3trDs5ek4ehjedhBa3j3zqa3dpqDYudy7DufswBM",
 };
 
 const authLink = setContext((_, { headers }) => {

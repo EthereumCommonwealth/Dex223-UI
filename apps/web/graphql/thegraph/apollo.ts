@@ -11,29 +11,14 @@ import { setContext } from "@apollo/client/link/context";
 import { DexChainId } from "@/sdk_bi/chains";
 
 const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
-  // [ChainId.MAINNET]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3?source=uniswap",
-  // [ChainId.ARBITRUM_ONE]:
-  //   "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-arbitrum-one?source=uniswap",
-  // [ChainId.OPTIMISM]:
-  //   "https://api.thegraph.com/subgraphs/name/ianlapham/optimism-post-regenesis?source=uniswap",
-  // [ChainId.POLYGON]:
-  //   "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-polygon?source=uniswap",
-  // [ChainId.CELO]: "https://api.thegraph.com/subgraphs/name/jesse-sawa/uniswap-celo?source=uniswap",
-  // [ChainId.BNB]: "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-v3-bsc?source=uniswap",
-  // [ChainId.AVALANCHE]:
-  //   "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax?source=uniswap",
-  // [ChainId.BASE]:
-  //   "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest?source=uniswap",
   [DexChainId.MAINNET]:
     "https://gateway.thegraph.com/api/subgraphs/id/78wjdcwJTbTmvhnUcyXjZVDPk5kWGFuosEuEWDimvHf2",
   [DexChainId.SEPOLIA]:
     "https://gateway.thegraph.com/api/subgraphs/id/9oohHEx5ivUXguYBGVJojrKuBQHLtLzg7df1pUC6mg8w",
-  // "https://api.studio.thegraph.com/query/56540/dex223-v1-sepolia/version/latest",
-  // [DexChainId.CALLISTO]: "",
   [DexChainId.BSC_TESTNET]: "https://api.studio.thegraph.com/query/56540/dex223-v1-chapel/1.0.82",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-eosevm",
   [DexChainId.APE_CHAIN]:
-    "https://api.studio.thegraph.com/query/56540/dex-223-v-1-apechain/version/latest",
+    "https://gateway.thegraph.com/api/subgraphs/id/GqFzonjU3ascqFnroxb5eziqxx4teWGEwLdWbbnRRQWa",
 };
 
 const httpLink = new HttpLink({ uri: CHAIN_SUBGRAPH_URL[DexChainId.MAINNET] });
