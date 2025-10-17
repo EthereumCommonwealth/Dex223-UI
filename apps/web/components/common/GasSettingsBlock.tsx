@@ -7,13 +7,13 @@ import { formatFloat } from "@/functions/formatFloat";
 export default function GasSettingsBlock({
   handleClick,
   formattedGasPrice,
-  customGasLimit,
-  estimatedGas,
+  customGasLimit = BigInt(0),
+  estimatedGas = BigInt(0),
 }: {
-  handleClick: () => void;
+  handleClick?: () => void;
   formattedGasPrice?: bigint;
   customGasLimit?: bigint;
-  estimatedGas: bigint;
+  estimatedGas?: bigint;
 }) {
   return (
     <div className="bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
