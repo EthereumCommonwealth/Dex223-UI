@@ -1,6 +1,6 @@
 import Checkbox from "@repo/ui/checkbox";
 import { Formik } from "formik";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import ConfirmCreateTokenDialog from "@/app/[locale]/create-token/components/ConfirmCreateTokenDialog";
 import { useCreateTokenDialogStore } from "@/app/[locale]/create-token/hooks/useCreateTokenDialogStore";
@@ -22,8 +22,20 @@ import { useTranslations } from "next-intl";
 import { useAccount } from "wagmi";
 import * as Yup from "yup";
 
+import { useCreateTokenEstimatedGas } from "@/app/[locale]/create-token/hooks/useCreateToken";
+import {
+  useCreateTokenGasLimitStore,
+  useCreateTokenGasModeStore,
+  useCreateTokenGasPriceStore,
+} from "@/app/[locale]/create-token/stores/useCreateTokenGasSettingsStore";
 import ConnectWalletDialog from "@/components/dialogs/ConnectWalletDialog";
+import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
+import { baseFeeMultipliers, SCALING_FACTOR } from "@/config/constants/baseFeeMultipliers";
+import { getFormattedGasPrice } from "@/functions/gasSettings";
+import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { GasFeeModel, GasOption } from "@/stores/factories/createGasPriceStore";
 
 const isValidHttpsUrl = (value?: string) => {
   try {
@@ -55,12 +67,39 @@ const createTokenSchema = Yup.object({
 });
 
 export default function CreateTokenForm() {
+  const chainId = useCurrentChainId();
   const { isOpen, setIsOpen } = useCreateTokenDialogStore();
   const [createTokenSettings, setCreateTokenSettings] = useState(initialCreateTokenSettings);
   const { isConnected } = useAccount();
 
   const tWallet = useTranslations("Wallet");
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
+
+  const {
+    gasPriceOption,
+    gasPriceSettings,
+    setGasPriceOption,
+    setGasPriceSettings,
+    updateDefaultState,
+  } = useCreateTokenGasPriceStore();
+  const { estimatedGas, customGasLimit, setEstimatedGas, setCustomGasLimit } =
+    useCreateTokenGasLimitStore();
+  const { isAdvanced, setIsAdvanced } = useCreateTokenGasModeStore();
+
+  const [isOpenedFee, setIsOpenedFee] = useState(false);
+  const { baseFee, gasPrice, priorityFee } = useGlobalFees();
+
+  const formattedGasPrice = useMemo(() => {
+    return getFormattedGasPrice({
+      baseFee,
+      chainId,
+      gasPrice,
+      gasPriceOption,
+      gasPriceSettings,
+    });
+  }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings]);
+
+  useCreateTokenEstimatedGas(createTokenSettings);
 
   return (
     <>
@@ -132,7 +171,12 @@ export default function CreateTokenForm() {
               />
             </div>
 
-            <GasSettingsBlock />
+            <GasSettingsBlock
+              customGasLimit={customGasLimit}
+              estimatedGas={estimatedGas}
+              formattedGasPrice={formattedGasPrice}
+              handleClick={() => setIsOpenedFee(true)}
+            />
 
             {isConnected ? (
               <Button
@@ -152,6 +196,20 @@ export default function CreateTokenForm() {
         )}
       </Formik>
       <ConfirmCreateTokenDialog createTokenSettings={createTokenSettings} />
+      <NetworkFeeConfigDialog
+        isAdvanced={isAdvanced}
+        setIsAdvanced={setIsAdvanced}
+        estimatedGas={estimatedGas}
+        setEstimatedGas={setEstimatedGas}
+        gasPriceSettings={gasPriceSettings}
+        gasPriceOption={gasPriceOption}
+        customGasLimit={customGasLimit}
+        setCustomGasLimit={setCustomGasLimit}
+        setGasPriceOption={setGasPriceOption}
+        setGasPriceSettings={setGasPriceSettings}
+        isOpen={isOpenedFee}
+        setIsOpen={setIsOpenedFee}
+      />
     </>
   );
 }

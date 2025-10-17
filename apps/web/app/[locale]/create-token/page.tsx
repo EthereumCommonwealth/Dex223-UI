@@ -2,7 +2,6 @@
 
 import clsx from "clsx";
 import React from "react";
-import { getContractAddress } from "viem";
 
 import CreateTokenForm from "@/app/[locale]/create-token/components/CreateTokenForm";
 import { useCreateTokenRecentTransactionsStore } from "@/app/[locale]/create-token/stores/useCreateTokenRecentTransactions";
@@ -10,8 +9,6 @@ import { useRemoveRecentTransactionsStore } from "@/app/[locale]/remove/[tokenId
 import Container from "@/components/atoms/Container";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import RecentTransactions from "@/components/common/RecentTransactions";
-import { ERC223_TOKEN_DEPLOYER_ADDRESS } from "@/sdk_bi/addresses";
-import { DexChainId } from "@/sdk_bi/chains";
 
 export default function DecreaseLiquidityPage() {
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
