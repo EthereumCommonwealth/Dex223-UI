@@ -22,10 +22,12 @@ const cookieStorage = {
   },
 };
 
-export const config = createConfig({
-  chains:
-    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
-  connectors: [
+function wagmiConnectors() {
+  if (typeof window === "undefined") {
+    return [];
+  }
+
+  return [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
     }),
@@ -43,7 +45,21 @@ export const config = createConfig({
     injected({
       target: "trust",
     }),
-  ],
+    injected({
+      target: () => ({
+        name: "SafePal Wallet",
+        id: "safePal",
+        provider: (window as any).safepalProvider,
+        icon: "/images/wallets/safepal-logo.svg",
+      }),
+    }),
+  ];
+}
+
+export const config = createConfig({
+  chains:
+    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
+  connectors: wagmiConnectors(),
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,

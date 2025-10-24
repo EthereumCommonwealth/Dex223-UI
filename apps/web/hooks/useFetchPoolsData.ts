@@ -46,11 +46,13 @@ export const useFetchPoolData = (chainId: number) => {
           return null;
         }
         // Step 1: Query GraphQL for ticks
+        console.log(address);
         const queryResult = await triggerQuery({
           variables: { addresses: [address.toLowerCase()] },
         });
 
         const poolGqlData = queryResult.data?.pools?.[0];
+        console.log("gqldata:", poolGqlData);
         if (!poolGqlData) {
           // Pool does not exist in the subgraph
           return null;

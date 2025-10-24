@@ -8,7 +8,7 @@ import Header from "@/components/common/Header";
 import { Locale, routing } from "@/i18n/routing";
 interface Props {
   params: Promise<{
-    locale: Locale;
+    locale: string;
   }>;
 }
 
@@ -25,7 +25,7 @@ export default async function RootLayout({ children, params }: PropsWithChildren
 
   return (
     <>
-      <Providers messages={messages} locale={locale}>
+      <Providers messages={messages} locale={locale as Locale}>
         <div className="grid h-[100vh] grid-rows-layout">
           <Header />
           <div>{children}</div>

@@ -13,6 +13,7 @@ import {
 import CoinbaseCard from "@/components/wallet-cards/CoinbaseCard";
 import KeystoreCard from "@/components/wallet-cards/KeystoreCard";
 import MetamaskCard from "@/components/wallet-cards/MetamaskCard";
+import SafePalCard from "@/components/wallet-cards/SafePalCard";
 import TrustWalletCard from "@/components/wallet-cards/TrustWalletCard";
 import WalletConnectCard from "@/components/wallet-cards/WalletConnectCard";
 import { networks } from "@/config/networks";
@@ -68,6 +69,7 @@ export default function ConnectWalletDialog() {
             <WalletConnectCard />
             <CoinbaseCard />
             {!isMobile && <TrustWalletCard />}
+            <SafePalCard />
             <KeystoreCard />
           </div>
         </div>

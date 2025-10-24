@@ -7,7 +7,6 @@ import {
   getAddress,
   http,
   WalletClient,
-  webSocket,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 
@@ -32,7 +31,7 @@ export function keystore({ pk }: KeystoreConnectorParameters) {
       //initial setup
     },
     async connect({ chainId }: { chainId: DexChainId }) {
-      const provider: WalletClient = await this.getProvider({ chainId });
+      const provider: any = await this.getProvider({ chainId });
 
       try {
         const accounts = await provider.getAddresses();
