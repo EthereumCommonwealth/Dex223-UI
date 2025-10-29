@@ -1,5 +1,4 @@
 "use client";
-import clsx from "clsx";
 import React, { useEffect } from "react";
 
 import ConfirmConvertDialog from "@/app/[locale]/swap/components/ConfirmConvertDialog";
@@ -8,9 +7,9 @@ import TwoVersionsInfo from "@/app/[locale]/swap/components/TwoVersionsInfo";
 import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
-import Container from "@/components/atoms/Container";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
+import TradingViewWidget from "@/app/[locale]/swap/components/TradingViewWidget";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useSwapSearchParams } from "@/hooks/useSwapSearchParams";
 
@@ -33,17 +32,13 @@ export default function SwapPage() {
 
   return (
     <>
-      <Container>
-        <div
-          className={clsx(
-            "grid py-4 lg:py-[40px] grid-cols-1 mx-auto",
-            showRecentTransactions
-              ? "xl:grid-cols-[580px_600px] xl:max-w-[1200px] gap-4 xl:grid-areas-[left_right] grid-areas-[right,left]"
-              : "xl:grid-cols-[600px] xl:max-w-[600px] grid-areas-[right]",
-          )}
-        >
-          <div className="grid-in-[left] flex justify-center">
-            <div className="w-full sm:max-w-[600px] xl:max-w-full">
+        <div className="grid py-3 sm:py-4 lg:py-[40px] grid-cols-1 lg:grid-cols-[2fr_1fr] mx-auto gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 max-w-full overflow-x-hidden">
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-1">
+            <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden flex-shrink-0">
+              <TradingViewWidget tokenA={tokenA} tokenB={tokenB}/>
+            </div>
+
+            <div className="w-full min-w-0 hidden lg:block">
               <RecentTransactions
                 showRecentTransactions={showRecentTransactions}
                 handleClose={() => setShowRecentTransactions(false)}
@@ -52,20 +47,25 @@ export default function SwapPage() {
             </div>
           </div>
 
-          <div className="flex justify-center grid-in-[right]">
-            <div className="flex flex-col gap-4 md:gap-6 lg:gap-5 w-full sm:max-w-[600px] xl:max-w-full">
-              <div className="flex flex-col gap-2 lg:gap-3">
-                <TwoVersionsInfo />
-              </div>
-
-              <TradeForm />
-              <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
+          <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-2">
+            <div className="flex flex-col gap-2 sm:gap-3">
+              <TwoVersionsInfo />
             </div>
+
+            <TradeForm />
+            <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
+          </div>
+
+          <div className="w-full min-w-0 order-3 lg:hidden">
+            <RecentTransactions
+              showRecentTransactions={showRecentTransactions}
+              handleClose={() => setShowRecentTransactions(false)}
+              store={useSwapRecentTransactionsStore}
+            />
           </div>
         </div>
 
-        <ConfirmConvertDialog />
-      </Container>
+      <ConfirmConvertDialog />
     </>
   );
 }
