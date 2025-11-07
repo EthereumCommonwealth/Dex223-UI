@@ -5,13 +5,10 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import Popover from "@/components/atoms/Popover";
 import SelectButton from "@/components/atoms/SelectButton";
 import SelectOption from "@/components/atoms/SelectOption";
-import Svg from "@/components/atoms/Svg";
 import ClientOnly from "@/components/common/ClientOnly";
 import { useConnectWalletStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { useUnknownNetworkWarningStore } from "@/components/dialogs/stores/useUnknownNetworkWarningStore";
 import { networks } from "@/config/networks";
-import { formatFloat } from "@/functions/formatFloat";
-import { addNotification } from "@/other/notification";
 import { useConfirmInWalletDialogStore } from "@/stores/useConfirmInWalletDialogStore";
 
 export default function NetworkPicker() {
