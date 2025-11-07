@@ -48,10 +48,22 @@ export default function PickTokenDialog({
   }, [items, virtualizer]);
 
   return (
-    <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Select token" />
+    <DrawerDialog
+      isOpen={isOpen}
+      setIsOpen={(value) => {
+        setIsOpen(value);
+        setSearchValue("");
+      }}
+    >
+      <DialogHeader
+        onClose={() => {
+          setIsOpen(false);
+          setSearchValue("");
+        }}
+        title="Select token"
+      />
 
-      <div className="px-10">
+      <div className="px-2">
         <SearchInput
           placeholder="Search tokens"
           value={searchValue}

@@ -87,22 +87,22 @@ function ExchangeStatusInfo({
       className={clsxMerge(
         "relative",
         status !== "sending" &&
-          "before:absolute before:h-0.5 before:w-5 before:bg-green-bg before:right-0 before:top-1/2 before:translate-x-full before:-translate-y-1/2",
+          "before:absolute before:h-0.5 before:w-3 md:before:w-5 before:bg-green-bg before:right-0 before:top-1/2 before:translate-x-full before:-translate-y-1/2",
         isPassed && "before:bg-green",
       )}
     >
       <div
         className={clsxMerge(
-          "flex relative items-center justify-center  rounded-full mx-auto w-8 h-8 mb-2 text-secondary-bg",
+          "flex relative items-center justify-center rounded-full mx-auto w-6 h-6 md:w-8 md:h-8 mb-1 md:mb-2 text-secondary-bg",
           isActive ? "bg-green text-secondary-bg" : "text-tertiary-text bg-tertiary-bg",
           isPassed && "text-green bg-green-bg",
         )}
       >
-        <Svg iconName={statusIconsMap[status]} />
+        <Svg iconName={statusIconsMap[status]} size={16} className="md:w-5 md:h-5" />
       </div>
       <p
         className={clsxMerge(
-          "text-center text-14 font-medium",
+          "text-center text-10 md:text-14 font-medium",
           (!isActive || isPassed) && "text-tertiary-text",
         )}
       >
@@ -188,23 +188,26 @@ export default function ExchangePageClient({
   console.log(exchange);
 
   return (
-    <Container className="px-4">
-      <div className="mx-auto w-[600px]">
+    <Container className="px-0 md:px-4">
+      <div className="mx-auto w-full max-w-[520px]">
         {exchange ? (
           <>
-            <div className="bg-primary-bg py-1 pl-5 pr-2 rounded-3 flex justify-between items-center my-5">
-              <div className="flex items-center gap-1">
-                <span className="text-secondary-text">Exchange ID:</span>
-                {exchange.id}
+            <div className="bg-primary-bg py-1 pl-3 md:pl-5 pr-2 rounded-3 flex justify-between items-center my-5">
+              <div className="flex items-center gap-1 text-12 md:text-14 overflow-hidden">
+                <span className="text-secondary-text whitespace-nowrap">Exchange ID:</span>
+                <span className="truncate">{exchange.id}</span>
                 <IconButton variant={IconButtonVariant.COPY} text={exchange.id} />
               </div>
-              <a className="flex items-center justify-center w-10 h-10 text-tertiary-text" href="#">
+              <a
+                className="flex items-center justify-center w-10 h-10 text-tertiary-text flex-shrink-0"
+                href="#"
+              >
                 <Svg iconName="help-outline" />
               </a>
             </div>
 
             {exchange.redirect_url ? (
-              <div className="px-10 pb-10 pt-3.5 rounded-5 bg-primary-bg">
+              <div className="px-4 md:px-10 pb-6 md:pb-10 pt-3.5 rounded-5 bg-primary-bg">
                 <div>
                   <Link href={"/"} shallow={true} onClick={() => setExchange(undefined)}>
                     <IconButton iconName="back" />
@@ -215,7 +218,7 @@ export default function ExchangePageClient({
                     <Image src="/images/guardian.svg" alt={""} width={80} height={80} />
                   </span>
 
-                  <h2 className="font-bold text-20 text-center">
+                  <h2 className="font-bold text-16 md:text-20 text-center">
                     <div className={clsx("flex items-center justify-center")}>
                       Continue on our partner&apos;s website
                     </div>
@@ -225,7 +228,7 @@ export default function ExchangePageClient({
                     <CountdownTimer validUntil={exchange.valid_until} />
                   )}
                   {exchange.status === "finished" && (
-                    <div className="flex justify-center items-center gap-2 mt-1">
+                    <div className="flex flex-wrap justify-center items-center gap-2 mt-1">
                       <div className="flex items-center gap-2">
                         <Image
                           width={24}
@@ -233,7 +236,7 @@ export default function ExchangePageClient({
                           src={tokenA?.image || "/images/tokens/placeholder.svg"}
                           alt={""}
                         />
-                        <span className="font-medium">
+                        <span className="font-medium text-14 md:text-16">
                           {inputAmount} {tokenA?.symbol}{" "}
                         </span>
                       </div>
@@ -245,13 +248,13 @@ export default function ExchangePageClient({
                           src={tokenA?.image || "/images/tokens/placeholder.svg"}
                           alt={""}
                         />
-                        <span className="font-medium">
+                        <span className="font-medium text-14 md:text-16">
                           {inputAmount} {tokenA?.symbol}{" "}
                         </span>
                       </div>
                     </div>
                   )}
-                  <p className="text-secondary-text mt-1 text-center mb-4">
+                  <p className="text-secondary-text mt-1 text-center mb-4 text-12 md:text-14">
                     To complete your transaction, you&apos;ll be redirected to a secure external
                     platform.
                   </p>
@@ -300,7 +303,7 @@ export default function ExchangePageClient({
                 </div>
               </div>
             ) : (
-              <div className="px-10 pb-10 pt-8 rounded-5 bg-primary-bg flex flex-col gap-5">
+              <div className="px-4 md:px-10 pb-6 md:pb-10 pt-6 md:pt-8 rounded-5 bg-primary-bg flex flex-col gap-5">
                 <div>
                   {exchange.status === "finished" && (
                     <span className="flex justify-center">
@@ -312,14 +315,14 @@ export default function ExchangePageClient({
                       <Image src="/images/success-exchange.svg" alt={""} width={80} height={80} />
                     </span>
                   )}
-                  <h2 className="grid grid-cols-[48px_1fr_48px] font-bold text-20 text-center">
+                  <h2 className="grid grid-cols-[40px_1fr_40px] md:grid-cols-[48px_1fr_48px] font-bold text-16 md:text-20 text-center">
                     <Link href={"/"} onClick={() => setExchange(undefined)}>
                       <IconButton iconName="back" />
                     </Link>
 
                     <div
                       className={clsx(
-                        "flex items-center justify-center",
+                        "flex items-center justify-center px-2",
                         exchange.status === ExchangeStatus.FAILED && "text-red-light",
                       )}
                     >
@@ -331,7 +334,7 @@ export default function ExchangePageClient({
                     <CountdownTimer validUntil={exchange.valid_until} />
                   )}
                   {exchange.status === "finished" && inputAmount && outputAmount && (
-                    <div className="flex justify-center items-center gap-2 mt-1">
+                    <div className="flex flex-wrap justify-center items-center gap-2 mt-1">
                       <div className="flex items-center gap-2">
                         <Image
                           width={24}
@@ -339,7 +342,7 @@ export default function ExchangePageClient({
                           src={tokenA?.image || "/images/tokens/placeholder.svg"}
                           alt={""}
                         />
-                        <span className="font-medium">
+                        <span className="font-medium text-14 md:text-16">
                           {formatFloat(inputAmount)} {tokenA?.symbol}{" "}
                         </span>
                       </div>
@@ -351,19 +354,19 @@ export default function ExchangePageClient({
                           src={tokenB?.image || "/images/tokens/placeholder.svg"}
                           alt={""}
                         />
-                        <span className="font-medium">
+                        <span className="font-medium text-14 md:text-16">
                           {formatFloat(outputAmount)} {tokenB?.symbol?.toUpperCase()}
                         </span>
                       </div>
                     </div>
                   )}
-                  <p className="text-secondary-text mt-1 text-center">
+                  <p className="text-secondary-text mt-1 text-center text-12 md:text-14">
                     {headingTextMap[exchange.status].subheading}
                     {exchange.status === "confirming" && " 1"}
                   </p>
                 </div>
                 {exchange.status === "waiting" && (
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 text-14 md:text-16">
                     <span className="font-bold text-secondary-text">Send deposit:</span>
                     <Image
                       width={32}
@@ -373,20 +376,24 @@ export default function ExchangePageClient({
                     />
                     <span className="font-medium">
                       {inputAmount} {tokenA?.symbol}{" "}
-                      <span className="text-secondary-text">(Network: {tokenA?.network})</span>
+                      <span className="text-secondary-text text-12 md:text-14">
+                        (Network: {tokenA?.network})
+                      </span>
                     </span>
                   </div>
                 )}
 
                 {addressQRUrl && exchange.status === "waiting" && (
-                  <div className="flex pl-5 pb-5 pt-3 pr-2 bg-tertiary-bg rounded-3 gap-5">
-                    <div className="overflow-hidden rounded-2 flex-shrink-0">
+                  <div className="flex flex-col md:flex-row pl-4 md:pl-5 pb-4 md:pb-5 pt-3 pr-2 bg-tertiary-bg rounded-3 gap-3 md:gap-5">
+                    <div className="overflow-hidden rounded-2 flex-shrink-0 mx-auto md:mx-0">
                       <Image src={addressQRUrl} alt={""} width={86} height={86} />
                     </div>
-                    <div className="flex-grow">
-                      <div className="flex justify-between items-center">
-                        <span className="text-secondary-text font-bold">Deposit address:</span>
-                        <div className="flex items-center">
+                    <div className="flex-grow min-w-0">
+                      <div className="flex justify-between items-center gap-2">
+                        <span className="text-secondary-text font-bold text-12 md:text-14 whitespace-nowrap">
+                          Deposit address:
+                        </span>
+                        <div className="flex items-center flex-shrink-0">
                           <a
                             target="_blank"
                             href="#"
@@ -400,12 +407,14 @@ export default function ExchangePageClient({
                           />
                         </div>
                       </div>
-                      <span className="text-14 font-medium">{exchange.address_from}</span>
+                      <span className="text-12 md:text-14 font-medium break-all">
+                        {exchange.address_from}
+                      </span>
                     </div>
                   </div>
                 )}
 
-                <div className="grid grid-cols-4 gap-5">
+                <div className="grid grid-cols-4 gap-2 md:gap-5">
                   {trackedStatuses.map((status) => (
                     <ExchangeStatusInfo
                       isPassed={

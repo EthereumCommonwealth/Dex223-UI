@@ -4,6 +4,7 @@
     "swap": "Swap",
     "margin_trading": "Margin trading",
     "buy_crypto": "Fiat",
+    "multisig": "Multisig",
     "pools": "Pools",
     "borrow_lend": "Borrow/Lend",
     "portfolio": "Portfolio",

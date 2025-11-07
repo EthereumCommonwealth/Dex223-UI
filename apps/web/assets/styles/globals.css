@@ -356,3 +356,28 @@ input[type="datetime-local"]::-webkit-calendar-picker-indicator {
   position: absolute;   /* makes the whole input clickable to open picker */
   right: 0;
 }
+
+/* Custom scrollbar styles */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: theme("colors.secondary-border") theme("colors.quaternary-bg");
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: theme("colors.quaternary-bg");
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: theme("colors.secondary-border");
+  border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: theme("colors.primary-border");
+}

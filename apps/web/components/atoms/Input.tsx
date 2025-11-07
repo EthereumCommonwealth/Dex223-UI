@@ -30,6 +30,7 @@ const Input = forwardRef<HTMLInputElement | null, Props>(function Input(
     className,
     inputSize = InputSize.LARGE,
     colorScheme = ThemeColors.GREEN,
+    noCloseIcon,
     ...props
   },
   ref,

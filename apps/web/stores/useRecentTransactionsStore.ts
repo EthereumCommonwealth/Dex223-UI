@@ -30,7 +30,6 @@ export enum RecentTransactionTitleTemplate {
   EDIT_LENDING_ORDER,
   OPEN_LENDING_ORDER,
   CLOSE_LENDING_ORDER,
-
   CREATE_MARGIN_POSITION,
   CLOSE_MARGIN_POSITION,
   TRANSFER,
@@ -38,8 +37,14 @@ export enum RecentTransactionTitleTemplate {
   LIQUIDATE_MARGIN_POSITION,
   MARGIN_SWAP,
   WITHDRAW_FROM_CLOSED_POSITION,
-
   DEPLOY_TOKEN,
+  MSIG_ADD_OWNER,
+  MSIG_REMOVE_OWNER,
+  MSIG_SET_DELAY,
+  MSIG_SET_THRESHOLD,
+  MSIG_APPROVE,
+  MSIG_TRANSACTION_CONFIRMED,
+  MSIG_DECLINE,
 }
 
 type RecentTransactionGasLimit =
@@ -88,6 +93,11 @@ type TwoTokensTransactionTitle = {
   amount1: string;
   logoURI0: string;
   logoURI1: string;
+};
+
+type MultisigTransactionConfirmedTitle = {
+  hash: string;
+  chainId: number;
 };
 
 type IncreaseLiquidityParams = any;
@@ -167,8 +177,28 @@ export type IRecentTransactionTitle =
     } & MarginPositionTitle)
   | ({
       template: RecentTransactionTitleTemplate.MARGIN_SWAP;
-    } & TwoTokensTransactionTitle);
-
+    } & TwoTokensTransactionTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_TRANSACTION_CONFIRMED;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_ADD_OWNER;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_REMOVE_OWNER;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_SET_DELAY;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_SET_THRESHOLD;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_APPROVE;
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.MSIG_DECLINE;
+    } & MultisigTransactionConfirmedTitle);
 export type IRecentTransaction = {
   id: Address;
   status: RecentTransactionStatus;
@@ -251,6 +281,7 @@ export const useRecentTransactionsStore = create<RecentTransactions>()(
         }),
       updateTransactionStatus: (id, status, account) =>
         set((state) => {
+          console.log("updateTransactionStatus", id, status, account);
           const updatedTransactions = { ...state.transactions };
           const accountTransactions = updatedTransactions[account];
           const transactionIndex = accountTransactions.findIndex((t) => t.id === id);

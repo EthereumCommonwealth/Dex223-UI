@@ -21,18 +21,6 @@ export default function BuyOnramp({ appId, userId, flowType, walletAddress }: Bu
   const effectiveWalletAddress = walletAddress || address || "";
 
   useEffect(() => {
-    return () => {
-      if (onrampInstanceObj) {
-        try {
-          onrampInstanceObj.close();
-        } catch (err) {
-          console.warn("Error closing onramp instance:", err);
-        }
-      }
-    };
-  }, [onrampInstanceObj]);
-
-  useEffect(() => {
     if (
       !effectiveWalletAddress &&
       (flowType === "Sell Crypto" || flowType === "Buy Crypto" || flowType === "Swap Crypto")
@@ -72,16 +60,16 @@ export default function BuyOnramp({ appId, userId, flowType, walletAddress }: Bu
         };
       }
 
-      if (onrampInstanceObj) {
-        try {
-          onrampInstanceObj.close();
-        } catch (err) {
-          console.warn("Error closing previous onramp instance:", err);
-        }
-      }
-
       const newInstance = new OnrampWebSDK(obj);
       setOnrampInstanceObj(newInstance);
+
+      return () => {
+        try {
+          newInstance.close();
+        } catch (err) {
+          console.warn("Error closing onramp instance:", err);
+        }
+      };
     } catch (err) {
       console.error("Error initializing OnRamp SDK:", err);
       setError("Failed to initialize payment system");

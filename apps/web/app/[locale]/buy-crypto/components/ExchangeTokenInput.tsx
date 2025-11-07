@@ -45,53 +45,53 @@ export default function ExchangeTokenInput({
   const t = useTranslations("Swap");
 
   return (
-    <div className="p-5 bg-secondary-bg rounded-3 relative">
-      <div className="flex justify-between items-center mb-5 h-[22px]">
-        <span className="text-14 block text-secondary-text">{label}</span>
+    <div className="p-3 md:p-5 bg-secondary-bg rounded-3 relative">
+      <div className="flex justify-between items-center mb-3 md:mb-5 min-h-[22px]">
+        <span className="text-12 md:text-14 block text-secondary-text">{label}</span>
         {((minAmount && +value < +minAmount) || (maxAmount && +value > +maxAmount)) && (
           <>
             {minAmount && +value < +minAmount && !minAmountLoading && (
-              <div className="flex items-center gap-1 text-12">
+              <div className="flex items-center gap-1 text-10 md:text-12">
                 <button
-                  className="text-green hover:text-green-hover duration-200"
+                  className="text-green hover:text-green-hover duration-200 whitespace-nowrap"
                   onClick={() => onInputChange(minAmount)}
                 >
                   Min amount
                 </button>
-                <span className="text-tertiary-text">
+                <span className="text-tertiary-text truncate">
                   {ceilWithDynamicPrecision(+minAmount)} {token?.symbol.toUpperCase()}
                 </span>
               </div>
             )}
             {maxAmount && +value > +maxAmount && !minAmountLoading && (
-              <div className="flex items-center gap-1 text-12">
+              <div className="flex items-center gap-1 text-10 md:text-12">
                 <button
-                  className="text-green hover:text-green-hover duration-200"
+                  className="text-green hover:text-green-hover duration-200 whitespace-nowrap"
                   onClick={() => onInputChange(maxAmount)}
                 >
                   Max amount
                 </button>
-                <span className="text-tertiary-text">
+                <span className="text-tertiary-text truncate">
                   {ceilWithDynamicPrecision(+maxAmount)} {token?.symbol.toUpperCase()}
                 </span>
               </div>
             )}
-            {minAmountLoading && <Skeleton className="w-[150px] h-4" />}
+            {minAmountLoading && <Skeleton className="w-[100px] md:w-[150px] h-4" />}
           </>
         )}
       </div>
 
-      <div className="flex items-center mb-5 justify-between">
-        <div>
+      <div className="flex items-center mb-3 md:mb-5 justify-between gap-2">
+        <div className="flex-1 min-w-0">
           {isLoadingAmount ? (
-            <Skeleton className="w-[120px] h-12" />
+            <Skeleton className="w-[80px] md:w-[120px] h-10 md:h-12" />
           ) : (
             <NumericFormat
               allowedDecimalSeparators={[","]}
               inputMode="decimal"
               placeholder="0.0"
               className={clsx(
-                "h-12 bg-transparent outline-0 border-0 text-32 w-full peer placeholder:text-tertiary-text",
+                "h-10 md:h-12 bg-transparent outline-0 border-0 text-24 md:text-32 w-full peer placeholder:text-tertiary-text",
                 readOnly && "pointer-events-none",
               )}
               type="text"
@@ -118,20 +118,22 @@ export default function ExchangeTokenInput({
           size="large"
         >
           {token ? (
-            <span className="flex gap-2 items-center">
+            <span className="flex gap-1.5 md:gap-2 items-center">
               <Image
-                className="flex-shrink-0"
+                className="flex-shrink-0 w-6 h-6 md:w-8 md:h-8"
                 src={token?.image || ""}
                 alt="Ethereum"
                 width={32}
                 height={32}
               />
-              <span className="max-w-[100px] md:max-w-[150px] overflow-ellipsis overflow-hidden whitespace-nowrap">
+              <span className="max-w-[80px] md:max-w-[150px] overflow-ellipsis overflow-hidden whitespace-nowrap text-14 md:text-16">
                 {token.name}
               </span>
             </span>
           ) : (
-            <span className="whitespace-nowrap text-tertiary-text pl-2">{t("select_token")}</span>
+            <span className="whitespace-nowrap text-tertiary-text pl-2 text-14 md:text-16">
+              {t("select_token")}
+            </span>
           )}
         </SelectButton>
       </div>

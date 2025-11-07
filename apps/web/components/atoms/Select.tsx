@@ -27,6 +27,7 @@ interface Props {
   placeholder?: string;
   extendWidth?: boolean;
   optionsHeight?: number;
+  buttonType?: "button" | "submit" | "reset";
 }
 
 export default function Select({
@@ -36,6 +37,7 @@ export default function Select({
   placeholder,
   extendWidth,
   optionsHeight,
+  buttonType = "button",
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useRef<HTMLButtonElement>(null);
@@ -84,6 +86,7 @@ export default function Select({
     <div className="relative w-full">
       {/* Trigger Button */}
       <button
+        type={buttonType}
         {...getReferenceProps()}
         ref={refs.setReference}
         onClick={() => setIsOpen((prev) => !prev)}

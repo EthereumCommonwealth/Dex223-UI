@@ -84,6 +84,14 @@ const menuItems: Array<
           handleClose={handleClose}
           className="min-w-[238px]"
         />
+        {/* <MobileLink
+          isActive={pathname === "/multisig"}
+          href="/multisig"
+          iconName="high-trust"
+          title={t("multisig")}
+          handleClose={handleClose}
+          className="min-w-[238px]"
+        /> */}
       </div>
     ),
     activeFlags: ["/swap", "/margin-trading", "/buy-crypto"],

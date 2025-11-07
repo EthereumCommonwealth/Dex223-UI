@@ -31,8 +31,8 @@ const CountdownTimer = ({ validUntil }: { validUntil: string }) => {
 
   return (
     <div className="flex justify-center mt-3">
-      <div className="flex gap-1 items-center py-1 pl-1 pr-3 rounded-20 bg-tertiary-bg">
-        <Svg iconName="time" className="text-tertiary-text" />
+      <div className="flex gap-1 items-center py-1 pl-1 pr-3 rounded-20 bg-tertiary-bg text-12 md:text-14">
+        <Svg iconName="time" className="text-tertiary-text" size={20} />
         <span>Timer:</span>
         <p>{timeLeft}</p>
       </div>

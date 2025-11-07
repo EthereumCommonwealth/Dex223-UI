@@ -93,8 +93,8 @@ export default function ExchangeForm({
 
   return (
     <>
-      <div className="mt-5 bg-primary-bg px-10 pb-10 rounded-5">
-        <h1 className="py-3.5 text-20 font-bold">Crypto exchange</h1>
+      <div className="mt-3 bg-primary-bg px-1 pb-6 md:pb-10 rounded-5">
+        <h1 className="py-3.5 text-16 md:text-20 font-bold px-3 md:px-0">Crypto exchange</h1>
         <ExchangeTokenInput
           handleClick={() => {
             setIsOpen(true);
@@ -111,7 +111,7 @@ export default function ExchangeForm({
           minAmountLoading={isLoadingMinAmount}
         />
         <div className="relative h-8 z-10">
-          <div className="absolute left-5 flex gap-1 items-center h-full top-0">
+          <div className="absolute left-3 md:left-5 flex gap-1 items-center h-full top-0">
             <button
               onClick={() => setIsFixed(!isFixed)}
               className={clsx("group flex items-center gap-1", isFiat && "pointer-events-none")}
@@ -135,7 +135,10 @@ export default function ExchangeForm({
                 )}
               </span>
               <span
-                className={clsx("text-12 ", isFixed ? "text-primary-text" : "text-tertiary-text")}
+                className={clsx(
+                  "text-10 md:text-12 whitespace-nowrap",
+                  isFixed ? "text-primary-text" : "text-tertiary-text",
+                )}
               >
                 {isFixed ? "Fixed rate" : "Floating rate"}
                 {isFiat && " only"}
@@ -165,7 +168,7 @@ export default function ExchangeForm({
           onInputChange={() => {}}
           label="You get"
         />
-        <div className="my-3 ">
+        <div className="my-3 px-3 md:px-0">
           <TextField
             value={recipient}
             onChange={(e) => {
@@ -177,25 +180,27 @@ export default function ExchangeForm({
           />
         </div>
         {outputAmountError === OutputAmountError.NOT_FOUND && (
-          <div className="mb-5">
+          <div className="mb-5 px-3 md:px-0">
             <Alert text="Pair is not supported" type="error" />
           </div>
         )}
 
-        <Button
-          disabled={
-            !recipient ||
-            isLoadingMinAmount ||
-            isLoadingOutputAmount ||
-            !outputAmount ||
-            !minAmount ||
-            !!addressError
-          }
-          onClick={() => handleCreateExchange()}
-          fullWidth
-        >
-          Create an exchange
-        </Button>
+        <div className="px-3 md:px-0">
+          <Button
+            disabled={
+              !recipient ||
+              isLoadingMinAmount ||
+              isLoadingOutputAmount ||
+              !outputAmount ||
+              !minAmount ||
+              !!addressError
+            }
+            onClick={() => handleCreateExchange()}
+            fullWidth
+          >
+            Create an exchange
+          </Button>
+        </div>
       </div>
       <PickTokenDialog
         isOpen={isOpen}

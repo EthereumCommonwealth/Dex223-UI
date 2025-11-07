@@ -73,7 +73,7 @@ export default function ImportListWithContract({ setContent }: Props) {
       addressToImport &&
       isAddress(addressToImport) &&
       !loading &&
-      !Boolean(data.autoListings?.[0])
+      !Boolean(data?.autoListings?.[0])
     ) {
       return "Contract address does not contain a token list";
     }
@@ -120,7 +120,7 @@ export default function ImportListWithContract({ setContent }: Props) {
       {addressToImport &&
         isAddress(addressToImport) &&
         !loading &&
-        !Boolean(data.autoListings?.[0]) && (
+        !Boolean(data?.autoListings?.[0]) && (
           <div className="flex-grow flex justify-center items-center flex-col gap-2">
             <EmptyStateIcon iconName="warning" />
             <p className="text-red-light text-center">
