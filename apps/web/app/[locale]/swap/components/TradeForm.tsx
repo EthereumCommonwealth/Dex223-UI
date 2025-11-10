@@ -472,6 +472,14 @@ export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIs
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">
+        {setIsChartVisible && tokenA && tokenB && (
+            <IconButton
+              buttonSize={IconButtonSize.LARGE}
+              active={isChartVisible}
+              iconName="toggle-trading-view"
+              onClick={() => setIsChartVisible(!isChartVisible)}
+            />
+          )}
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}
@@ -483,14 +491,7 @@ export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIs
             iconName="gas-edit"
             onClick={() => setIsOpenedFee(true)}
           />
-          {setIsChartVisible && tokenA && tokenB && (
-            <IconButton
-              buttonSize={IconButtonSize.LARGE}
-              active={isChartVisible}
-              iconName="toggle-trading-view"
-              onClick={() => setIsChartVisible(!isChartVisible)}
-            />
-          )}
+
           <span className="relative">
             <IconButton
               buttonSize={IconButtonSize.LARGE}
