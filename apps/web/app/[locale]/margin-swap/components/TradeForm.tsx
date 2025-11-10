@@ -253,7 +253,7 @@ const gasOptionTitle: Record<GasOption, any> = {
   [GasOption.CUSTOM]: "custom",
 };
 
-export default function TradeForm() {
+export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIsChartVisible?: (isVisible: boolean) => void, isChartVisible?: boolean }) {
   const t = useTranslations("Swap");
 
   useMarginTradeComputation();
@@ -629,6 +629,15 @@ export default function TradeForm() {
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">
+          {setIsChartVisible && tokenB && tokenA && (
+            <IconButton
+            buttonSize={IconButtonSize.LARGE}
+              active={isChartVisible}
+              iconName="toggle-trading-view"
+              onClick={() => setIsChartVisible(!isChartVisible)}
+              colorScheme={ThemeColors.PURPLE}
+            />
+          )}
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}
@@ -642,7 +651,6 @@ export default function TradeForm() {
             onClick={() => setIsOpenedFee(true)}
             colorScheme={ThemeColors.PURPLE}
           />
-
           <span className="relative">
             <IconButton
               buttonSize={IconButtonSize.LARGE}

@@ -1,11 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import ConfirmConvertDialog from "@/app/[locale]/swap/components/ConfirmConvertDialog";
 import TradeForm from "@/app/[locale]/swap/components/TradeForm";
-import TradingViewWidget from "@/app/[locale]/swap/components/TradingViewWidget";
+import TradingViewWidget from "@/components/common/TradingViewWidget";
 import TwoVersionsInfo from "@/app/[locale]/swap/components/TwoVersionsInfo";
-import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
+import { Field, useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
 import RecentTransactions from "@/components/common/RecentTransactions";
@@ -21,9 +21,17 @@ export default function SwapPage() {
 
   const chainId = useCurrentChainId();
 
-  const { tokenA, tokenB, reset: resetTokens } = useSwapTokensStore();
+  const { tokenA, tokenB, reset: resetTokens, switchTokens } = useSwapTokensStore();
+  const [isChartVisible, setIsChartVisible] = useState(false);
+  const { reset: resetAmount, setTypedValue } = useSwapAmountsStore();
 
-  const { reset: resetAmount } = useSwapAmountsStore();
+  const handleSwapTokens = () => {
+    switchTokens();
+    setTypedValue({
+      typedValue: "",
+      field: Field.CURRENCY_A,
+    });
+  };
 
   useEffect(() => {
     resetTokens();
@@ -32,36 +40,45 @@ export default function SwapPage() {
 
   return (
     <>
-      <div className="grid py-3 sm:py-4 lg:py-[40px] grid-cols-1 lg:grid-cols-[2fr_1fr] mx-auto gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 max-w-full overflow-x-hidden">
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-1">
-          <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden flex-shrink-0">
-            <TradingViewWidget tokenA={tokenA} tokenB={tokenB} />
-          </div>
+      <div className="flex py-3 sm:py-4 xl:py-[40px] mx-auto gap-3 sm:gap-4 xl:gap-6 px-3 sm:px-4 xl:px-6 max-w-full overflow-x-hidden">
+        {(isChartVisible || showRecentTransactions) && (
+          <div className="hidden xl:flex flex-col gap-3 sm:gap-4 xl:gap-6 flex-1 min-w-0">
+            {isChartVisible && (
+              <div className="w-full h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden">
+                <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
+              </div>
+            )}
 
-          <div className="w-full min-w-0 hidden lg:block">
+            <div className="w-full min-w-0">
+              <RecentTransactions
+                showRecentTransactions={showRecentTransactions}
+                handleClose={() => setShowRecentTransactions(false)}
+                store={useSwapRecentTransactionsStore}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className={`flex flex-col gap-3 sm:gap-4 xl:gap-6 w-full xl:w-[600px] flex-shrink-0 ${isChartVisible || showRecentTransactions ? 'mx-auto xl:mx-0' : 'mx-auto'}`}>
+          {isChartVisible && (
+            <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden xl:hidden">
+              <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
+            </div>
+          )}
+
+          <div className="flex flex-col gap-2 sm:gap-3 max-w-[600px] mx-auto">
+            <TwoVersionsInfo />
+
+          <TradeForm setIsChartVisible={setIsChartVisible} isChartVisible={isChartVisible} />
+          <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
+          </div>
+          <div className="w-full min-w-0 xl:hidden max-w-[600px] mx-auto">
             <RecentTransactions
               showRecentTransactions={showRecentTransactions}
               handleClose={() => setShowRecentTransactions(false)}
               store={useSwapRecentTransactionsStore}
             />
           </div>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-2">
-          <div className="flex flex-col gap-2 sm:gap-3">
-            <TwoVersionsInfo />
-          </div>
-
-          <TradeForm />
-          <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
-        </div>
-
-        <div className="w-full min-w-0 order-3 lg:hidden">
-          <RecentTransactions
-            showRecentTransactions={showRecentTransactions}
-            handleClose={() => setShowRecentTransactions(false)}
-            store={useSwapRecentTransactionsStore}
-          />
         </div>
       </div>
 

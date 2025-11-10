@@ -208,7 +208,7 @@ export default function SelectPositionDialog() {
 
     const matching: MarginPosition[] = [];
     const other: MarginPosition[] = [];
-
+    if(openedPositions && openedPositions?.length){
     for (const position of openedPositions) {
       const hasA = tokenA && position.assets.some((asset) => asset.equals(tokenA));
 
@@ -226,7 +226,7 @@ export default function SelectPositionDialog() {
         other.push(position);
       }
     }
-
+  }
     return [matching, other];
   }, [openedPositions, tokenA, tokenB]);
 

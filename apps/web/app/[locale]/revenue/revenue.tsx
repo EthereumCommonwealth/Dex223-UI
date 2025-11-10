@@ -295,7 +295,28 @@ export function Revenue() {
     const quotientStr = quotient.toString();
     const quotientNum = Number(quotient);
 
-    if (quotientNum >= 1000000) {
+    if (quotientNum >= 1000000000000000000000) {
+      // Sextillions
+      const sextillions = quotientNum / 1000000000000000000000;
+      return `${sextillions}Sx`;
+    } else if (quotientNum >= 1000000000000000000) {
+      // Quintillions
+      const quintillions = quotientNum / 1000000000000000000;
+      return `${quintillions}Qt`;
+    } else if (quotientNum >= 1000000000000000) {
+      // Quadrillions
+      const quadrillions = quotientNum / 1000000000000000;
+      return `${quadrillions}Q`;
+    } else if (quotientNum >= 1000000000000) {
+      // Trillions
+      const trillions = quotientNum / 1000000000000;
+      return `${trillions}T`;
+    } else if (quotientNum >= 1000000000) {
+      // Billions
+      const billions = quotientNum / 1000000000;
+      return `${billions}B`;
+    } else if (quotientNum >= 1000000) {
+      // Millions
       const millions = quotientNum / 1000000;
       return `${millions}M`;
     }
@@ -352,10 +373,10 @@ export function Revenue() {
             />
           </div>
         )}
-        <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="mt-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
           {isLoadingUserData ? (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full lg:col-span-7 overflow-hidden">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
@@ -381,7 +402,7 @@ export function Revenue() {
                 </SkeletonTheme>
               </div>
 
-              <div className="relative flex flex-col bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full lg:col-span-5 lg:h-[120px] overflow-hidden">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
@@ -395,14 +416,14 @@ export function Revenue() {
 
                   <div className="flex flex-col gap-2 z-10">
                     <Skeleton width={140} height={24} />
-                    <Skeleton width={120} height={14} />
+                    <Skeleton width={120} height={16} />
                   </div>
                 </SkeletonTheme>
               </div>
             </>
           ) : (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full lg:col-span-7 overflow-hidden">
                 <div className="flex items-center gap-1 mb-auto z-10">
                   <span className="text-14 lg:text-16 text-secondary-text">D223 staked</span>
                   <Tooltip
@@ -411,7 +432,7 @@ export function Revenue() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between z-10">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between z-10">
                   <div className="flex flex-col">
                     <span className="text-24 lg:text-32 font-medium">
                       {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
@@ -421,18 +442,18 @@ export function Revenue() {
                     </span>
                   </div>
 
-                  <div className="flex gap-2 w-full lg:w-auto justify-end">
+                  <div className="flex gap-2 justify-end">
                     <button
                       type="button"
                       onClick={handleStakeClick}
-                      className="bg-green text-black px-4 py-2 rounded-3 text-14 font-medium hover:bg-green/90 transition-colors cursor-pointer active:scale-95"
+                      className="border border-yellow-light bg-[#4C483C] text-white px-4 py-2 rounded-3 text-14 font-medium transition-colors cursor-pointer active:scale-95"
                     >
                       Stake
                     </button>
                     <button
                       type="button"
                       onClick={handleUnstakeClick}
-                      className="bg-green text-black px-4 py-2 rounded-3 text-14 font-medium hover:bg-green/90 transition-colors cursor-pointer active:scale-95"
+                      className="border border-yellow-light bg-[#4C483C] text-white px-4 py-2 rounded-3 text-14 font-medium transition-colors cursor-pointer active:scale-95"
                     >
                       Unstake
                     </button>
@@ -448,7 +469,7 @@ export function Revenue() {
                 />
               </div>
 
-              <div className="relative flex flex-col bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full lg:col-span-5 overflow-hidden">
                 <div className="flex items-center gap-1 z-10">
                   <span className="text-14 lg:text-16 text-secondary-text">Total reward</span>
                   <Tooltip
@@ -459,14 +480,14 @@ export function Revenue() {
 
                 <span className="text-24 lg:text-32 font-medium mb-2 z-10">
                   $
-                  {dataToUse
+                  {mappedClaimsData
                     .reduce((sum, claim) => {
                       const usdValue = parseFloat(claim.amountUSD.replace(/[$,]/g, ""));
                       return sum + usdValue;
                     }, 0)
                     .toFixed(2)}
                 </span>
-                <span className="text-12 lg:text-14 text-secondary-text z-10">
+                <span className="text-12 lg:text-16 text-secondary-text z-10">
                   {userStaked && typeof userStaked === "bigint" && userStaked > 0n
                     ? "Staking active"
                     : "Not staked yet"}
@@ -487,7 +508,7 @@ export function Revenue() {
         <div className="mt-10 flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
           <h1 className="text-18 lg:text-32 font-medium">Claim rewards</h1>
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-            <div className="w-full sm:w-auto">
+            <div className="w-full">
               <TokenListDropdown
                 selectedOptions={selectedTokenLists}
                 onSelectionChange={setSelectedTokenLists}
@@ -496,7 +517,7 @@ export function Revenue() {
                 className="w-full sm:w-auto"
               />
             </div>
-            <div className="w-full sm:w-auto">
+            <div className="w-full">
               <SearchInput
                 value={claimRewardsSearchValue}
                 onChange={(e) => setClaimRewardsSearchValue(e.target.value)}
