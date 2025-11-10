@@ -199,7 +199,7 @@ const gasOptionTitle: Record<GasOption, any> = {
   [GasOption.FAST]: "fast",
   [GasOption.CUSTOM]: "custom",
 };
-export default function TradeForm() {
+export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIsChartVisible?: (isVisible: boolean) => void, isChartVisible?: boolean }) {
   const t = useTranslations("Swap");
   useTradeComputation();
 
@@ -483,7 +483,14 @@ export default function TradeForm() {
             iconName="gas-edit"
             onClick={() => setIsOpenedFee(true)}
           />
-
+          {setIsChartVisible && (
+            <IconButton
+              buttonSize={IconButtonSize.LARGE}
+              active={isChartVisible}
+              iconName="toggle-trading-view"
+              onClick={() => setIsChartVisible(!isChartVisible)}
+            />
+          )}
           <span className="relative">
             <IconButton
               buttonSize={IconButtonSize.LARGE}

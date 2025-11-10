@@ -1,5 +1,5 @@
 "use client";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 import SelectPositionDialog, {
@@ -15,13 +15,17 @@ import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import { ThemeColors } from "@/config/theme/colors";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
 import TradingViewWidget from "@/components/common/TradingViewWidget";
+import { Field, useMarginSwapAmountsStore } from "./stores/useMarginSwapAmountsStore";
 
 export default function MarginSwapPage() {
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useSwapRecentTransactionsStore();
-  const { tokenA, tokenB, reset: resetTokens } = useMarginSwapTokensStore();
+  const { tokenA, tokenB, reset: resetTokens, switchTokens } = useMarginSwapTokensStore();
   const { address } = useAccount();
   const { loading, positions } = usePositionsByOwner({ owner: address });
+  // const { isChartVisible } = useSwapChartStore();
+  const [isChartVisible, setIsChartVisible] = useState(false);
+  const { reset: resetAmount, setTypedValue } = useMarginSwapAmountsStore();
 
   const openedPositions = useMemo(() => {
     return positions?.filter((position) => !position.isLiquidated && !position.isClosed);
@@ -56,25 +60,44 @@ export default function MarginSwapPage() {
     return [matching, other];
   }, [openedPositions, tokenA, tokenB]);
 
+  const handleSwapTokens = () => {
+    switchTokens();
+    setTypedValue({
+      typedValue: "",
+      field: Field.CURRENCY_A,
+    });
+  };
+
   return (
     <ColorSchemeProvider value={ThemeColors.PURPLE}>
-      <div className="grid py-3 sm:py-4 lg:py-[40px] grid-cols-1 lg:grid-cols-[2fr_1fr] mx-auto gap-3 sm:gap-4 lg:gap-6 px-3 sm:px-4 lg:px-6 max-w-full overflow-x-hidden">
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-1">
-          <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] lg:h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden flex-shrink-0">
-            <TradingViewWidget tokenA={tokenA} tokenB={tokenB} />
-          </div>
+      <div className="flex py-3 sm:py-4 xl:py-[40px] mx-auto gap-3 sm:gap-4 xl:gap-6 px-3 sm:px-4 xl:px-6 max-w-full overflow-x-hidden">
+        {(isChartVisible || showRecentTransactions) && (
+          <div className="hidden xl:flex flex-col gap-3 sm:gap-4 xl:gap-6 flex-1 min-w-0">
+            {isChartVisible && (
+              <div className="w-full h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden">
+                <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
+              </div>
+            )}
 
-          <div className="w-full min-w-0 hidden lg:block">
-            <RecentTransactions
-              showRecentTransactions={showRecentTransactions}
-              handleClose={() => setShowRecentTransactions(false)}
-              store={useSwapRecentTransactionsStore}
-            />
+            <div className="w-full min-w-0">
+              <RecentTransactions
+                showRecentTransactions={showRecentTransactions}
+                handleClose={() => setShowRecentTransactions(false)}
+                store={useSwapRecentTransactionsStore}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="flex flex-col gap-3 sm:gap-4 lg:gap-6 min-w-0 order-2">
-          <div className="flex flex-col gap-2 sm:gap-3">
+        <div className={`flex flex-col gap-3 sm:gap-4 xl:gap-6 w-full xl:w-[600px] flex-shrink-0 ${isChartVisible || showRecentTransactions ? 'mx-auto xl:mx-0' : 'mx-auto'}`}>
+          {isChartVisible && (
+            <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden xl:hidden">
+              <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
+            </div>
+          )}
+
+<div className="max-w-[600px] mx-auto">
+          <div className="flex flex-col gap-2 sm:gap-3 mb-4">
             <div className="flex justify-between items-center pl-4 pr-5 py-2 text-secondary-text border-l-4 bg-primary-bg rounded-2 border-purple">
               {!openedPositions?.length ? (
                 "You don't have any active positions"
@@ -95,19 +118,18 @@ export default function MarginSwapPage() {
               <SelectPositionDialog />
             </div>
           </div>
-
           <SelectedPositionInfo />
-
-          <TradeForm />
+          <TradeForm setIsChartVisible={setIsChartVisible} isChartVisible={isChartVisible} />
           <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
-        </div>
+</div>
 
-        <div className="w-full min-w-0 order-3 lg:hidden">
-          <RecentTransactions
-            showRecentTransactions={showRecentTransactions}
-            handleClose={() => setShowRecentTransactions(false)}
-            store={useSwapRecentTransactionsStore}
-          />
+          <div className="w-full min-w-0 xl:hidden max-w-[600px] mx-auto">
+            <RecentTransactions
+              showRecentTransactions={showRecentTransactions}
+              handleClose={() => setShowRecentTransactions(false)}
+              store={useSwapRecentTransactionsStore}
+            />
+          </div>
         </div>
       </div>
     </ColorSchemeProvider>
