@@ -483,7 +483,7 @@ export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIs
             iconName="gas-edit"
             onClick={() => setIsOpenedFee(true)}
           />
-          {setIsChartVisible && (
+          {setIsChartVisible && tokenA && tokenB && (
             <IconButton
               buttonSize={IconButtonSize.LARGE}
               active={isChartVisible}

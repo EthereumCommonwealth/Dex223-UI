@@ -39,21 +39,23 @@ export default function MarginSwapPage() {
     const matching: MarginPosition[] = [];
     const other: MarginPosition[] = [];
 
-    for (const position of openedPositions) {
-      const hasA = tokenA && position.assets.some((asset) => asset.equals(tokenA));
+    if(openedPositions && openedPositions?.length){
+      for (const position of openedPositions) {
+        const hasA = tokenA && position.assets.some((asset) => asset.equals(tokenA));
 
-      const hasB =
-        tokenB && position.order.allowedTradingAssets.some((asset) => asset.equals(tokenB));
+        const hasB =
+          tokenB && position.order.allowedTradingAssets.some((asset) => asset.equals(tokenB));
 
-      // If tokenA is provided → must match assets
-      // If tokenB is provided → must match allowedTradingAssets
-      // If both are provided → both must match
-      const matches = (!tokenA || hasA) && (!tokenB || hasB);
+        // If tokenA is provided → must match assets
+        // If tokenB is provided → must match allowedTradingAssets
+        // If both are provided → both must match
+        const matches = (!tokenA || hasA) && (!tokenB || hasB);
 
-      if (matches) {
-        matching.push(position);
-      } else {
-        other.push(position);
+        if (matches) {
+          matching.push(position);
+        } else {
+          other.push(position);
+        }
       }
     }
 
@@ -119,9 +121,11 @@ export default function MarginSwapPage() {
             </div>
           </div>
           <SelectedPositionInfo />
-          <TradeForm setIsChartVisible={setIsChartVisible} isChartVisible={isChartVisible} />
-          <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
-</div>
+          <div className="flex flex-col gap-2 sm:gap-3 max-w-[600px] mx-auto">
+              <TradeForm setIsChartVisible={setIsChartVisible} isChartVisible={isChartVisible} />
+              <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
+          </div>
+        </div>
 
           <div className="w-full min-w-0 xl:hidden max-w-[600px] mx-auto">
             <RecentTransactions

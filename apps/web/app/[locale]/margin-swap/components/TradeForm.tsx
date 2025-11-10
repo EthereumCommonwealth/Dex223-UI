@@ -642,7 +642,7 @@ export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIs
             onClick={() => setIsOpenedFee(true)}
             colorScheme={ThemeColors.PURPLE}
           />
-          {setIsChartVisible && (
+          {setIsChartVisible && tokenB && tokenA && (
             <IconButton
             buttonSize={IconButtonSize.LARGE}
               active={isChartVisible}
