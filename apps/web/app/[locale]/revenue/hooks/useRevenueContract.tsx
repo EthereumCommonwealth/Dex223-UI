@@ -323,11 +323,12 @@ export default function useRevenueContract({
   }, []);
 
   const unstakeCountdown = useMemo(() => {
-    if (!userStakingTimestamp || !claimDelay) return null;
+    if (!hasStaked || !userStakingTimestamp || !claimDelay) return null;
     const unlockTime = Number(userStakingTimestamp) + Number(claimDelay);
     const remaining = Math.max(0, unlockTime - currentTime);
+    if (remaining <= 0) return null;
     return formatCountdown(remaining);
-  }, [userStakingTimestamp, claimDelay, currentTime, formatCountdown]);
+  }, [hasStaked, userStakingTimestamp, claimDelay, currentTime, formatCountdown]);
 
   const claimableRewards = useMemo<ClaimableReward[]>(() => {
     if (
