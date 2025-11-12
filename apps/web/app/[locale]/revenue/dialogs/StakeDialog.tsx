@@ -27,6 +27,7 @@ import {
   StakeStatus,
   useStakeDialogStore,
 } from "../stores/useStakeDialogStore";
+import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 
 export function useStakeStatus() {
   const { status: stakeStatus } = useStakeDialogStore();
@@ -726,7 +727,7 @@ const StakeDialog = () => {
               type="button"
               onClick={() => setSelectedStandard(Standard.ERC20)}
               className={clsx(
-                "*:z-10 flex flex-col gap-1 px-3 py-2.5 rounded-2 before:absolute before:rounded-3 before:w-full before:h-full before:left-0 before:top-0 before:duration-200 relative before:bg-gradient-to-r before:from-green-bg before:to-green-bg/0 text-12 group bg-gradient-to-r from-primary-bg to-secondary-bg md:rounded-b-0 md:before:rounded-b-0",
+                "*:z-10 flex flex-col gap-1 px-3 py-2.5 rounded-2 before:absolute before:rounded-3 before:w-full before:h-full before:left-0 before:top-0 before:duration-200 relative before:bg-gradient-to-r before:from-green-bg before:to-green-bg/0 text-12 group bg-gradient-to-r from-primary-bg md:rounded-b-0 md:before:rounded-b-0",
                 selectedStandard === Standard.ERC20
                   ? "before:opacity-100"
                   : "before:opacity-0 hocus:before:opacity-100",
@@ -793,7 +794,7 @@ const StakeDialog = () => {
               type="button"
               onClick={() => setSelectedStandard(Standard.ERC223)}
               className={clsx(
-                "*:z-10 flex flex-col gap-1 px-3 py-2.5 rounded-2 before:absolute before:rounded-3 before:w-full before:h-full before:left-0 before:top-0 before:duration-200 relative before:bg-gradient-to-r before:from-green-bg before:to-green-bg/0 text-12 group before:rotate-180 items-end bg-gradient-to-l from-primary-bg to-secondary-bg md:rounded-b-0 md:before:rounded-t-0",
+                "*:z-10 flex flex-col gap-1 px-3 py-2.5 rounded-2 before:absolute before:rounded-3 before:w-full before:h-full before:left-0 before:top-0 before:duration-200 relative before:bg-gradient-to-r before:from-green-bg before:to-green-bg/0 text-12 group before:rotate-180 items-end bg-gradient-to-l from-primary-bg md:rounded-b-0 md:before:rounded-t-0",
                 selectedStandard === Standard.ERC223
                   ? "before:opacity-100"
                   : "before:opacity-0 hocus:before:opacity-100",
@@ -842,17 +843,17 @@ const StakeDialog = () => {
             </button>
 
             {/* Gas info */}
-            <div className="py-1 px-3 text-12 bg-gradient-to-r from-primary-bg to-secondary-bg rounded-bl-2 text-tertiary-text max-md:hidden">
+            <div className="py-1 px-3 text-12 bg-gradient-to-r from-primary-bg rounded-bl-2 text-tertiary-text max-md:hidden">
               ~{gasLimitERC20.toLocaleString()} gas
             </div>
-            <div className="py-1 px-3 text-12 bg-gradient-to-l from-primary-bg to-secondary-bg rounded-br-2 text-right text-tertiary-text max-md:hidden ml-auto">
+            <div className="py-1 px-3 text-12 bg-gradient-to-l from-primary-bg rounded-br-2 text-right text-tertiary-text max-md:hidden ml-auto">
               ~{gasLimitERC223.toLocaleString()} gas
             </div>
           </div>
         </div>
 
         {/* Approve amount section - only show for ERC-20 staking */}
-        {isStaking && selectedStandard === Standard.ERC20 && (
+        {isStaking && (selectedStandard === Standard.ERC20 || selectedStandard === Standard.ERC223) && (
           <div className="bg-tertiary-bg rounded-3 flex justify-between items-center px-5 py-2.5 min-h-12 gap-3">
             <div className="flex items-center gap-1.5 text-secondary-text whitespace-nowrap">
               <Tooltip
@@ -875,44 +876,7 @@ const StakeDialog = () => {
         )}
 
         {/* Gas price and network fee section */}
-        <div className="bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
-          <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
-            <p className="flex flex-col text-tertiary-text">
-              <span>Gas price:</span>
-              <span>{gasPriceGwei} GWEI</span>
-            </p>
-
-            <p className="flex flex-col text-tertiary-text">
-              <span>Gas limit:</span>
-              <span>
-                {selectedStandard === Standard.ERC20
-                  ? gasLimitERC20.toLocaleString()
-                  : gasLimitERC223.toLocaleString()}
-              </span>
-            </p>
-            <p className="flex flex-col">
-              <span className="text-tertiary-text">Network fee:</span>
-              <span>
-                {selectedStandard === Standard.ERC20 ? networkFeeERC20 : networkFeeERC223} ETH
-              </span>
-            </p>
-          </div>
-          <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
-            <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-              Cheaper
-            </span>
-            <Button
-              type="button"
-              colorScheme={ButtonColor.LIGHT_GREEN}
-              size={ButtonSize.EXTRA_SMALL}
-              onClick={() => null}
-              fullWidth={false}
-              className="rounded-5 border border-secondary-border"
-            >
-              Edit
-            </Button>
-          </div>
-        </div>
+        <GasSettingsBlock />
       </div>
     );
   };
