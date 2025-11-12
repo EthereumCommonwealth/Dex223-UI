@@ -199,7 +199,13 @@ const gasOptionTitle: Record<GasOption, any> = {
   [GasOption.FAST]: "fast",
   [GasOption.CUSTOM]: "custom",
 };
-export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIsChartVisible?: (isVisible: boolean) => void, isChartVisible?: boolean }) {
+export default function TradeForm({
+  setIsChartVisible,
+  isChartVisible,
+}: {
+  setIsChartVisible?: (isVisible: boolean) => void;
+  isChartVisible?: boolean;
+}) {
   const t = useTranslations("Swap");
   useTradeComputation();
 
@@ -472,7 +478,7 @@ export default function TradeForm({ setIsChartVisible, isChartVisible }: { setIs
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">
-        {setIsChartVisible && tokenA && tokenB && (
+          {setIsChartVisible && tokenA && tokenB && (
             <IconButton
               buttonSize={IconButtonSize.LARGE}
               active={isChartVisible}

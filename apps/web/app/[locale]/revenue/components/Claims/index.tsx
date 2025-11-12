@@ -8,6 +8,7 @@ import Image from "next/image";
 import React from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
+import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button from "@/components/buttons/Button";
 import {
@@ -20,11 +21,10 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import { Standard } from "@/sdk_bi/standard";
 
+import ForwardIcon from "../../../../../../../packages/ui/src/icons/ForwardIcon";
 import MultipleClaimDialog from "../../dialogs/MultipleClaimDialog";
 import SingleClaimDialog from "../../dialogs/SingleClaimDialog";
 import { useClaimDialogStore } from "../../stores/useClaimDialogStore";
-import Svg from "@/components/atoms/Svg";
-import ForwardIcon from "../../../../../../../packages/ui/src/icons/ForwardIcon";
 
 export const Claims = ({
   tableData,
@@ -196,7 +196,11 @@ export const Claims = ({
                   key={key}
                   className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5"
                 >
-                  <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3 pl-5")}>
+                  <div
+                    className={clsx(
+                      "min-h-[72px] flex text-secondary-text items-center gap-3 pl-5",
+                    )}
+                  >
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -230,10 +234,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-left">{truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-left">
+                            {truncateMiddle(o.erc20Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
                         </a>
                         <IconButton
@@ -252,10 +258,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-left">{truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-left">
+                            {truncateMiddle(o.erc223Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
                         </a>
                         <IconButton
@@ -266,11 +274,7 @@ export const Claims = ({
                       </div>
                     </div>
                   </div>
-                  <div
-                    className={clsx(
-                      "min-h-[72px] flex text-14 items-center justify-end pr-4",
-                    )}
-                  >
+                  <div className={clsx("min-h-[72px] flex text-14 items-center justify-end pr-4")}>
                     <div className="flex items-center">
                       <span className="text-primary-text">{o.amount}</span>
                       <span className="text-secondary-text ml-1">{o.symbol}</span>
@@ -401,7 +405,6 @@ export const Claims = ({
               return (
                 <div key={key} className="bg-tertiary-bg rounded-3 p-4 flex flex-col gap-2">
                   <div className="flex justify-between">
-
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -430,7 +433,7 @@ export const Claims = ({
                       Claim
                     </Button>
                   </div>
-                 
+
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-tertiary-text text-12">ERC-20 Address</span>
@@ -444,10 +447,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-right">{truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-right">
+                            {truncateMiddle(o.erc20Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
                         </a>
                         <div className="w-6 h-6 flex items-center justify-center">
@@ -472,10 +477,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-right">{truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-right">
+                            {truncateMiddle(o.erc223Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
                         </a>
                         <div className="w-6 h-6 flex items-center justify-center">
@@ -502,14 +509,14 @@ export const Claims = ({
                     </div>
                   </div>
                   <Button
-                      className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg block sm:hidden lg:hidden"
-                      colorScheme={ButtonColor.LIGHT_GREEN}
-                      size={ButtonSize.EXTRA_SMALL}
-                      disabled={selectedTokens.size > 0}
-                      onClick={() => handleClaimSingle(o)}
-                    >
-                      Claim
-                    </Button>
+                    className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg block sm:hidden lg:hidden"
+                    colorScheme={ButtonColor.LIGHT_GREEN}
+                    size={ButtonSize.EXTRA_SMALL}
+                    disabled={selectedTokens.size > 0}
+                    onClick={() => handleClaimSingle(o)}
+                  >
+                    Claim
+                  </Button>
                 </div>
               );
             })}

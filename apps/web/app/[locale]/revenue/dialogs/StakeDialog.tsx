@@ -14,6 +14,7 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
+import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import { StandardButton } from "@/components/common/TokenStandardSelector";
 import { ThemeColors } from "@/config/theme/colors";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
@@ -22,12 +23,7 @@ import addToast from "@/other/toast";
 import { Standard } from "@/sdk_bi/standard";
 
 import useRevenueContract from "../hooks/useRevenueContract";
-import {
-  StakeError,
-  StakeStatus,
-  useStakeDialogStore,
-} from "../stores/useStakeDialogStore";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
+import { StakeError, StakeStatus, useStakeDialogStore } from "../stores/useStakeDialogStore";
 
 export function useStakeStatus() {
   const { status: stakeStatus } = useStakeDialogStore();
@@ -76,7 +72,7 @@ function ApproveRow({
             isReverted && "bg-red-bg",
           )}
         >
-          {(isSuccess || isSuccessStake) ? (
+          {isSuccess || isSuccessStake ? (
             <Image
               className="rounded-full"
               src="/images/logo-short.svg"
@@ -764,7 +760,9 @@ const StakeDialog = () => {
               >
                 <span
                   className={
-                    selectedStandard === Standard.ERC20 ? "text-secondary-text" : "text-tertiary-text"
+                    selectedStandard === Standard.ERC20
+                      ? "text-secondary-text"
+                      : "text-tertiary-text"
                   }
                 >
                   Balance
@@ -801,7 +799,10 @@ const StakeDialog = () => {
               )}
             >
               <div className="max-md:hidden flex items-center gap-1 cursor-default">
-                <Tooltip iconSize={16} text="ERC-223 is an improved token standard with lower fees" />
+                <Tooltip
+                  iconSize={16}
+                  text="ERC-223 is an improved token standard with lower fees"
+                />
                 <span
                   className={clsx(
                     "px-2 py-0.5 rounded-2 text-10 font-medium",
@@ -853,27 +854,28 @@ const StakeDialog = () => {
         </div>
 
         {/* Approve amount section - only show for ERC-20 staking */}
-        {isStaking && (selectedStandard === Standard.ERC20 || selectedStandard === Standard.ERC223) && (
-          <div className="bg-tertiary-bg rounded-3 flex justify-between items-center px-5 py-2.5 min-h-12 gap-3">
-            <div className="flex items-center gap-1.5 text-secondary-text whitespace-nowrap">
-              <Tooltip
-                iconSize={16}
-                text="In order to stake ERC-20 tokens, you need to give the contract permission to withdraw your tokens. This amount never expires."
-              />
-              <span className="text-14">Approve amount</span>
+        {isStaking &&
+          (selectedStandard === Standard.ERC20 || selectedStandard === Standard.ERC223) && (
+            <div className="bg-tertiary-bg rounded-3 flex justify-between items-center px-5 py-2.5 min-h-12 gap-3">
+              <div className="flex items-center gap-1.5 text-secondary-text whitespace-nowrap">
+                <Tooltip
+                  iconSize={16}
+                  text="In order to stake ERC-20 tokens, you need to give the contract permission to withdraw your tokens. This amount never expires."
+                />
+                <span className="text-14">Approve amount</span>
+              </div>
+              <div className="flex items-center gap-2 flex-grow justify-end min-w-0">
+                <span className="text-14 truncate">{amount || "0"} D223</span>
+                <Button
+                  size={ButtonSize.EXTRA_SMALL}
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  onClick={() => {}}
+                >
+                  Edit
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2 flex-grow justify-end min-w-0">
-              <span className="text-14 truncate">{amount || "0"} D223</span>
-              <Button
-                size={ButtonSize.EXTRA_SMALL}
-                colorScheme={ButtonColor.LIGHT_GREEN}
-                onClick={() => { }}
-              >
-                Edit
-              </Button>
-            </div>
-          </div>
-        )}
+          )}
 
         {/* Gas price and network fee section */}
         <GasSettingsBlock />
@@ -904,16 +906,17 @@ const StakeDialog = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 bg-primary-bg rounded-full flex items-center justify-center flex-shrink-0">
-                        <Image
-                          src="/images/logo-short.svg"
-                          alt="D223"
-                          width={16}
-                          height={16}
-                        />
+                        <Image src="/images/logo-short.svg" alt="D223" width={16} height={16} />
                       </div>
-                      <span className="text-16 font-medium text-primary-text whitespace-nowrap">D223</span>
+                      <span className="text-16 font-medium text-primary-text whitespace-nowrap">
+                        D223
+                      </span>
                       <Image
-                        src={selectedStandard === Standard.ERC20 ? "/images/badges/erc-20-green-small.svg" : "/images/badges/erc-223-green-small.svg"}
+                        src={
+                          selectedStandard === Standard.ERC20
+                            ? "/images/badges/erc-20-green-small.svg"
+                            : "/images/badges/erc-223-green-small.svg"
+                        }
                         alt="Standard"
                         width={48}
                         height={48}
@@ -963,9 +966,7 @@ const StakeDialog = () => {
                 </h3>
 
                 {/* Amount */}
-                <p className="text-16 text-primary-text mb-6">
-                  {amount} D223
-                </p>
+                <p className="text-16 text-primary-text mb-6">{amount} D223</p>
               </div>
 
               <div className="h-px w-full bg-secondary-border mb-5" />

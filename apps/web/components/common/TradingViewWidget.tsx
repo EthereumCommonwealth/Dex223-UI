@@ -13,20 +13,20 @@ function TradingViewWidget({
   tokenB: Currency | undefined;
   onSwapTokens?: () => void;
 }) {
-  const QUOTE_CURRENCIES = ['USDT', 'USDC', 'USD', 'BUSD', 'DAI', 'BTC', 'ETH', 'BNB'];
-  
+  const QUOTE_CURRENCIES = ["USDT", "USDC", "USD", "BUSD", "DAI", "BTC", "ETH", "BNB"];
+
   const symbol = useMemo(() => {
     if (!tokenA?.symbol || !tokenB?.symbol) return "BINANCE:BTCUSDT";
-    
+
     const symbolA = tokenA.symbol.toUpperCase();
     const symbolB = tokenB.symbol.toUpperCase();
-    
+
     const isAQuote = QUOTE_CURRENCIES.indexOf(symbolA);
     const isBQuote = QUOTE_CURRENCIES.indexOf(symbolB);
-    
+
     let baseToken = symbolA;
     let quoteToken = symbolB;
-    
+
     if (isAQuote !== -1 && isBQuote !== -1) {
       if (isAQuote > isBQuote) {
         baseToken = symbolA;
@@ -35,8 +35,7 @@ function TradingViewWidget({
         baseToken = symbolB;
         quoteToken = symbolA;
       }
-    }
-    else if (isAQuote !== -1 && isBQuote === -1) {
+    } else if (isAQuote !== -1 && isBQuote === -1) {
       baseToken = symbolB;
       quoteToken = symbolA;
     }
@@ -101,36 +100,34 @@ function TradingViewWidget({
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-3 bg-tertiary-bg border-b border-secondary-border rounded-t-2 flex-shrink-0">
-        
         {tokenA && tokenB && (
-          <div className="flex items-center flex-shrink-0">  
-          <Image
-            src={tokenA?.logoURI || "/images/tokens/placeholder.svg"}
-            alt={tokenA?.symbol || ""}
-            width={32}
-            height={32}
-            className="h-[24px] w-[24px] md:h-[32px] md:w-[32px] rounded-full border-2 border-tertiary-bg relative z-10"
-          />
-          <Image
-            src={tokenB?.logoURI || "/images/tokens/placeholder.svg"}
-            alt={tokenB?.symbol || ""}
-            width={32}
-            height={32}
-            className="h-[24px] w-[24px] md:h-[32px] md:w-[32px] rounded-full relative z-[11] left-[-16px] top-[8px] "
-          />
-        </div>
+          <div className="flex items-center flex-shrink-0">
+            <Image
+              src={tokenA?.logoURI || "/images/tokens/placeholder.svg"}
+              alt={tokenA?.symbol || ""}
+              width={32}
+              height={32}
+              className="h-[24px] w-[24px] md:h-[32px] md:w-[32px] rounded-full border-2 border-tertiary-bg relative z-10"
+            />
+            <Image
+              src={tokenB?.logoURI || "/images/tokens/placeholder.svg"}
+              alt={tokenB?.symbol || ""}
+              width={32}
+              height={32}
+              className="h-[24px] w-[24px] md:h-[32px] md:w-[32px] rounded-full relative z-[11] left-[-16px] top-[8px] "
+            />
+          </div>
         )}
         <span className="text-primary-text text-14 sm:text-16 font-medium uppercase">
           {tokenA && tokenB ? `${tokenA?.symbol} / ${tokenB?.symbol}` : "BTC"}
         </span>
-          <button
-            onClick={onSwapTokens}
-            className="flex items-center justify-center hover:bg-tertiary-bg rounded transition-colors cursor-pointer"
-            aria-label="Swap tokens"
-          >
-            <Svg iconName="swap" size={24} className="text-tertiary-text" />
-          </button>
-
+        <button
+          onClick={onSwapTokens}
+          className="flex items-center justify-center hover:bg-tertiary-bg rounded transition-colors cursor-pointer"
+          aria-label="Swap tokens"
+        >
+          <Svg iconName="swap" size={24} className="text-tertiary-text" />
+        </button>
       </div>
 
       <div

@@ -11,10 +11,10 @@ import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
+import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import { Standard } from "@/sdk_bi/standard";
 
 import { useClaimDialogStore } from "../stores/useClaimDialogStore";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 
 const SingleClaimDialog = () => {
   const { isOpen, state, data, closeDialog, setState, setError, setData } = useClaimDialogStore();
@@ -74,7 +74,8 @@ const SingleClaimDialog = () => {
     const networkFeeERC20 = 0.0031;
     const networkFeeERC223 = 0.0011;
     const currentGasLimit = selectedStandard === Standard.ERC20 ? gasLimitERC20 : gasLimitERC223;
-    const currentNetworkFee = selectedStandard === Standard.ERC20 ? networkFeeERC20 : networkFeeERC223;
+    const currentNetworkFee =
+      selectedStandard === Standard.ERC20 ? networkFeeERC20 : networkFeeERC223;
 
     return (
       <div className="space-y-4">
@@ -121,9 +122,7 @@ const SingleClaimDialog = () => {
                   <div
                     className={clsx(
                       "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                      isSelected
-                        ? "border-green bg-green"
-                        : "border-secondary-border",
+                      isSelected ? "border-green bg-green" : "border-secondary-border",
                     )}
                   >
                     {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -169,11 +168,7 @@ const SingleClaimDialog = () => {
               alt={token.symbol}
             />
             <span className="text-primary-text text-16 font-medium">{token.symbol}</span>
-            <Badge
-              variant={BadgeVariant.STANDARD}
-              standard={selectedStandard}
-              size="small"
-            />
+            <Badge variant={BadgeVariant.STANDARD} standard={selectedStandard} size="small" />
           </div>
         </div>
       </div>
@@ -218,11 +213,7 @@ const SingleClaimDialog = () => {
             />
             <div className="flex flex-row items-center gap-2">
               <span className="text-primary-text text-16 font-medium">{token.symbol}</span>
-              <Badge
-                variant={BadgeVariant.STANDARD}
-                standard={selectedStandard}
-                size="small"
-              />
+              <Badge variant={BadgeVariant.STANDARD} standard={selectedStandard} size="small" />
             </div>
           </div>
         </div>
@@ -268,20 +259,20 @@ const SingleClaimDialog = () => {
       </div>
 
       <div className="h-px w-full bg-secondary-border mb-2" />
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
-              <Svg iconName="arrow-left-down" size={20} className="text-green" />
-            </div>
-            <span className="text-primary-text text-16">Successfully claimed</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <div className="flex items-center gap-2">
-            <IconButton iconName="forward" />
-            <div className="w-5 h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
-              <Svg className="text-primary-bg" iconName="check" size={14} />
-            </div>
+          <span className="text-primary-text text-16">Successfully claimed</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <IconButton iconName="forward" />
+          <div className="w-5 h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
+            <Svg className="text-primary-bg" iconName="check" size={14} />
           </div>
         </div>
+      </div>
     </div>
   );
 
@@ -317,7 +308,8 @@ const SingleClaimDialog = () => {
       {/* Error message */}
       <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-4 mb-4">
         <p className="text-14 text-secondary-text">
-          {data?.errorMessage || "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+          {data?.errorMessage ||
+            "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
           {!data?.errorMessage && (
             <a href="#" className="text-secondary-text underline">
               common errors

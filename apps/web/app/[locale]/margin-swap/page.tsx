@@ -12,9 +12,10 @@ import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
+import TradingViewWidget from "@/components/common/TradingViewWidget";
 import { ThemeColors } from "@/config/theme/colors";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
-import TradingViewWidget from "@/components/common/TradingViewWidget";
+
 import { Field, useMarginSwapAmountsStore } from "./stores/useMarginSwapAmountsStore";
 
 export default function MarginSwapPage() {
@@ -39,7 +40,7 @@ export default function MarginSwapPage() {
     const matching: MarginPosition[] = [];
     const other: MarginPosition[] = [];
 
-    if(openedPositions && openedPositions?.length){
+    if (openedPositions && openedPositions?.length) {
       for (const position of openedPositions) {
         const hasA = tokenA && position.assets.some((asset) => asset.equals(tokenA));
 
@@ -77,7 +78,11 @@ export default function MarginSwapPage() {
           <div className="hidden xl:flex flex-col gap-3 sm:gap-4 xl:gap-6 flex-1 min-w-0">
             {isChartVisible && (
               <div className="w-full h-[600px] xl:h-[700px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden">
-                <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
+                <TradingViewWidget
+                  tokenA={tokenA}
+                  tokenB={tokenB}
+                  onSwapTokens={handleSwapTokens}
+                />
               </div>
             )}
 
@@ -91,41 +96,43 @@ export default function MarginSwapPage() {
           </div>
         )}
 
-        <div className={`flex flex-col gap-3 sm:gap-4 xl:gap-6 w-full xl:w-[600px] flex-shrink-0 ${isChartVisible || showRecentTransactions ? 'mx-auto xl:mx-0' : 'mx-auto'}`}>
+        <div
+          className={`flex flex-col gap-3 sm:gap-4 xl:gap-6 w-full xl:w-[600px] flex-shrink-0 ${isChartVisible || showRecentTransactions ? "mx-auto xl:mx-0" : "mx-auto"}`}
+        >
           {isChartVisible && (
             <div className="w-full h-[300px] xs:h-[350px] sm:h-[450px] md:h-[500px] bg-secondary-bg rounded-2 border border-secondary-border overflow-hidden xl:hidden">
               <TradingViewWidget tokenA={tokenA} tokenB={tokenB} onSwapTokens={handleSwapTokens} />
             </div>
           )}
 
-<div className="max-w-[600px] mx-auto">
-          <div className="flex flex-col gap-2 sm:gap-3 mb-4">
-            <div className="flex justify-between items-center pl-4 pr-5 py-2 text-secondary-text border-l-4 bg-primary-bg rounded-2 border-purple">
-              {!openedPositions?.length ? (
-                "You don't have any active positions"
-              ) : (
-                <>
-                  {!!(tokenA && !tokenB && matchingPositions?.length) &&
-                    `${matchingPositions?.length} positions with ${tokenA.symbol}`}
-                  {!!(tokenB && !tokenA && matchingPositions?.length) &&
-                    `${matchingPositions?.length} positions allowed for ${tokenB.symbol} trade`}
-                  {!!(tokenA && tokenB && matchingPositions?.length) &&
-                    `${matchingPositions?.length} positions with ${tokenA.symbol} allowed for ${tokenB.symbol} trade`}
-                  {(!!tokenA || !!tokenB) &&
-                    matchingPositions?.length === 0 &&
-                    "No positions for selected tokens"}
-                  {!tokenA && !tokenB && `You have ${openedPositions?.length} position(s)`}
-                </>
-              )}
-              <SelectPositionDialog />
+          <div className="max-w-[600px] mx-auto">
+            <div className="flex flex-col gap-2 sm:gap-3 mb-4">
+              <div className="flex justify-between items-center pl-4 pr-5 py-2 text-secondary-text border-l-4 bg-primary-bg rounded-2 border-purple">
+                {!openedPositions?.length ? (
+                  "You don't have any active positions"
+                ) : (
+                  <>
+                    {!!(tokenA && !tokenB && matchingPositions?.length) &&
+                      `${matchingPositions?.length} positions with ${tokenA.symbol}`}
+                    {!!(tokenB && !tokenA && matchingPositions?.length) &&
+                      `${matchingPositions?.length} positions allowed for ${tokenB.symbol} trade`}
+                    {!!(tokenA && tokenB && matchingPositions?.length) &&
+                      `${matchingPositions?.length} positions with ${tokenA.symbol} allowed for ${tokenB.symbol} trade`}
+                    {(!!tokenA || !!tokenB) &&
+                      matchingPositions?.length === 0 &&
+                      "No positions for selected tokens"}
+                    {!tokenA && !tokenB && `You have ${openedPositions?.length} position(s)`}
+                  </>
+                )}
+                <SelectPositionDialog />
+              </div>
             </div>
-          </div>
-          <SelectedPositionInfo />
-          <div className="flex flex-col gap-2 sm:gap-3 max-w-[600px] mx-auto">
+            <SelectedPositionInfo />
+            <div className="flex flex-col gap-2 sm:gap-3 max-w-[600px] mx-auto">
               <TradeForm setIsChartVisible={setIsChartVisible} isChartVisible={isChartVisible} />
               <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
+            </div>
           </div>
-        </div>
 
           <div className="w-full min-w-0 xl:hidden max-w-[600px] mx-auto">
             <RecentTransactions

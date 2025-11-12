@@ -554,7 +554,9 @@ export function Revenue() {
             </div>
           ) : !hasFilteredResults ? (
             <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-8 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">Reward not found</p>
+              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">
+                Reward not found
+              </p>
               <div className="absolute top-0 right-0 flex items-center justify-center p-4 pointer-events-none">
                 <Image
                   src="/images/empty-state.svg"

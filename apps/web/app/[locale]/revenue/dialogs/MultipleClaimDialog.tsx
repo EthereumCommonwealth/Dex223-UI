@@ -1,9 +1,8 @@
 "use client";
 
+import Preloader from "@repo/ui/preloader";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-
-import Preloader from "@repo/ui/preloader";
 
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
@@ -210,13 +209,12 @@ const MultipleClaimDialog = () => {
       <div className="bg-tertiary-bg rounded-3 p-5">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
         <div className="flex items-center gap-2">
-            <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
+          <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
-            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
-         
+          <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
         </div>
       </div>
 
@@ -247,12 +245,12 @@ const MultipleClaimDialog = () => {
       <div className="bg-tertiary-bg rounded-3 p-5">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
         <div className="flex items-center gap-2">
-            <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
+          <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
-            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
+          <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
         </div>
       </div>
 
