@@ -1,75 +1,92 @@
 "use client";
 
+import { Address } from "viem";
 import { create } from "zustand";
 
-export type StakeDialogState =
-  | "initial"
-  | "approving"
-  | "confirming"
-  | "executing"
-  | "success"
-  | "error";
+export enum StakeStatus {
+  INITIAL,
+  PENDING_APPROVE,
+  LOADING_APPROVE,
+  PENDING,
+  LOADING,
+  SUCCESS,
+  ERROR,
+  APPROVE_ERROR,
+}
 
-export interface StakeDialogData {
-  amount: string;
-  amountUSD: string;
-  selectedStandard: "ERC-20" | "ERC-223";
-  errorMessage?: string;
-  transactionHash?: string;
-  requiresApproval?: boolean;
+export enum StakeError {
+  OUT_OF_GAS,
+  INSUFFICIENT_BALANCE,
+  LOCKED_TOKENS,
+  UNKNOWN,
 }
 
 interface StakeDialogStore {
   isOpen: boolean;
-  state: StakeDialogState;
-  data: StakeDialogData | null;
+  status: StakeStatus;
   dialogType: "stake" | "unstake";
+  amount: string;
+  selectedStandard: "ERC-20" | "ERC-223";
+  approveHash: Address | undefined;
+  stakeHash: Address | undefined;
+  errorType: StakeError;
+  errorMessage?: string;
 
   // Actions
-  openDialog: (type: "stake" | "unstake", data: StakeDialogData) => void;
+  openDialog: (type: "stake" | "unstake", amount: string, standard: "ERC-20" | "ERC-223") => void;
   closeDialog: () => void;
-  setState: (state: StakeDialogState) => void;
-  setData: (data: Partial<StakeDialogData>) => void;
-  setError: (errorMessage: string) => void;
-  setTransactionHash: (hash: string) => void;
+  setStatus: (status: StakeStatus) => void;
+  setErrorType: (errorType: StakeError) => void;
+  setErrorMessage: (message: string) => void;
+  setApproveHash: (hash: Address) => void;
+  setStakeHash: (hash: Address) => void;
+  resetHashes: () => void;
 }
 
 export const useStakeDialogStore = create<StakeDialogStore>((set) => ({
   isOpen: false,
-  state: "initial",
-  data: null,
+  status: StakeStatus.INITIAL,
   dialogType: "stake",
+  amount: "",
+  selectedStandard: "ERC-20",
+  approveHash: undefined,
+  stakeHash: undefined,
+  errorType: StakeError.UNKNOWN,
+  errorMessage: undefined,
 
-  openDialog: (type, data) =>
+  openDialog: (type, amount, standard) =>
     set({
       isOpen: true,
-      state: "initial",
-      data,
+      status: StakeStatus.INITIAL,
       dialogType: type,
+      amount,
+      selectedStandard: standard,
+      approveHash: undefined,
+      stakeHash: undefined,
+      errorMessage: undefined,
     }),
 
   closeDialog: () =>
     set({
       isOpen: false,
-      state: "initial",
-      data: null,
+      status: StakeStatus.INITIAL,
+      amount: "",
+      approveHash: undefined,
+      stakeHash: undefined,
+      errorMessage: undefined,
     }),
 
-  setState: (state) => set({ state }),
+  setStatus: (status) => {
+    if (status === StakeStatus.INITIAL) {
+      set({ status, stakeHash: undefined, approveHash: undefined, errorMessage: undefined });
+    } else {
+      set({ status });
+    }
+  },
 
-  setData: (newData) =>
-    set((state) => ({
-      data: state.data ? { ...state.data, ...newData } : null,
-    })),
-
-  setError: (errorMessage) =>
-    set((state) => ({
-      data: state.data ? { ...state.data, errorMessage } : null,
-      state: "error",
-    })),
-
-  setTransactionHash: (transactionHash) =>
-    set((state) => ({
-      data: state.data ? { ...state.data, transactionHash } : null,
-    })),
+  setErrorType: (errorType) => set({ errorType }),
+  setErrorMessage: (errorMessage) => set({ errorMessage }),
+  setApproveHash: (hash) => set({ approveHash: hash }),
+  setStakeHash: (hash) => set({ stakeHash: hash }),
+  resetHashes: () => set({ approveHash: undefined, stakeHash: undefined }),
 }));

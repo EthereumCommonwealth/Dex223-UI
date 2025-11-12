@@ -10,13 +10,15 @@ interface Props extends SVGProps<SVGSVGElement> {
 }
 
 export default function Svg({ iconName, size = 24, style, sprite = "sprite", ...rest }: Props) {
+  const iconPath = `/images/${sprite}.svg#${iconName}`;
+  
   return (
     <svg
-      style={{
-        width: size,
-        height: size,
-        ...style,
-      }}
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      style={style}
       {...rest}
     >
       <use xlinkHref={`/images/${sprite}.svg#${iconName}`} />

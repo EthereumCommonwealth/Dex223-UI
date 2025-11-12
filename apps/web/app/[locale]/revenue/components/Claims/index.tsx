@@ -3,7 +3,6 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
 import Checkbox from "@repo/ui/checkbox";
-import ExternalTextLink from "@repo/ui/external-text-link";
 import clsx from "clsx";
 import Image from "next/image";
 import React from "react";
@@ -24,6 +23,8 @@ import { Standard } from "@/sdk_bi/standard";
 import MultipleClaimDialog from "../../dialogs/MultipleClaimDialog";
 import SingleClaimDialog from "../../dialogs/SingleClaimDialog";
 import { useClaimDialogStore } from "../../stores/useClaimDialogStore";
+import Svg from "@/components/atoms/Svg";
+import ForwardIcon from "../../../../../../../packages/ui/src/icons/ForwardIcon";
 
 export const Claims = ({
   tableData,
@@ -127,8 +128,8 @@ export const Claims = ({
       <SingleClaimDialog />
       <MultipleClaimDialog />
       {/* Desktop version */}
-      <div className="hidden lg:block pr-5 pl-5 pb-5 rounded-3 overflow-hidden bg-table-gradient">
-        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative border-b border-quaternary-bg">
+      <div className="hidden lg:block rounded-3 overflow-hidden bg-table-gradient">
+        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5">
           <div className="text-tertiary-text text-13 pl-5 h-[60px] flex items-center">Token</div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center">
             <div className="flex flex-col gap-1">
@@ -185,18 +186,17 @@ export const Claims = ({
             ))}
           </SkeletonTheme>
         ) : (
-          <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative">
+          <>
             {tableData.map((o: any, index: number) => {
               const key = o?.token?.address0 ? o.token.address0 : `item-${index}`;
               const isSelected = selectedTokens.has(o.id);
 
               return (
-                <React.Fragment key={key}>
-                  <div
-                    className={clsx(
-                      "min-h-[30px] flex text-secondary-text items-center gap-3 pl-5 border-b border-quaternary-bg",
-                    )}
-                  >
+                <div
+                  key={key}
+                  className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5"
+                >
+                  <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3 pl-5")}>
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -208,6 +208,7 @@ export const Claims = ({
                         width={32}
                         height={32}
                         alt=""
+                        className="flex-shrink-0"
                       />
                       <div className="flex min-w-0 justify-center gap-2 items-center">
                         <span className="truncate text-primary-text text-14 font-medium">
@@ -217,59 +218,72 @@ export const Claims = ({
                       </div>
                     </div>
                   </div>
-                  <div
-                    className={clsx("min-h-[30px] flex items-center border-b border-quaternary-bg")}
-                  >
-                    <div className="flex flex-col w-full">
+                  <div className={clsx("min-h-[72px] flex items-center")}>
+                    <div className="flex flex-col gap-2 w-full">
                       <div className="flex items-center gap-2">
-                        <ExternalTextLink
-                          text={truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 5,
-                            charsFromEnd: 3,
-                          })}
+                        <a
+                          target="_blank"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
                             o.erc20Address,
                             o.chainId,
                           )}
+                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
+                        >
+                          <span className="w-[80px] text-left">{truncateMiddle(o.erc20Address || "", {
+                            charsFromStart: 3,
+                            charsFromEnd: 3,
+                          })}</span>
+                          <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
+                        </a>
+                        <IconButton
+                          variant={IconButtonVariant.COPY}
+                          text={o.erc20Address}
+                          buttonSize={IconButtonSize.EXTRA_SMALL}
                         />
-                        <IconButton variant={IconButtonVariant.COPY} text={o.erc20Address} />
                       </div>
                       <div className="flex items-center gap-2">
-                        <ExternalTextLink
-                          text={truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 5,
-                            charsFromEnd: 3,
-                          })}
+                        <a
+                          target="_blank"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
                             o.erc223Address,
                             o.chainId,
                           )}
+                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
+                        >
+                          <span className="w-[80px] text-left">{truncateMiddle(o.erc223Address || "", {
+                            charsFromStart: 3,
+                            charsFromEnd: 3,
+                          })}</span>
+                          <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
+                        </a>
+                        <IconButton
+                          variant={IconButtonVariant.COPY}
+                          text={o.erc223Address}
+                          buttonSize={IconButtonSize.EXTRA_SMALL}
                         />
-                        <IconButton variant={IconButtonVariant.COPY} text={o.erc223Address} />
                       </div>
                     </div>
                   </div>
                   <div
                     className={clsx(
-                      "min-h-[30px] flex text-primary-text text-14 items-center justify-end pr-4 border-b border-quaternary-bg",
+                      "min-h-[72px] flex text-14 items-center justify-end pr-4",
                     )}
                   >
-                    {o.amount} {o.symbol}
+                    <div className="flex items-center">
+                      <span className="text-primary-text">{o.amount}</span>
+                      <span className="text-secondary-text ml-1">{o.symbol}</span>
+                    </div>
                   </div>
                   <div
                     className={clsx(
-                      "min-h-[30px] flex text-primary-text text-14 font-medium items-center justify-end pr-4 border-b border-quaternary-bg",
+                      "min-h-[72px] flex text-secondary-text text-14 items-center justify-end pr-4",
                     )}
                   >
                     {o.amountUSD}
                   </div>
-                  <div
-                    className={clsx(
-                      "min-h-[30px] flex items-center justify-center border-b border-quaternary-bg",
-                    )}
-                  >
+                  <div className={clsx("min-h-[72px] flex items-center justify-center")}>
                     <Button
                       variant={ButtonVariantType.CONTAINED}
                       colorScheme={ButtonColor.GREEN}
@@ -280,45 +294,51 @@ export const Claims = ({
                       Claim
                     </Button>
                   </div>
-                </React.Fragment>
+                </div>
               );
             })}
-          </div>
+          </>
         )}
 
         {selectedCount > 0 && !isLoading && (
-          <div className="mt-4 p-4 bg-tertiary-bg rounded-3 flex items-center justify-between gap-4 border border-quaternary-bg">
+          <div className="mt-4 p-4 bg-tertiary-bg rounded-b-3 flex items-center justify-between gap-4 border border-quaternary-bg">
             <div className="flex items-center gap-4">
-              <span className="text-primary-text text-14">
+              <span className="text-secondary-text text-14">
                 Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
               </span>
               <button
                 onClick={handleUnselectAll}
-                className="text-tertiary-text hover:text-primary-text transition-colors underline text-14"
+                className="text-secondary-text hover:text-primary-text transition-colors text-14 font-medium"
               >
                 Unselect all
               </button>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <span className="text-primary-text text-14">Gas price: $12.23</span>
+                <Svg iconName="gas-edit" size={20} className="text-secondary-text" />
+                <span className="text-secondary-text text-14">Gas price: $12.23</span>
                 <Button
-                  variant={ButtonVariantType.OUTLINED}
-                  colorScheme={ButtonColor.GREEN}
-                  size={ButtonSize.SMALL}
+                  variant={ButtonVariantType.CONTAINED}
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  size={ButtonSize.EXTRA_SMALL}
                 >
                   Edit
                 </Button>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-primary-text text-14">
-                  Total reward: ${totalReward.toFixed(2)}
-                </span>
+              <div className="h-[20px] w-[2px] bg-secondary-border"></div>
+              <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2">
+                  <Svg iconName="subtract" size={20} className="text-secondary-text" />
+                  <span className="text-secondary-text text-14 font-light">
+                    Total reward: ${totalReward.toFixed(2)}
+                  </span>
+                </div>
                 <Button
                   variant={ButtonVariantType.CONTAINED}
                   colorScheme={ButtonColor.GREEN}
                   size={ButtonSize.SMALL}
                   onClick={handleClaimSelected}
+                  className="!rounded-[8px]"
                 >
                   Claim selected tokens
                 </Button>
@@ -379,8 +399,9 @@ export const Claims = ({
               const isSelected = selectedTokens.has(o.id);
 
               return (
-                <div key={key} className="bg-tertiary-bg rounded-3 p-4">
-                  <div className="flex items-start justify-between mb-3">
+                <div key={key} className="bg-tertiary-bg rounded-3 p-4 flex flex-col gap-2">
+                  <div className="flex justify-between">
+
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -398,8 +419,9 @@ export const Claims = ({
                         <span className="text-tertiary-text text-12">{o.symbol}</span>
                       </div>
                     </div>
+
                     <Button
-                      className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg"
+                      className="w-[150px] h-8 md:h-auto disabled:bg-quaternary-bg hidden sm:block lg:hidden"
                       colorScheme={ButtonColor.LIGHT_GREEN}
                       size={ButtonSize.EXTRA_SMALL}
                       disabled={selectedTokens.size > 0}
@@ -408,56 +430,86 @@ export const Claims = ({
                       Claim
                     </Button>
                   </div>
-
+                 
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
                       <span className="text-tertiary-text text-12">ERC-20 Address</span>
                       <div className="flex items-center gap-2">
-                        <ExternalTextLink
-                          text={truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 5,
-                            charsFromEnd: 3,
-                          })}
+                        <a
+                          target="_blank"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
                             o.erc20Address,
                             o.chainId,
                           )}
-                        />
-                        <IconButton variant={IconButtonVariant.COPY} text={o.erc20Address} />
+                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
+                        >
+                          <span className="w-[80px] text-right">{truncateMiddle(o.erc20Address || "", {
+                            charsFromStart: 3,
+                            charsFromEnd: 3,
+                          })}</span>
+                          <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
+                        </a>
+                        <div className="w-6 h-6 flex items-center justify-center">
+                          <IconButton
+                            variant={IconButtonVariant.COPY}
+                            text={o.erc20Address}
+                            buttonSize={IconButtonSize.EXTRA_SMALL}
+                          />
+                        </div>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <span className="text-tertiary-text text-12">ERC-223 Address</span>
                       <div className="flex items-center gap-2">
-                        <ExternalTextLink
-                          text={truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 5,
-                            charsFromEnd: 3,
-                          })}
+                        <a
+                          target="_blank"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
                             o.erc223Address,
                             o.chainId,
                           )}
-                        />
-                        <IconButton variant={IconButtonVariant.COPY} text={o.erc223Address} />
+                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
+                        >
+                          <span className="w-[80px] text-right">{truncateMiddle(o.erc223Address || "", {
+                            charsFromStart: 3,
+                            charsFromEnd: 3,
+                          })}</span>
+                          <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
+                        </a>
+                        <div className="w-6 h-6 flex items-center justify-center">
+                          <IconButton
+                            variant={IconButtonVariant.COPY}
+                            text={o.erc223Address}
+                            buttonSize={IconButtonSize.EXTRA_SMALL}
+                          />
+                        </div>
                       </div>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <span className="text-tertiary-text text-12">Amount</span>
-                      <span className="text-primary-text text-14">
-                        {o.amount} {o.symbol}
+                      <span className="text-14">
+                        <span className="text-primary-text">{o.amount}</span>
+                        <span className="text-secondary-text ml-1">{o.symbol}</span>
                       </span>
                     </div>
 
                     <div className="flex items-center justify-between">
                       <span className="text-tertiary-text text-12">USD Value</span>
-                      <span className="text-primary-text text-14">{o.amountUSD}</span>
+                      <span className="text-secondary-text text-14">{o.amountUSD}</span>
                     </div>
                   </div>
+                  <Button
+                      className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg block sm:hidden lg:hidden"
+                      colorScheme={ButtonColor.LIGHT_GREEN}
+                      size={ButtonSize.EXTRA_SMALL}
+                      disabled={selectedTokens.size > 0}
+                      onClick={() => handleClaimSingle(o)}
+                    >
+                      Claim
+                    </Button>
                 </div>
               );
             })}

@@ -152,7 +152,7 @@ const WalletSearchInput = ({
   }, [hasRevenue, searchValue]);
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <SearchInput
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
@@ -162,11 +162,11 @@ const WalletSearchInput = ({
           searchValue && !hasSearchRevenue ? { paddingRight: "100px" } : { paddingRight: "60px" }
         }
         className={clsx(
-          "bg-primary-bg lg:w-[480px] h-[40px] lg:h-[48px]",
+          "bg-primary-bg w-full lg:w-[480px] h-[40px] lg:h-[48px]",
           searchValue && "pr-[92px]",
         )}
       />
-      {<p className="text-12 text-red-light mb-1 h-4">{error}</p>}
+      {error && <p className="text-12 text-red-light mt-1 h-4">{error}</p>}
     </div>
   );
 };
@@ -184,10 +184,8 @@ export function Revenue() {
   const { openDialog } = useStakeDialogStore();
   const { switchChain } = useSwitchChain();
 
-  // Get all available tokens from the DEX
   const allAvailableTokens = useTokens();
 
-  // Filter tokens based on selected token lists
   const tokensFromSelectedLists = useMemo(() => {
     return allAvailableTokens.filter((token) => {
       if (!token.isToken) return false; // Filter out native coins
@@ -197,7 +195,6 @@ export function Revenue() {
     });
   }, [allAvailableTokens, selectedTokenLists]);
 
-  // Use real contract data
   const searchAddress =
     searchValue && isAddress(searchValue) ? (searchValue as Address) : undefined;
   const {
@@ -209,6 +206,9 @@ export function Revenue() {
     requiredChainId,
     claimableRewards,
     setRewardTokens,
+    canUnstake,
+    unstakeCountdown,
+    hasStaked,
   } = useRevenueContract({ searchAddress });
 
   useEffect(() => {
@@ -251,20 +251,11 @@ export function Revenue() {
   };
 
   const handleStakeClick = () => {
-    openDialog("stake", {
-      amount: "",
-      amountUSD: "0",
-      selectedStandard: "ERC-20",
-      requiresApproval: true,
-    });
+    openDialog("stake", "", "ERC-20");
   };
 
   const handleUnstakeClick = () => {
-    openDialog("unstake", {
-      amount: "",
-      amountUSD: "0",
-      selectedStandard: "ERC-20",
-    });
+    openDialog("unstake", "", "ERC-20");
   };
 
   useEffect(() => {
@@ -295,7 +286,28 @@ export function Revenue() {
     const quotientStr = quotient.toString();
     const quotientNum = Number(quotient);
 
-    if (quotientNum >= 1000000) {
+    if (quotientNum >= 1000000000000000000000) {
+      // Sextillions
+      const sextillions = quotientNum / 1000000000000000000000;
+      return `${sextillions}Sx`;
+    } else if (quotientNum >= 1000000000000000000) {
+      // Quintillions
+      const quintillions = quotientNum / 1000000000000000000;
+      return `${quintillions}Qt`;
+    } else if (quotientNum >= 1000000000000000) {
+      // Quadrillions
+      const quadrillions = quotientNum / 1000000000000000;
+      return `${quadrillions}Q`;
+    } else if (quotientNum >= 1000000000000) {
+      // Trillions
+      const trillions = quotientNum / 1000000000000;
+      return `${trillions}T`;
+    } else if (quotientNum >= 1000000000) {
+      // Billions
+      const billions = quotientNum / 1000000000;
+      return `${billions}B`;
+    } else if (quotientNum >= 1000000) {
+      // Millions
       const millions = quotientNum / 1000000;
       return `${millions}M`;
     }
@@ -321,7 +333,7 @@ export function Revenue() {
   return (
     <Container>
       <div className="p-4 lg:p-10 flex flex-col max-w-[100dvw]">
-        <div className="flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
+        <div className="flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 lg:gap-0 mb-5 lg:mb-0">
           <h1 className="text-24 lg:text-40 font-medium">Revenue</h1>
           <div className="flex flex-col lg:flex-row gap-y-2 lg:gap-x-3">
             <WalletSearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
@@ -330,7 +342,7 @@ export function Revenue() {
 
         {/* Network Warning */}
         {address && !isCorrectNetwork && (
-          <div className="mt-5">
+          <div className="mt-6 mb-5">
             <Alert
               type="warning"
               text={
@@ -352,17 +364,17 @@ export function Revenue() {
             />
           </div>
         )}
-        <div className="mt-5 grid grid-cols-1 lg:grid-cols-2 gap-5">
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
           {isLoadingUserData ? (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-6 w-full lg:col-span-7 overflow-hidden min-h-[140px]">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
                   borderRadius="20px"
                   enableAnimation={false}
                 >
-                  <div className="flex items-center gap-1 mb-auto z-10">
+                  <div className="flex items-center gap-1 mb-4 z-10">
                     <Skeleton width={80} height={16} />
                     <Skeleton circle width={20} height={20} />
                   </div>
@@ -381,29 +393,29 @@ export function Revenue() {
                 </SkeletonTheme>
               </div>
 
-              <div className="relative flex flex-col bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full lg:col-span-5 overflow-hidden min-h-[140px]">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
                   borderRadius="20px"
                   enableAnimation={false}
                 >
-                  <div className="flex items-center gap-1 z-10">
+                  <div className="flex items-center gap-1 z-10 mb-4">
                     <Skeleton width={90} height={16} />
                     <Skeleton circle width={20} height={20} />
                   </div>
 
                   <div className="flex flex-col gap-2 z-10">
                     <Skeleton width={140} height={24} />
-                    <Skeleton width={120} height={14} />
+                    <Skeleton width={120} height={16} />
                   </div>
                 </SkeletonTheme>
               </div>
             </>
           ) : (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
-                <div className="flex items-center gap-1 mb-auto z-10">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-6 w-full lg:col-span-7 overflow-hidden min-h-[140px]">
+                <div className="flex items-center gap-1 mb-4 z-10">
                   <span className="text-14 lg:text-16 text-secondary-text">D223 staked</span>
                   <Tooltip
                     iconSize={20}
@@ -411,8 +423,8 @@ export function Revenue() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between z-10">
-                  <div className="flex flex-col">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 z-10">
+                  <div className="flex flex-col gap-1">
                     <span className="text-24 lg:text-32 font-medium">
                       {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
                     </span>
@@ -421,21 +433,37 @@ export function Revenue() {
                     </span>
                   </div>
 
-                  <div className="flex gap-2 w-full lg:w-auto justify-end">
+                  <div className="flex gap-2 justify-end mt-2 sm:mt-0">
                     <button
                       type="button"
                       onClick={handleStakeClick}
-                      className="bg-green text-black px-4 py-2 rounded-3 text-14 font-medium hover:bg-green/90 transition-colors cursor-pointer active:scale-95"
+                      className={clsx(
+                        "border px-4 py-2 rounded-3 text-14 font-medium transition-colors active:scale-95",
+                        "border-yellow-light bg-[#4C483C] text-white cursor-pointer",
+                      )}
                     >
                       Stake
                     </button>
-                    <button
-                      type="button"
-                      onClick={handleUnstakeClick}
-                      className="bg-green text-black px-4 py-2 rounded-3 text-14 font-medium hover:bg-green/90 transition-colors cursor-pointer active:scale-95"
-                    >
-                      Unstake
-                    </button>
+                    {unstakeCountdown ? (
+                      <div className="border border-yellow-light bg-primary-bg text-secondary-text px-4 py-2 rounded-3 text-14 font-medium">
+                        {unstakeCountdown}
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={handleUnstakeClick}
+                        disabled={!canUnstake || !hasStaked}
+                        className={clsx(
+                          "border px-4 py-2 rounded-3 text-14 font-medium transition-colors active:scale-95",
+                          "border-yellow-light bg-[#4C483C] text-white",
+                          !canUnstake || !hasStaked
+                            ? "opacity-50 cursor-not-allowed"
+                            : "cursor-pointer",
+                        )}
+                      >
+                        Unstake
+                      </button>
+                    )}
                   </div>
                 </div>
 
@@ -444,12 +472,12 @@ export function Revenue() {
                   alt="Side Icon"
                   width={180}
                   height={120}
-                  className="absolute right-0 bottom-0 w-auto h-full object-contain pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
                 />
               </div>
 
-              <div className="relative flex flex-col bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
-                <div className="flex items-center gap-1 z-10">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full lg:col-span-5 overflow-hidden min-h-[140px]">
+                <div className="flex items-center gap-1 z-10 mb-4">
                   <span className="text-14 lg:text-16 text-secondary-text">Total reward</span>
                   <Tooltip
                     iconSize={20}
@@ -457,37 +485,39 @@ export function Revenue() {
                   />
                 </div>
 
-                <span className="text-24 lg:text-32 font-medium mb-2 z-10">
-                  $
-                  {dataToUse
-                    .reduce((sum, claim) => {
-                      const usdValue = parseFloat(claim.amountUSD.replace(/[$,]/g, ""));
-                      return sum + usdValue;
-                    }, 0)
-                    .toFixed(2)}
-                </span>
-                <span className="text-12 lg:text-14 text-secondary-text z-10">
-                  {userStaked && typeof userStaked === "bigint" && userStaked > 0n
-                    ? "Staking active"
-                    : "Not staked yet"}
-                </span>
+                <div className="flex flex-col gap-1 z-10">
+                  <span className="text-24 lg:text-32 font-medium">
+                    $
+                    {mappedClaimsData
+                      .reduce((sum, claim) => {
+                        const usdValue = parseFloat(claim.amountUSD.replace(/[$,]/g, ""));
+                        return sum + usdValue;
+                      }, 0)
+                      .toFixed(2)}
+                  </span>
+                  <span className="text-12 lg:text-16 text-secondary-text">
+                    {userStaked && typeof userStaked === "bigint" && userStaked > 0n
+                      ? "Staking active"
+                      : "Not staked yet"}
+                  </span>
+                </div>
 
                 <Image
                   src="/images/revenue-reward.svg"
                   alt="Side Icon"
                   width={220}
                   height={140}
-                  className="absolute right-0 bottom-0 object-contain pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
                 />
               </div>
             </>
           )}
         </div>
 
-        <div className="mt-10 flex flex-col lg:flex-row w-full justify-between gap-4 lg:gap-0">
+        <div className="mt-10 flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 lg:gap-0">
           <h1 className="text-18 lg:text-32 font-medium">Claim rewards</h1>
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-            <div className="w-full sm:w-auto">
+            <div className="w-full">
               <TokenListDropdown
                 selectedOptions={selectedTokenLists}
                 onSelectionChange={setSelectedTokenLists}
@@ -496,7 +526,7 @@ export function Revenue() {
                 className="w-full sm:w-auto"
               />
             </div>
-            <div className="w-full sm:w-auto">
+            <div className="w-full">
               <SearchInput
                 value={claimRewardsSearchValue}
                 onChange={(e) => setClaimRewardsSearchValue(e.target.value)}
@@ -509,7 +539,7 @@ export function Revenue() {
         <div className="mt-6 min-h-[340px] w-full">
           {!address ? (
             <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-8 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-gray-400 text-center z-10">
+              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">
                 Connect wallet to see your rewards
               </p>
               <div className="absolute top-0 right-0 flex items-end justify-end p-4 pointer-events-none">
@@ -518,20 +548,20 @@ export function Revenue() {
                   alt="Account"
                   width={300}
                   height={200}
-                  className="w-full"
+                  className="w-full h-auto object-contain object-right-bottom"
                 />
               </div>
             </div>
           ) : !hasFilteredResults ? (
             <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-8 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-gray-400 text-center z-10">Reward not found</p>
+              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">Reward not found</p>
               <div className="absolute top-0 right-0 flex items-center justify-center p-4 pointer-events-none">
                 <Image
                   src="/images/empty-state.svg"
                   alt="Search"
                   width={220}
                   height={220}
-                  className="w-full opacity-30"
+                  className="w-full h-auto object-contain opacity-30"
                 />
               </div>
             </div>

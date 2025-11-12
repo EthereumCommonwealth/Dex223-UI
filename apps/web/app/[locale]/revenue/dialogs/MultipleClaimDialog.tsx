@@ -3,11 +3,14 @@
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 
+import Preloader from "@repo/ui/preloader";
+
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import IconButton from "@/components/buttons/IconButton";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import { StandardButton } from "@/components/common/TokenStandardSelector";
 import { ThemeColors } from "@/config/theme/colors";
@@ -207,29 +210,31 @@ const MultipleClaimDialog = () => {
       <div className="bg-tertiary-bg rounded-3 p-5">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
         <div className="flex items-center gap-2">
-          <div>
             <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
-            <div className="text-14 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
-          </div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
+            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
+         
         </div>
       </div>
 
-      {/* Confirmation section */}
+      {/* Executing claim section */}
       <div className="border-t border-secondary-border pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="wallet" size={20} className="text-secondary-text" />
+              <Svg iconName="arrow-left-down" size={20} className="text-green" />
             </div>
-            <span className="text-primary-text text-16">Confirm claim</span>
+            <span className="text-primary-text text-16">Executing claim</span>
           </div>
-          <div className="flex items-center gap-2 text-secondary-text text-14">
-            <Svg iconName="more" size={16} />
-            <span className="hidden xs:inline">Proceed in your wallet</span>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1.5 bg-green text-primary-bg text-12 rounded-2 hover:bg-green/90 transition-colors font-medium">
+              Speed up
+            </button>
+            <IconButton iconName="forward" />
+            <Preloader size={20} />
           </div>
         </div>
       </div>
@@ -242,14 +247,12 @@ const MultipleClaimDialog = () => {
       <div className="bg-tertiary-bg rounded-3 p-5">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
         <div className="flex items-center gap-2">
-          <div>
             <div className="text-24 font-bold text-primary-text mb-1">{tokenCount} tokens</div>
-            <div className="text-14 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
-          </div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
+            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
         </div>
       </div>
 
@@ -258,7 +261,7 @@ const MultipleClaimDialog = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="wallet" size={20} className="text-secondary-text" />
+              <Svg iconName="arrow-left-down" size={20} className="text-secondary-text" />
             </div>
             <span className="text-primary-text text-16">Executing claim</span>
           </div>
@@ -295,8 +298,8 @@ const MultipleClaimDialog = () => {
       <div className="border-t border-secondary-border pt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green rounded-full flex items-center justify-center">
-              <Svg iconName="check" size={24} className="text-white" />
+            <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
+              <Svg iconName="arrow-left-down" size={24} className="text-white" />
             </div>
             <span className="text-primary-text text-16">Successfully claimed</span>
           </div>

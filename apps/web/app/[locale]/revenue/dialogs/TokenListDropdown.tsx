@@ -11,12 +11,14 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react";
+import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import { SearchInput } from "@/components/atoms/Input";
+import Svg from "@/components/atoms/Svg";
 import { TokenListId } from "@/db/db";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useTokenLists } from "@/hooks/useTokenLists";
@@ -63,7 +65,6 @@ export default function TokenListDropdown({
     if (!tokenLists) return [];
 
     return tokenLists.map((list) => {
-      console.log(list, "list");
       const isDefault = list.id === `default-${chainId}`;
       const isPaid =
         list.autoListingContract?.toLowerCase() ===
@@ -149,9 +150,9 @@ export default function TokenListDropdown({
         <Image
           src={option.icon}
           alt={option.name}
-          width={16}
-          height={16}
-          className="w-4 h-4 rounded"
+          width={24}
+          height={24}
+          className="w-6 h-6 rounded"
         />
       );
     }
@@ -170,35 +171,38 @@ export default function TokenListDropdown({
           ref={refs.setReference}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className={clsx(
-            "duration-200 border-none rounded-3 h-10 md:h-12 px-3 flex items-center gap-2 cursor-pointer w-full min-w-[200px]",
+            "duration-200 border-none rounded-3 h-10 md:h-12 px-3 flex items-center justify-between gap-2 cursor-pointer w-full min-w-[200px]",
             "bg-primary-bg text-primary-text",
             "hocus:shadow hocus:shadow-green/60 focus:shadow focus:shadow-green focus:border-green",
             isDropdownOpen && "border-green bg-green-bg shadow shadow-green/60",
           )}
         >
-          {selectedOptionsList.length === 0 ? (
-            <span className="text-secondary-text">{placeholder}</span>
-          ) : (
-            <>
-              {visibleTags.map((option) => (
-                <div
-                  key={option.id}
-                  className="flex items-center gap-1 bg-tertiary-bg border border-secondary-border rounded-2 px-2 py-1 text-12 text-secondary-text"
-                >
-                  {/* <div className="w-4 h-4 flex-shrink-0">
-                                        {getOptionIcon(option)}
-                                    </div> */}
-                  <span className="truncate max-w-[100px]">{option.name}</span>
+          <div className="flex items-center gap-2 flex-1 min-w-0">
+            {selectedOptionsList.length === 0 ? (
+              <span className="text-secondary-text text-16">{placeholder}</span>
+            ) : (
+              <>
+                {visibleTags.map((option) => (
+                  <div
+                    key={option.id}
+                    className="flex items-center gap-1 bg-tertiary-bg border border-secondary-border rounded-2 px-2 py-1 text-16 text-secondary-text"
+                  >
+                    <span className="truncate max-w-[100px]">{option.name}</span>
+                  </div>
+                ))}
+
+                {remainingCount > 0 && <span className="text-secondary-text text-16">...</span>}
+
+                <div className="flex items-center gap-1 bg-tertiary-bg border border-secondary-border rounded-2 px-2 py-1 text-16 text-primary-text">
+                  <span>{selectedOptionsList.length}</span>
                 </div>
-              ))}
-
-              {remainingCount > 0 && <span className="text-secondary-text text-12">...</span>}
-
-              <div className="flex items-center gap-1 bg-tertiary-bg border border-secondary-border rounded-2 px-2 py-1 text-12 text-primary-text">
-                <span>{selectedOptionsList.length}</span>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
+          <Svg
+            iconName="small-expand-arrow"
+            className={clsx("duration-200 flex-shrink-0", isDropdownOpen && "-rotate-180")}
+          />
         </div>
 
         {isDropdownOpen && (
@@ -206,7 +210,7 @@ export default function TokenListDropdown({
             <div
               ref={refs.setFloating}
               style={floatingStyles}
-              className="absolute z-[101] bg-tertiary-bg overflow-hidden rounded-3 min-w-[450px] shadow-lg border border-secondary-border"
+              className="absolute z-[101] bg-primary-bg overflow-hidden rounded-3 min-w-[450px] shadow-lg border border-secondary-border"
               {...getFloatingProps()}
             >
               <div className="px-3 py-3 border-b border-secondary-border">
@@ -221,33 +225,15 @@ export default function TokenListDropdown({
 
               <div
                 onClick={handleSelectAll}
-                className="cursor-pointer h-10 bg-tertiary-bg hover:bg-quaternary-bg flex justify-between items-center px-4 border-b border-secondary-border"
+                className="cursor-pointer h-12 bg-primary-bg flex justify-between items-center px-4 border-b border-secondary-border"
               >
-                <span className="text-primary-text text-14">Select all</span>
-                <div
-                  className={clsx(
-                    "w-4 h-4 rounded border-2 flex items-center justify-center",
-                    allFilteredSelected ? "bg-green border-green" : "border-secondary-border",
-                  )}
-                >
-                  {allFilteredSelected && (
-                    <svg
-                      width="10"
-                      height="8"
-                      viewBox="0 0 10 8"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M1 4L3.5 6.5L9 1"
-                        stroke="white"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
-                </div>
+                <span className="text-primary-text text-16">Select all</span>
+                <Checkbox
+                  checked={allFilteredSelected}
+                  handleChange={handleSelectAll}
+                  id="select-all-token-lists"
+                  className="pointer-events-none"
+                />
               </div>
 
               <div className="max-h-60 overflow-y-auto">
@@ -257,66 +243,34 @@ export default function TokenListDropdown({
                     <div
                       key={option.id}
                       onClick={() => handleOptionSelect(option.id)}
-                      className="cursor-pointer h-10 bg-tertiary-bg hover:bg-quaternary-bg flex items-center gap-3 px-4"
+                      className="cursor-pointer h-12 bg-primary-bg flex items-center gap-3 px-4"
                     >
                       {getOptionIcon(option)}
-                      <span className="text-primary-text flex-1 truncate text-14">
+                      <span className="text-primary-text flex-1 truncate text-16">
                         {option.name}
                       </span>
-                      <div
-                        className={clsx(
-                          "w-4 h-4 rounded border-2 flex items-center justify-center",
-                          isSelected ? "bg-green border-green" : "border-secondary-border",
-                        )}
-                      >
-                        {isSelected && (
-                          <svg
-                            width="10"
-                            height="8"
-                            viewBox="0 0 10 8"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M1 4L3.5 6.5L9 1"
-                              stroke="white"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        )}
-                      </div>
+                      <Checkbox
+                        checked={isSelected}
+                        handleChange={() => handleOptionSelect(option.id)}
+                        id={`token-list-${option.id}`}
+                        className="pointer-events-none"
+                      />
                     </div>
                   );
                 })}
               </div>
 
-              <div className="border-t border-secondary-border px-4 py-3">
+              <div className="border-t border-secondary-border px-4 py-3 bg-tertiary-bg">
                 <button
                   onClick={() => {
                     setIsDropdownOpen(false);
                     setIsOpen(true);
                     setContent("import-list");
                   }}
-                  className="w-full flex items-center justify-between text-primary-text text-14 font-medium hover:text-green transition-colors duration-200"
+                  className="w-full flex items-center justify-center gap-2 text-primary-text text-16 hover:text-green transition-colors duration-200"
                 >
-                  <span>Add new list</span>
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M8 3V13M3 8H13"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <span className="text-primary-text text-16">Add new list</span>
+                  <Svg iconName="import-list" size={24} />
                 </button>
               </div>
             </div>
