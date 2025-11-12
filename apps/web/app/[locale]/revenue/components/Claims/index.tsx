@@ -129,7 +129,7 @@ export const Claims = ({
       <MultipleClaimDialog />
       {/* Desktop version */}
       <div className="hidden lg:block rounded-3 overflow-hidden bg-table-gradient">
-        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5  ">
+        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5">
           <div className="text-tertiary-text text-13 pl-5 h-[60px] flex items-center">Token</div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center">
             <div className="flex flex-col gap-1">
@@ -194,9 +194,9 @@ export const Claims = ({
               return (
                 <div
                   key={key}
-                  className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5 "
+                  className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5"
                 >
-                  <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3")}>
+                  <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3 pl-5")}>
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -208,6 +208,7 @@ export const Claims = ({
                         width={32}
                         height={32}
                         alt=""
+                        className="flex-shrink-0"
                       />
                       <div className="flex min-w-0 justify-center gap-2 items-center">
                         <span className="truncate text-primary-text text-14 font-medium">
@@ -233,13 +234,13 @@ export const Claims = ({
                             charsFromStart: 3,
                             charsFromEnd: 3,
                           })}</span>
-                      <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
+                          <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
                         </a>
-                          <IconButton
-                            variant={IconButtonVariant.COPY}
-                            text={o.erc20Address}
-                            buttonSize={IconButtonSize.EXTRA_SMALL}
-                          />
+                        <IconButton
+                          variant={IconButtonVariant.COPY}
+                          text={o.erc20Address}
+                          buttonSize={IconButtonSize.EXTRA_SMALL}
+                        />
                       </div>
                       <div className="flex items-center gap-2">
                         <a
@@ -255,28 +256,29 @@ export const Claims = ({
                             charsFromStart: 3,
                             charsFromEnd: 3,
                           })}</span>
-                          <ForwardIcon className="ui-flex-shrink-0" size={24} />
-                          </a>
-                        
-                          <IconButton
-                            variant={IconButtonVariant.COPY}
-                            text={o.erc223Address}
-                            buttonSize={IconButtonSize.EXTRA_SMALL}
-                          />
+                          <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
+                        </a>
+                        <IconButton
+                          variant={IconButtonVariant.COPY}
+                          text={o.erc223Address}
+                          buttonSize={IconButtonSize.EXTRA_SMALL}
+                        />
                       </div>
                     </div>
                   </div>
                   <div
                     className={clsx(
-                      "min-h-[72px] flex text-14 items-center justify-center",
+                      "min-h-[72px] flex text-14 items-center justify-end pr-4",
                     )}
                   >
-                    <span className="text-primary-text">{o.amount}</span>
-                    <span className="text-secondary-text ml-1">{o.symbol}</span>
+                    <div className="flex items-center">
+                      <span className="text-primary-text">{o.amount}</span>
+                      <span className="text-secondary-text ml-1">{o.symbol}</span>
+                    </div>
                   </div>
                   <div
                     className={clsx(
-                      "min-h-[72px] flex text-secondary-text text-14 items-center justify-center",
+                      "min-h-[72px] flex text-secondary-text text-14 items-center justify-end pr-4",
                     )}
                   >
                     {o.amountUSD}
@@ -301,20 +303,20 @@ export const Claims = ({
         {selectedCount > 0 && !isLoading && (
           <div className="mt-4 p-4 bg-tertiary-bg rounded-b-3 flex items-center justify-between gap-4 border border-quaternary-bg">
             <div className="flex items-center gap-4">
-              <span className="text-secondary-text">
+              <span className="text-secondary-text text-14">
                 Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
               </span>
               <button
                 onClick={handleUnselectAll}
-                className="text-secondary-text hover:text-primary-text transition-colors text-16 font-medium"
+                className="text-secondary-text hover:text-primary-text transition-colors text-14 font-medium"
               >
                 Unselect all
               </button>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <Svg iconName="gas-edit" size={24} className="text-secondary-text" />
-                <span className="text-secondary-text">Gas price: $12.23</span>
+                <Svg iconName="gas-edit" size={20} className="text-secondary-text" />
+                <span className="text-secondary-text text-14">Gas price: $12.23</span>
                 <Button
                   variant={ButtonVariantType.CONTAINED}
                   colorScheme={ButtonColor.LIGHT_GREEN}
@@ -326,10 +328,10 @@ export const Claims = ({
               <div className="h-[20px] w-[2px] bg-secondary-border"></div>
               <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
-              <Svg iconName="subtract" size={24} className="text-secondary-text" />
-                <span className="text-secondary-text text-16 font-light">
-                  Total reward: ${totalReward.toFixed(2)}
-                </span>
+                  <Svg iconName="subtract" size={20} className="text-secondary-text" />
+                  <span className="text-secondary-text text-14 font-light">
+                    Total reward: ${totalReward.toFixed(2)}
+                  </span>
                 </div>
                 <Button
                   variant={ButtonVariantType.CONTAINED}

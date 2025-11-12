@@ -1,5 +1,6 @@
 "use client";
 
+import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -9,15 +10,16 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
+import IconButton from "@/components/buttons/IconButton";
 import { Standard } from "@/sdk_bi/standard";
 
 import { useClaimDialogStore } from "../stores/useClaimDialogStore";
+import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 
 const SingleClaimDialog = () => {
   const { isOpen, state, data, closeDialog, setState, setError, setData } = useClaimDialogStore();
 
-  const [selectedStandard, setSelectedStandard] = useState<"ERC-20" | "ERC-223">("ERC-223");
+  const [selectedStandard, setSelectedStandard] = useState<Standard>(Standard.ERC223);
 
   useEffect(() => {
     if (data?.selectedStandard) {
@@ -65,94 +67,99 @@ const SingleClaimDialog = () => {
     setState("initial");
   };
 
-  const renderInitialState = () => (
-    <div className="space-y-4">
-      {/* Rewards to receive */}
-      <div className="bg-tertiary-bg rounded-3 p-4">
-        <div className="flex items-center justify-between gap-3 flex-wrap">
-          <span className="text-primary-text text-14">Rewards to receive:</span>
-          <div className="flex items-center gap-2 flex-wrap">
-            <Image
-              src={token.logoURI || "/images/tokens/placeholder.svg"}
-              width={24}
-              height={24}
-              alt={token.symbol}
-              className="w-6 h-6"
-            />
-            <span className="text-primary-text text-16 font-medium">
-              {token.amount} {token.symbol}
-            </span>
-            <span className="text-secondary-text text-14">
-              (${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)})
-            </span>
+  const renderInitialState = () => {
+    const gasLimitERC20 = 329000;
+    const gasLimitERC223 = 115000;
+    const gasPriceGwei = 33.53;
+    const networkFeeERC20 = 0.0031;
+    const networkFeeERC223 = 0.0011;
+    const currentGasLimit = selectedStandard === Standard.ERC20 ? gasLimitERC20 : gasLimitERC223;
+    const currentNetworkFee = selectedStandard === Standard.ERC20 ? networkFeeERC20 : networkFeeERC223;
+
+    return (
+      <div className="space-y-4">
+        <div className="bg-tertiary-bg rounded-3 p-4">
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-secondary-text text-14">Rewards to receive:</span>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Image
+                src={token.logoURI || "/images/tokens/placeholder.svg"}
+                width={24}
+                height={24}
+                alt={token.symbol}
+                className="w-6 h-6"
+              />
+              <span className="text-primary-text text-16 font-medium">
+                {token.amount} {token.symbol}
+              </span>
+              <span className="text-secondary-text text-14">
+                (${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)})
+              </span>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Standard selection */}
-      <div className="bg-tertiary-bg rounded-3 p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <span className="text-primary-text text-14">Standard for {token.symbol}</span>
-          <div
-            className="w-4 h-4 bg-secondary-border rounded-full flex items-center justify-center cursor-help"
-            title="Select the token standard for claiming"
-          >
-            <Svg iconName="info" size={12} className="text-secondary-text" />
+        <div className="bg-tertiary-bg rounded-3 p-4">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-primary-text text-14">Standard for {token.symbol}</span>
+            <Svg iconName="info" size={16} className="text-secondary-text cursor-help" />
+          </div>
+          <div className="flex gap-2">
+            {[Standard.ERC20, Standard.ERC223].map((standard) => {
+              const isSelected = selectedStandard === standard;
+              return (
+                <button
+                  key={standard}
+                  onClick={() => setSelectedStandard(standard)}
+                  className={clsx(
+                    "flex-1 h-10 px-4 rounded-2 text-14 font-medium transition-all duration-200 flex items-center justify-center gap-2",
+                    isSelected
+                      ? "bg-green-bg border border-green text-green"
+                      : "bg-quaternary-bg border border-secondary-border text-secondary-text hover:bg-tertiary-bg hover:text-primary-text",
+                  )}
+                >
+                  <div
+                    className={clsx(
+                      "w-4 h-4 rounded-full border-2 flex items-center justify-center",
+                      isSelected
+                        ? "border-green bg-green"
+                        : "border-secondary-border",
+                    )}
+                  >
+                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                  </div>
+                  {standard}
+                </button>
+              );
+            })}
           </div>
         </div>
-        <div className="flex gap-2">
-          {(["ERC-20", "ERC-223"] as const).map((standard) => (
-            <button
-              key={standard}
-              onClick={() => setSelectedStandard(standard)}
-              className={clsx(
-                "flex-1 h-10 px-4 rounded-2 text-14 font-medium transition-all duration-200 flex items-center justify-center gap-2",
-                selectedStandard === standard
-                  ? "bg-green-bg border border-green text-green"
-                  : "bg-quaternary-bg border border-secondary-border text-secondary-text hover:bg-tertiary-bg hover:text-primary-text",
-              )}
-            >
-              <div
-                className={clsx(
-                  "w-4 h-4 rounded-full border-2 flex items-center justify-center",
-                  selectedStandard === standard
-                    ? "border-green bg-green"
-                    : "border-secondary-border",
-                )}
-              >
-                {selectedStandard === standard && <div className="w-2 h-2 rounded-full bg-white" />}
-              </div>
-              {standard}
-            </button>
-          ))}
-        </div>
+
+        <GasSettingsBlock />
+
+        <Button
+          fullWidth
+          size={ButtonSize.LARGE}
+          colorScheme={ButtonColor.GREEN}
+          onClick={handleClaim}
+        >
+          Claim
+        </Button>
       </div>
-
-      <GasSettingsBlock />
-
-      {/* Claim button */}
-      <Button
-        fullWidth
-        size={ButtonSize.LARGE}
-        colorScheme={ButtonColor.GREEN}
-        onClick={handleClaim}
-      >
-        Claim
-      </Button>
-    </div>
-  );
+    );
+  };
 
   const renderConfirmingState = () => (
     <div className="space-y-5">
       {/* Claim amount display */}
-      <div className="bg-tertiary-bg rounded-3 p-5">
-        <div className="text-secondary-text text-14 mb-1">Claim amount</div>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-24 font-bold text-primary-text mb-1">{token.amount}</div>
-            <div className="text-14 text-secondary-text">
+      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
+        <p className="text-secondary-text text-14">Claim amount</p>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-24 font-bold text-primary-text">{token.amount}</span>
+            <p className="text-secondary-text text-14">
               ${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)}
-            </div>
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Image
@@ -160,33 +167,30 @@ const SingleClaimDialog = () => {
               width={32}
               height={32}
               alt={token.symbol}
-              className="w-8 h-8"
             />
-            <div className="flex flex-col gap-1">
-              <span className="text-primary-text text-16 font-medium">{token.symbol}</span>
-              <Badge
-                variant={BadgeVariant.STANDARD}
-                standard={selectedStandard === "ERC-20" ? Standard.ERC20 : Standard.ERC223}
-                size="small"
-              />
-            </div>
+            <span className="text-primary-text text-16 font-medium">{token.symbol}</span>
+            <Badge
+              variant={BadgeVariant.STANDARD}
+              standard={selectedStandard}
+              size="small"
+            />
           </div>
         </div>
       </div>
 
+      <div className="h-px w-full bg-secondary-border" />
+
       {/* Confirmation section */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="wallet" size={20} className="text-secondary-text" />
-            </div>
-            <span className="text-primary-text text-16">Confirm claim</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <div className="flex items-center gap-2 text-secondary-text text-14">
-            <Svg iconName="more" size={16} />
-            <span className="hidden xs:inline">Proceed in your wallet</span>
-          </div>
+          <span className="text-primary-text text-16">Confirm claim</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-secondary-text text-14">...</span>
+          <span className="text-secondary-text text-14">Proceed in your wallet</span>
         </div>
       </div>
     </div>
@@ -195,14 +199,14 @@ const SingleClaimDialog = () => {
   const renderExecutingState = () => (
     <div className="space-y-5">
       {/* Claim amount display */}
-      <div className="bg-tertiary-bg rounded-3 p-5">
-        <div className="text-secondary-text text-14 mb-1">Claim amount</div>
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <div className="text-24 font-bold text-primary-text mb-1">{token.amount}</div>
-            <div className="text-14 text-secondary-text">
+      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
+        <p className="text-secondary-text text-14">Claim amount</p>
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <span className="text-24 font-bold text-primary-text">{token.amount}</span>
+            <p className="text-secondary-text text-14">
               ${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)}
-            </div>
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Image
@@ -212,11 +216,11 @@ const SingleClaimDialog = () => {
               alt={token.symbol}
               className="w-8 h-8"
             />
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-row items-center gap-2">
               <span className="text-primary-text text-16 font-medium">{token.symbol}</span>
               <Badge
                 variant={BadgeVariant.STANDARD}
-                standard={selectedStandard === "ERC-20" ? Standard.ERC20 : Standard.ERC223}
+                standard={selectedStandard}
                 size="small"
               />
             </div>
@@ -224,24 +228,22 @@ const SingleClaimDialog = () => {
         </div>
       </div>
 
+      <div className="h-px w-full bg-secondary-border" />
+
       {/* Executing claim section */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="wallet" size={20} className="text-secondary-text" />
-            </div>
-            <span className="text-primary-text text-16">Executing claim</span>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <div className="flex items-center gap-2">
-            <button className="px-3 py-1 bg-green text-white text-12 rounded-2 hover:bg-green/90 transition-colors font-medium">
-              Speed up
-            </button>
-            <button className="text-secondary-text hover:text-primary-text transition-colors">
-              <Svg iconName="forward" size={20} />
-            </button>
-            <div className="w-6 h-6 border-2 border-green border-t-transparent rounded-full animate-spin" />
-          </div>
+          <span className="text-primary-text text-16">Executing claim</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="px-3 py-1.5 bg-green text-primary-bg text-12 rounded-2 hover:bg-green/90 transition-colors font-medium">
+            Speed up
+          </button>
+          <IconButton iconName="forward" />
+          <Preloader size={20} />
         </div>
       </div>
     </div>
@@ -250,76 +252,78 @@ const SingleClaimDialog = () => {
   const renderSuccessState = () => (
     <div className="space-y-5">
       {/* Success confirmation */}
-      <div className="text-center py-8">
-        <div className="flex items-center justify-center mx-auto mb-4">
-          <div className="w-16 h-16 bg-green rounded-full flex items-center justify-center">
-            <Svg iconName="check" size={32} className="text-white" />
-          </div>
+      <div className="flex flex-col items-center py-3">
+        <div className="mx-auto w-[80px] h-[80px] flex items-center justify-center relative mb-5">
+          <div className="w-[54px] h-[54px] rounded-full border-[7px] blur-[8px] opacity-80 border-green" />
+          <Svg
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-green"
+            iconName="success"
+            size={65}
+          />
         </div>
         <h3 className="text-20 font-bold text-primary-text mb-2">Successfully claimed</h3>
-        <p className="text-16 text-secondary-text">
+        <p className="text-16 text-primary-text mb-6">
           {token.amount} {token.symbol}
         </p>
       </div>
 
-      {/* Transaction details */}
-      <div className="border-t border-secondary-border pt-4">
+      <div className="h-px w-full bg-secondary-border mb-2" />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-green rounded-full flex items-center justify-center">
-              <Svg iconName="check" size={24} className="text-white" />
+            <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
+              <Svg iconName="arrow-left-down" size={20} className="text-green" />
             </div>
             <span className="text-primary-text text-16">Successfully claimed</span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="text-secondary-text hover:text-primary-text transition-colors">
-              <Svg iconName="forward" size={20} />
-            </button>
-            <div className="w-6 h-6 bg-green rounded-full flex items-center justify-center">
-              <Svg iconName="check" size={16} className="text-white" />
+            <IconButton iconName="forward" />
+            <div className="w-5 h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
+              <Svg className="text-primary-bg" iconName="check" size={14} />
             </div>
           </div>
         </div>
-      </div>
     </div>
   );
 
   const renderErrorState = () => (
-    <div className="space-y-5">
+    <div className="space-y-4">
       {/* Error display */}
-      <div className="text-center py-8">
-        <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Svg iconName="warning" size={32} className="text-white" />
+      <div className="flex flex-col items-center py-3">
+        <div className="flex items-center justify-center mx-auto mb-5">
+          <Svg className="text-red-light" iconName="warning" size={64} />
         </div>
-        <h3 className="text-20 font-bold text-red-500 mb-2">Claim failed</h3>
-        <p className="text-16 text-secondary-text">
+        <h3 className="text-20 font-bold text-red-light mb-2">Claim failed</h3>
+        <p className="text-16 text-primary-text mb-6">
           {token.amount} {token.symbol}
         </p>
       </div>
 
-      {/* Error details */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-              <Svg iconName="warning" size={24} className="text-white" />
-            </div>
-            <span className="text-primary-text text-16">Claim failed</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="text-secondary-text hover:text-primary-text transition-colors">
-              <Svg iconName="forward" size={20} />
-            </button>
-            <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-              <Svg iconName="warning" size={16} className="text-white" />
-            </div>
-          </div>
-        </div>
+      <div className="h-px w-full bg-secondary-border mb-5" />
 
-        {/* Error message */}
-        <div className="bg-red-500/10 border border-red-500/20 rounded-3 p-4">
-          <p className="text-14 text-red-500">{data?.errorMessage}</p>
+      {/* Error details */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-red-light/20 rounded-full flex items-center justify-center">
+            <Svg iconName="arrow-left-down" size={20} className="text-red-light" />
+          </div>
+          <span className="text-primary-text text-16">Claim failed</span>
         </div>
+        <div className="flex items-center gap-2">
+          <IconButton iconName="forward" />
+          <Svg className="text-red-light" iconName="warning" size={20} />
+        </div>
+      </div>
+
+      {/* Error message */}
+      <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-4 mb-4">
+        <p className="text-14 text-secondary-text">
+          {data?.errorMessage || "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+          {!data?.errorMessage && (
+            <a href="#" className="text-secondary-text underline">
+              common errors
+            </a>
+          )}
+        </p>
       </div>
 
       {/* Try again button */}
@@ -353,9 +357,10 @@ const SingleClaimDialog = () => {
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog}>
-      <DialogHeader onClose={closeDialog} title="Claim" />
-
-      <div className="w-full md:w-[500px] p-5 md:p-6">{renderContent()}</div>
+      <div className="bg-primary-bg rounded-5 w-full sm:w-[600px]">
+        <DialogHeader onClose={closeDialog} title="Claim" />
+        <div className="card-spacing">{renderContent()}</div>
+      </div>
     </DrawerDialog>
   );
 };
