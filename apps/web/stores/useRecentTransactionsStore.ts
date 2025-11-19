@@ -45,6 +45,7 @@ export enum RecentTransactionTitleTemplate {
   MSIG_APPROVE,
   MSIG_TRANSACTION_CONFIRMED,
   MSIG_DECLINE,
+  CLAIM,
 }
 
 type RecentTransactionGasLimit =
@@ -198,7 +199,10 @@ export type IRecentTransactionTitle =
     } & MultisigTransactionConfirmedTitle)
   | ({
       template: RecentTransactionTitleTemplate.MSIG_DECLINE;
-    } & MultisigTransactionConfirmedTitle);
+    } & MultisigTransactionConfirmedTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.CLAIM;
+    } & SingleTokenTransactionTitle);
 export type IRecentTransaction = {
   id: Address;
   status: RecentTransactionStatus;

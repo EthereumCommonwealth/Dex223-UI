@@ -46,6 +46,7 @@ export function NotificationSubTitle({ title }: { title: IRecentTransactionTitle
     case RecentTransactionTitleTemplate.CONVERT:
     case RecentTransactionTitleTemplate.UNWRAP:
     case RecentTransactionTitleTemplate.TRANSFER:
+    case RecentTransactionTitleTemplate.CLAIM:
       return (
         <NotificationSubtitleText>
           {t("single_subtitle", {
@@ -188,6 +189,14 @@ function NotificationTitle({
               : "Unwrapping WETH9 failed"}
           </NotificationTitleText>
         </div>
+      );
+    case RecentTransactionTitleTemplate.CLAIM:
+      return (
+        <NotificationTitleText>
+          {status === RecentTransactionStatus.SUCCESS
+            ? "Successfully claimed"
+            : "Claim failed"}
+        </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.SWAP:
       return (

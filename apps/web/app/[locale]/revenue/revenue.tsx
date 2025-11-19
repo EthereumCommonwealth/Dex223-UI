@@ -32,7 +32,7 @@ const claimsData = [
     id: 1,
     name: "Aave Token",
     symbol: "AAVE",
-    logoURI: "/images/tokens/aave.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x5...B3C",
     erc223Address: "0xD...C93",
     amount: "0.34",
@@ -45,7 +45,7 @@ const claimsData = [
     id: 2,
     name: "Basic Attention Token",
     symbol: "BAT",
-    logoURI: "/images/tokens/bat.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x3...B7D",
     erc223Address: "0x7...U1A",
     amount: "4.25",
@@ -58,7 +58,7 @@ const claimsData = [
     id: 3,
     name: "Binance USD",
     symbol: "BUSD",
-    logoURI: "/images/tokens/busd.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x5...C9E",
     erc223Address: "0x5...T9E",
     amount: "245.24",
@@ -71,7 +71,7 @@ const claimsData = [
     id: 4,
     name: "Dai Stablecoin",
     symbol: "DAI",
-    logoURI: "/images/tokens/dai.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x7...D1A",
     erc223Address: "0x3...S7D",
     amount: "73.2",
@@ -84,7 +84,7 @@ const claimsData = [
     id: 5,
     name: "Enjin Coin",
     symbol: "ENJ",
-    logoURI: "/images/tokens/enj.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x9...E3B",
     erc223Address: "0x1...R5C",
     amount: "23.2",
@@ -97,7 +97,7 @@ const claimsData = [
     id: 6,
     name: "Kyber Network Crystal",
     symbol: "KNC",
-    logoURI: "/images/tokens/knc.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0xB...F5C",
     erc223Address: "0xE...Q3B",
     amount: "3.24",
@@ -110,7 +110,7 @@ const claimsData = [
     id: 7,
     name: "Lend",
     symbol: "LEND",
-    logoURI: "/images/tokens/lend.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0xD...G7D",
     erc223Address: "0xC...P1A",
     amount: "12.3",
@@ -123,7 +123,7 @@ const claimsData = [
     id: 8,
     name: "ChainLink Token",
     symbol: "LINK",
-    logoURI: "/images/tokens/link.svg",
+    logoURI: "/images/tokens/placeholder.svg",
     erc20Address: "0x2...A1B",
     erc223Address: "0x4...C2D",
     amount: "0.3",
@@ -162,8 +162,8 @@ const WalletSearchInput = ({
           searchValue && !hasSearchRevenue ? { paddingRight: "100px" } : { paddingRight: "60px" }
         }
         className={clsx(
-          "bg-primary-bg w-full lg:w-[480px] h-[40px] lg:h-[48px]",
-          searchValue && "pr-[92px]",
+          "bg-primary-bg w-full lg:w-[540px] h-[40px] lg:h-[48px]",
+          searchValue && "pr-[100px]",
         )}
       />
       {error && <p className="text-12 text-red-light mt-1 h-4">{error}</p>}
@@ -367,65 +367,77 @@ export function Revenue() {
         <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
           {isLoadingUserData ? (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-6 w-full lg:col-span-7 overflow-hidden min-h-[140px]">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-3 w-full lg:col-span-7 overflow-hidden h-[120px]">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
                   borderRadius="20px"
                   enableAnimation={false}
                 >
-                  <div className="flex items-center gap-1 mb-4 z-10">
-                    <Skeleton width={80} height={16} />
-                    <Skeleton circle width={20} height={20} />
+                  <div className="flex items-center gap-1 z-10">
+                    <Skeleton width={90} height={20} />
                   </div>
 
-                  <div className="flex items-center justify-between z-10">
-                    <div className="flex flex-col gap-2">
-                      <Skeleton width={120} height={24} />
-                      <Skeleton width={60} height={14} />
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 z-10">
+                    <div className="flex flex-col">
+                      <Skeleton width={200} height={32} className="mb-1" />
+                      <Skeleton width={50} height={14} />
                     </div>
 
-                    <div className="flex gap-2 w-full lg:w-auto justify-end">
-                      <Skeleton width={60} height={32} />
-                      <Skeleton width={70} height={32} />
+                    <div className="flex gap-2 justify-end mt-2 sm:mt-0">
+                      <Skeleton width={73} height={48} />
+                      <Skeleton width={90} height={48} />
                     </div>
                   </div>
                 </SkeletonTheme>
+                <Image
+                  src="/images/revenue-image.svg"
+                  alt="Side Icon"
+                  width={180}
+                  height={120}
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                />
               </div>
 
-              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full lg:col-span-5 overflow-hidden min-h-[140px]">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-3 w-full lg:col-span-5 overflow-hidden h-[120px]">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
                   borderRadius="20px"
                   enableAnimation={false}
                 >
-                  <div className="flex items-center gap-1 z-10 mb-4">
-                    <Skeleton width={90} height={16} />
-                    <Skeleton circle width={20} height={20} />
+                  <div className="flex items-center gap-1 z-10">
+                    <Skeleton width={100} height={20} />
                   </div>
 
-                  <div className="flex flex-col gap-2 z-10">
-                    <Skeleton width={140} height={24} />
-                    <Skeleton width={120} height={16} />
+                  <div className="flex flex-col z-10">
+                    <Skeleton width={120} height={32} className="mb-1" />
+                    <Skeleton width={110} height={16} />
                   </div>
                 </SkeletonTheme>
+                <Image
+                  src="/images/revenue-reward.svg"
+                  alt="Side Icon"
+                  width={220}
+                  height={140}
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                />
               </div>
             </>
           ) : (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-6 w-full lg:col-span-7 overflow-hidden min-h-[140px]">
-                <div className="flex items-center gap-1 mb-4 z-10">
-                  <span className="text-14 lg:text-16 text-secondary-text">D223 staked</span>
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-3 w-full lg:col-span-7 overflow-hidden h-[120px]">
+                <div className="flex items-center z-10">
+                  <span className="text-16 text-secondary-text">D223 staked</span>
                   <Tooltip
                     iconSize={20}
-                    text="This shows your staked D223 tokens and the percentage of total supply you represent."
+                    text="This shows your staked D223 tokens and the percentage of total supply you represent"
                   />
                 </div>
 
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 z-10">
-                  <div className="flex flex-col gap-1">
-                    <span className="text-24 lg:text-32 font-medium">
+                  <div className="flex flex-col">
+                    <span className="text-32 lg:text-32 font-medium">
                       {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
                     </span>
                     <span className="text-12 lg:text-14 text-secondary-text">
@@ -438,14 +450,14 @@ export function Revenue() {
                       type="button"
                       onClick={handleStakeClick}
                       className={clsx(
-                        "border px-4 py-2 rounded-3 text-14 font-medium transition-colors active:scale-95",
+                        "border px-4 h-[48px] rounded-3 text-14 font-medium transition-colors active:scale-95",
                         "border-yellow-light bg-[#4C483C] text-white cursor-pointer",
                       )}
                     >
                       Stake
                     </button>
                     {unstakeCountdown ? (
-                      <div className="border border-yellow-light bg-primary-bg text-secondary-text px-4 py-2 rounded-3 text-14 font-medium">
+                      <div className="border border-yellow-light bg-primary-bg text-secondary-text px-4 h-[48px] rounded-3 text-14 font-medium flex items-center">
                         {unstakeCountdown}
                       </div>
                     ) : (
@@ -454,7 +466,7 @@ export function Revenue() {
                         onClick={handleUnstakeClick}
                         disabled={!canUnstake || !hasStaked}
                         className={clsx(
-                          "border px-4 py-2 rounded-3 text-14 font-medium transition-colors active:scale-95",
+                          "border px-4 h-[48px] rounded-3 text-14 font-medium transition-colors active:scale-95",
                           "border-yellow-light bg-[#4C483C] text-white",
                           !canUnstake || !hasStaked
                             ? "opacity-50 cursor-not-allowed"
@@ -476,16 +488,16 @@ export function Revenue() {
                 />
               </div>
 
-              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full lg:col-span-5 overflow-hidden min-h-[140px]">
-                <div className="flex items-center gap-1 z-10 mb-4">
-                  <span className="text-14 lg:text-16 text-secondary-text">Total reward</span>
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-3 w-full lg:col-span-5 overflow-hidden h-[120px]">
+                <div className="flex items-center z-10">
+                  <span className="text-16 text-secondary-text">Total reward</span>
                   <Tooltip
                     iconSize={20}
-                    text="Total rewards earned from staking your D223 tokens."
+                    text="Total rewards earned from staking your D223 tokens"
                   />
                 </div>
 
-                <div className="flex flex-col gap-1 z-10">
+                <div className="flex flex-col z-10">
                   <span className="text-24 lg:text-32 font-medium">
                     $
                     {mappedClaimsData
@@ -531,7 +543,7 @@ export function Revenue() {
                 value={claimRewardsSearchValue}
                 onChange={(e) => setClaimRewardsSearchValue(e.target.value)}
                 placeholder="Search name or paste address"
-                className="h-10 md:h-12 bg-primary-bg w-full lg:w-[480px]"
+                className="h-[48px] bg-primary-bg w-full lg:w-[540px]"
               />
             </div>
           </div>
@@ -553,15 +565,15 @@ export function Revenue() {
               </div>
             </div>
           ) : !hasFilteredResults ? (
-            <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-8 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">Reward not found</p>
-              <div className="absolute top-0 right-0 flex items-center justify-center p-4 pointer-events-none">
+            <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 relative overflow-hidden">
+              <p className="text-14 lg:text-16 text-secondary-text text-center z-10 mb-4">Reward not found</p>
+              <div className="absolute top-0 right-0 flex items-center justify-center pointer-events-none">
                 <Image
                   src="/images/empty-state.svg"
                   alt="Search"
-                  width={220}
-                  height={220}
-                  className="w-full h-auto object-contain opacity-30"
+                  width={340}
+                  height={340}
+                  className="w-[340px] h-[340px] object-contain opacity-30"
                 />
               </div>
             </div>

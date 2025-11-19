@@ -3,9 +3,10 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
 import Checkbox from "@repo/ui/checkbox";
+import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
@@ -37,7 +38,29 @@ export const Claims = ({
   setSelectedTokens: (tokenId: number) => void;
   isLoading?: boolean;
 }) => {
-  const { openDialog } = useClaimDialogStore();
+  const { openDialog, state: claimState, data: claimData, isOpen: isClaimDialogOpen, resetClaim } =
+    useClaimDialogStore();
+
+  // Check if a specific token is being claimed
+  const isTokenBeingClaimed = (tokenId: number) => {
+    if (!claimData) return false;
+    if (claimState !== "confirming" && claimState !== "executing") return false;
+    if (isClaimDialogOpen) return false;
+    return claimData.selectedTokens?.some((token) => token.id === tokenId) || false;
+  };
+
+  const hasClaimInProgress =
+    (claimState === "confirming" || claimState === "executing") && !isClaimDialogOpen;
+
+  useEffect(() => {
+    if ((claimState === "success" || claimState === "error") && !isClaimDialogOpen) {
+      const timer = setTimeout(() => {
+        resetClaim();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [claimState, isClaimDialogOpen, resetClaim]);
 
   const handleTokenSelect = (tokenId: number) => {
     setSelectedTokens(tokenId);
@@ -98,20 +121,33 @@ export const Claims = ({
       return sum;
     }, 0);
 
-    const tokenStandards: Record<number, "ERC-20" | "ERC-223"> = {};
-    selectedTokensData.forEach((token: any) => {
-      tokenStandards[token.id] = "ERC-223";
-    });
+    if (selectedTokens.size === 1) {
+      const token = selectedTokensData[0];
+      openDialog({
+        selectedTokens: selectedTokensData,
+        totalReward,
+        gasPrice: "33.53",
+        gasLimit: "329000",
+        networkFee: "0.0031",
+        selectedStandard: "ERC-223",
+        isMultiple: false,
+      });
+    } else {
+      const tokenStandards: Record<number, "ERC-20" | "ERC-223"> = {};
+      selectedTokensData.forEach((token: any) => {
+        tokenStandards[token.id] = "ERC-223";
+      });
 
-    openDialog({
-      selectedTokens: selectedTokensData,
-      totalReward,
-      gasPrice: "33.53",
-      gasLimit: "329000",
-      networkFee: "0.0031",
-      isMultiple: true,
-      tokenStandards,
-    });
+      openDialog({
+        selectedTokens: selectedTokensData,
+        totalReward,
+        gasPrice: "33.53",
+        gasLimit: "329000",
+        networkFee: "0.0031",
+        isMultiple: true,
+        tokenStandards,
+      });
+    }
   };
 
   const selectedCount = selectedTokens.size;
@@ -194,7 +230,12 @@ export const Claims = ({
               return (
                 <div
                   key={key}
-                  className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5"
+                  className={clsx(
+                    "grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative duration-200 rounded-2 pr-5 pl-5",
+                    isTokenBeingClaimed(o.id)
+                      ? "opacity-60 pointer-events-none"
+                      : "hover:bg-tertiary-bg cursor-pointer",
+                  )}
                 >
                   <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3 pl-5")}>
                     <div className="flex items-center gap-3">
@@ -202,6 +243,7 @@ export const Claims = ({
                         checked={isSelected}
                         handleChange={() => handleTokenSelect(o.id)}
                         id={`claim-token-${o.id}`}
+                        disabled={hasClaimInProgress || isTokenBeingClaimed(o.id)}
                       />
                       <Image
                         src={o.logoURI || "/images/tokens/placeholder.svg"}
@@ -211,7 +253,7 @@ export const Claims = ({
                         className="flex-shrink-0"
                       />
                       <div className="flex min-w-0 justify-center gap-2 items-center">
-                        <span className="truncate text-primary-text text-14 font-medium">
+                        <span className="truncate text-secondary-text text-14 font-medium">
                           {o.name}
                         </span>
                         <span className="text-13 text-tertiary-text">{o.symbol}</span>
@@ -238,7 +280,7 @@ export const Claims = ({
                         </a>
                         <IconButton
                           variant={IconButtonVariant.COPY}
-                          text={o.erc20Address}
+                          text={o.fullErc20Address}
                           buttonSize={IconButtonSize.EXTRA_SMALL}
                         />
                       </div>
@@ -260,7 +302,7 @@ export const Claims = ({
                         </a>
                         <IconButton
                           variant={IconButtonVariant.COPY}
-                          text={o.erc223Address}
+                          text={o.fullErc223Address}
                           buttonSize={IconButtonSize.EXTRA_SMALL}
                         />
                       </div>
@@ -283,16 +325,23 @@ export const Claims = ({
                   >
                     {o.amountUSD}
                   </div>
-                  <div className={clsx("min-h-[72px] flex items-center justify-center")}>
-                    <Button
-                      variant={ButtonVariantType.CONTAINED}
-                      colorScheme={ButtonColor.GREEN}
-                      size={ButtonSize.MEDIUM}
-                      onClick={() => handleClaimSingle(o)}
-                      disabled={selectedTokens.size > 0}
-                    >
-                      Claim
-                    </Button>
+                  <div className={clsx("min-h-[72px] flex items-center justify-center ml-10")}>
+                    {isTokenBeingClaimed(o.id) ? (
+                      <div className="flex items-center gap-2">
+                        <Preloader size={20} />
+                        <span className="text-secondary-text text-14">Claiming...</span>
+                      </div>
+                    ) : (
+                      <Button
+                        variant={ButtonVariantType.CONTAINED}
+                        colorScheme={ButtonColor.GREEN}
+                        size={ButtonSize.MEDIUM}
+                        onClick={() => handleClaimSingle(o)}
+                        disabled={selectedTokens.size > 0 || hasClaimInProgress}
+                      >
+                        Claim
+                      </Button>
+                    )}
                   </div>
                 </div>
               );
@@ -303,7 +352,7 @@ export const Claims = ({
         {selectedCount > 0 && !isLoading && (
           <div className="mt-4 p-4 bg-tertiary-bg rounded-b-3 flex items-center justify-between gap-4 border border-quaternary-bg">
             <div className="flex items-center gap-4">
-              <span className="text-secondary-text text-14">
+              <span className="text-tertiary-text text-14">
                 Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
               </span>
               <button
@@ -315,8 +364,8 @@ export const Claims = ({
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
-                <Svg iconName="gas-edit" size={20} className="text-secondary-text" />
-                <span className="text-secondary-text text-14">Gas price: $12.23</span>
+                <Svg iconName="gas-edit" size={20} className="text-tertiary-text" />
+                <span className="text-tertiary-text text-14">Gas price: $12.23</span>
                 <Button
                   variant={ButtonVariantType.CONTAINED}
                   colorScheme={ButtonColor.LIGHT_GREEN}
@@ -328,8 +377,8 @@ export const Claims = ({
               <div className="h-[20px] w-[2px] bg-secondary-border"></div>
               <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
-                  <Svg iconName="subtract" size={20} className="text-secondary-text" />
-                  <span className="text-secondary-text text-14 font-light">
+                  <Svg iconName="subtract" size={20} className="text-tertiary-text" />
+                  <span className="text-tertiary-text text-14 font-light">
                     Total reward: ${totalReward.toFixed(2)}
                   </span>
                 </div>
@@ -339,8 +388,16 @@ export const Claims = ({
                   size={ButtonSize.SMALL}
                   onClick={handleClaimSelected}
                   className="!rounded-[8px]"
+                  disabled={hasClaimInProgress}
                 >
-                  Claim selected tokens
+                  {hasClaimInProgress ? (
+                    <div className="flex items-center gap-2">
+                      <Preloader size={16} />
+                      Claiming...
+                    </div>
+                  ) : (
+                    "Claim selected tokens"
+                  )}
                 </Button>
               </div>
             </div>
@@ -399,7 +456,13 @@ export const Claims = ({
               const isSelected = selectedTokens.has(o.id);
 
               return (
-                <div key={key} className="bg-tertiary-bg rounded-3 p-4 flex flex-col gap-2">
+                <div
+                  key={key}
+                  className={clsx(
+                    "bg-tertiary-bg rounded-3 p-4 flex flex-col gap-2",
+                    isTokenBeingClaimed(o.id) && "opacity-60 pointer-events-none",
+                  )}
+                >
                   <div className="flex justify-between">
 
                     <div className="flex items-center gap-3">
@@ -407,6 +470,7 @@ export const Claims = ({
                         checked={isSelected}
                         handleChange={() => handleTokenSelect(o.id)}
                         id={`claim-token-mobile-${o.id}`}
+                        disabled={hasClaimInProgress || isTokenBeingClaimed(o.id)}
                       />
                       <Image
                         src={o.logoURI || "/images/tokens/placeholder.svg"}
@@ -420,15 +484,22 @@ export const Claims = ({
                       </div>
                     </div>
 
-                    <Button
-                      className="w-[150px] h-8 md:h-auto disabled:bg-quaternary-bg hidden sm:block lg:hidden"
-                      colorScheme={ButtonColor.LIGHT_GREEN}
-                      size={ButtonSize.EXTRA_SMALL}
-                      disabled={selectedTokens.size > 0}
-                      onClick={() => handleClaimSingle(o)}
-                    >
-                      Claim
-                    </Button>
+                    {isTokenBeingClaimed(o.id) ? (
+                      <div className="flex items-center gap-2 hidden sm:flex lg:hidden">
+                        <Preloader size={16} />
+                        <span className="text-secondary-text text-12">Claiming...</span>
+                      </div>
+                    ) : (
+                      <Button
+                        className="w-[150px] h-8 md:h-auto disabled:bg-quaternary-bg hidden sm:block lg:hidden"
+                        colorScheme={ButtonColor.LIGHT_GREEN}
+                        size={ButtonSize.EXTRA_SMALL}
+                        disabled={selectedTokens.size > 0 || hasClaimInProgress}
+                        onClick={() => handleClaimSingle(o)}
+                      >
+                        Claim
+                      </Button>
+                    )}
                   </div>
                  
                   <div className="space-y-2">
@@ -453,7 +524,7 @@ export const Claims = ({
                         <div className="w-6 h-6 flex items-center justify-center">
                           <IconButton
                             variant={IconButtonVariant.COPY}
-                            text={o.erc20Address}
+                            text={o.fullErc20Address}
                             buttonSize={IconButtonSize.EXTRA_SMALL}
                           />
                         </div>
@@ -481,7 +552,7 @@ export const Claims = ({
                         <div className="w-6 h-6 flex items-center justify-center">
                           <IconButton
                             variant={IconButtonVariant.COPY}
-                            text={o.erc223Address}
+                            text={o.fullErc223Address}
                             buttonSize={IconButtonSize.EXTRA_SMALL}
                           />
                         </div>
@@ -501,15 +572,22 @@ export const Claims = ({
                       <span className="text-secondary-text text-14">{o.amountUSD}</span>
                     </div>
                   </div>
-                  <Button
+                  {isTokenBeingClaimed(o.id) ? (
+                    <div className="flex items-center gap-2 block sm:hidden lg:hidden">
+                      <Preloader size={16} />
+                      <span className="text-secondary-text text-12">Claiming...</span>
+                    </div>
+                  ) : (
+                    <Button
                       className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg block sm:hidden lg:hidden"
                       colorScheme={ButtonColor.LIGHT_GREEN}
                       size={ButtonSize.EXTRA_SMALL}
-                      disabled={selectedTokens.size > 0}
+                      disabled={selectedTokens.size > 0 || hasClaimInProgress}
                       onClick={() => handleClaimSingle(o)}
                     >
                       Claim
                     </Button>
+                  )}
                 </div>
               );
             })}
@@ -519,7 +597,7 @@ export const Claims = ({
         {selectedCount > 0 && !isLoading && (
           <div className="bg-tertiary-bg rounded-3 p-4 space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-primary-text text-14">
+              <span className="text-tertiary-text text-14">
                 Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
               </span>
               <button
@@ -531,7 +609,7 @@ export const Claims = ({
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-primary-text text-14">Gas price: $12.23</span>
+              <span className="text-tertiary-text text-14">Gas price: $12.23</span>
               <Button
                 variant={ButtonVariantType.CONTAINED}
                 colorScheme={ButtonColor.GREEN}
@@ -542,7 +620,7 @@ export const Claims = ({
             </div>
 
             <div className="flex items-center justify-between">
-              <span className="text-primary-text text-14">
+              <span className="text-tertiary-text text-14">
                 Total reward: ${totalReward.toFixed(2)}
               </span>
               <Button
@@ -550,8 +628,16 @@ export const Claims = ({
                 colorScheme={ButtonColor.GREEN}
                 size={ButtonSize.SMALL}
                 onClick={handleClaimSelected}
+                disabled={hasClaimInProgress}
               >
-                Claim selected tokens
+                {hasClaimInProgress ? (
+                  <div className="flex items-center gap-2">
+                    <Preloader size={16} />
+                    Claiming...
+                  </div>
+                ) : (
+                  "Claim selected tokens"
+                )}
               </Button>
             </div>
           </div>
