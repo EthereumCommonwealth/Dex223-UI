@@ -43,6 +43,7 @@ interface ClaimDialogStore {
   setError: (errorMessage: string) => void;
   setTransactionHash: (hash: string) => void;
   setTokenStandard: (tokenId: number, standard: "ERC-20" | "ERC-223") => void;
+  resetClaim: () => void;
 }
 
 export const useClaimDialogStore = create<ClaimDialogStore>((set) => ({
@@ -58,13 +59,26 @@ export const useClaimDialogStore = create<ClaimDialogStore>((set) => ({
     }),
 
   closeDialog: () =>
-    set({
-      isOpen: false,
-      state: "initial",
-      data: null,
+    set((state) => {
+      if (state.state === "confirming" || state.state === "executing") {
+        return {
+          isOpen: false,
+        };
+      }
+      return {
+        isOpen: false,
+        state: "initial",
+        data: null,
+      };
     }),
 
-  setState: (state) => set({ state }),
+  setState: (state) =>
+    set((currentState) => {
+      if (state === "success" || state === "error") {
+        return { state };
+      }
+      return { state };
+    }),
 
   setData: (newData) =>
     set((state) => ({
@@ -96,5 +110,12 @@ export const useClaimDialogStore = create<ClaimDialogStore>((set) => ({
           },
         },
       };
+    }),
+
+  resetClaim: () =>
+    set({
+      isOpen: false,
+      state: "initial",
+      data: null,
     }),
 }));

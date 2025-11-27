@@ -3,29 +3,116 @@
 import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
-import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
-import { Standard } from "@/sdk_bi/standard";
-
-import { useClaimDialogStore } from "../stores/useClaimDialogStore";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
+import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
+import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { Standard } from "@/sdk_bi/standard";
+import { useConfirmInWalletAlertStore } from "@/stores/useConfirmInWalletAlertStore";
+
+import {
+  useClaimGasLimitStore,
+  useClaimGasModeStore,
+  useClaimGasPrice,
+  useClaimGasPriceStore,
+} from "../stores/useClaimGasSettingsStore";
+import { useClaimDialogStore } from "../stores/useClaimDialogStore";
+import { addNotification } from "@/other/notification";
+import {
+  RecentTransactionStatus,
+  RecentTransactionTitleTemplate,
+} from "@/stores/useRecentTransactionsStore";
 
 const SingleClaimDialog = () => {
   const { isOpen, state, data, closeDialog, setState, setError, setData } = useClaimDialogStore();
+  const chainId = useCurrentChainId();
+  const { openConfirmInWalletAlert, closeConfirmInWalletAlert } = useConfirmInWalletAlertStore();
 
   const [selectedStandard, setSelectedStandard] = useState<Standard>(Standard.ERC223);
+  const [isGasSettingsOpen, setIsGasSettingsOpen] = useState(false);
+
+  const {
+    gasPriceOption,
+    gasPriceSettings,
+    setGasPriceOption,
+    setGasPriceSettings,
+    updateDefaultState,
+  } = useClaimGasPriceStore();
+
+  const { estimatedGas, customGasLimit, setEstimatedGas, setCustomGasLimit } =
+    useClaimGasLimitStore();
+
+  const { isAdvanced, setIsAdvanced } = useClaimGasModeStore();
+
+  const gasPrice = useClaimGasPrice();
+  const gasToUse = customGasLimit || estimatedGas || BigInt(115000); // Default gas limit for ERC223
+  const notificationShownRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (data?.selectedStandard) {
       setSelectedStandard(data.selectedStandard === "ERC-20" ? Standard.ERC20 : Standard.ERC223);
     }
   }, [data?.selectedStandard]);
+
+  useEffect(() => {
+    if (isOpen) {
+      updateDefaultState(chainId);
+    }
+  }, [chainId, isOpen, updateDefaultState]);
+
+  // Show/hide bottom alert for confirming state
+  useEffect(() => {
+    if (state === "confirming" && isOpen) {
+      openConfirmInWalletAlert("Please confirm action in your wallet");
+    } else {
+      closeConfirmInWalletAlert();
+    }
+
+    return () => {
+      closeConfirmInWalletAlert();
+    };
+  }, [state, isOpen, openConfirmInWalletAlert, closeConfirmInWalletAlert]);
+
+  // Show notifications for success/error states
+  useEffect(() => {
+    if (!data || data.isMultiple || (state !== "success" && state !== "error")) {
+      notificationShownRef.current = null;
+      return;
+    }
+
+    const token = data.selectedTokens?.[0];
+    if (!token) return;
+
+    // Prevent duplicate notifications
+    const notificationKey = `${state}-${token.symbol}-${token.amount}`;
+    if (notificationShownRef.current === notificationKey) return;
+    notificationShownRef.current = notificationKey;
+
+    const notificationTitle: {
+      template: RecentTransactionTitleTemplate.CLAIM;
+      symbol: string;
+      amount: string;
+      logoURI: string;
+    } = {
+      template: RecentTransactionTitleTemplate.CLAIM,
+      symbol: token.symbol,
+      amount: token.amount,
+      logoURI: token.logoURI || "/images/tokens/placeholder.svg",
+    };
+
+    if (state === "success") {
+      addNotification(notificationTitle, RecentTransactionStatus.SUCCESS);
+    } else if (state === "error") {
+      addNotification(notificationTitle, RecentTransactionStatus.ERROR);
+    }
+  }, [state, data]);
 
   // Only show this dialog for single token claims
   if (!isOpen || !data || data.isMultiple) return null;
@@ -78,9 +165,9 @@ const SingleClaimDialog = () => {
 
     return (
       <div className="space-y-4">
-        <div className="bg-tertiary-bg rounded-3 p-4">
+        <div className="bg-tertiary-bg rounded-3 px-4 h-12 flex items-center">
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-secondary-text text-14">Rewards to receive:</span>
+            <span className="text-tertiary-text text-14">Rewards to receive:</span>
             <div className="flex items-center gap-2 flex-wrap">
               <Image
                 src={token.logoURI || "/images/tokens/placeholder.svg"}
@@ -101,8 +188,8 @@ const SingleClaimDialog = () => {
 
         <div className="bg-tertiary-bg rounded-3 p-4">
           <div className="flex items-center gap-2 mb-3">
-            <span className="text-primary-text text-14">Standard for {token.symbol}</span>
-            <Svg iconName="info" size={16} className="text-secondary-text cursor-help" />
+            <span className="text-secondary-text text-14">Standard for {token.symbol}</span>
+            <Svg iconName="info" size={24} className="text-tertiary-text" />
           </div>
           <div className="flex gap-2">
             {[Standard.ERC20, Standard.ERC223].map((standard) => {
@@ -112,7 +199,7 @@ const SingleClaimDialog = () => {
                   key={standard}
                   onClick={() => setSelectedStandard(standard)}
                   className={clsx(
-                    "flex-1 h-10 px-4 rounded-2 text-14 font-medium transition-all duration-200 flex items-center justify-center gap-2",
+                    "flex-1 h-10 px-4 rounded-2 text-14 font-medium transition-all duration-200 flex items-center justify-center gap-2 group",
                     isSelected
                       ? "bg-green-bg border border-green text-green"
                       : "bg-quaternary-bg border border-secondary-border text-secondary-text hover:bg-tertiary-bg hover:text-primary-text",
@@ -120,14 +207,12 @@ const SingleClaimDialog = () => {
                 >
                   <div
                     className={clsx(
-                      "w-4 h-4 rounded-full border-2 flex items-center justify-center",
+                      "w-4 h-4 duration-200 before:duration-200 border bg-secondary-bg rounded-full before:content-[''] before:w-2.5 before:h-2.5 before:absolute before:top-1/2 before:rounded-full before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 relative",
                       isSelected
-                        ? "border-green bg-green"
-                        : "border-secondary-border",
+                        ? "border-green before:bg-green"
+                        : "border-secondary-border group-hocus:border-green",
                     )}
-                  >
-                    {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
-                  </div>
+                  />
                   {standard}
                 </button>
               );
@@ -135,7 +220,12 @@ const SingleClaimDialog = () => {
           </div>
         </div>
 
-        <GasSettingsBlock />
+        <GasSettingsBlock
+          gasPrice={gasPrice}
+          gasLimit={gasToUse}
+          gasPriceOption={gasPriceOption}
+          onEditClick={() => setIsGasSettingsOpen(true)}
+        />
 
         <Button
           fullWidth
@@ -152,11 +242,11 @@ const SingleClaimDialog = () => {
   const renderConfirmingState = () => (
     <div className="space-y-5">
       {/* Claim amount display */}
-      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
+      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1 h-[88px] justify-center">
         <p className="text-secondary-text text-14">Claim amount</p>
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-24 font-bold text-primary-text">{token.amount}</span>
+            <span className="text-20 font-normal text-primary-text">{token.amount}</span>
             <p className="text-secondary-text text-14">
               ${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)}
             </p>
@@ -178,7 +268,7 @@ const SingleClaimDialog = () => {
         </div>
       </div>
 
-      <div className="h-px w-full bg-secondary-border" />
+      <div className="h-px w-full bg-secondary-border" style={{ marginTop: '20px' }} />
 
       {/* Confirmation section */}
       <div className="flex items-center justify-between">
@@ -189,7 +279,7 @@ const SingleClaimDialog = () => {
           <span className="text-primary-text text-16">Confirm claim</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-secondary-text text-14">...</span>
+          <Preloader type="linear" />
           <span className="text-secondary-text text-14">Proceed in your wallet</span>
         </div>
       </div>
@@ -199,11 +289,11 @@ const SingleClaimDialog = () => {
   const renderExecutingState = () => (
     <div className="space-y-5">
       {/* Claim amount display */}
-      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
+      <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1 h-[88px] justify-center">
         <p className="text-secondary-text text-14">Claim amount</p>
         <div className="flex justify-between items-center">
           <div className="flex flex-col">
-            <span className="text-24 font-bold text-primary-text">{token.amount}</span>
+            <span className="text-20 font-normal text-primary-text">{token.amount}</span>
             <p className="text-secondary-text text-14">
               ${parseFloat(token.amountUSD.replace(/[$,]/g, "")).toFixed(3)}
             </p>
@@ -228,7 +318,7 @@ const SingleClaimDialog = () => {
         </div>
       </div>
 
-      <div className="h-px w-full bg-secondary-border" />
+      <div className="h-px w-full bg-secondary-border" style={{ marginTop: '20px' }} />
 
       {/* Executing claim section */}
       <div className="flex items-center justify-between">
@@ -239,9 +329,12 @@ const SingleClaimDialog = () => {
           <span className="text-primary-text text-16">Executing claim</span>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-3 py-1.5 bg-green text-primary-bg text-12 rounded-2 hover:bg-green/90 transition-colors font-medium">
+          <Button
+             size={ButtonSize.EXTRA_SMALL}
+             colorScheme={ButtonColor.LIGHT_GREEN}
+          >
             Speed up
-          </button>
+          </Button>
           <IconButton iconName="forward" />
           <Preloader size={20} />
         </div>
@@ -267,7 +360,7 @@ const SingleClaimDialog = () => {
         </p>
       </div>
 
-      <div className="h-px w-full bg-secondary-border mb-2" />
+      <div className="h-px w-full bg-secondary-border mb-2" style={{ marginTop: '20px' }} />
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
@@ -298,7 +391,7 @@ const SingleClaimDialog = () => {
         </p>
       </div>
 
-      <div className="h-px w-full bg-secondary-border mb-5" />
+      <div className="h-px w-full bg-secondary-border mb-5" style={{ marginTop: '20px' }} />
 
       {/* Error details */}
       <div className="flex items-center justify-between mb-4">
@@ -356,12 +449,28 @@ const SingleClaimDialog = () => {
   };
 
   return (
-    <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog}>
-      <div className="bg-primary-bg rounded-5 w-full sm:w-[600px]">
-        <DialogHeader onClose={closeDialog} title="Claim" />
-        <div className="card-spacing">{renderContent()}</div>
-      </div>
-    </DrawerDialog>
+    <>
+      <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog}>
+        <div className="bg-primary-bg rounded-5 w-full sm:w-[600px]">
+          <DialogHeader onClose={closeDialog} title="Claim" />
+          <div className="card-spacing">{renderContent()}</div>
+        </div>
+      </DrawerDialog>
+      <NetworkFeeConfigDialog
+        isAdvanced={isAdvanced}
+        setIsAdvanced={setIsAdvanced}
+        estimatedGas={estimatedGas > BigInt(0) ? estimatedGas : gasToUse}
+        setEstimatedGas={setEstimatedGas}
+        gasPriceSettings={gasPriceSettings}
+        gasPriceOption={gasPriceOption}
+        customGasLimit={customGasLimit}
+        setCustomGasLimit={setCustomGasLimit}
+        setGasPriceOption={setGasPriceOption}
+        setGasPriceSettings={setGasPriceSettings}
+        isOpen={isGasSettingsOpen}
+        setIsOpen={setIsGasSettingsOpen}
+      />
+    </>
   );
 };
 
