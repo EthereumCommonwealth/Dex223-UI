@@ -5,5 +5,5 @@ export const metadata: Metadata = {
   title: "Revenue",
 };
 export default function Layout({ children }: PropsWithChildren) {
-  return <>{children}</>;
+  return <div className="overflow-x-hidden w-full">{children}</div>;
 }

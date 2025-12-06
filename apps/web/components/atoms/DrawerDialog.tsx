@@ -8,9 +8,10 @@ import Drawer from "@/components/atoms/Drawer";
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  maxMobileWidth?: string;
 }
-export default function DrawerDialog({ isOpen, children, setIsOpen }: PropsWithChildren<Props>) {
-  const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
+export default function DrawerDialog({ isOpen, children, setIsOpen, maxMobileWidth = '640px' }: PropsWithChildren<Props>) {
+  const isMobile = useMediaQuery({ query: `(max-width: ${maxMobileWidth})` });
 
   const handlers = useSwipeable({
     onSwipedDown: (eventData) => {

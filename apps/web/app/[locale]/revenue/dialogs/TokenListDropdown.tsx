@@ -15,12 +15,13 @@ import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import Image from "next/image";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useMediaQuery } from "react-responsive";
 
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import { SearchInput } from "@/components/atoms/Input";
 import Svg from "@/components/atoms/Svg";
-import Button, { ButtonColor } from "@/components/buttons/Button";
+import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { db, TokenListId } from "@/db/db";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useTokenLists } from "@/hooks/useTokenLists";
@@ -59,10 +60,12 @@ export default function TokenListDropdown({
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [listToDelete, setListToDelete] = useState<TokenListOption | null>(null);
+  const [initialSelection, setInitialSelection] = useState<Set<TokenListId>>(new Set());
   const ref = useRef<HTMLButtonElement>(null);
   const { isOpen, setIsOpen, content, setContent } = useAddNewListDialogStore();
   const { setActiveTab } = useAddNewListDialogStore();
 
+  const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const tokenLists = useTokenLists();
   const chainId = useCurrentChainId();
 
@@ -109,8 +112,8 @@ export default function TokenListDropdown({
     onOpenChange: setIsDropdownOpen,
   });
 
-  const click = useClick(context);
-  const dismiss = useDismiss(context);
+  const click = useClick(context, { enabled: !isMobile });
+  const dismiss = useDismiss(context, { enabled: !isMobile });
   const role = useRole(context);
 
   const { getReferenceProps, getFloatingProps } = useInteractions([click, dismiss, role]);
@@ -169,11 +172,126 @@ export default function TokenListDropdown({
   const visibleTags = selectedOptionsList.slice(0, maxVisibleTags);
   const remainingCount = selectedOptionsList.length - maxVisibleTags;
 
+  // Render the dropdown content
+  const renderDropdownContent = () => (
+    <>
+      <div className="px-5 py-5">
+        <SearchInput
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+          placeholder={searchPlaceholder}
+          className="h-12 text-12 bg-secondary-bg"
+          noCloseIcon={searchValue === ""}
+        />
+      </div>
+
+      <div
+        onClick={handleSelectAll}
+        className="cursor-pointer h-12 bg-primary-bg flex justify-between items-center px-5 border-b border-secondary-border hover:bg-tertiary-bg transition-colors duration-200"
+      >
+        <span className="text-primary-text text-16">Select all</span>
+        <Checkbox
+          checked={allFilteredSelected}
+          handleChange={handleSelectAll}
+          id="select-all-token-lists"
+          className="pointer-events-none"
+        />
+      </div>
+
+      <div className="max-h-60 overflow-y-auto">
+        {filteredOptions.length === 0 ? (
+          <div className="flex items-center justify-center py-12 px-5 relative overflow-hidden min-h-[284px]">
+            <p className="text-16 text-secondary-text text-center z-10">List not found</p>
+            <div className="absolute inset-0 flex items-center justify-end pr-8 pointer-events-none opacity-[0.8]">
+              <Image
+                src="/images/empty/empty-search-list.svg"
+                alt="No results"
+                width={200}
+                height={200}
+                className="object-contain"
+              />
+            </div>
+          </div>
+        ) : (
+          filteredOptions.map((option) => {
+            const isSelected = selectedOptions.has(option.id);
+            return (
+              <div
+                key={option.id}
+                onClick={() => handleOptionSelect(option.id)}
+                className="cursor-pointer h-12 bg-primary-bg flex items-center gap-3 px-5 group relative hover:bg-tertiary-bg transition-colors duration-200"
+              >
+                {getOptionIcon(option)}
+                <span className="text-primary-text flex-1 truncate text-16">
+                  {option.name}
+                </span>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log(e);
+                    }}
+                    className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-light/20 rounded-2 flex items-center justify-center"
+                    title="Delete"
+                  >
+                    <Svg
+                      iconName="delete"
+                      size={16}
+                      className="text-tertiary-text hover:text-tertiary-text-hover"
+                    />
+                  </button>
+                  <Checkbox
+                    checked={isSelected}
+                    handleChange={() => handleOptionSelect(option.id)}
+                    id={`token-list-${option.id}`}
+                    className="pointer-events-none"
+                  />
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      <div className="border-t border-secondary-border px-4 py-3 bg-primary-bg mt-4">
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          <Button
+            colorScheme={ButtonColor.LIGHT_GREEN}
+            size={ButtonSize.MEDIUM}
+            fullWidth
+            onClick={() => setIsDropdownOpen(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            colorScheme={ButtonColor.GREEN}
+            size={ButtonSize.MEDIUM}
+            fullWidth
+            onClick={() => setIsDropdownOpen(false)}
+          >
+            Apply
+          </Button>
+        </div>
+      </div>
+      <button
+        onClick={() => {
+          setIsDropdownOpen(false);
+          setIsOpen(true);
+          setContent("import-list");
+        }}
+        className="w-full bg-tertiary-bg p-2 flex items-center justify-center gap-2 text-primary-text text-16 hover:text-green transition-colors duration-200"
+      >
+        <span className="text-16">Add new list</span>
+        <Svg iconName="import-list" size={24} />
+      </button>
+    </>
+  );
+
   return (
     <>
       <div className={clsx("relative", className)}>
         <div
-          {...getReferenceProps()}
+          {...(!isMobile ? getReferenceProps() : {})}
           ref={refs.setReference}
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className={clsx(
@@ -211,116 +329,37 @@ export default function TokenListDropdown({
           />
         </div>
 
-        {isDropdownOpen && (
+        {/* Desktop dropdown */}
+        {!isMobile && isDropdownOpen && (
           <FloatingFocusManager context={context} modal={false} initialFocus={-1}>
             <div
               ref={refs.setFloating}
               style={floatingStyles}
-              className="absolute z-[101] bg-primary-bg overflow-hidden rounded-3 min-w-[450px] shadow-lg border border-secondary-border"
+              className="absolute z-[101] bg-primary-bg overflow-hidden rounded-3 min-w-[400px] shadow-lg border border-secondary-border"
               {...getFloatingProps()}
             >
-              <div className="px-5 py-5">
-                <SearchInput
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  placeholder={searchPlaceholder}
-                  className="h-12 text-12 bg-secondary-bg"
-                  noCloseIcon={searchValue === ""}
-                />
-              </div>
-
-              <div
-                onClick={handleSelectAll}
-                className="cursor-pointer h-12 bg-primary-bg flex justify-between items-center px-5 border-b border-secondary-border hover:bg-tertiary-bg transition-colors duration-200"
-              >
-                <span className="text-primary-text text-16">Select all</span>
-                <Checkbox
-                  checked={allFilteredSelected}
-                  handleChange={handleSelectAll}
-                  id="select-all-token-lists"
-                  className="pointer-events-none"
-                />
-              </div>
-
-              <div className="max-h-60 overflow-y-auto">
-                {filteredOptions.length === 0 ? (
-                  <div className="flex items-center justify-center py-12 px-5 relative overflow-hidden min-h-[284px]">
-                    <p className="text-16 text-secondary-text text-center z-10">List not found</p>
-                    <div className="absolute inset-0 flex items-center justify-end pr-8 pointer-events-none opacity-[0.8]">
-                      <Image
-                        src="/images/empty/empty-search-list.svg"
-                        alt="No results"
-                        width={200}
-                        height={200}
-                        className="object-contain"
-                      />
-                    </div>
-                  </div>
-                ) : (
-                  filteredOptions.map((option) => {
-                    const isSelected = selectedOptions.has(option.id);
-                    return (
-                      <div
-                        key={option.id}
-                        onClick={() => handleOptionSelect(option.id)}
-                        className="cursor-pointer h-12 bg-primary-bg flex items-center gap-3 px-5 group relative hover:bg-tertiary-bg transition-colors duration-200"
-                      >
-                        {getOptionIcon(option)}
-                        <span className="text-primary-text flex-1 truncate text-16">
-                          {option.name}
-                        </span>
-                        <div className="flex items-center gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                console.log(e);
-                              }}
-                              className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-light/20 rounded-2 flex items-center justify-center"
-                              title="Delete"
-                            >
-                              <Svg
-                                iconName="delete"
-                                size={16}
-                                className="text-tertiary-text hover:text-tertiary-text-hover"
-                              />
-                            </button>
-                          <Checkbox
-                            checked={isSelected}
-                            handleChange={() => handleOptionSelect(option.id)}
-                            id={`token-list-${option.id}`}
-                            className="pointer-events-none"
-                          />
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-
-              <div className="border-t border-secondary-border px-4 py-3 bg-tertiary-bg">
-                <button
-                  onClick={() => {
-                    setIsDropdownOpen(false);
-                    setIsOpen(true);
-                    setContent("import-list");
-                  }}
-                  className="w-full flex items-center justify-center gap-2 text-primary-text text-16 hover:text-green transition-colors duration-200"
-                >
-                  <span className="text-16">Add new list</span>
-                  <Svg iconName="import-list" size={24} />
-                </button>
-              </div>
+              {renderDropdownContent()}
             </div>
           </FloatingFocusManager>
         )}
       </div>
 
-      <DrawerDialog isOpen={content === "import-list"} setIsOpen={handleClose}>
+      {/* Mobile modal */}
+      <DrawerDialog isOpen={isMobile && isDropdownOpen} setIsOpen={setIsDropdownOpen} maxMobileWidth="767px">
+        <div className="w-full md:w-[600px] max-md:rounded-t-5 max-md:rounded-b-none">
+          <DialogHeader onClose={() => setIsDropdownOpen(false)} title="Token lists" />
+          <div className="pb-4">
+            {renderDropdownContent()}
+          </div>
+        </div>
+      </DrawerDialog>
+
+      <DrawerDialog isOpen={content === "import-list"} setIsOpen={handleClose} maxMobileWidth="767px">
         <AddNewList setContent={setContent} handleClose={handleClose} />
       </DrawerDialog>
 
-      <DrawerDialog isOpen={deleteDialogOpen} setIsOpen={setDeleteDialogOpen}>
-        <div className="w-full md:w-[600px]">
+      <DrawerDialog isOpen={deleteDialogOpen} setIsOpen={setDeleteDialogOpen} maxMobileWidth="767px">
+        <div className="w-full sm:w-[600px] max-md:rounded-t-5 max-md:rounded-b-none">
           <DialogHeader
             onClose={() => {
               setDeleteDialogOpen(false);

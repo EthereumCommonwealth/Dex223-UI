@@ -170,9 +170,9 @@ const MultipleClaimDialog = () => {
       </div>
 
       <div className="relative">
-        <SearchInput 
-          value={searchQuery} 
-          onChange={(e) => setSearchQuery(e.target.value)} 
+        <SearchInput
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search name or paste address"
           className="h-12 text-14 border-secondary-border rounded-3"
         />
@@ -181,32 +181,28 @@ const MultipleClaimDialog = () => {
       {filteredTokens.length > 0 ? (
         <div className="bg-tertiary-bg rounded-3 p-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-secondary-text text-14 font-bold">Tokens to claim</span>
-            <div className="flex items-center gap-2 mr-3">
-              <span className="text-secondary-text text-12">Standard for all tokens</span>
-
-              <div className="flex items-center gap-1">
-                <div
-                  className={clsxMerge(
-                    "mx-auto z-10 text-10 w-[calc(100%-24px)] h-[32px] rounded-20 border p-1 flex gap-1 items-center md:w-auto",
-                    ThemeColors.GREEN ? "border-green" : "border-purple",
-                    false && "border-secondary-border",
-                  )}
-                >
-                  {[Standard.ERC20, Standard.ERC223].map((standard) => {
-                    return (
-                      <StandardButton
-                        colorScheme={ThemeColors.GREEN}
-                        key={standard}
-                        handleStandardSelect={() => handleStandardChange(standard)}
-                        standard={standard}
-                        selectedStandard={standard}
-                        disabled={false}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
+            <span className="text-secondary-text text-14">Standard for all tokens</span>
+            <div
+              className={clsxMerge(
+                "z-10 text-10 h-[32px] rounded-20 border p-1 flex gap-1 items-center",
+                ThemeColors.GREEN ? "border-green" : "border-purple",
+                false && "border-secondary-border",
+              )}
+            >
+              {[Standard.ERC20, Standard.ERC223].map((standard) => {
+                return (
+                  <div key={standard} className="[&>button]:!w-auto">
+                    <StandardButton
+                      colorScheme={ThemeColors.GREEN}
+                      key={standard}
+                      handleStandardSelect={() => handleStandardChange(standard)}
+                      standard={standard}
+                      selectedStandard={globalStandard}
+                      disabled={false}
+                    />
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -217,54 +213,111 @@ const MultipleClaimDialog = () => {
               return (
                 <div
                   key={token.id}
-                  className="flex items-center gap-3 p-3 bg-quaternary-bg rounded-2 hover:bg-primary-bg/5 transition-colors"
+                  className="p-3 bg-quaternary-bg rounded-2 hover:bg-primary-bg/5 transition-colors"
                 >
-                  {/* Token icon and name */}
-                  <div className="flex items-center gap-2 min-w-0 flex-shrink-0" style={{ width: '160px' }}>
-                    <Image
-                      src={token.logoURI || "/images/tokens/placeholder.svg"}
-                      width={24}
-                      height={24}
-                      alt={token.symbol}
-                      className="w-6 h-6 flex-shrink-0"
-                    />
-                    <span className="text-primary-text text-14 font-medium truncate">
-                      {token.name}
-                    </span>
+                  {/* Desktop layout */}
+                  <div className="hidden md:flex items-center gap-3">
+                    {/* Token icon and name */}
+                    <div className="flex items-center gap-2 min-w-0 flex-shrink-0" style={{ width: '160px' }}>
+                      <Image
+                        src={token.logoURI || "/images/tokens/placeholder.svg"}
+                        width={24}
+                        height={24}
+                        alt={token.symbol}
+                        className="w-6 h-6 flex-shrink-0"
+                      />
+                      <span className="text-primary-text text-14 font-medium truncate">
+                        {token.name}
+                      </span>
+                    </div>
+
+                    {/* Token amount */}
+                    <div className="flex-1 min-w-0">
+                      <span className="text-primary-text text-14">
+                        {token.amount} {token.symbol}
+                      </span>
+                    </div>
+
+                    {/* USD value */}
+                    <div className="flex-shrink-0" style={{ width: '120px' }}>
+                      <span className="text-primary-text text-14 font-medium">{token.amountUSD}</span>
+                    </div>
+
+                    {/* Standard toggle */}
+                    <div className="flex-shrink-0">
+                      <div
+                        className={clsxMerge(
+                          "z-10 text-10 h-[32px] rounded-20 border p-1 flex gap-1 items-center",
+                          ThemeColors.GREEN ? "border-green" : "border-purple",
+                        )}
+                      >
+                        {[Standard.ERC20, Standard.ERC223].map((standard) => {
+                          return (
+                            <StandardButton
+                              colorScheme={ThemeColors.GREEN}
+                              key={standard}
+                              handleStandardSelect={() => handleTokenStandardChange(token.id, standard)}
+                              standard={standard}
+                              selectedStandard={tokenStandard as Standard}
+                              disabled={false}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Token amount */}
-                  <div className="flex-1 min-w-0">
-                    <span className="text-primary-text text-14">
-                      {token.amount} {token.symbol}
-                    </span>
-                  </div>
+                  {/* Mobile layout */}
+                  <div className="md:hidden">
+                    {/* Token info row */}
+                    <div className="flex items-start justify-between mb-3">
+                      {/* Left: Token icon, name, and amount */}
+                      <div className="flex items-start gap-2 flex-1 min-w-0 pr-2">
+                        <Image
+                          src={token.logoURI || "/images/tokens/placeholder.svg"}
+                          width={24}
+                          height={24}
+                          alt={token.symbol}
+                          className="w-6 h-6 flex-shrink-0"
+                        />
+                        <div className="flex flex-col min-w-0 flex-1">
+                          <span className="text-primary-text text-14 font-medium truncate mb-0.5">
+                            {token.name}
+                          </span>
+                          <span className="text-primary-text text-14">
+                            {token.amount} {token.symbol}
+                          </span>
+                        </div>
+                      </div>
 
-                  {/* USD value */}
-                  <div className="flex-shrink-0" style={{ width: '120px' }}>
-                    <span className="text-primary-text text-14 font-medium">{token.amountUSD}</span>
-                  </div>
+                      {/* Right: USD value */}
+                      <div className="flex-shrink-0">
+                        <span className="text-primary-text text-14 font-medium">{token.amountUSD}</span>
+                      </div>
+                    </div>
 
-                  {/* Standard toggle */}
-                  <div className="flex-shrink-0">
-                    <div
-                      className={clsxMerge(
-                        "z-10 text-10 h-[32px] rounded-20 border p-1 flex gap-1 items-center",
-                        ThemeColors.GREEN ? "border-green" : "border-purple",
-                      )}
-                    >
-                      {[Standard.ERC20, Standard.ERC223].map((standard) => {
-                        return (
-                          <StandardButton
-                            colorScheme={ThemeColors.GREEN}
-                            key={standard}
-                            handleStandardSelect={() => handleTokenStandardChange(token.id, standard)}
-                            standard={standard}
-                            selectedStandard={tokenStandard as Standard}
-                            disabled={false}
-                          />
-                        );
-                      })}
+                    {/* Standard toggle - centered */}
+                    <div className="flex justify-center mt-3">
+                      <div
+                        className={clsxMerge(
+                          "z-10 text-10 h-[32px] rounded-20 border p-1 flex gap-1 items-center w-fit",
+                          ThemeColors.GREEN ? "border-green" : "border-purple",
+                        )}
+                      >
+                        {[Standard.ERC20, Standard.ERC223].map((standard) => {
+                          return (
+                            <div key={standard} className="[&>button]:!w-auto">
+                              <StandardButton
+                                colorScheme={ThemeColors.GREEN}
+                                handleStandardSelect={() => handleTokenStandardChange(token.id, standard)}
+                                standard={standard}
+                                selectedStandard={tokenStandard as Standard}
+                                disabled={false}
+                              />
+                            </div>
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -297,38 +350,32 @@ const MultipleClaimDialog = () => {
 
   const renderConfirmingState = () => (
     <div className="space-y-5">
-      <div className="bg-tertiary-bg rounded-3 p-5 h-[88px] flex flex-col justify-center">
+      <div className="bg-tertiary-bg rounded-3 p-4 md:p-5 min-h-[88px] flex flex-col justify-center">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
-        <div className="flex items-center gap-2">
-            <div className="text-20 font-normal text-primary-text mb-1">{tokenCount} tokens</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-20 font-normal text-primary-text">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
-            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
-         
+          <div className="text-14 md:text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
         </div>
       </div>
 
+      <div className="h-px w-full bg-secondary-border" />
+
       {/* Executing claim section */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="arrow-left-down" size={20} className="text-green" />
-            </div>
-            <span className="text-primary-text text-16">Executing claim</span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-quaternary-bg rounded-full flex items-center justify-center flex-shrink-0">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <div className="flex items-center gap-2">
-          <Button
-             size={ButtonSize.EXTRA_SMALL}
-             colorScheme={ButtonColor.LIGHT_GREEN}
-          >
-            Speed up
-          </Button>
-            <IconButton iconName="forward" />
-            <Preloader size={20} />
-          </div>
+          <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">Confirm claim</span>
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <Preloader type="linear" className="max-md:hidden" />
+          <span className="text-secondary-text text-12 md:text-14 whitespace-nowrap max-md:hidden">Proceed in your wallet</span>
+          <Preloader size={16} className="md:hidden" />
         </div>
       </div>
     </div>
@@ -337,39 +384,38 @@ const MultipleClaimDialog = () => {
   const renderExecutingState = () => (
     <div className="space-y-5">
       {/* Claim amount display */}
-      <div className="bg-tertiary-bg rounded-3 p-5 h-[88px] flex flex-col justify-center">
+      <div className="bg-tertiary-bg rounded-3 p-4 md:p-5 min-h-[88px] flex flex-col justify-center">
         <div className="text-secondary-text text-14 mb-1">Claim amount</div>
-        <div className="flex items-center gap-2">
-            <div className="text-20 font-normal text-primary-text mb-1">{tokenCount} tokens</div>
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="text-20 font-normal text-primary-text">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} size="small" />
             <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} size="small" />
           </div>
-            <div className="text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
+          <div className="text-14 md:text-16 text-secondary-text">(${data.totalReward.toFixed(2)})</div>
         </div>
       </div>
 
+      <div className="h-px w-full bg-secondary-border" />
+
       {/* Executing claim section */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-quaternary-bg rounded-full flex items-center justify-center">
-              <Svg iconName="arrow-left-down" size={20} className="text-secondary-text" />
-            </div>
-            <span className="text-primary-text text-16">Executing claim</span>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-quaternary-bg rounded-full flex items-center justify-center flex-shrink-0">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <div className="flex items-center gap-2">
+          <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">Executing claim</span>
+        </div>
+        <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
           <Button
-             size={ButtonSize.EXTRA_SMALL}
-             colorScheme={ButtonColor.LIGHT_GREEN}
+            size={ButtonSize.EXTRA_SMALL}
+            colorScheme={ButtonColor.LIGHT_GREEN}
+            className="max-md:text-10 max-md:px-2 max-md:py-1"
           >
             Speed up
           </Button>
-            <button className="text-secondary-text hover:text-primary-text transition-colors">
-              <Svg iconName="forward" size={20} />
-            </button>
-            <div className="w-6 h-6 border-2 border-green border-t-transparent rounded-full animate-spin" />
-          </div>
+          <IconButton iconName="forward" />
+          <Preloader size={20} />
         </div>
       </div>
     </div>
@@ -378,34 +424,34 @@ const MultipleClaimDialog = () => {
   const renderSuccessState = () => (
     <div className="space-y-5">
       {/* Success confirmation */}
-      <div className="flex flex-col items-center py-3">
-        <div className="mx-auto w-[80px] h-[80px] flex items-center justify-center relative mb-5">
-          <div className="w-[54px] h-[54px] rounded-full border-[7px] blur-[8px] opacity-80 border-green" />
+      <div className="flex flex-col items-center py-3 md:py-4">
+        <div className="mx-auto w-[64px] h-[64px] md:w-[80px] md:h-[80px] flex items-center justify-center relative mb-4 md:mb-5">
+          <div className="w-[40px] h-[40px] md:w-[54px] md:h-[54px] rounded-full border-[5px] md:border-[7px] blur-[6px] md:blur-[8px] opacity-80 border-green" />
           <Svg
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-green"
             iconName="success"
-            size={65}
+            size={52}
           />
         </div>
-        <h3 className="text-20 font-bold text-primary-text mb-2">Successfully claimed</h3>
-        <p className="text-16 text-primary-text mb-6">
+        <h3 className="text-16 md:text-20 font-bold text-primary-text mb-2">Successfully claimed</h3>
+        <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {tokenCount} tokens (${data.totalReward.toFixed(2)})
         </p>
       </div>
 
-      <div className="h-px w-full bg-secondary-border mb-2" style={{ marginTop: '20px' }} />
+      <div className="h-px w-full bg-secondary-border" />
       {/* Transaction details */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-green-bg rounded-full flex items-center justify-center">
-            <Svg iconName="arrow-left-down" size={24} className="text-green" />
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-green-bg rounded-full flex items-center justify-center flex-shrink-0">
+            <Svg iconName="arrow-left-down" size={20} className="text-green" />
           </div>
-          <span className="text-primary-text text-16">Successfully claimed</span>
+          <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">Successfully claimed</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-shrink-0">
           <IconButton iconName="forward" />
-          <div className="w-5 h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
-            <Svg className="text-primary-bg" iconName="check" size={14} />
+          <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-green flex items-center justify-center flex-shrink-0">
+            <Svg className="text-primary-bg" iconName="check" size={12} />
           </div>
         </div>
       </div>
@@ -413,41 +459,44 @@ const MultipleClaimDialog = () => {
   );
 
   const renderErrorState = () => (
-    <div className="space-y-5">
+    <div className="space-y-4 md:space-y-5">
       {/* Error display */}
-      <div className="text-center py-8">
-        <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Svg iconName="warning" size={32} className="text-white" />
+      <div className="flex flex-col items-center py-3 md:py-4">
+        <div className="flex items-center justify-center mx-auto mb-4 md:mb-5">
+          <Svg className="text-red-light" iconName="warning" size={52} />
         </div>
-        <h3 className="text-20 font-bold text-red-500 mb-2">Claim failed</h3>
-        <p className="text-16 text-secondary-text">
+        <h3 className="text-16 md:text-20 font-bold text-red-light mb-2">Claim failed</h3>
+        <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {tokenCount} tokens (${data.totalReward.toFixed(2)})
         </p>
       </div>
 
-      {/* Error details */}
-      <div className="border-t border-secondary-border pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center">
-              <Svg iconName="warning" size={24} className="text-white" />
-            </div>
-            <span className="text-primary-text text-16">Claim failed</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="text-secondary-text hover:text-primary-text transition-colors">
-              <Svg iconName="forward" size={20} />
-            </button>
-            <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center">
-              <Svg iconName="warning" size={16} className="text-white" />
-            </div>
-          </div>
-        </div>
+      <div className="h-px w-full bg-secondary-border" />
 
-        {/* Error message */}
-        <div className="bg-red-500/10 border border-red-500/20 rounded-3 p-4">
-          <p className="text-14 text-red-500">{data?.errorMessage}</p>
+      {/* Error details */}
+      <div className="flex items-center justify-between mb-4 gap-2">
+        <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+          <div className="w-8 h-8 md:w-10 md:h-10 bg-red-light/20 rounded-full flex items-center justify-center flex-shrink-0">
+            <Svg iconName="arrow-left-down" size={20} className="text-red-light" />
+          </div>
+          <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">Claim failed</span>
         </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <IconButton iconName="forward" />
+          <Svg className="text-red-light" iconName="warning" size={18} />
+        </div>
+      </div>
+
+      {/* Error message */}
+      <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4">
+        <p className="text-12 md:text-14 text-secondary-text break-words">
+          {data?.errorMessage || "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+          {!data?.errorMessage && (
+            <a href="#" className="text-secondary-text underline break-words">
+              common errors
+            </a>
+          )}
+        </p>
       </div>
 
       {/* Try again button */}
@@ -481,13 +530,14 @@ const MultipleClaimDialog = () => {
 
   return (
     <>
-      <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog}>
-        <DialogHeader onClose={closeDialog} title="Claim" />
-
+      <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog} maxMobileWidth="767px">
         <div className={clsxMerge(
-          "w-full p-5 md:p-6",
-          state === "initial" ? "md:w-[800px]" : "md:w-[600px]"
-        )}>{renderContent()}</div>
+          "bg-primary-bg rounded-5 w-full max-md:rounded-t-5 max-md:rounded-b-none",
+          state === "initial" ? "md:max-w-[800px]" : "md:w-[600px]"
+        )}>
+          <DialogHeader onClose={closeDialog} title="Claim" />
+          <div className="card-spacing max-md:px-4 max-md:pb-6">{renderContent()}</div>
+        </div>
       </DrawerDialog>
       <NetworkFeeConfigDialog
         isAdvanced={isAdvanced}

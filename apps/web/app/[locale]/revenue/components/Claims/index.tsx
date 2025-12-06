@@ -38,8 +38,13 @@ export const Claims = ({
   setSelectedTokens: (tokenId: number) => void;
   isLoading?: boolean;
 }) => {
-  const { openDialog, state: claimState, data: claimData, isOpen: isClaimDialogOpen, resetClaim } =
-    useClaimDialogStore();
+  const {
+    openDialog,
+    state: claimState,
+    data: claimData,
+    isOpen: isClaimDialogOpen,
+    resetClaim,
+  } = useClaimDialogStore();
 
   // Check if a specific token is being claimed
   const isTokenBeingClaimed = (tokenId: number) => {
@@ -164,8 +169,8 @@ export const Claims = ({
       <SingleClaimDialog />
       <MultipleClaimDialog />
       {/* Desktop version */}
-      <div className="hidden lg:block rounded-3 overflow-hidden bg-table-gradient">
-        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5">
+      <div className="hidden xl:block rounded-3 overflow-x-auto bg-table-gradient">
+        <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5 min-w-[1000px]">
           <div className="text-tertiary-text text-13 pl-5 h-[60px] flex items-center">Token</div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center">
             <div className="flex flex-col gap-1">
@@ -237,7 +242,11 @@ export const Claims = ({
                       : "hover:bg-tertiary-bg cursor-pointer",
                   )}
                 >
-                  <div className={clsx("min-h-[72px] flex text-secondary-text items-center gap-3 pl-5")}>
+                  <div
+                    className={clsx(
+                      "min-h-[72px] flex text-secondary-text items-center gap-3 pl-5",
+                    )}
+                  >
                     <div className="flex items-center gap-3">
                       <Checkbox
                         checked={isSelected}
@@ -272,10 +281,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-left">{truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-left">
+                            {truncateMiddle(o.erc20Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
                         </a>
                         <IconButton
@@ -294,10 +305,12 @@ export const Claims = ({
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
-                          <span className="w-[80px] text-left">{truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
+                          <span className="w-[80px] text-left">
+                            {truncateMiddle(o.erc223Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
                           <ForwardIcon className="flex-shrink-0 w-6 h-6" size={24} />
                         </a>
                         <IconButton
@@ -308,11 +321,7 @@ export const Claims = ({
                       </div>
                     </div>
                   </div>
-                  <div
-                    className={clsx(
-                      "min-h-[72px] flex text-14 items-center justify-end pr-4",
-                    )}
-                  >
+                  <div className={clsx("min-h-[72px] flex text-14 items-center justify-end pr-4")}>
                     <div className="flex items-center">
                       <span className="text-primary-text">{o.amount}</span>
                       <span className="text-secondary-text ml-1">{o.symbol}</span>
@@ -405,67 +414,110 @@ export const Claims = ({
         )}
       </div>
 
-      {/* Mobile version */}
-      <div className="lg:hidden space-y-4">
+      {/* Mobile and Tablet version */}
+      <div className="xl:hidden grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 overflow-x-hidden w-full">
         {isLoading ? (
           <SkeletonTheme
             baseColor="#272727"
             highlightColor="#2E2F2F"
-            borderRadius="0.5rem"
+            borderRadius="0.75rem"
             enableAnimation={false}
           >
             {[...Array(6)].map((_, index) => (
-              <div key={index} className="bg-tertiary-bg rounded-3 p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <Skeleton circle width={16} height={16} />
-                    <Skeleton circle width={24} height={24} />
-                    <div className="flex flex-col gap-1">
-                      <Skeleton width={80} height={14} />
-                      <Skeleton width={40} height={12} />
+              <div key={index} className="bg-primary-bg rounded-3 p-4">
+                <div className="flex items-start gap-3 mb-3">
+                  <Skeleton circle width={16} height={16} className="mt-1" />
+                  <Skeleton circle width={32} height={32} />
+                  <div className="flex flex-col gap-1 flex-1">
+                    <div className="flex items-center justify-between">
+                      <Skeleton width={120} height={14} />
+                      <Skeleton width={60} height={14} />
                     </div>
+                    <Skeleton width={80} height={13} />
                   </div>
-                  <Skeleton width={60} height={32} />
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <Skeleton width={80} height={12} />
-                    <Skeleton width={100} height={12} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Skeleton width={80} height={12} />
-                    <Skeleton width={100} height={12} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Skeleton width={60} height={12} />
-                    <Skeleton width={80} height={14} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <Skeleton width={60} height={12} />
-                    <Skeleton width={80} height={14} />
-                  </div>
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <Skeleton width={100} height={12} />
+                  <Skeleton width={100} height={12} />
                 </div>
+
+                <Skeleton width="100%" height={40} />
               </div>
             ))}
           </SkeletonTheme>
         ) : (
           <>
+            {selectedCount > 0 && !isLoading && (
+              <div className="bg-tertiary-bg rounded-3 p-4 xl:col-span-2">
+                <div className="flex items-center mb-3 gap-2">
+                  <div className="flex items-center gap-1.5">
+                    <Svg iconName="gas-edit" size={16} className="text-tertiary-text" />
+                    <span className="text-secondary-text text-14">Gas price: $12.23</span>
+                  </div>
+                  <Button
+                    variant={ButtonVariantType.OUTLINED}
+                    colorScheme={ButtonColor.LIGHT_GREEN}
+                    size={ButtonSize.EXTRA_SMALL}
+                    className="!h-6 !px-2 !text-12"
+                  >
+                    Edit
+                  </Button>
+                </div>
+
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-1.5">
+                    <Svg iconName="subtract" size={16} className="text-tertiary-text" />
+                    <span className="text-secondary-text text-14">
+                      Total reward: ${totalReward.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button
+                    variant={ButtonVariantType.OUTLINED}
+                    colorScheme={ButtonColor.LIGHT_GREEN}
+                    size={ButtonSize.MEDIUM}
+                    onClick={handleUnselectAll}
+                    className="flex-1 h-10 !px-0"
+                  >
+                    Unselect all
+                  </Button>
+                  <Button
+                    variant={ButtonVariantType.CONTAINED}
+                    colorScheme={ButtonColor.GREEN}
+                    size={ButtonSize.MEDIUM}
+                    onClick={handleClaimSelected}
+                    disabled={hasClaimInProgress}
+                    className="flex-1 h-10 !px-0"
+                  >
+                    {hasClaimInProgress ? (
+                      <div className="flex items-center gap-2">
+                        <Preloader size={16} />
+                        Claiming...
+                      </div>
+                    ) : (
+                      `Claim ${selectedCount} token${selectedCount !== 1 ? "s" : ""}`
+                    )}
+                  </Button>
+                </div>
+              </div>
+            )}
             {tableData.map((o: any, index: number) => {
               const key = o?.token?.address0 ? o.token.address0 : `item-${index}`;
               const isSelected = selectedTokens.has(o.id);
 
               return (
-                <div
-                  key={key}
-                  className={clsx(
-                    "bg-tertiary-bg rounded-3 p-4 flex flex-col gap-2",
-                    isTokenBeingClaimed(o.id) && "opacity-60 pointer-events-none",
-                  )}
-                >
-                  <div className="flex justify-between">
-
-                    <div className="flex items-center gap-3">
+                  <div
+                    key={key}
+                    className={clsx(
+                      "bg-primary-bg rounded-3 p-4 flex flex-col overflow-hidden w-full",
+                      isTokenBeingClaimed(o.id) && "opacity-60 pointer-events-none",
+                    )}
+                  >
+                    {/* Header with token info */}
+                    <div className="flex items-center gap-3 mb-2 overflow-hidden w-full">
                       <Checkbox
                         checked={isSelected}
                         handleChange={() => handleTokenSelect(o.id)}
@@ -474,26 +526,82 @@ export const Claims = ({
                       />
                       <Image
                         src={o.logoURI || "/images/tokens/placeholder.svg"}
-                        width={24}
-                        height={24}
+                        width={32}
+                        height={32}
                         alt=""
+                        className="flex-shrink-0"
                       />
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-primary-text text-14 font-medium">{o.name}</span>
-                        <span className="text-tertiary-text text-12">{o.symbol}</span>
+                      <div className="flex flex-col flex-1 min-w-0">
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-primary-text text-14 font-medium truncate">
+                            {o.name}
+                          </span>
+                          <span className="text-primary-text text-14 font-medium flex-shrink-0">
+                            {o.amountUSD}
+                          </span>
+                        </div>
+                        <div className="text-13 text-secondary-text">
+                          {o.amount} {o.symbol}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Addresses section */}
+                    <div className="flex flex-row justify-between gap-2 md:gap-3 mb-3 overflow-hidden w-full">
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                        <span className="text-tertiary-text text-13 flex-shrink-0">ERC-20</span>
+                        <a
+                          target="_blank"
+                          href={getExplorerLink(
+                            ExplorerLinkType.ADDRESS,
+                            o.fullErc20Address || o.erc20Address,
+                            o.chainId,
+                          )}
+                          className="flex items-center gap-0.5 text-green hocus:text-green-hover duration-200 min-w-0 overflow-hidden"
+                        >
+                          <span className="text-13 truncate">
+                            {truncateMiddle(o.fullErc20Address || o.erc20Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
+                          <Svg iconName="forward" size={16} className="flex-shrink-0" />
+                        </a>
+                      </div>
+
+                      <div className="flex items-center gap-1.5 min-w-0 flex-1 overflow-hidden">
+                        <span className="text-tertiary-text text-13 flex-shrink-0">ERC-223</span>
+                        <a
+                          target="_blank"
+                          href={getExplorerLink(
+                            ExplorerLinkType.ADDRESS,
+                            o.fullErc223Address || o.erc223Address,
+                            o.chainId,
+                          )}
+                          className="flex items-center gap-0.5 text-green hocus:text-green-hover duration-200 min-w-0 overflow-hidden"
+                        >
+                          <span className="text-13 truncate">
+                            {truncateMiddle(o.fullErc223Address || o.erc223Address || "", {
+                              charsFromStart: 3,
+                              charsFromEnd: 3,
+                            })}
+                          </span>
+                          <Svg iconName="forward" size={16} className="flex-shrink-0" />
+                        </a>
                       </div>
                     </div>
 
                     {isTokenBeingClaimed(o.id) ? (
-                      <div className="flex items-center gap-2 hidden sm:flex lg:hidden">
+                      <div className="flex items-center justify-center gap-2 h-10 bg-quaternary-bg rounded-2">
                         <Preloader size={16} />
-                        <span className="text-secondary-text text-12">Claiming...</span>
+                        <span className="text-secondary-text text-14">Claiming...</span>
                       </div>
                     ) : (
                       <Button
-                        className="w-[150px] h-8 md:h-auto disabled:bg-quaternary-bg hidden sm:block lg:hidden"
-                        colorScheme={ButtonColor.LIGHT_GREEN}
-                        size={ButtonSize.EXTRA_SMALL}
+                        className="w-full h-10"
+                        variant={ButtonVariantType.CONTAINED}
+                        colorScheme={ButtonColor.GREEN}
+                        size={ButtonSize.MEDIUM}
                         disabled={selectedTokens.size > 0 || hasClaimInProgress}
                         onClick={() => handleClaimSingle(o)}
                       >
@@ -501,146 +609,9 @@ export const Claims = ({
                       </Button>
                     )}
                   </div>
-                 
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <span className="text-tertiary-text text-12">ERC-20 Address</span>
-                      <div className="flex items-center gap-2">
-                        <a
-                          target="_blank"
-                          href={getExplorerLink(
-                            ExplorerLinkType.ADDRESS,
-                            o.erc20Address,
-                            o.chainId,
-                          )}
-                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
-                        >
-                          <span className="w-[80px] text-right">{truncateMiddle(o.erc20Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
-                          <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
-                        </a>
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          <IconButton
-                            variant={IconButtonVariant.COPY}
-                            text={o.fullErc20Address}
-                            buttonSize={IconButtonSize.EXTRA_SMALL}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-tertiary-text text-12">ERC-223 Address</span>
-                      <div className="flex items-center gap-2">
-                        <a
-                          target="_blank"
-                          href={getExplorerLink(
-                            ExplorerLinkType.ADDRESS,
-                            o.erc223Address,
-                            o.chainId,
-                          )}
-                          className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
-                        >
-                          <span className="w-[80px] text-right">{truncateMiddle(o.erc223Address || "", {
-                            charsFromStart: 3,
-                            charsFromEnd: 3,
-                          })}</span>
-                          <Svg iconName="forward" size={24} className="flex-shrink-0 w-6 h-6" />
-                        </a>
-                        <div className="w-6 h-6 flex items-center justify-center">
-                          <IconButton
-                            variant={IconButtonVariant.COPY}
-                            text={o.fullErc223Address}
-                            buttonSize={IconButtonSize.EXTRA_SMALL}
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-tertiary-text text-12">Amount</span>
-                      <span className="text-14">
-                        <span className="text-primary-text">{o.amount}</span>
-                        <span className="text-secondary-text ml-1">{o.symbol}</span>
-                      </span>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <span className="text-tertiary-text text-12">USD Value</span>
-                      <span className="text-secondary-text text-14">{o.amountUSD}</span>
-                    </div>
-                  </div>
-                  {isTokenBeingClaimed(o.id) ? (
-                    <div className="flex items-center gap-2 block sm:hidden lg:hidden">
-                      <Preloader size={16} />
-                      <span className="text-secondary-text text-12">Claiming...</span>
-                    </div>
-                  ) : (
-                    <Button
-                      className="w-full md:w-auto h-8 md:h-auto disabled:bg-quaternary-bg block sm:hidden lg:hidden"
-                      colorScheme={ButtonColor.LIGHT_GREEN}
-                      size={ButtonSize.EXTRA_SMALL}
-                      disabled={selectedTokens.size > 0 || hasClaimInProgress}
-                      onClick={() => handleClaimSingle(o)}
-                    >
-                      Claim
-                    </Button>
-                  )}
-                </div>
               );
             })}
           </>
-        )}
-
-        {selectedCount > 0 && !isLoading && (
-          <div className="bg-tertiary-bg rounded-3 p-4 space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-tertiary-text text-14">
-                Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
-              </span>
-              <button
-                onClick={handleUnselectAll}
-                className="text-tertiary-text hover:text-primary-text transition-colors underline text-14"
-              >
-                Unselect all
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-tertiary-text text-14">Gas price: $12.23</span>
-              <Button
-                variant={ButtonVariantType.CONTAINED}
-                colorScheme={ButtonColor.GREEN}
-                size={ButtonSize.SMALL}
-              >
-                Edit
-              </Button>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-tertiary-text text-14">
-                Total reward: ${totalReward.toFixed(2)}
-              </span>
-              <Button
-                variant={ButtonVariantType.CONTAINED}
-                colorScheme={ButtonColor.GREEN}
-                size={ButtonSize.SMALL}
-                onClick={handleClaimSelected}
-                disabled={hasClaimInProgress}
-              >
-                {hasClaimInProgress ? (
-                  <div className="flex items-center gap-2">
-                    <Preloader size={16} />
-                    Claiming...
-                  </div>
-                ) : (
-                  "Claim selected tokens"
-                )}
-              </Button>
-            </div>
-          </div>
         )}
       </div>
     </>

@@ -162,7 +162,7 @@ const WalletSearchInput = ({
           searchValue && !hasSearchRevenue ? { paddingRight: "100px" } : { paddingRight: "60px" }
         }
         className={clsx(
-          "bg-primary-bg w-full lg:w-[540px] h-[40px] lg:h-[48px]",
+          "bg-primary-bg w-full xl:w-[540px] h-[40px] md:h-[48px]",
           searchValue && "pr-[100px]",
         )}
       />
@@ -331,43 +331,19 @@ export function Revenue() {
   const hasFilteredResults = filteredClaimsData.length > 0;
 
   return (
-    <Container>
-      <div className="p-4 lg:p-10 flex flex-col max-w-[100dvw]">
-        <div className="flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 lg:gap-0 mb-5 lg:mb-0">
-          <h1 className="text-24 lg:text-40 font-medium">Revenue</h1>
-          <div className="flex flex-col lg:flex-row gap-y-2 lg:gap-x-3">
+    <Container className="overflow-x-hidden">
+      <div className="p-4 md:p-6 xl:p-10 flex flex-col overflow-x-hidden w-full">
+        <div className="flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 xl:mb-0 overflow-x-hidden">
+          <h1 className="text-24 md:text-32 xl:text-40 font-medium">Revenue</h1>
+          <div className="flex flex-col w-full xl:flex-row xl:w-auto gap-y-2 xl:gap-x-3 overflow-x-hidden">
             <WalletSearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
           </div>
         </div>
 
-        {/* Network Warning */}
-        {address && !isCorrectNetwork && (
-          <div className="mt-6 mb-5">
-            <Alert
-              type="warning"
-              text={
-                <div className="flex items-center justify-between gap-4 w-full">
-                  <span className="text-14">
-                    Please switch to Sepolia testnet to use the Revenue feature. Your balances are
-                    only available on Sepolia.
-                  </span>
-                  <Button
-                    size={ButtonSize.SMALL}
-                    colorScheme={ButtonColor.GREEN}
-                    onClick={() => switchChain?.({ chainId: requiredChainId })}
-                    className="whitespace-nowrap flex-shrink-0"
-                  >
-                    Switch Network
-                  </Button>
-                </div>
-              }
-            />
-          </div>
-        )}
-        <div className="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div className="mt-4 md:mt-6 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-4 md:gap-5 w-full overflow-x-hidden">
           {isLoadingUserData ? (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-3 w-full lg:col-span-7 overflow-hidden h-[120px]">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-7 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
@@ -378,15 +354,15 @@ export function Revenue() {
                     <Skeleton width={90} height={20} />
                   </div>
 
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 z-10">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 z-10 mt-2">
                     <div className="flex flex-col">
                       <Skeleton width={200} height={32} className="mb-1" />
                       <Skeleton width={50} height={14} />
                     </div>
 
-                    <div className="flex gap-2 justify-end mt-2 sm:mt-0">
-                      <Skeleton width={73} height={48} />
-                      <Skeleton width={90} height={48} />
+                    <div className="flex gap-2 justify-start md:justify-end mt-2 md:mt-0">
+                      <Skeleton width={73} height={40} className="md:h-[48px]" />
+                      <Skeleton width={90} height={40} className="md:h-[48px]" />
                     </div>
                   </div>
                 </SkeletonTheme>
@@ -395,11 +371,11 @@ export function Revenue() {
                   alt="Side Icon"
                   width={180}
                   height={120}
-                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none opacity-50 md:opacity-100"
                 />
               </div>
 
-              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-3 w-full lg:col-span-5 overflow-hidden h-[120px]">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-5 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <SkeletonTheme
                   baseColor="#1D1E1E"
                   highlightColor="#272727"
@@ -410,7 +386,7 @@ export function Revenue() {
                     <Skeleton width={100} height={20} />
                   </div>
 
-                  <div className="flex flex-col z-10">
+                  <div className="flex flex-col z-10 mt-2">
                     <Skeleton width={120} height={32} className="mb-1" />
                     <Skeleton width={110} height={16} />
                   </div>
@@ -420,45 +396,45 @@ export function Revenue() {
                   alt="Side Icon"
                   width={220}
                   height={140}
-                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none opacity-50 md:opacity-100"
                 />
               </div>
             </>
           ) : (
             <>
-              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-5 py-3 w-full lg:col-span-7 overflow-hidden h-[120px]">
+              <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-7 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center z-10">
-                  <span className="text-16 text-secondary-text">D223 staked</span>
+                  <span className="text-14 md:text-16 text-secondary-text">D223 staked</span>
                   <Tooltip
-                    iconSize={20}
+                    iconSize={16}
                     text="This shows your staked D223 tokens and the percentage of total supply you represent"
                   />
                 </div>
 
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 z-10">
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 z-10 mt-2">
                   <div className="flex flex-col">
-                    <span className="text-32 lg:text-32 font-medium">
+                    <span className="text-24 md:text-28 xl:text-32 font-medium">
                       {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
                     </span>
-                    <span className="text-12 lg:text-14 text-secondary-text">
+                    <span className="text-12 md:text-13 xl:text-14 text-secondary-text">
                       {stakingPercentage}%
                     </span>
                   </div>
 
-                  <div className="flex gap-2 justify-end mt-2 sm:mt-0">
+                  <div className="flex gap-2 justify-start md:justify-end mt-2 md:mt-0 w-full md:w-auto">
                     <button
                       type="button"
                       onClick={handleStakeClick}
                       className={clsx(
-                        "border px-4 h-[48px] rounded-3 text-14 font-medium transition-colors active:scale-95",
+                        "border px-3 md:px-4 h-[40px] md:h-[48px] flex-1 md:flex-none md:min-w-[100px] rounded-3 text-12 md:text-14 font-medium transition-colors active:scale-95",
                         "border-yellow-light bg-[#4C483C] text-white cursor-pointer",
                       )}
                     >
                       Stake
                     </button>
                     {unstakeCountdown ? (
-                      <div className="border border-yellow-light bg-primary-bg text-secondary-text px-4 h-[48px] rounded-3 text-14 font-medium flex items-center">
-                        {unstakeCountdown}
+                      <div className="border border-yellow-light bg-primary-bg text-secondary-text px-3 md:px-4 h-[40px] md:h-[48px] flex-1 md:flex-none md:min-w-[100px] rounded-3 text-12 md:text-14 font-medium flex items-center justify-center">
+                        <span className="text-10 md:text-12">{unstakeCountdown}</span>
                       </div>
                     ) : (
                       <button
@@ -466,7 +442,7 @@ export function Revenue() {
                         onClick={handleUnstakeClick}
                         disabled={!canUnstake || !hasStaked}
                         className={clsx(
-                          "border px-4 h-[48px] rounded-3 text-14 font-medium transition-colors active:scale-95",
+                          "border px-3 md:px-4 h-[40px] md:h-[48px] flex-1 md:flex-none md:min-w-[100px] rounded-3 text-12 md:text-14 font-medium transition-colors active:scale-95",
                           "border-yellow-light bg-[#4C483C] text-white",
                           !canUnstake || !hasStaked
                             ? "opacity-50 cursor-not-allowed"
@@ -484,21 +460,21 @@ export function Revenue() {
                   alt="Side Icon"
                   width={180}
                   height={120}
-                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none opacity-50 md:opacity-100"
                 />
               </div>
 
-              <div className="relative flex flex-col bg-primary-bg rounded-3 px-5 py-3 w-full lg:col-span-5 overflow-hidden h-[120px]">
+              <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-5 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center z-10">
-                  <span className="text-16 text-secondary-text">Total reward</span>
+                  <span className="text-14 md:text-16 text-secondary-text">Total reward</span>
                   <Tooltip
-                    iconSize={20}
+                    iconSize={16}
                     text="Total rewards earned from staking your D223 tokens"
                   />
                 </div>
 
-                <div className="flex flex-col z-10">
-                  <span className="text-24 lg:text-32 font-medium">
+                <div className="flex flex-col z-10 mt-2">
+                  <span className="text-20 md:text-24 xl:text-32 font-medium">
                     $
                     {mappedClaimsData
                       .reduce((sum, claim) => {
@@ -507,7 +483,7 @@ export function Revenue() {
                       }, 0)
                       .toFixed(2)}
                   </span>
-                  <span className="text-12 lg:text-16 text-secondary-text">
+                  <span className="text-12 md:text-14 xl:text-16 text-secondary-text mt-1">
                     {userStaked && typeof userStaked === "bigint" && userStaked > 0n
                       ? "Staking active"
                       : "Not staked yet"}
@@ -519,61 +495,61 @@ export function Revenue() {
                   alt="Side Icon"
                   width={220}
                   height={140}
-                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none"
+                  className="absolute right-0 bottom-0 w-auto h-full max-h-full object-contain object-right-bottom pointer-events-none select-none opacity-50 md:opacity-100"
                 />
               </div>
             </>
           )}
         </div>
 
-        <div className="mt-10 flex flex-col lg:flex-row w-full justify-between items-start lg:items-center gap-4 lg:gap-0">
-          <h1 className="text-18 lg:text-32 font-medium">Claim rewards</h1>
-          <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-            <div className="w-full">
+        <div className="mt-6 md:mt-8 xl:mt-10 flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 overflow-x-hidden">
+          <h1 className="text-20 md:text-24 xl:text-32 font-medium">Claim rewards</h1>
+          <div className="flex flex-col md:flex-row xl:flex-row gap-3 w-full xl:w-auto overflow-x-hidden">
+            <div className="w-full xl:w-auto min-w-0">
               <TokenListDropdown
                 selectedOptions={selectedTokenLists}
                 onSelectionChange={setSelectedTokenLists}
                 placeholder="Select token lists"
                 searchPlaceholder="Search list name"
-                className="w-full sm:w-auto"
+                className="w-full xl:w-auto"
               />
             </div>
-            <div className="w-full">
+            <div className="w-full xl:w-auto min-w-0">
               <SearchInput
                 value={claimRewardsSearchValue}
                 onChange={(e) => setClaimRewardsSearchValue(e.target.value)}
                 placeholder="Search name or paste address"
-                className="h-[48px] bg-primary-bg w-full lg:w-[540px]"
+                className="h-[40px] md:h-[48px] bg-primary-bg w-full xl:w-[540px]"
               />
             </div>
           </div>
         </div>
-        <div className="mt-6 min-h-[340px] w-full">
+        <div className="mt-4 md:mt-6 min-h-[340px] w-full overflow-x-hidden">
           {!address ? (
-            <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-8 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-gray-400 text-center z-10 mb-4">
+            <div className="flex flex-col items-center justify-center min-h-[280px] md:min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-6 md:p-8 relative overflow-hidden">
+              <p className="text-12 md:text-14 xl:text-16 text-gray-400 text-center z-10 mb-4">
                 Connect wallet to see your rewards
               </p>
-              <div className="absolute top-0 right-0 flex items-end justify-end p-4 pointer-events-none">
+              <div className="absolute top-0 right-0 flex items-end justify-end p-2 md:p-4 pointer-events-none">
                 <Image
                   src="/images/state.svg"
                   alt="Account"
                   width={300}
                   height={200}
-                  className="w-full h-auto object-contain object-right-bottom"
+                  className="w-[200px] md:w-full h-auto object-contain object-right-bottom opacity-50 md:opacity-100"
                 />
               </div>
             </div>
           ) : !hasFilteredResults ? (
-            <div className="flex flex-col items-center justify-center min-h-[340px] w-full bg-[#1A1A1A] rounded-3 relative overflow-hidden">
-              <p className="text-14 lg:text-16 text-secondary-text text-center z-10 mb-4">Reward not found</p>
+            <div className="flex flex-col items-center justify-center min-h-[280px] md:min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-6 md:p-8 relative overflow-hidden">
+              <p className="text-12 md:text-14 xl:text-16 text-secondary-text text-center z-10 mb-4">Reward not found</p>
               <div className="absolute top-0 right-0 flex items-center justify-center pointer-events-none">
                 <Image
                   src="/images/empty-state.svg"
                   alt="Search"
                   width={340}
                   height={340}
-                  className="w-[340px] h-[340px] object-contain opacity-30"
+                  className="w-[200px] md:w-[340px] h-[200px] md:h-[340px] object-contain opacity-20 md:opacity-30"
                 />
               </div>
             </div>
