@@ -1,5 +1,5 @@
 import "../assets/styles/globals.css";
-import "@repo/ui/styles.css";
+import "../../../packages/ui/src/styles.css";
 
 import clsx from "clsx";
 import { Golos_Text } from "next/font/google";
