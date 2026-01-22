@@ -7,13 +7,3 @@ interface Window {
     isMetaMask?: boolean;
   };
 }
-
-declare module "*.css" {
-  const content: string;
-  export default content;
-}
-
-declare module "@repo/ui/styles.css" {
-  const content: string;
-  export default content;
-}
