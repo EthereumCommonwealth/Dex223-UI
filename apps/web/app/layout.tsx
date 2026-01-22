@@ -1,5 +1,5 @@
 import "../assets/styles/globals.css";
-import "../../../packages/ui/src/styles.css";
+import "@repo/ui/styles.css";
 
 import clsx from "clsx";
 import { Golos_Text } from "next/font/google";
@@ -8,7 +8,7 @@ import type { PropsWithChildren } from "react";
 import { cookieToInitialState } from "wagmi";
 
 import Providers from "@/app/providers";
-import { config } from "@/config/wagmi/config";
+// import { config } from "@/config/wagmi/config";
 
 const golos_text = Golos_Text({
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -25,13 +25,14 @@ interface Props {
 
 
 export default async function RootLayout({ children, params }: PropsWithChildren<Props>) {
-  const initialState = cookieToInitialState(config, (await headers()).get("cookie"));
+  // const initialState = (await headers()).get("cookie");
   const locale = (await params).locale || 'en' 
+  const cookie = (await headers()).get("cookie");
 
   return (
     <html suppressHydrationWarning lang={locale}>
       <body className={clsx(golos_text.className)}>
-        <Providers initialState={initialState}>{children}</Providers>
+        <Providers cookie={cookie}>{children}</Providers>
       </body>
     </html>
   );
