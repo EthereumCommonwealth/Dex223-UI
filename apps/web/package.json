@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -H 0.0.0.0 -p 3000",
-    "build": "next build --webpack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint -c .eslintrc.json --ext .js,.jsx,.ts,.tsx ./ --fix",
     "storybook": "storybook dev -p 6006",
