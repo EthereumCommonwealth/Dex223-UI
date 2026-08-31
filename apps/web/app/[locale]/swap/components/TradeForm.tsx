@@ -36,6 +36,7 @@ import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/us
 import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/useTransactionSettingsDialogStore";
 import { networks } from "@/config/networks";
 import { formatFloat } from "@/functions/formatFloat";
+import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -325,7 +326,7 @@ export default function TradeForm() {
     (token: Currency) => {
       if (currentlyPicking === "tokenA") {
         setTokenA(token);
-        setTokenAStandard(Standard.ERC20);
+        setTokenAStandard(getDefaultStandard(token));
 
         if (token.isNative || tokenB?.isNative) {
           if (tokenB && tokenB.equals(token)) {
@@ -345,7 +346,7 @@ export default function TradeForm() {
 
       if (currentlyPicking === "tokenB") {
         setTokenB(token);
-        setTokenBStandard(Standard.ERC20);
+        setTokenBStandard(getDefaultStandard(token));
 
         if (token.isNative || tokenA?.isNative) {
           if (tokenA && tokenA.equals(token)) {
