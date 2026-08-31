@@ -3,6 +3,7 @@ import { useLocale } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
+import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { usePathname } from "@/i18n/routing";
 
 import { useTokens } from "./useTokenLists";
@@ -20,7 +21,8 @@ export const useSwapSearchParams = () => {
   const searchParams = useSearchParams();
   const tokens = useTokens();
 
-  const { tokenA, tokenB, setTokenA, setTokenB } = useSwapTokensStore();
+  const { tokenA, tokenB, setTokenA, setTokenB, setTokenAStandard, setTokenBStandard } =
+    useSwapTokensStore();
 
   const currentPath = useMemo(() => {
     return searchParams.toString() ? pathname + "?" + searchParams.toString() : pathname;
@@ -53,6 +55,7 @@ export const useSwapSearchParams = () => {
         );
         if (token) {
           setTokenA(token);
+          setTokenAStandard(getDefaultStandard(token));
         }
       }
       if (queryTokenB) {
@@ -61,12 +64,21 @@ export const useSwapSearchParams = () => {
         );
         if (token && queryTokenA !== queryTokenB) {
           setTokenB(token);
+          setTokenBStandard(getDefaultStandard(token));
         }
       }
 
       setIsInitialized(true);
     }
-  }, [searchParams, tokens, setTokenA, setTokenB, isInitialized]);
+  }, [
+    searchParams,
+    tokens,
+    setTokenA,
+    setTokenB,
+    setTokenAStandard,
+    setTokenBStandard,
+    isInitialized,
+  ]);
   useEffect(() => {
     if (isInitialized) {
       if (currentPath !== updatedPath) {

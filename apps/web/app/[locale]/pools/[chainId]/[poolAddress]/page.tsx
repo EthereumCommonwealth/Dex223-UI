@@ -4,9 +4,10 @@ import "react-loading-skeleton/dist/skeleton.css";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React from "react";
-import { use } from "react";
+import { use, useMemo } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useMediaQuery } from "react-responsive";
+import { Address } from "viem";
 
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
@@ -23,11 +24,14 @@ import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { computePoolTVL } from "@/functions/poolTvl";
 import { renderShortAddress } from "@/functions/renderAddress";
+import { PoolTokenBalance, usePoolOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { useTokens } from "@/hooks/useTokenLists";
 import { Link, useRouter } from "@/i18n/routing";
+import { DexChainId } from "@/sdk_bi/chains";
 
-import { usePoolData } from "../../hooks";
+import { usePoolData, usePoolPriceIndex } from "../../hooks";
 
 export default function ExplorePoolPage({
   params,
@@ -52,12 +56,48 @@ export default function ExplorePoolPage({
 
   const { pool } = data || { pool: undefined };
 
+  // Balances are read from the token contracts rather than taken from the subgraph's
+  // totalValueLockedToken0/1, which are running sums of event amounts and drift away
+  // from what the pool actually holds whenever an event and its transfers disagree.
+  const { balances, isLoading: balancesLoading } = usePoolOnChainBalances({
+    poolAddress: poolAddress as Address,
+    chainId: Number(chainId) as DexChainId,
+  });
+
+  const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(Number(chainId) as DexChainId);
+
+  const balancesPending = loading || balancesLoading;
+
   const tokenA = tokens.find((t) => t.wrapped.address0.toLowerCase() === pool?.token0?.id);
   const tokenB = tokens.find((t) => t.wrapped.address0.toLowerCase() === pool?.token1?.id);
 
-  const valuePercent =
-    (Number(pool?.totalValueLockedToken0) * 100) /
-    (Number(pool?.totalValueLockedToken0) + Number(pool?.totalValueLockedToken1)); // token0?.totalValueLocked
+  const valuePercent = balances
+    ? (balances.token0.formatted * 100) / (balances.token0.formatted + balances.token1.formatted)
+    : 0;
+
+  // On-chain balances valued at the pool's own spot price. The subgraph's own
+  // totalValueLockedUSD prices this pair off whichever pool it considers deepest, which is
+  // how a pool holding $2.40 comes to report $16.3K - see computePoolTVL. Chains with no
+  // stablecoin to anchor on have nothing better to offer, so they keep that figure.
+  const totalValueLockedUSD = useMemo(() => {
+    // Holding off until the prices land keeps the subgraph fallback from flashing the very
+    // number this replaces.
+    if (!pool || !balances || pricesLoading) {
+      return undefined;
+    }
+
+    return (
+      computePoolTVL({
+        pool,
+        balance0: balances.token0.formatted,
+        balance1: balances.token1.formatted,
+        priceIndex,
+      }) ?? Number(pool.totalValueLockedUSD)
+    );
+  }, [balances, pool, priceIndex, pricesLoading]);
+
+  const renderBalance = (balance: PoolTokenBalance | undefined) =>
+    balance ? formatNumberKilos(balance.formatted) : "\u2014";
 
   return (
     <Container>
@@ -130,7 +170,7 @@ export default function ExplorePoolPage({
             <div
               className={clsxMerge(
                 "flex flex-col mt-4 bg-quaternary-bg px-5 py-4 rounded-[12px] gap-3",
-                loading && "bg-primary-bg",
+                balancesPending && "bg-primary-bg",
               )}
             >
               <SkeletonTheme
@@ -140,13 +180,13 @@ export default function ExplorePoolPage({
                 enableAnimation={false}
                 // duration={5}
               >
-                {loading ? (
+                {balancesPending ? (
                   <Skeleton width={112} height={16} />
                 ) : (
                   <span className="font-bold text-secondary-text">{t("pool_balances_title")}</span>
                 )}
                 <div className="flex justify-between">
-                  {loading ? (
+                  {balancesPending ? (
                     <>
                       {isMobile ? (
                         <div className="flex gap-2 items-center -mt-2">
@@ -169,7 +209,7 @@ export default function ExplorePoolPage({
                   ) : (
                     <div className="flex gap-2 items-center">
                       <span className="text-12 lg:text-16 font-bold text-primary-text">
-                        {formatNumberKilos(pool?.totalValueLockedToken0)}
+                        {renderBalance(balances?.token0)}
                       </span>
                       <Image
                         src="/images/tokens/placeholder.svg"
@@ -185,7 +225,7 @@ export default function ExplorePoolPage({
                       </div>
                     </div>
                   )}
-                  {loading ? (
+                  {balancesPending ? (
                     <>
                       {isMobile ? (
                         <div className="flex gap-2 items-center -mt-2">
@@ -208,7 +248,7 @@ export default function ExplorePoolPage({
                   ) : (
                     <div className="flex gap-2 items-center">
                       <span className="text-12 lg:text-16 font-bold text-primary-text">
-                        {formatNumberKilos(pool?.totalValueLockedToken1)}
+                        {renderBalance(balances?.token1)}
                       </span>
                       <Image
                         src="/images/tokens/placeholder.svg"
@@ -229,11 +269,11 @@ export default function ExplorePoolPage({
                 <div
                   className={clsxMerge(
                     "bg-green h-2 w-full rounded-[20px] overflow-hidden",
-                    loading && "bg-tertiary-bg",
+                    balancesPending && "bg-tertiary-bg",
                     isMobile && "-mt-2",
                   )}
                 >
-                  {!loading && (
+                  {!balancesPending && (
                     <div
                       className="bg-purple h-2 "
                       style={{
@@ -312,7 +352,11 @@ export default function ExplorePoolPage({
             <div className="flex flex-col lg:flex-row w-full justify-between gap-2 lg:gap-3 mt-4 md:h-[94px]">
               <div className="flex flex-col gap-1 bg-tertiary-bg rounded-[12px] px-5 pb-[10px] pt-3.5 w-full">
                 <span className="text-secondary-text text-14 lg:text-16">{t("tvl_title")}</span>
-                <span className="text-20 lg:text-24 font-medium">{`$${formatNumberKilos(pool?.totalValueLockedUSD)}`}</span>
+                <span className="text-20 lg:text-24 font-medium">
+                  {totalValueLockedUSD !== undefined
+                    ? `$${formatNumberKilos(totalValueLockedUSD)}`
+                    : "\u2014"}
+                </span>
               </div>
               <div className="flex flex-col gap-1 bg-tertiary-bg rounded-[12px] px-5 pb-[10px] pt-3.5 w-full">
                 <span className="text-secondary-text text-14 lg:text-16">{t("day_volume")}</span>

@@ -67,19 +67,19 @@ export const config = createConfig({
   multiInjectedProviderDiscovery: false, // to avoid connecting to io.metamask and other injected connectors
   transports: {
     [mainnet.id]: fallback([
-      webSocket(
-        "wss://lb.drpc.org/ogws?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-      ),
-      http(
-        "https://lb.drpc.org/ogrpc?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-      ),
-      webSocket("wss://ethereum.callstaticrpc.com"),
-      webSocket("wss://ethereum-rpc.publicnode.com"),
-      http("https://ethereum-rpc.publicnode.com"),
-      http("https://eth.drpc.org"),
-      http("https://1rpc.io/eth"),
-      http(),
-    ]),
+          webSocket(
+            "wss://lb.drpc.org/ogws?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
+          ),
+          http(
+            "https://lb.drpc.org/ogrpc?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
+          ),
+          webSocket("wss://ethereum.callstaticrpc.com"),
+          webSocket("wss://ethereum-rpc.publicnode.com"),
+          http("https://ethereum-rpc.publicnode.com"),
+          http("https://eth.drpc.org"),
+          http("https://1rpc.io/eth"),
+          http(),
+        ]),
     [sepolia.id]: fallback([
       webSocket("wss://lb.drpc.org/sepolia/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),
       http("https://lb.drpc.org/sepolia/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),

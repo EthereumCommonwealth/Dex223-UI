@@ -20,11 +20,13 @@ import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { formatFloat } from "@/functions/formatFloat";
 import { formatNumberKilos } from "@/functions/formatFloat";
+import { computePoolTVL } from "@/functions/poolTvl";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { Link, useRouter } from "@/i18n/routing";
 
-import { usePoolsData } from "./hooks";
+import { usePoolPriceIndex, usePoolsData } from "./hooks";
 
 function HeaderItem({
   isFirst = false,
@@ -60,6 +62,10 @@ function HeaderItem({
 }
 
 const PAGE_SIZE = 10;
+
+// Reading balances costs a handful of contract calls per pool, so the fan-out is bounded.
+// Anything past this keeps the subgraph's own figure; DEX223 is nowhere near the limit.
+const MAX_ONCHAIN_BALANCE_POOLS = 200;
 
 const PoolsTableDesktop = ({
   tableData,
@@ -211,7 +217,7 @@ const PoolsTableDesktop = ({
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
                 >
-                  ${formatNumberKilos(o.totalValueLockedUSD)}
+                  ${formatNumberKilos(o.tvlUSD)}
                 </div>
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
@@ -273,7 +279,7 @@ const PoolsTableItemMobile = ({
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">TVL</span>
-              <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.totalValueLockedUSD)}`}</span>
+              <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.tvlUSD)}`}</span>
             </div>
             {/*<div className="flex w-full flex-col items-start gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">*/}
             {/*  <span className="text-12 text-secondary-text">Turnover</span>*/}
@@ -350,12 +356,12 @@ function localSorting(data: any[], sorting: SortingType): any[] {
   const arrayForSort = [...data];
   if (sorting === SortingType.DESCENDING) {
     arrayForSort.sort((a, b) => {
-      return Number(b.totalValueLockedUSD) - Number(a.totalValueLockedUSD);
+      return b.tvlUSD - a.tvlUSD;
     });
   }
   if (sorting === SortingType.ASCENDING) {
     arrayForSort.sort((a, b) => {
-      return Number(a.totalValueLockedUSD) - Number(b.totalValueLockedUSD);
+      return a.tvlUSD - b.tvlUSD;
     });
   }
   return arrayForSort;
@@ -395,11 +401,45 @@ export default function PoolsTable({
     orderDirection: undefined, //sorting],
     filter,
   });
+  const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(chainId);
+
+  const poolAddresses = useMemo(
+    () =>
+      (data?.pools || [])
+        .slice(0, MAX_ONCHAIN_BALANCE_POOLS)
+        .map((pool: any) => pool.id as Address),
+    [data?.pools],
+  );
+
+  // Same reason the pool page reads balances on-chain: the subgraph's per-token totals
+  // drift from what a pool holds, and valuing the drift is what makes a $423 pool read
+  // $827. The list has to read them too, or its rows contradict the page they open.
+  const { balances: onChainBalances, isLoading: balancesLoading } = usePoolsOnChainBalances({
+    poolAddresses,
+    chainId,
+  });
 
   const pools: any[] = useMemo(() => {
-    const pools = data?.pools || [];
+    // The subgraph also prices every pool with one global price per token, which overstates
+    // any pool trading away from that price - see computePoolTVL. Chains with no stablecoin
+    // to anchor on have nothing better to offer, so they keep the subgraph's figure.
+    const pools = (data?.pools || []).map((pool: any) => {
+      const balances = onChainBalances[pool.id?.toLowerCase()];
+
+      return {
+        ...pool,
+        tvlUSD:
+          computePoolTVL({
+            pool,
+            balance0: balances?.token0.formatted,
+            balance1: balances?.token1.formatted,
+            priceIndex,
+          }) ?? Number(pool.totalValueLockedUSD),
+      };
+    });
+
     return localSorting(pools, sorting);
-  }, [data?.pools, sorting]);
+  }, [data?.pools, onChainBalances, priceIndex, sorting]);
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
@@ -414,7 +454,7 @@ export default function PoolsTable({
           {pools.length > 0 ? (
             <>
               <PoolsTableDesktop
-                isLoading={loading}
+                isLoading={loading || pricesLoading || balancesLoading}
                 tableData={currentTableData}
                 sorting={sorting}
                 currentPage={currentPage}
@@ -437,7 +477,7 @@ export default function PoolsTable({
       </div>
 
       <Pagination
-        isLoading={loading}
+        isLoading={loading || pricesLoading || balancesLoading}
         className="pagination-bar"
         currentPage={currentPage}
         totalCount={pools.length}
