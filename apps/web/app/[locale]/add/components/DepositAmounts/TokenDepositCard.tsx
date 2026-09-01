@@ -395,10 +395,12 @@ export default function TokenDepositCard({
   });
 
   const { address } = useAccount();
+  const chainId = useCurrentChainId();
 
   const { blockNumber } = useGlobalBlockNumber();
   const { data: token0Balance, refetch: refetchBalance0 } = useBalance({
     address: currency ? address : undefined,
+    chainId,
     token: currency && !currency.isNative ? currency.address0 : undefined,
     query: {
       enabled: Boolean(currency),
@@ -406,6 +408,7 @@ export default function TokenDepositCard({
   });
   const { data: token1Balance, refetch: refetchBalance1 } = useBalance({
     address: currency ? address : undefined,
+    chainId,
     token: currency && !currency.isNative ? currency.address1 : undefined,
     query: {
       enabled: Boolean(currency),
@@ -417,7 +420,6 @@ export default function TokenDepositCard({
     refetchBalance1();
   }, [blockNumber, refetchBalance0, refetchBalance1]);
 
-  const chainId = useCurrentChainId();
   const valueBigInt = value ? BigInt(value.quotient.toString()) : BigInt(0);
 
   const ERC223Value = (valueBigInt * BigInt(tokenStandardRatio)) / BigInt(100);
