@@ -80,20 +80,16 @@ export default function ExplorePoolPage({
   // how a pool holding $2.40 comes to report $16.3K - see computePoolTVL. Chains with no
   // stablecoin to anchor on have nothing better to offer, so they keep that figure.
   const totalValueLockedUSD = useMemo(() => {
-    // Holding off until the prices land keeps the subgraph fallback from flashing the very
-    // number this replaces.
     if (!pool || !balances || pricesLoading) {
       return undefined;
     }
 
-    return (
-      computePoolTVL({
-        pool,
-        balance0: balances.token0.formatted,
-        balance1: balances.token1.formatted,
-        priceIndex,
-      }) ?? Number(pool.totalValueLockedUSD)
-    );
+    return computePoolTVL({
+      pool,
+      balance0: balances.token0.formatted,
+      balance1: balances.token1.formatted,
+      priceIndex,
+    });
   }, [balances, pool, priceIndex, pricesLoading]);
 
   const renderBalance = (balance: PoolTokenBalance | undefined) =>

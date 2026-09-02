@@ -2,6 +2,7 @@ import { Address } from "viem";
 
 /** `token0Price`/`token1Price` are BigDecimal strings, balances arrive as strings too. */
 export type PoolPriceInput = {
+  id?: string;
   token0: { id: string };
   token1: { id: string };
   token0Price: string | number;
@@ -17,9 +18,15 @@ export type TokenPrice = {
 
 export type TokenPriceIndex = Record<string, TokenPrice>;
 
+export type PoolDepthBalances = Record<string, { token0: number; token1: number }>;
+
 const MAX_RESOLUTION_PASSES = 3;
 
-export function buildTokenPriceIndex(pools: PoolPriceInput[], anchors: Address[]): TokenPriceIndex {
+export function buildTokenPriceIndex(
+  pools: PoolPriceInput[],
+  anchors: Address[],
+  balances: PoolDepthBalances = {},
+): TokenPriceIndex {
   const index: TokenPriceIndex = {};
 
   for (const anchor of anchors) {
@@ -41,12 +48,12 @@ export function buildTokenPriceIndex(pools: PoolPriceInput[], anchors: Address[]
         continue;
       }
 
-      changed =
-        offer(index, token1, token0, Number(pool.token0Price), pool.totalValueLockedToken0) ||
-        changed;
-      changed =
-        offer(index, token0, token1, Number(pool.token1Price), pool.totalValueLockedToken1) ||
-        changed;
+      const onChain = pool.id ? balances[pool.id.toLowerCase()] : undefined;
+      const balance0 = onChain?.token0 ?? pool.totalValueLockedToken0;
+      const balance1 = onChain?.token1 ?? pool.totalValueLockedToken1;
+
+      changed = offer(index, token1, token0, Number(pool.token0Price), balance0) || changed;
+      changed = offer(index, token0, token1, Number(pool.token1Price), balance1) || changed;
     }
 
     if (!changed) {
@@ -115,22 +122,26 @@ export function computePoolTVL({
     return undefined;
   }
 
-  const price0 = priceIndex[token0];
-  const price1 = priceIndex[token1];
+  const price0 = priceIndex[token0]?.price;
+  const price1 = priceIndex[token1]?.price;
 
-  const valueAt = (usd0: number, usd1: number): number | undefined => {
-    const tvl = amount0 * usd0 + amount1 * usd1;
-    return Number.isFinite(tvl) ? tvl : undefined;
-  };
-
-  if (price0?.depth === Infinity && price1?.depth === Infinity) {
-    return valueAt(price0.price, price1.price);
+  const usd0 = price0 ?? derivePrice(price1, pool.token1Price);
+  const usd1 = price1 ?? derivePrice(price0, pool.token0Price);
+  if ((usd0 === undefined && amount0 !== 0) || (usd1 === undefined && amount1 !== 0)) {
+    return undefined;
   }
 
-  const candidates = [
-    price0 && valueAt(price0.price, price0.price * Number(pool.token0Price)),
-    price1 && valueAt(price1.price * Number(pool.token1Price), price1.price),
-  ].filter((value): value is number => value !== undefined && value !== null);
+  const tvl = amount0 * (usd0 ?? 0) + amount1 * (usd1 ?? 0);
 
-  return candidates.length ? Math.min(...candidates) : undefined;
+  return Number.isFinite(tvl) ? tvl : undefined;
+}
+
+function derivePrice(price: number | undefined, ratio: string | number): number | undefined {
+  if (price === undefined) {
+    return undefined;
+  }
+
+  const derived = price * Number(ratio);
+
+  return Number.isFinite(derived) && derived > 0 ? derived : undefined;
 }

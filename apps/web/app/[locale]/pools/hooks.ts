@@ -4,8 +4,9 @@ import { useMemo } from "react";
 import { Address } from "viem";
 
 import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
-import { buildTokenPriceIndex, TokenPriceIndex } from "@/functions/poolTvl";
+import { buildTokenPriceIndex, PoolDepthBalances, TokenPriceIndex } from "@/functions/poolTvl";
 import { chainToApolloClient } from "@/graphql/thegraph/apollo";
+import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { DexChainId } from "@/sdk_bi/chains";
 
 export const PoolsDataDocument = gql`
@@ -207,6 +208,8 @@ export const PoolPricesDocument = gql`
   }
 `;
 
+const MAX_PRICE_INDEX_BALANCE_POOLS = 200;
+
 /**
  * USD prices for every token reachable from one of the chain's stablecoins, used to value
  * pools against their own spot price instead of the subgraph's global per-token price.
@@ -225,11 +228,36 @@ export const usePoolPriceIndex = (
     client: apolloClient || chainToApolloClient[DexChainId.SEPOLIA],
   });
 
-  const priceIndex = useMemo(
-    () => buildTokenPriceIndex(data?.pools || [], anchors),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [data?.pools, chainId],
+  const poolAddresses = useMemo(
+    () =>
+      (data?.pools || [])
+        .slice(0, MAX_PRICE_INDEX_BALANCE_POOLS)
+        .map((pool: any) => pool.id as Address),
+    [data?.pools],
   );
 
-  return { priceIndex, loading };
+  const { balances, isLoading: balancesLoading } = usePoolsOnChainBalances({
+    poolAddresses,
+    chainId,
+  });
+
+  const depthBalances = useMemo(
+    () =>
+      Object.entries(balances).reduce((acc, [pool, poolBalances]) => {
+        acc[pool] = {
+          token0: poolBalances.token0.formatted,
+          token1: poolBalances.token1.formatted,
+        };
+        return acc;
+      }, {} as PoolDepthBalances),
+    [balances],
+  );
+
+  const priceIndex = useMemo(
+    () => buildTokenPriceIndex(data?.pools || [], anchors, depthBalances),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data?.pools, chainId, depthBalances],
+  );
+
+  return { priceIndex, loading: loading || balancesLoading };
 };
