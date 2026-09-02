@@ -67,6 +67,9 @@ const PAGE_SIZE = 10;
 // Anything past this keeps the subgraph's own figure; DEX223 is nowhere near the limit.
 const MAX_ONCHAIN_BALANCE_POOLS = 200;
 
+const renderTVL = (tvlUSD: number | undefined) =>
+  tvlUSD === undefined ? "\u2014" : `$${formatNumberKilos(tvlUSD)}`;
+
 const PoolsTableDesktop = ({
   tableData,
   currentPage,
@@ -217,7 +220,7 @@ const PoolsTableDesktop = ({
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
                 >
-                  ${formatNumberKilos(o.tvlUSD)}
+                  {renderTVL(o.tvlUSD)}
                 </div>
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
@@ -279,7 +282,7 @@ const PoolsTableItemMobile = ({
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">TVL</span>
-              <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.tvlUSD)}`}</span>
+              <span className="text-14 text-secondary-text">{renderTVL(pool.tvlUSD)}</span>
             </div>
             {/*<div className="flex w-full flex-col items-start gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">*/}
             {/*  <span className="text-12 text-secondary-text">Turnover</span>*/}
@@ -340,22 +343,24 @@ const PoolsTableMobile = ({
         />
       </div>
       <div className="flex lg:hidden flex-col gap-4">
-        {isLoading &&
-          [...Array(5)].map((_, index) => (
-            <div
-              key={index}
-              className="h-[148px] bg-primary-bg rounded-3 motion-safe:animate-pulse"
-            />
-          ))}
-        {tableData.map((pool: any, index: number) => {
-          return (
-            <PoolsTableItemMobile
-              key={pool.id || index}
-              index={(currentPage - 1) * PAGE_SIZE + index + 1}
-              pool={pool}
-            />
-          );
-        })}
+        {/* Without this the cards render their TVL before the price index lands, which is
+            the one number they exist to show and the one that changes once it does. */}
+        {isLoading
+          ? [...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="h-[148px] bg-primary-bg rounded-3 motion-safe:animate-pulse"
+              />
+            ))
+          : tableData.map((pool: any, index: number) => {
+              return (
+                <PoolsTableItemMobile
+                  key={pool.id || index}
+                  index={(currentPage - 1) * PAGE_SIZE + index + 1}
+                  pool={pool}
+                />
+              );
+            })}
       </div>
     </>
   );
@@ -363,16 +368,21 @@ const PoolsTableMobile = ({
 
 function localSorting(data: any[], sorting: SortingType): any[] {
   const arrayForSort = [...data];
-  if (sorting === SortingType.DESCENDING) {
-    arrayForSort.sort((a, b) => {
-      return b.tvlUSD - a.tvlUSD;
-    });
+
+  if (sorting === SortingType.NONE) {
+    return arrayForSort;
   }
-  if (sorting === SortingType.ASCENDING) {
-    arrayForSort.sort((a, b) => {
-      return a.tvlUSD - b.tvlUSD;
-    });
-  }
+
+  const direction = sorting === SortingType.DESCENDING ? -1 : 1;
+
+  arrayForSort.sort((a, b) => {
+    if (a.tvlUSD === undefined || b.tvlUSD === undefined) {
+      return (a.tvlUSD === undefined ? 1 : 0) - (b.tvlUSD === undefined ? 1 : 0);
+    }
+
+    return direction * (a.tvlUSD - b.tvlUSD);
+  });
+
   return arrayForSort;
 }
 
@@ -437,18 +447,19 @@ export default function PoolsTable({
 
       return {
         ...pool,
-        tvlUSD:
-          computePoolTVL({
-            pool,
-            balance0: balances?.token0.formatted,
-            balance1: balances?.token1.formatted,
-            priceIndex,
-          }) ?? Number(pool.totalValueLockedUSD),
+        tvlUSD: computePoolTVL({
+          pool,
+          balance0: balances?.token0.formatted,
+          balance1: balances?.token1.formatted,
+          priceIndex,
+        }),
       };
     });
 
     return localSorting(pools, sorting);
   }, [data?.pools, onChainBalances, priceIndex, sorting]);
+
+  const isLoading = loading || pricesLoading || balancesLoading;
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
@@ -471,17 +482,17 @@ export default function PoolsTable({
                 {t("try_again")}
               </Button>
             </div>
-          ) : loading || pools.length > 0 ? (
+          ) : isLoading || pools.length > 0 ? (
             <>
               <PoolsTableDesktop
-                isLoading={loading || pricesLoading || balancesLoading}
+                isLoading={isLoading}
                 tableData={currentTableData}
                 sorting={sorting}
                 currentPage={currentPage}
                 handleSort={handleSort}
               />
               <PoolsTableMobile
-                isLoading={loading}
+                isLoading={isLoading}
                 tableData={currentTableData}
                 sorting={sorting}
                 currentPage={currentPage}
@@ -498,7 +509,7 @@ export default function PoolsTable({
       </div>
 
       <Pagination
-        isLoading={loading || pricesLoading || balancesLoading}
+        isLoading={isLoading}
         className="pagination-bar"
         currentPage={currentPage}
         totalCount={pools.length}
