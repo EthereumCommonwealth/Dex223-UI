@@ -1,5 +1,8 @@
 import { useMemo } from "react";
+import { Address, isAddress } from "viem";
 
+import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { FeeAmount } from "@/sdk_bi/constants";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
@@ -10,6 +13,11 @@ import { PoolsParams, PoolState } from "./usePools";
 
 // maximum number of blocks past which we consider the data stale
 const MAX_DATA_BLOCK_AGE = 20;
+
+type FeeTierPool = {
+  id?: string;
+  feeTier: FeeAmount;
+};
 
 interface FeeTierDistribution {
   isLoading: boolean;
@@ -86,6 +94,7 @@ export function useFeeTierDistribution(tokenA?: Currency, tokenB?: Currency): Fe
 
 function usePoolTVL(tokenA?: Currency, tokenB?: Currency) {
   const { blockNumber } = useGlobalBlockNumber();
+  const chainId = useCurrentChainId();
 
   const { isLoading, error, data } = useFeeTierDistributionQuery(
     tokenA?.wrapped.address0,
@@ -94,29 +103,68 @@ function usePoolTVL(tokenA?: Currency, tokenB?: Currency) {
   );
 
   const { asToken0, asToken1, _meta } = data ?? {};
+  const allPools = useMemo(
+    () => ([...(asToken0 ?? []), ...(asToken1 ?? [])] as FeeTierPool[]),
+    [asToken0, asToken1],
+  );
+  const poolAddresses = useMemo(
+    () =>
+      allPools
+        .map((pool) => pool.id)
+        .filter((id): id is Address => Boolean(id && isAddress(id))),
+    [allPools],
+  );
+  const { balances, isLoading: balancesLoading, isError: balancesError } = usePoolsOnChainBalances({
+    poolAddresses,
+    chainId,
+  });
+
   return useMemo(() => {
     if (!blockNumber || !_meta || !asToken0 || !asToken1) {
       return {
-        isLoading,
-        error,
+        isLoading: isLoading || balancesLoading,
+        error: error || (balancesError ? new Error("Failed to read pool balances") : undefined),
       };
     }
 
     if (blockNumber - BigInt(_meta?.block?.number ?? 0) > MAX_DATA_BLOCK_AGE) {
       console.log(`Graph stale (latest block: ${blockNumber})`);
       return {
-        isLoading,
+        isLoading: isLoading || balancesLoading,
         error,
       };
     }
 
-    const all = [...asToken0, ...asToken1];
+    if (balancesLoading) {
+      return {
+        isLoading: true,
+        error,
+      };
+    }
 
-    const tvlByFeeTier = all.reduce<Record<FeeAmount, [number, number]>>(
+    const missingBalance = poolAddresses.some((pool) => !balances[pool.toLowerCase()]);
+    const balanceReadError =
+      balancesError || (poolAddresses.length > 0 && missingBalance)
+        ? new Error("Failed to read pool balances")
+        : undefined;
+
+    if (balanceReadError) {
+      return {
+        isLoading,
+        error: error || balanceReadError,
+      };
+    }
+
+    const tvlByFeeTier = allPools.reduce<Record<FeeAmount, [number, number]>>(
       (acc, value) => {
+        const poolBalances = value.id ? balances[value.id.toLowerCase()] : undefined;
+        if (!poolBalances) {
+          return acc;
+        }
+
         const feeTier = value.feeTier as FeeAmount;
-        acc[feeTier][0] += Number(value.totalValueLockedToken0 ?? 0);
-        acc[feeTier][1] += Number(value.totalValueLockedToken1 ?? 0);
+        acc[feeTier][0] += poolBalances.token0.formatted;
+        acc[feeTier][1] += poolBalances.token1.formatted;
         return acc;
       },
       {
@@ -154,5 +202,17 @@ function usePoolTVL(tokenA?: Currency, tokenB?: Currency) {
       error,
       distributions,
     };
-  }, [_meta, asToken0, asToken1, isLoading, error, blockNumber]);
+  }, [
+    _meta,
+    asToken0,
+    asToken1,
+    isLoading,
+    balancesLoading,
+    balancesError,
+    balances,
+    error,
+    blockNumber,
+    allPools,
+    poolAddresses,
+  ]);
 }

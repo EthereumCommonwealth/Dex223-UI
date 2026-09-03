@@ -71,9 +71,9 @@ export const Balances = ({
     .filter((value) => filterTable({ searchValue, value }))
     .map(({ token, amountERC20, amountERC223, amountFiat }) => ({
       logoURI: token.logoURI,
-      name: token.wrapped.name,
-      amountERC20: `${formatFloat(formatUnits(amountERC20 || BigInt(0), token.decimals))} ${token.symbol}`,
-      amountERC223: `${formatFloat(formatUnits(amountERC223 || BigInt(0), token.decimals))} ${token.symbol}`,
+      name: token.isNative ? token.name : token.wrapped.name,
+      amountERC20: formatFloat(formatUnits(amountERC20 || BigInt(0), token.decimals)),
+      amountERC223: formatFloat(formatUnits(amountERC223 || BigInt(0), token.decimals)),
       amountFiat: amountFiat,
       token,
     })) as any[];
