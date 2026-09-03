@@ -15,7 +15,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { FeeAmount } from "@/sdk_bi/constants";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { getTokenAddressForStandard, Standard } from "@/sdk_bi/standard";
-import { usePoolAddresses } from "@/stores/usePoolsStore";
+import { PoolAddress, usePoolAddresses } from "@/stores/usePoolsStore";
 
 import { FACTORY_ADDRESS, POOL_INIT_CODE_HASH } from "../addresses";
 import { DEX_SUPPORTED_CHAINS, DexChainId } from "../chains";
@@ -74,7 +74,11 @@ export function computePoolAddress({
   });
 }
 
-const cachedKeys = new Set<string>();
+// Requests in flight, keyed by pool key. Concurrent callers share one request
+// instead of the later ones resolving to `undefined`, and the entry is always
+// released, so a failed lookup never blocks a later retry.
+const inFlightRequests = new Map<string, Promise<Address | undefined>>();
+
 export const computePoolAddressDex = async ({
   addressTokenA,
   addressTokenB,
@@ -85,7 +89,9 @@ export const computePoolAddressDex = async ({
   addressTokenB: Address;
   tier: FeeAmount;
   chainId: DexChainId;
-}) => {
+}): Promise<Address | undefined> => {
+  if (!DEX_SUPPORTED_CHAINS.includes(chainId)) return undefined;
+
   const key = getPoolAddressKey({
     addressTokenA,
     addressTokenB,
@@ -93,24 +99,27 @@ export const computePoolAddressDex = async ({
     tier,
   });
 
-  if (cachedKeys.has(key) || !DEX_SUPPORTED_CHAINS.includes(chainId)) return undefined;
-  cachedKeys.add(key);
+  const pending = inFlightRequests.get(key);
+  if (pending) return pending;
 
-  try {
-    const poolContract = await readContract(config, {
-      abi: FACTORY_ABI,
-      address: FACTORY_ADDRESS[chainId],
-      functionName: "getPool",
-      args: [addressTokenA, addressTokenB, tier],
+  const request = readContract(config, {
+    abi: FACTORY_ABI,
+    address: FACTORY_ADDRESS[chainId],
+    functionName: "getPool",
+    args: [addressTokenA, addressTokenB, tier],
+  })
+    .then((poolContract) => poolContract as Address)
+    .catch((e) => {
+      console.error("computePoolAddressDex: getPool failed for " + key, e);
+      return undefined;
+    })
+    .finally(() => {
+      inFlightRequests.delete(key);
     });
 
-    console.log("Pool contract from node: " + poolContract);
-    cachedKeys.delete(key);
-    return poolContract;
-  } catch (e) {
-    console.log(e);
-    return undefined;
-  }
+  inFlightRequests.set(key, request);
+
+  return request;
 };
 
 export const computePoolAddressDexNoCache = async ({
@@ -151,6 +160,14 @@ export const getPoolAddressKey = ({
 }): string =>
   `${chainId}:${addressTokenA.toLowerCase()}:${addressTokenB.toLowerCase()}:${tier.toString()}`;
 
+export const POOL_ADDRESS_RETRY_INTERVAL = 15_000;
+
+const shouldRequestPoolAddress = (entry: PoolAddress | undefined) => {
+  if (!entry) return true;
+  if (entry.isLoading || entry.address) return false;
+  return Date.now() - (entry.failedAt ?? 0) > POOL_ADDRESS_RETRY_INTERVAL;
+};
+
 export const useComputePoolAddressDex = ({
   tokenA,
   tokenB,
@@ -181,7 +198,13 @@ export const useComputePoolAddressDex = ({
   }, [addresses, key]);
 
   useEffect(() => {
-    if (poolAddressFromStore || !tokenA || !tokenB || !tier || !chainId) {
+    if (
+      !shouldRequestPoolAddress(poolAddressFromStore) ||
+      !tokenA ||
+      !tokenB ||
+      !tier ||
+      !chainId
+    ) {
       return;
     }
     const key = getPoolAddressKey({
@@ -203,6 +226,7 @@ export const useComputePoolAddressDex = ({
       addPoolAddress(key, {
         address,
         isLoading: false,
+        failedAt: address ? undefined : Date.now(),
       });
     });
   }, [poolAddressFromStore, tokenA, tokenB, tier, chainId, addPoolAddress]);
@@ -244,7 +268,13 @@ export const useComputePoolAddressesDex = (
   useEffect(() => {
     params.map(({ tier, tokenA, tokenB }, index) => {
       const poolAddressFromStore = poolAddressesFromStore[index];
-      if (poolAddressFromStore || !tokenA || !tokenB || !tier || !chainId) {
+      if (
+        !shouldRequestPoolAddress(poolAddressFromStore) ||
+        !tokenA ||
+        !tokenB ||
+        !tier ||
+        !chainId
+      ) {
         return;
       }
       const key = getPoolAddressKey({
@@ -266,6 +296,7 @@ export const useComputePoolAddressesDex = (
         addPoolAddress(key, {
           address,
           isLoading: false,
+          failedAt: address ? undefined : Date.now(),
         });
       });
     });

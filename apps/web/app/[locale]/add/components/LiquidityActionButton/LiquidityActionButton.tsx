@@ -128,6 +128,7 @@ export const LiquidityActionButton = ({ increase = false }: { increase?: boolean
 
   const { data: tokenA0Balance, refetch: refetchBalanceA0 } = useBalance({
     address: tokenA ? address : undefined,
+    chainId,
     token: tokenA && !tokenA.isNative ? tokenA.address0 : undefined,
     query: {
       enabled: Boolean(tokenA),
@@ -135,6 +136,7 @@ export const LiquidityActionButton = ({ increase = false }: { increase?: boolean
   });
   const { data: tokenA1Balance, refetch: refetchBalanceA1 } = useBalance({
     address: tokenA ? address : undefined,
+    chainId,
     token: tokenA && !tokenA.isNative ? tokenA.address1 : undefined,
     query: {
       enabled: Boolean(tokenA),
@@ -143,6 +145,7 @@ export const LiquidityActionButton = ({ increase = false }: { increase?: boolean
 
   const { data: tokenB0Balance, refetch: refetchBalanceB0 } = useBalance({
     address: tokenB ? address : undefined,
+    chainId,
     token: tokenB && !tokenB.isNative ? tokenB.address0 : undefined,
     query: {
       enabled: Boolean(tokenB),
@@ -150,6 +153,7 @@ export const LiquidityActionButton = ({ increase = false }: { increase?: boolean
   });
   const { data: tokenB1Balance, refetch: refetchBalanceB1 } = useBalance({
     address: tokenB ? address : undefined,
+    chainId,
     token: tokenB && !tokenB.isNative ? tokenB.address1 : undefined,
     query: {
       enabled: Boolean(tokenB),
