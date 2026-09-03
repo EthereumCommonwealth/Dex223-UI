@@ -3,9 +3,10 @@ import { create } from "zustand";
 
 export type WalletBalances = {
   address: Address; // wallet address
+  nativeBalance: bigint;
   balances: {
     address: Address; // token address
-    value: BigInt;
+    value: bigint;
   }[];
 };
 interface WalletsBalancesStore {
