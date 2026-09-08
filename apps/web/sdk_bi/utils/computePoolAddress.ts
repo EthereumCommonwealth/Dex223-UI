@@ -69,7 +69,13 @@ export function computePoolAddress({
         ],
       ),
     ),
-    bytecode: initCodeHashManualOverride ?? POOL_INIT_CODE_HASH[DexChainId.SEPOLIA],
+    // Derive the init code hash from the tokens' own chain. This was hardcoded to
+    // POOL_INIT_CODE_HASH[DexChainId.SEPOLIA] while `factoryAddress` was passed per-chain, so on every
+    // network except Sepolia the CREATE2 inputs were mismatched and the computed pool address was wrong.
+    bytecode:
+      initCodeHashManualOverride ??
+      POOL_INIT_CODE_HASH[token0.chainId as DexChainId] ??
+      POOL_INIT_CODE_HASH[DexChainId.SEPOLIA],
     opcode: "CREATE2",
   });
 }
