@@ -457,9 +457,11 @@ export class Trade<
     for (const { route } of routes) {
       for (const pool of route.pools) {
         poolAddressSet.add(
-          // TODO Change it
           computePoolAddress({
-            factoryAddress: FACTORY_ADDRESS[DexChainId.SEPOLIA],
+            // was hardcoded to FACTORY_ADDRESS[DexChainId.SEPOLIA] regardless of the connected chain
+            factoryAddress:
+              FACTORY_ADDRESS[pool.token0.chainId as DexChainId] ??
+              FACTORY_ADDRESS[DexChainId.SEPOLIA],
             fee: pool.fee,
             tokenA: pool.token0.wrapped,
             tokenB: pool.token1.wrapped,

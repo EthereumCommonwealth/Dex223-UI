@@ -65,13 +65,19 @@ export const config = createConfig({
       http(),
     ]),
     [sepolia.id]: fallback([
-      webSocket("wss://lb.drpc.org/sepolia/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),
-      http("https://lb.drpc.org/sepolia/AkwuSJ_nLEH3t2kOUJMm2iE4PlM4mHER8Lt2wg8TMB_n"),
-      webSocket("wss://ethereum-rpc.publicnode.com"),
+      // NOTE: the previous first two entries pointed at lb.drpc.org/sepolia, which dRPC has moved behind
+      // a paid plan - it now answers every request with HTTP 400 "chain is not available on free plan",
+      // so Sepolia was completely broken in the UI.
+      //
+      // The third entry was wss://ethereum-rpc.publicnode.com, which is MAINNET (chainId 1) listed as a
+      // Sepolia fallback. With the drpc entries failing, that was the next transport tried.
+      //
+      // rpc.ankr.com/eth_sepolia no longer answers either. Verified working, in order:
+      webSocket("wss://ethereum-sepolia-rpc.publicnode.com"),
+      http("https://ethereum-sepolia-rpc.publicnode.com"),
       webSocket("wss://eth-sepolia.g.alchemy.com/v2/kvidqVpyVu4aivBEb55XXIzCHDqMm7CO"),
-      http("https://sepolia.infura.io/v3/6689c099b8d542589b1842e30dbc2027"),
       http("https://eth-sepolia.g.alchemy.com/v2/kvidqVpyVu4aivBEb55XXIzCHDqMm7CO"),
-      http("https://rpc.ankr.com/eth_sepolia"),
+      http("https://sepolia.infura.io/v3/6689c099b8d542589b1842e30dbc2027"),
       http(),
     ]),
     [bscTestnet.id]: fallback([
