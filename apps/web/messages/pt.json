@@ -1,0 +1,29 @@
+{
+  "Navigation": {
+    "trade": "Negociar",
+    "swap": "Troca",
+    "margin_trading": "Negociação com margem",
+    "buy_crypto": "Fiat",
+    "pools": "Pools",
+    "borrow_lend": "Emprestar/Tomar emprestado",
+    "portfolio": "Portfólio",
+    "more": "Mais",
+    "token": "Token",
+    "token_listing": "Listagem de tokens",
+    "token_statistics": "Estatísticas",
+    "token_lists": "Listas de tokens",
+    "social_media": "Redes sociais",
+    "social_telegram_discussions": "Discussões no Telegram",
+    "social_telegram_announcements": "Canal de anúncios do Telegram",
+    "social_x_account": "DEX223",
+    "social_discord": "Discord",
+    "social_dex_x_account": "Conta X do Dexaran",
+    "useful_links": "Links úteis",
+    "useful_converter": "Conversor de tokens ERC20 e ERC223",
+    "useful_losses_calculator": "Calculadora de perdas ERC-20 em tempo real",
+    "useful_front_page": "Página inicial ERC223",
+    "useful_page_source_codes": "Códigos-fonte da página",
+    "partners": "Parceiros",
+    "partners_eos_support": "BlockzHub"
+  }
+}

@@ -10,17 +10,18 @@ import { cookieToInitialState } from "wagmi";
 import Providers from "@/app/providers";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { config } from "@/config/wagmi/config";
+import { Locale } from "@/i18n/routing";
 
 const golos_text = Golos_Text({
   weight: ["400", "500", "600", "700", "800", "900"],
-  subsets: ["latin"],
+  subsets: ["latin", "cyrillic"],
   display: "swap",
   adjustFontFallback: false,
 });
 
 interface Props {
   params: Promise<{
-    locale: "es" | "en" | "zh";
+    locale: Locale;
   }>;
 }
 
