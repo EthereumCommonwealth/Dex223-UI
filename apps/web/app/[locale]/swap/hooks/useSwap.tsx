@@ -31,6 +31,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
@@ -49,7 +50,6 @@ import { useComputePoolAddressDex } from "@/sdk_bi/utils/computePoolAddress";
 import { TickMath } from "@/sdk_bi/utils/tickMath";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { useConfirmInWalletAlertStore } from "@/stores/useConfirmInWalletAlertStore";
-import { slippageToPercent } from "@/functions/slippageToPercent";
 import {
   RecentTransactionTitleTemplate,
   stringifyObject,
@@ -101,9 +101,7 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
     }
 
     return BigInt(
-      trade
-        .minimumAmountOut(slippageToPercent(slippage), dependentAmount)
-        .quotient.toString(),
+      trade.minimumAmountOut(slippageToPercent(slippage), dependentAmount).quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);
 

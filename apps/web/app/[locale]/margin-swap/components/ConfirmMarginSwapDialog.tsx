@@ -32,6 +32,7 @@ import OperationStepRow, {
 import { networks } from "@/config/networks";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -42,7 +43,6 @@ import { wrappedTokens } from "@/sdk_bi/entities/weth9";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
-import { slippageToPercent } from "@/functions/slippageToPercent";
 
 type StepTextMap = {
   [key in OperationStepStatus]: string;

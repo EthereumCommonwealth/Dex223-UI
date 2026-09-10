@@ -44,6 +44,7 @@ import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/us
 import { networks } from "@/config/networks";
 import { ThemeColors } from "@/config/theme/colors";
 import { formatFloat } from "@/functions/formatFloat";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
@@ -60,7 +61,6 @@ import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { GasOption } from "@/stores/factories/createGasPriceStore";
 import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
-import { slippageToPercent } from "@/functions/slippageToPercent";
 
 const ActionButtonSize = ButtonSize.EXTRA_LARGE;
 const MobileActionButtonSize = ButtonSize.LARGE;
@@ -316,9 +316,7 @@ export default function TradeForm() {
     }
 
     return BigInt(
-      trade
-        .minimumAmountOut(slippageToPercent(slippage), dependentAmount)
-        .quotient.toString(),
+      trade.minimumAmountOut(slippageToPercent(slippage), dependentAmount).quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);
 
