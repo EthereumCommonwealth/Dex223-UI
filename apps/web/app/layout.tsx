@@ -7,8 +7,8 @@ import { headers } from "next/headers";
 import { PropsWithChildren } from "react";
 import { cookieToInitialState } from "wagmi";
 
-import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import Providers from "@/app/providers";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { config } from "@/config/wagmi/config";
 
 const golos_text = Golos_Text({
