@@ -74,7 +74,19 @@
     "swap_is_unavailable_for_this_pair": "El intercambio no está disponible para este par",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Ajustes aplicados",
-    "tokens_in_two_standards_title": "Tokens en los estándares ERC-20 y ERC-223"
+    "tokens_in_two_standards_title": "Tokens en los estándares ERC-20 y ERC-223",
+    "tokens_in_two_standards_paragraph": "Desde el 27 de julio de 2023, todos los tokens de la red principal de Ethereum están disponibles en dos «versiones»: ERC-20 y ERC-223. Siempre puedes convertir una versión del token en la otra a una proporción 1:1 en DEX223 o mediante el <convert>conversor</convert>. Los tokens ERC-223 pueden requerir menos gas para intercambiarse por otro token. La mayoría de los exchanges centralizados todavía no admiten depósitos ERC-223.",
+    "erc20_tooltip": "ERC-20 es un estándar de tokens en la red Ethereum. Determina la «versión» del token que vas a utilizar.",
+    "erc223_tooltip": "ERC-223 es un estándar alternativo de tokens en la red Ethereum. Determina la «versión» del token que vas a utilizar. ERC-223 introduce mejoras de seguridad y optimizaciones de gas que no están disponibles con ERC-20.",
+    "network_fee_tooltip": "La comisión de red se cobra al enviar cualquier transacción en la red {networkName}. Se paga en la moneda nativa de la red (por ejemplo, ETH en Ethereum).",
+    "minimum_received_tooltip": "Cantidad mínima de tokens que recibirás cuando se ejecute el intercambio. El precio real puede diferir del previsto en el momento de crear la transacción, porque tu transacción solo puede confirmarse en el siguiente bloque mientras que los precios se toman del bloque actual. En ningún caso recibirás menos de esta cantidad mínima, ni siquiera por cambios de precio mientras la transacción está pendiente.",
+    "price_impact_tooltip": "Impacto estimado de tu transacción en el mercado. Cuando compras o vendes activos su precio cambia como consecuencia, y esta métrica muestra qué parte de ese cambio se debe a tus acciones.",
+    "trading_fee_tooltip": "La comisión de operación se cobra en cada operación y se distribuye entre los poseedores del token D223.",
+    "route_tooltip": "Si tu transacción tiene un impacto elevado en el mercado, puedes obtener mejores precios mediante arbitraje en lugar de comprar o vender todo el importe en un solo pool. La ruta muestra los demás pares de tokens que se verán afectados durante tu operación, si los hay.",
+    "maximum_slippage_tooltip": "El precio real del intercambio puede diferir del indicado al enviar la transacción. El deslizamiento determina cuánto cambio de precio se tolera. Si el precio real difiere del esperado más que el deslizamiento máximo, la transacción se revertirá automáticamente y tus tokens no se intercambiarán.",
+    "gas_limit_tooltip": "El límite de gas determina la cantidad de operaciones que puede invocar tu transacción. Cuanto más complejas sean las acciones que desencadena en el contrato inteligente, mayor puede ser el límite de gas necesario. Un límite de gas más alto se traduce en una comisión de red mayor.",
+    "deadline_tooltip": "El plazo de la transacción determina el tiempo durante el cual tu transacción en cola sigue siendo válida. Una transacción puede permanecer pendiente bastante tiempo por valores de gas bajos o por una red muy cargada. Si se confirma después del plazo indicado, se revertirá automáticamente (pagarás el gas pero no se realizará el intercambio).",
+    "slippage_tooltip": "El precio real del intercambio puede diferir del indicado al enviar la transacción. El deslizamiento determina cuánto cambio de precio se tolera. Un deslizamiento del 5% significa que si el precio del pool cambia más de un 5% respecto al esperado, tu transacción fallará automáticamente (pagarás el gas pero no se realizará el intercambio)."
   },
   "Wallet": {
     "my_wallet": "Mi monedero",
@@ -121,7 +133,16 @@
     "cheap": "Más barato",
     "fast": "Más rápido",
     "custom": "Personalizado",
-    "edit": "Editar"
+    "edit": "Editar",
+    "cheap_tooltip": "Los valores de GAS se ajustarán para minimizar la comisión que vas a pagar. Puede que la transacción permanezca pendiente más tiempo antes de confirmarse.",
+    "fast_tooltip": "Los valores de GAS se ajustarán para minimizar el tiempo que tarda en confirmarse tu transacción. Puede suponer una comisión de gas más alta.",
+    "custom_tooltip": "Con la configuración personalizada puedes definir los valores de gas manualmente.",
+    "eip1559_tooltip": "Existen dos tipos de transacción: EIP-1559 y legacy. El tipo afecta a la fórmula de cálculo de las comisiones de gas. Se recomiendan las transacciones EIP-1559 en las redes y monederos que las admiten.",
+    "legacy_tooltip": "Existen dos tipos de transacción: EIP-1559 y legacy. El tipo afecta a la fórmula de cálculo de las comisiones de gas. Las transacciones legacy permiten determinar el gasPrice exacto que vas a pagar. Se recomiendan las EIP-1559 en las redes que las admiten.",
+    "max_fee_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. La tarifa base la determina la carga de la red y la tarifa de prioridad la determina el emisor. El gas necesario depende del tipo de acción que realice tu transacción. La comisión máxima fija el límite superior del pago total que permites consumir. La transacción no se confirmará hasta que la tarifa base sea lo bastante baja para no superar ese máximo.",
+    "priority_fee_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. Una tarifa de prioridad más alta puede reducir el tiempo necesario para que tu transacción se incluya, si la carga de la red es lo bastante baja para cumplir el criterio de comisión máxima.",
+    "gas_limit_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. El límite de gas fija el máximo de la variable gasUsed. Si tu transacción consume menos gas que el límite, solo pagarás el gas necesario y el resto se devolverá. Un límite demasiado bajo puede provocar que la transacción falle si las acciones que desencadena requieren más gas del indicado.",
+    "gas_price_tooltip": "La comisión que pagarás con una transacción legacy se calcula como gasPrice * gasUsed. Tu transacción no se confirmará hasta que tu gasPrice sea igual o superior al precio del gas de la red en el último bloque."
   },
   "Toast": {
     "successfully_copied": "¡Copiado correctamente!"
@@ -306,7 +327,15 @@
     "already_imported": "El token ya está importado",
     "import_symbol": "Importar {symbol}",
     "import_list_tooltip": "Aquí puedes importar una lista de tokens como archivo JSON o mediante URL.",
-    "import_token_tooltip": "Puedes importar un token introduciendo su dirección de contrato. El token se añadirá a tu «lista de tokens personalizados» en Dex223."
+    "import_token_tooltip": "Puedes importar un token introduciendo su dirección de contrato. El token se añadirá a tu «lista de tokens personalizados» en Dex223.",
+    "tokens_amount": "{amount} {amount, plural, one {token} other {tokens}}",
+    "custom_tokens_amount": "{amount} {amount, plural, one {token personalizado} other {tokens personalizados}}",
+    "found_in": "Encontrado en {amount} {amount, plural, one {lista de tokens} other {listas de tokens}}:",
+    "confirm_removing_list_text": "Confirma que quieres eliminar la lista <bold>«<list></list>»</bold>",
+    "confirm_removing_token_text": "Confirma que quieres eliminar el token personalizado <bold>«<token></token>»</bold>.",
+    "adding_list_warning": " La mayoría de las listas de tokens están gestionadas por terceros, por lo que el equipo de Dex223 no puede garantizar la exactitud de los datos que contienen. Da por hecho que cualquiera puede añadir cualquier token arbitrario a una lista. Verifica tú mismo las direcciones de los contratos y comprueba dos veces los datos de cualquier token antes de realizar una transacción financiera.",
+    "import_token_warning": " Importa tokens con precaución, ya que es posible incluir versiones falsas de tokens existentes. Asegúrate de que el token importado es compatible con Dex223. Siempre puedes verificar los datos del token mediante exploradores públicos de blockchain para evitar errores y estafas.",
+    "predicted_alert": "El token con el estándar ERC-223 todavía no existe. Los contratos del conversor predicen la dirección que ves."
   },
   "Liquidity": {
     "set_default": "Restablecer",
@@ -414,6 +443,11 @@
     "button_deposit": "Depositar",
     "button_approve": "Aprobar",
     "button_approve_and_deposit": "Aprobar y depositar",
-    "approve_transaction_modal_title": "transacciones"
+    "approve_transaction_modal_title": "transacciones",
+    "init_pool_message": "Este pool debe inicializarse antes de poder añadir liquidez. Para inicializarlo, selecciona un precio inicial para el pool. Después, introduce tu rango de precios de liquidez y el importe a depositar. Las comisiones de gas serán más altas de lo habitual debido a la transacción de inicialización.",
+    "failed_transaction_error_message": "La transacción falló por falta de gas o por un error interno del contrato. Prueba a usar un deslizamiento o un gas más altos para asegurar que se complete. Si sigues teniendo problemas, haz clic en",
+    "gas_price_tooltip": "La comisión que vas a pagar con una transacción legacy se calcula como gasPrice * gasUsed. Tu transacción no se confirmará hasta que tu gasPrice sea igual o superior al precio del gas de la red en el último bloque.",
+    "approved_tooltip": "Para depositar tokens ERC-20 en contratos debes «autorizar» al contrato a retirar el token de tu saldo. La aprobación determina cuántos tokens de tu saldo puede mover un contrato en tu nombre. Los tokens ERC-223 no requieren aprobaciones, por lo que no necesitas autorizar a ningún contrato a acceder a tu saldo.",
+    "deposited_tooltip": "Los tokens ERC-223 deben depositarse primero en el contrato para poder operar con ellos. Este importe muestra cuántos de tus tokens ya están en el contrato. Puedes retirar tus tokens ERC-223 depositados en cualquier momento."
   }
 }

@@ -74,7 +74,19 @@
     "swap_is_unavailable_for_this_pair": "A troca não está disponível para este par",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Definições aplicadas",
-    "tokens_in_two_standards_title": "Tokens nos padrões ERC-20 e ERC-223"
+    "tokens_in_two_standards_title": "Tokens nos padrões ERC-20 e ERC-223",
+    "tokens_in_two_standards_paragraph": "Desde 27 de julho de 2023, todos os tokens na rede principal Ethereum estão disponíveis em duas «versões»: ERC-20 e ERC-223. Pode sempre converter uma versão do token na outra a uma taxa de 1:1 no DEX223 ou através do <convert>conversor</convert>. Os tokens ERC-223 podem exigir menos gás para serem trocados por outro token. A maioria das exchanges centralizadas ainda não suporta depósitos ERC-223.",
+    "erc20_tooltip": "ERC-20 é um padrão de tokens na rede Ethereum. Define a «versão» do token que vai utilizar.",
+    "erc223_tooltip": "ERC-223 é um padrão alternativo de tokens na rede Ethereum. Define a «versão» do token que vai utilizar. O ERC-223 introduz melhorias de segurança e otimizações de gás que não existem no ERC-20.",
+    "network_fee_tooltip": "A taxa de rede é cobrada ao enviar qualquer transação na rede {networkName}. É paga na moeda nativa da rede (por exemplo, ETH na Ethereum).",
+    "minimum_received_tooltip": "Quantidade mínima de tokens que irá receber quando a troca for executada. O preço real pode diferir do previsto no momento da criação da transação, porque a sua transação só pode ser confirmada no bloco seguinte enquanto os preços vêm do bloco atual. Em nenhuma circunstância receberá menos do que este montante mínimo, mesmo com alterações de preço enquanto a transação está pendente.",
+    "price_impact_tooltip": "Impacto estimado da sua transação no mercado. Quando compra ou vende ativos, o preço destes altera-se em consequência, e esta métrica mostra que parte dessa alteração é causada pelas suas ações.",
+    "trading_fee_tooltip": "A taxa de negociação é cobrada em cada operação e distribuída pelos detentores do token D223.",
+    "route_tooltip": "Se a sua transação tiver um impacto elevado no mercado, poderá obter melhores preços através de arbitragem em vez de comprar ou vender a totalidade do montante num único pool. A rota mostra os outros pares de tokens que serão afetados durante a sua negociação, caso existam.",
+    "maximum_slippage_tooltip": "O preço real da troca pode ser diferente do indicado no momento do envio da transação. O slippage determina quanta variação de preço é tolerada. Se o preço real diferir do esperado mais do que o slippage máximo, a transação será automaticamente revertida e os seus tokens não serão trocados.",
+    "gas_limit_tooltip": "O limite de gás determina a quantidade de operações que a sua transação pode invocar. Quanto mais complexas forem as ações desencadeadas no contrato inteligente, maior poderá ser o limite de gás necessário. Um limite mais elevado resulta numa taxa de rede mais alta.",
+    "deadline_tooltip": "O prazo da transação define o período durante o qual a sua transação em fila continua válida. Uma transação pode permanecer pendente bastante tempo devido a valores de gás baixos ou a uma rede muito carregada. Se for confirmada após o prazo indicado, será automaticamente revertida (paga o gás mas não ocorre qualquer troca).",
+    "slippage_tooltip": "O preço real da troca pode ser diferente do indicado no momento do envio da transação. O slippage determina quanta variação de preço é tolerada. Um slippage de 5% significa que, se o preço no pool variar mais de 5% face ao esperado, a sua transação falhará automaticamente (paga o gás mas não ocorre qualquer troca)."
   },
   "Wallet": {
     "my_wallet": "A minha carteira",
@@ -121,7 +133,16 @@
     "cheap": "Mais barato",
     "fast": "Mais rápido",
     "custom": "Personalizado",
-    "edit": "Editar"
+    "edit": "Editar",
+    "cheap_tooltip": "Os valores de GÁS serão definidos para minimizar a taxa que vai pagar. A transação pode ficar pendente durante mais tempo antes de ser confirmada.",
+    "fast_tooltip": "Os valores de GÁS serão definidos para minimizar o tempo até a sua transação ser confirmada. Pode resultar numa taxa de gás mais elevada.",
+    "custom_tooltip": "Com a configuração personalizada pode definir os valores de gás manualmente.",
+    "eip1559_tooltip": "Existem dois tipos de transação: EIP-1559 e legacy. O tipo afeta a fórmula de cálculo das taxas de gás. As transações EIP-1559 são recomendadas em redes e carteiras que as suportam.",
+    "legacy_tooltip": "Existem dois tipos de transação: EIP-1559 e legacy. O tipo afeta a fórmula de cálculo das taxas de gás. As transações legacy permitem determinar o gasPrice exato que vai pagar. As EIP-1559 são recomendadas em redes que as suportam.",
+    "max_fee_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. A taxa base é determinada pela carga da rede e a taxa de prioridade pelo emissor. O gás necessário depende do tipo de ação da transação. A taxa máxima define o limite superior do pagamento total permitido. A transação só será confirmada quando a taxa base for suficientemente baixa para não exceder esse máximo.",
+    "priority_fee_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. Uma taxa de prioridade mais elevada pode reduzir o tempo até a transação ser incluída, se a carga da rede for suficientemente baixa para cumprir o critério da taxa máxima.",
+    "gas_limit_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. O limite de gás define o valor máximo da variável gasUsed. Se a transação consumir menos gás do que o limite, paga apenas o gás necessário e o restante é devolvido. Um limite demasiado baixo pode fazer a transação falhar se as ações exigirem mais gás do que o indicado.",
+    "gas_price_tooltip": "A taxa paga numa transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco."
   },
   "Toast": {
     "successfully_copied": "Copiado com sucesso!"
@@ -306,7 +327,15 @@
     "already_imported": "O token já está importado",
     "import_symbol": "Importar {symbol}",
     "import_list_tooltip": "Aqui pode importar uma lista de tokens como ficheiro JSON ou através de um URL.",
-    "import_token_tooltip": "Pode importar um token introduzindo o endereço do contrato. O token será adicionado à sua «lista de tokens personalizados» no Dex223."
+    "import_token_tooltip": "Pode importar um token introduzindo o endereço do contrato. O token será adicionado à sua «lista de tokens personalizados» no Dex223.",
+    "tokens_amount": "{amount} {amount, plural, one {token} other {tokens}}",
+    "custom_tokens_amount": "{amount} {amount, plural, one {token personalizado} other {tokens personalizados}}",
+    "found_in": "Encontrado em {amount} {amount, plural, one {lista de tokens} other {listas de tokens}}:",
+    "confirm_removing_list_text": "Confirme que pretende remover a lista <bold>«<list></list>»</bold>",
+    "confirm_removing_token_text": "Confirme que pretende remover o token personalizado <bold>«<token></token>»</bold>.",
+    "adding_list_warning": " A maioria das listas de tokens é gerida por terceiros, pelo que a equipa Dex223 não pode garantir a correção dos dados nelas apresentados. Parta do princípio de que qualquer pessoa pode adicionar qualquer token a uma lista. Verifique você mesmo os endereços dos contratos e confirme os dados de qualquer token antes de efetuar uma transação financeira.",
+    "import_token_warning": " Importe tokens com cuidado, pois é possível incluir versões falsas de tokens existentes. Certifique-se de que o token importado é compatível com o Dex223. Pode sempre verificar os dados do token através de exploradores públicos de blockchain para evitar erros e/ou fraudes.",
+    "predicted_alert": "O token com o padrão ERC-223 ainda não existe. Os contratos do conversor preveem o endereço que está a ver."
   },
   "Liquidity": {
     "set_default": "Repor",
@@ -414,6 +443,11 @@
     "button_deposit": "Depositar",
     "button_approve": "Aprovar",
     "button_approve_and_deposit": "Aprovar e depositar",
-    "approve_transaction_modal_title": "transações"
+    "approve_transaction_modal_title": "transações",
+    "init_pool_message": "Este pool tem de ser inicializado antes de poder adicionar liquidez. Para inicializar, selecione um preço inicial para o pool. Depois, introduza o seu intervalo de preços de liquidez e o montante do depósito. As taxas de gás serão mais elevadas do que o habitual devido à transação de inicialização.",
+    "failed_transaction_error_message": "A transação falhou por falta de gás ou por um erro interno do contrato. Experimente usar um slippage ou gás mais elevado para garantir que é concluída. Se o problema persistir, clique em",
+    "gas_price_tooltip": "A taxa que vai pagar com uma transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
+    "approved_tooltip": "Para depositar tokens ERC-20 em contratos, precisa de «autorizar» o contrato a levantar o token do seu saldo. A aprovação determina quantos tokens do seu saldo um contrato pode movimentar em seu nome. Os tokens ERC-223 não exigem aprovações, pelo que não precisa de autorizar nenhum contrato a aceder ao seu saldo.",
+    "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento."
   }
 }

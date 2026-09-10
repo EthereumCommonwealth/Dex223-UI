@@ -74,7 +74,19 @@
     "swap_is_unavailable_for_this_pair": "该交易对暂不支持兑换",
     "insufficient_balance": "余额不足",
     "settings_applied": "设置已应用",
-    "tokens_in_two_standards_title": "ERC-20 与 ERC-223 标准的代币"
+    "tokens_in_two_standards_title": "ERC-20 与 ERC-223 标准的代币",
+    "tokens_in_two_standards_paragraph": "自 2023 年 7 月 27 日起，以太坊主网上的所有代币都提供两种“版本”：ERC-20 和 ERC-223。您随时可以在 DEX223 上或通过<convert>转换器</convert>以 1:1 的比例将一种版本转换为另一种。将 ERC-223 代币兑换为其他代币所需的 Gas 可能更少。目前大多数中心化交易所尚不支持 ERC-223 充值。",
+    "erc20_tooltip": "ERC-20 是以太坊网络上的一种代币标准，它决定了您将使用的代币“版本”。",
+    "erc223_tooltip": "ERC-223 是以太坊网络上的另一种代币标准，它决定了您将使用的代币“版本”。ERC-223 带来了 ERC-20 所不具备的安全性改进和 Gas 优化。",
+    "network_fee_tooltip": "在 {networkName} 网络上发送任何交易时都会收取网络费用。该费用以网络的原生代币支付（例如以太坊上的 ETH）。",
+    "minimum_received_tooltip": "兑换执行后您将收到的最少代币数量。实际兑换价格可能与创建交易时的预期价格不同，因为您的交易只能在下一个区块中被确认，而价格取自当前区块。无论交易等待期间价格如何变动，您收到的数量都不会低于该最小值。",
+    "price_impact_tooltip": "您的交易对市场的预计影响。买入或卖出资产会导致其价格发生变化，该指标显示其中有多少变化是由您的操作造成的。",
+    "trading_fee_tooltip": "每笔操作都会收取交易费用，并分配给 D223 代币持有者。",
+    "route_tooltip": "如果您的交易对市场影响较大，通过套利路径可能比在单一流动性池中一次性买卖全部数量获得更好的价格。路径显示本次交易中会受到影响的其他代币交易对（如果有）。",
+    "maximum_slippage_tooltip": "实际兑换价格可能与发送交易时显示的价格不同。滑点决定了可以容忍多大的价格变动。如果实际价格与预期价格的偏差超过最大滑点，交易将自动回滚，您的代币不会被兑换。",
+    "gas_limit_tooltip": "Gas 上限决定了您的交易可以执行的操作数量。交易在智能合约中触发的操作越复杂，所需的 Gas 上限可能越高。较高的 Gas 上限会带来更高的网络费用。",
+    "deadline_tooltip": "交易期限规定了排队中的交易保持有效的时间范围。由于 Gas 设置过低或网络拥堵，交易可能长时间处于待处理状态。如果交易在指定期限之后才被确认，它将自动回滚（您需要支付 Gas，但不会发生兑换）。",
+    "slippage_tooltip": "实际兑换价格可能与发送交易时显示的价格不同。滑点决定了可以容忍多大的价格变动。5% 的滑点意味着如果池中价格相对预期变动超过 5%，您的交易将自动失败（您需要支付 Gas，但不会发生兑换）。"
   },
   "Wallet": {
     "my_wallet": "我的钱包",
@@ -121,7 +133,16 @@
     "cheap": "更便宜",
     "fast": "更快",
     "custom": "自定义",
-    "edit": "编辑"
+    "edit": "编辑",
+    "cheap_tooltip": "系统会调整 GAS 数值以尽量降低您需要支付的费用。这可能导致交易在确认前处于待处理状态的时间更长。",
+    "fast_tooltip": "系统会调整 GAS 数值以尽量缩短交易确认所需的时间。这可能导致更高的 Gas 费用。",
+    "custom_tooltip": "使用自定义交易配置，您可以手动设置 Gas 数值。",
+    "eip1559_tooltip": "交易分为两种类型：EIP-1559 和传统（legacy）。交易类型会影响 Gas 费用的计算公式。对于支持该功能的网络和钱包，建议使用 EIP-1559 交易。",
+    "legacy_tooltip": "交易分为两种类型：EIP-1559 和传统（legacy）。交易类型会影响 Gas 费用的计算公式。传统交易允许您确定将要支付的确切 gasPrice。对于支持 EIP-1559 的网络，建议使用 EIP-1559 交易。",
+    "max_fee_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。基础费用由网络负载决定，优先费用由交易发送者决定，所需 Gas 取决于交易执行的操作类型。最高费用设定了您允许交易总共消耗的上限。只有当网络基础费用低到足以让交易在不超过最高费用的情况下提交时，交易才会被确认。",
+    "priority_fee_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。如果网络负载足够低以满足最高费用条件，提高优先费用可以缩短交易提交所需的时间。",
+    "gas_limit_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。Gas 上限设定了公式中 gasUsed 变量的最大值。如果交易消耗的 Gas 少于上限，您只需支付交易实际所需的 Gas，其余部分会被退还。Gas 上限设置过低可能导致交易失败，因为交易触发的操作可能需要更多 Gas。",
+    "gas_price_tooltip": "使用传统交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。"
   },
   "Toast": {
     "successfully_copied": "复制成功！"
@@ -306,7 +327,15 @@
     "already_imported": "该代币已导入",
     "import_symbol": "导入 {symbol}",
     "import_list_tooltip": "您可以在此通过 JSON 文件或 URL 导入代币列表。",
-    "import_token_tooltip": "您可以输入合约地址来导入代币。该代币将被添加到 Dex223 中您的“自定义代币列表”。"
+    "import_token_tooltip": "您可以输入合约地址来导入代币。该代币将被添加到 Dex223 中您的“自定义代币列表”。",
+    "tokens_amount": "{amount} {amount, plural, other {个代币}}",
+    "custom_tokens_amount": "{amount} {amount, plural, other {个自定义代币}}",
+    "found_in": "在 {amount} {amount, plural, other {个代币列表}} 中找到：",
+    "confirm_removing_list_text": "请确认您要移除 <bold>«<list></list>»</bold> 列表",
+    "confirm_removing_token_text": "请确认您要移除 <bold>«<token></token>»</bold> 自定义代币。",
+    "adding_list_warning": " 大多数代币列表由第三方维护，因此 Dex223 团队无法保证这些列表中数据的正确性。请假定任何人都可以将任意代币添加到代币列表中。在进行任何资金交易之前，请自行核实代币合约地址并再次确认代币数据。",
+    "import_token_warning": " 导入代币时请谨慎，列表中可能包含现有代币的仿冒版本。请确认导入的代币与 Dex223 兼容。您可以随时通过公开的区块链浏览器核实代币数据，以避免可能的错误和诈骗。",
+    "predicted_alert": "ERC-223 标准的该代币尚不存在。您看到的地址是由转换器合约预测得出的。"
   },
   "Liquidity": {
     "set_default": "恢复默认",
@@ -414,6 +443,11 @@
     "button_deposit": "存入",
     "button_approve": "授权",
     "button_approve_and_deposit": "授权并存入",
-    "approve_transaction_modal_title": "交易"
+    "approve_transaction_modal_title": "交易",
+    "init_pool_message": "在添加流动性之前必须先初始化该流动性池。初始化时请为池选择一个初始价格，然后输入您的流动性价格区间和存入数量。由于需要执行初始化交易，Gas 费用会高于平常。",
+    "failed_transaction_error_message": "交易因 Gas 不足或合约内部错误而失败。请尝试提高滑点或 Gas 以确保交易完成。如果问题仍然存在，请点击",
+    "gas_price_tooltip": "使用传统（legacy）交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。",
+    "approved_tooltip": "要将 ERC-20 代币存入合约，您需要“授权”合约从您的余额中提取代币。授权额度决定了合约可以代您转移多少余额中的代币。ERC-223 代币无需授权，因此您不必授权合约访问您的余额。",
+    "deposited_tooltip": "ERC-223 代币必须先存入合约，才能对其进行操作。此数额显示您已存入合约的代币数量。您可以随时从合约中提取已存入的 ERC-223 代币。"
   }
 }
