@@ -9,6 +9,7 @@ import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsSt
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
 import Container from "@/components/atoms/Container";
+import SwapPriceChart from "@/components/charts/SwapPriceChart";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -63,6 +64,9 @@ export default function SwapPage() {
               </div>
 
               <TradeForm />
+              {/* Renders nothing until both tokens are chosen, so the form keeps its
+                  position on first load instead of the chart pushing it down. */}
+              <SwapPriceChart tokenA={tokenA} tokenB={tokenB} />
               <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
             </div>
           </div>
