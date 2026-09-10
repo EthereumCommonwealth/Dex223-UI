@@ -104,7 +104,6 @@ export default function useMarginPositionRecentTransactionsById({ id }: { id: st
     client: apolloClient || chainToApolloClient[DexChainId.SEPOLIA],
   });
 
-  console.log(data);
   const recentTransactions = useMemo(() => {
     if (!data) {
       return data;

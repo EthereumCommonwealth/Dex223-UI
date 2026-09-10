@@ -90,7 +90,6 @@ export default function PositionTransactionHistoryBlock({
 
   const chainId = useCurrentChainId();
 
-  console.log(recentTransactions);
   if (loading || !recentTransactions) {
     return "Loading...";
   }

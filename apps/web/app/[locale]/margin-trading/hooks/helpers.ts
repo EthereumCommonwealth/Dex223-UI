@@ -150,7 +150,6 @@ export function serializeGqlOrder(
   const { positions, duration, liquidationRewardAmount, balance, minLoan, createdAt, ...rest } =
     gqlOrder;
 
-  console.log(gqlOrder);
   return {
     ...rest,
     minLoan: BigInt(minLoan),
@@ -349,8 +348,6 @@ export function serializeGqlRecentTransactions(
       }
       case "PositionOpened": {
         const { baseAssetToken, loanAmount } = field[0] as GqlPositionOpenFields;
-        console.log(baseAssetToken);
-        console.log(loanAmount);
         return {
           type: MarginPositionTransactionType.BORROW,
           hash: gqlTx.id,

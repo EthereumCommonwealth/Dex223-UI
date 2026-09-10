@@ -342,8 +342,6 @@ export default function BorrowPage({
       }
 
       const inputAmount = parseUnits("1", base.decimals); // 1 base unit
-      console.log("Oracle address: " + order.oracle);
-      console.log("Calling oracle with:", [base.address0, collateral.address0, inputAmount]);
 
       try {
         const outputAmount = await publicClient.readContract({
@@ -357,7 +355,6 @@ export default function BorrowPage({
           throw new Error("Error getting price with oracle");
         }
 
-        console.log("Oracle output:", outputAmount);
         // output/base
         setOraclePriceError(undefined);
         return getPrice(outputAmount as bigint, inputAmount);
@@ -509,7 +506,6 @@ export default function BorrowPage({
     (async () => {
       if (!order?.baseAsset || !values.collateralToken) return;
       const r = await getOracleRatio(order.baseAsset.wrapped, values.collateralToken.wrapped);
-      console.log("Ratio from effect: " + r);
       if (r !== undefined) setRatio(r);
     })();
   }, [chainId, order, values.collateralToken, getOracleRatio]);
@@ -599,7 +595,6 @@ export default function BorrowPage({
                         // fetch fresh ratio right away and store it
                         if (order?.baseAsset) {
                           const r = await getOracleRatio(order.baseAsset.wrapped, token.wrapped);
-                          console.log("Ratio from token change: " + r);
 
                           if (r !== undefined) setRatio(r);
 
@@ -613,7 +608,7 @@ export default function BorrowPage({
                           }
                         }
                       } catch (error) {
-                        console.log(error);
+                        console.error(error);
                       }
                     }}
                     amount={values.collateralAmount}

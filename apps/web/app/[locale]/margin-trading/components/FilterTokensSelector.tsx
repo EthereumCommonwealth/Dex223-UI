@@ -61,7 +61,6 @@ export default function FilterTokensSelector({
 
   const items = virtualizer.getVirtualItems();
 
-  console.log(items);
 
   const { refs, floatingStyles, context } = useFloating({
     elements: {
@@ -99,7 +98,6 @@ export default function FilterTokensSelector({
             <div
               key={currency.wrapped.address0}
               onClick={() => {
-                console.log("Logingg..");
                 if (
                   selectedCurrencies.length >= 10 &&
                   !Boolean(selectedCurrencies.find((curr) => curr.equals(currency)))

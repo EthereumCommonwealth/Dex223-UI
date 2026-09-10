@@ -58,7 +58,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
         setStatus(PositionWithdrawStatus.ERROR_WITHDRAW);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setStatus(PositionWithdrawStatus.ERROR_WITHDRAW);
     }
 
