@@ -22,6 +22,7 @@ import { useColorScheme } from "@/lib/color-scheme";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { CurrencyAmount } from "@/sdk_bi/entities/fractions/currencyAmount";
 import { Percent } from "@/sdk_bi/entities/fractions/percent";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 
 export default function SwapDetails({
   trade,
@@ -174,7 +175,7 @@ export default function SwapDetails({
             title={t("minimum_received")}
             value={
               trade
-                ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                 .toSignificant() || "Loading..."
             }
             tooltipText={t("minimum_received_tooltip")}

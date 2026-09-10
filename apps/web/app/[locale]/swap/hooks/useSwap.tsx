@@ -49,6 +49,7 @@ import { useComputePoolAddressDex } from "@/sdk_bi/utils/computePoolAddress";
 import { TickMath } from "@/sdk_bi/utils/tickMath";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { useConfirmInWalletAlertStore } from "@/stores/useConfirmInWalletAlertStore";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import {
   RecentTransactionTitleTemplate,
   stringifyObject,
@@ -101,7 +102,7 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
 
     return BigInt(
       trade
-        .minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+        .minimumAmountOut(slippageToPercent(slippage), dependentAmount)
         .quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);

@@ -42,6 +42,7 @@ import { wrappedTokens } from "@/sdk_bi/entities/weth9";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 
 type StepTextMap = {
   [key in OperationStepStatus]: string;
@@ -351,7 +352,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 title={t("minimum_received")}
                 value={
                   trade
-                    ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                    ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                     .toSignificant() || "Loading..."
                 }
                 tooltipText={t("minimum_received_tooltip")}

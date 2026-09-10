@@ -23,6 +23,7 @@ import { ONE } from "@/sdk_bi/internalConstants";
 import { TickMath } from "@/sdk_bi/utils/tickMath";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useRecentTransactionsStore } from "@/stores/useRecentTransactionsStore";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 
 export default function useMarginSwap() {
   const { data: walletClient } = useWalletClient();
@@ -60,7 +61,7 @@ export default function useMarginSwap() {
 
     return BigInt(
       trade
-        .minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+        .minimumAmountOut(slippageToPercent(slippage), dependentAmount)
         .quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);

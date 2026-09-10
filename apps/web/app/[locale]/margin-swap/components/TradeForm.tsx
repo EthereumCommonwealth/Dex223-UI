@@ -60,6 +60,7 @@ import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { GasOption } from "@/stores/factories/createGasPriceStore";
 import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 
 const ActionButtonSize = ButtonSize.EXTRA_LARGE;
 const MobileActionButtonSize = ButtonSize.LARGE;
@@ -316,7 +317,7 @@ export default function TradeForm() {
 
     return BigInt(
       trade
-        .minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+        .minimumAmountOut(slippageToPercent(slippage), dependentAmount)
         .quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);
