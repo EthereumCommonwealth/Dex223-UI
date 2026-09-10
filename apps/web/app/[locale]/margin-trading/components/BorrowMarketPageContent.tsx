@@ -113,7 +113,7 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
         >
           <Tab title="Borrow market">
             <div className="pt-4">
-              <div className="grid grid-cols-[1fr_1fr_1fr_min-content] gap-2.5 mb-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_min-content] gap-2.5 mb-4 [&>*]:min-w-0">
                 <div className="flex flex-col gap-1">
                   <InputLabel label="Collateral tokens" tooltipText="TooltipText" />
                   <FilterTokensSelector

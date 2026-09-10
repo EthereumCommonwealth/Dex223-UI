@@ -160,7 +160,7 @@ export default function PickMultipleTokensDialog({
 
           {Boolean(tokens.length) && (
             <>
-              <div className="w-full sm:w-[600px] max-h-[580px] h-[calc(100vh-60px)] flex flex-col">
+              <div className="w-full sm:w-[600px] max-h-[580px] h-[calc(100dvh-60px)] flex flex-col">
                 <div className={clsx("card-spacing-x pb-3")}>
                   <SearchInput
                     value={tokensSearchValue}
