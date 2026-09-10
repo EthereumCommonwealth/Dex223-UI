@@ -1,0 +1,29 @@
+{
+  "Navigation": {
+    "trade": "거래",
+    "swap": "스왑",
+    "margin_trading": "마진 거래",
+    "buy_crypto": "법정화폐",
+    "pools": "풀",
+    "borrow_lend": "대출/차입",
+    "portfolio": "포트폴리오",
+    "more": "더보기",
+    "token": "토큰",
+    "token_listing": "토큰 상장",
+    "token_statistics": "통계",
+    "token_lists": "토큰 목록",
+    "social_media": "소셜 미디어",
+    "social_telegram_discussions": "텔레그램 토론방",
+    "social_telegram_announcements": "텔레그램 공지 채널",
+    "social_x_account": "DEX223",
+    "social_discord": "Discord",
+    "social_dex_x_account": "Dexaran의 X 계정",
+    "useful_links": "유용한 링크",
+    "useful_converter": "ERC20 및 ERC223 토큰 변환기",
+    "useful_losses_calculator": "ERC-20 실시간 손실 계산기",
+    "useful_front_page": "ERC223 메인 페이지",
+    "useful_page_source_codes": "페이지 소스 코드",
+    "partners": "파트너",
+    "partners_eos_support": "BlockzHub"
+  }
+}

@@ -12,7 +12,7 @@ import { locales, usePathname, useRouter } from "@/i18n/routing";
 
 const localesMap: {
   [key: string]: {
-    img: string;
+    img?: string;
     label: string;
     symbol: string;
   };
@@ -29,8 +29,25 @@ const localesMap: {
   },
   zh: {
     img: "/images/locales/zh.svg",
-    label: "中国人",
+    // Was 中国人, which means "Chinese person" rather than the language.
+    label: "中文",
     symbol: "Zh",
+  },
+  ko: {
+    label: "한국어",
+    symbol: "Ko",
+  },
+  fr: {
+    label: "Français",
+    symbol: "Fr",
+  },
+  pt: {
+    label: "Português",
+    symbol: "Pt",
+  },
+  ru: {
+    label: "Русский",
+    symbol: "Ru",
   },
 };
 export default function LocaleSwitcher({ isMobile = false }: { isMobile?: boolean }) {
@@ -68,14 +85,22 @@ export default function LocaleSwitcher({ isMobile = false }: { isMobile?: boolea
                   <SelectOption
                     onClick={() => redirectedPathName(locale)}
                     isActive={lang === locale}
-                    disabled={locale !== "en"}
                   >
-                    <Image
-                      src={localesMap[locale]?.img}
-                      alt={localesMap[locale]?.label}
-                      width={24}
-                      height={24}
-                    />
+                    {localesMap[locale]?.img ? (
+                      <Image
+                        src={localesMap[locale].img as string}
+                        alt={localesMap[locale].label}
+                        width={24}
+                        height={24}
+                      />
+                    ) : (
+                      <span
+                        aria-hidden
+                        className="w-6 h-6 flex items-center justify-center rounded-1 bg-tertiary-bg text-12 text-secondary-text"
+                      >
+                        {localesMap[locale]?.symbol}
+                      </span>
+                    )}
                     {localesMap[locale]?.label} ({localesMap[locale]?.symbol})
                   </SelectOption>
                 </li>

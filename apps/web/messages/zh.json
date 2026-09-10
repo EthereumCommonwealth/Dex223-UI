@@ -1,13 +1,29 @@
 {
-  "Trade": {
+  "Navigation": {
     "trade": "交易",
-    "swap": "交易cio",
-    "margin-trading": "Margin tradingio",
-    "portfolio": "Portfolioio",
-    "lending-and-borrowing": "Borrow/Lendio",
-    "pools": "Poolsio",
-    "token-listing": "Token listingio",
-    "lib": "Libio"
+    "swap": "兑换",
+    "margin_trading": "保证金交易",
+    "buy_crypto": "法币",
+    "pools": "流动性池",
+    "borrow_lend": "借入/借出",
+    "portfolio": "投资组合",
+    "more": "更多",
+    "token": "代币",
+    "token_listing": "代币上市",
+    "token_statistics": "统计数据",
+    "token_lists": "代币列表",
+    "social_media": "社交媒体",
+    "social_telegram_discussions": "Telegram 讨论组",
+    "social_telegram_announcements": "Telegram 公告频道",
+    "social_x_account": "DEX223",
+    "social_discord": "Discord",
+    "social_dex_x_account": "Dexaran 的 X 账号",
+    "useful_links": "实用链接",
+    "useful_converter": "ERC20 与 ERC223 代币转换器",
+    "useful_losses_calculator": "ERC-20 实时损失计算器",
+    "useful_front_page": "ERC223 首页",
+    "useful_page_source_codes": "页面源代码",
+    "partners": "合作伙伴",
+    "partners_eos_support": "BlockzHub"
   }
 }
-

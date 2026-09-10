@@ -1,0 +1,29 @@
+{
+  "Navigation": {
+    "trade": "Торговля",
+    "swap": "Обмен",
+    "margin_trading": "Маржинальная торговля",
+    "buy_crypto": "Фиат",
+    "pools": "Пулы",
+    "borrow_lend": "Займы/Кредиты",
+    "portfolio": "Портфель",
+    "more": "Ещё",
+    "token": "Токен",
+    "token_listing": "Листинг токенов",
+    "token_statistics": "Статистика",
+    "token_lists": "Списки токенов",
+    "social_media": "Соцсети",
+    "social_telegram_discussions": "Обсуждения в Telegram",
+    "social_telegram_announcements": "Канал анонсов в Telegram",
+    "social_x_account": "DEX223",
+    "social_discord": "Discord",
+    "social_dex_x_account": "Аккаунт Dexaran в X",
+    "useful_links": "Полезные ссылки",
+    "useful_converter": "Конвертер токенов ERC20 и ERC223",
+    "useful_losses_calculator": "Калькулятор потерь ERC-20 в реальном времени",
+    "useful_front_page": "Главная страница ERC223",
+    "useful_page_source_codes": "Исходный код страницы",
+    "partners": "Партнёры",
+    "partners_eos_support": "BlockzHub"
+  }
+}
