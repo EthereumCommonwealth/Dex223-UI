@@ -60,32 +60,34 @@ export function usePoolPriceChart({
   const series: PricePoint[] = useMemo(() => {
     const rows: RawDayData[] = data?.poolDayDatas ?? [];
 
-    return rows
-      .map((row) => {
-        const open = Number(row.open);
-        const high = Number(row.high);
-        const low = Number(row.low);
-        const close = Number(row.close);
+    return (
+      rows
+        .map((row) => {
+          const open = Number(row.open);
+          const high = Number(row.high);
+          const low = Number(row.low);
+          const close = Number(row.close);
 
-        // A day with no trades can carry zeroes; inverting those would produce
-        // Infinity and blow up the y-scale, so drop them rather than plot a spike.
-        if (![open, high, low, close].every((n) => Number.isFinite(n) && n > 0)) {
-          return null;
-        }
+          // A day with no trades can carry zeroes; inverting those would produce
+          // Infinity and blow up the y-scale, so drop them rather than plot a spike.
+          if (![open, high, low, close].every((n) => Number.isFinite(n) && n > 0)) {
+            return null;
+          }
 
-        return {
-          date: row.date,
-          // High and low swap places when the quote direction flips.
-          open: inverted ? 1 / open : open,
-          high: inverted ? 1 / low : high,
-          low: inverted ? 1 / high : low,
-          close: inverted ? 1 / close : close,
-          volumeUSD: Number(row.volumeUSD) || 0,
-        };
-      })
-      .filter((p): p is PricePoint => p !== null)
-      // The query asks for the most recent days first; the chart draws left to right.
-      .sort((a, b) => a.date - b.date);
+          return {
+            date: row.date,
+            // High and low swap places when the quote direction flips.
+            open: inverted ? 1 / open : open,
+            high: inverted ? 1 / low : high,
+            low: inverted ? 1 / high : low,
+            close: inverted ? 1 / close : close,
+            volumeUSD: Number(row.volumeUSD) || 0,
+          };
+        })
+        .filter((p): p is PricePoint => p !== null)
+        // The query asks for the most recent days first; the chart draws left to right.
+        .sort((a, b) => a.date - b.date)
+    );
   }, [data, inverted]);
 
   const change = useMemo(() => {

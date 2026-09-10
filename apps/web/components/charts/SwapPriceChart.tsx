@@ -5,8 +5,8 @@ import { useMemo, useState } from "react";
 
 import PriceChart from "@/components/charts/PriceChart";
 import { ChartRange, PricePoint, usePoolPriceChart } from "@/hooks/usePoolPriceChart";
-import { Currency } from "@/sdk_bi/entities/currency";
 import { FeeAmount } from "@/sdk_bi/constants";
+import { Currency } from "@/sdk_bi/entities/currency";
 import { useComputePoolAddressDex } from "@/sdk_bi/utils/computePoolAddress";
 
 const RANGES: ChartRange[] = [7, 30, 90];

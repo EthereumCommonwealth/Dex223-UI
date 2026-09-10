@@ -13,12 +13,7 @@ import gql from "graphql-tag";
  */
 export const PoolPriceChartQuery = gql`
   query PoolPriceChart($poolId: ID!, $days: Int!) {
-    poolDayDatas(
-      first: $days
-      orderBy: date
-      orderDirection: desc
-      where: { pool: $poolId }
-    ) {
+    poolDayDatas(first: $days, orderBy: date, orderDirection: desc, where: { pool: $poolId }) {
       id
       date
       open
