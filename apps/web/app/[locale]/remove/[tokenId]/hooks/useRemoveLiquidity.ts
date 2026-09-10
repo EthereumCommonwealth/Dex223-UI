@@ -196,7 +196,16 @@ export default function useRemoveLiquidity() {
       );
       if (hash) {
         setStatus(RemoveLiquidityStatus.LOADING);
-        await publicClient.waitForTransactionReceipt({ hash });
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+        // A reverted transaction still produces a receipt, so the status has to be
+        // inspected. Without this a failed removal was reported as successful and the
+        // deposits refresh was triggered against unchanged state.
+        if (receipt.status !== "success") {
+          setStatus(RemoveLiquidityStatus.ERROR);
+          return { success: false };
+        }
+
         setStatus(RemoveLiquidityStatus.SUCCESS);
         setRefreshDepositsTrigger(true);
         return { success: true };

@@ -197,7 +197,16 @@ export default function useWithdraw({
 
         if (hash) {
           setStatus(AllowanceStatus.LOADING);
-          await publicClient.waitForTransactionReceipt({ hash });
+          const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+          // A reverted transaction still produces a receipt; without checking it a
+          // failed withdrawal was shown to the user as successful.
+          if (receipt.status !== "success") {
+            setStatus(AllowanceStatus.INITIAL);
+            addToast("Withdraw failed", "error");
+            return;
+          }
+
           setStatus(AllowanceStatus.SUCCESS);
           setRefreshDepositsTrigger(true);
         }
