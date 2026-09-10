@@ -11,7 +11,17 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
-  const API_URL = `https://api.simpleswap.io/get_estimated?api_key=${process.env.SIMPLE_SWAP_API_KEY}&fixed=${isFixed}&currency_from=${currencyFrom}&currency_to=${currencyTo}&amount=${amount}`;
+  // Values arrive from the query string and were previously interpolated raw, so a
+  // caller could append their own parameters to the upstream request - this call is
+  // made with our API key. URLSearchParams encodes every value.
+  const query = new URLSearchParams({
+    api_key: process.env.SIMPLE_SWAP_API_KEY ?? "",
+    fixed: isFixed ?? "",
+    currency_from: currencyFrom,
+    currency_to: currencyTo,
+    amount,
+  });
+  const API_URL = `https://api.simpleswap.io/get_estimated?${query.toString()}`;
 
   try {
     const response = await fetch(API_URL, {
@@ -26,6 +36,9 @@ export async function GET(request: NextRequest) {
       status: response.status,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // The upstream request carries our API key; echoing its failure text back to
+    // the caller risks handing over more than intended. Log it, return a fixed message.
+    console.error("simpleswap request failed:", error?.message);
+    return NextResponse.json({ error: "Upstream request failed" }, { status: 500 });
   }
 }
