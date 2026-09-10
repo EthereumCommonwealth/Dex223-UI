@@ -5,18 +5,21 @@ import { locales } from "@/i18n/routing";
 
 // Public, crawlable surfaces only. Routes keyed by a position or pool id are
 // per-user and unbounded, so they are excluded here and in robots.ts.
-const ROUTES: { path: string; priority: number; changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] }[] =
-  [
-    { path: "swap", priority: 1, changeFrequency: "daily" },
-    { path: "pools", priority: 0.9, changeFrequency: "daily" },
-    { path: "pools/positions", priority: 0.6, changeFrequency: "weekly" },
-    { path: "add", priority: 0.8, changeFrequency: "monthly" },
-    { path: "margin-trading", priority: 0.8, changeFrequency: "weekly" },
-    { path: "portfolio", priority: 0.6, changeFrequency: "weekly" },
-    { path: "token-listing", priority: 0.7, changeFrequency: "weekly" },
-    { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
-    { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
-  ];
+const ROUTES: {
+  path: string;
+  priority: number;
+  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
+}[] = [
+  { path: "swap", priority: 1, changeFrequency: "daily" },
+  { path: "pools", priority: 0.9, changeFrequency: "daily" },
+  { path: "pools/positions", priority: 0.6, changeFrequency: "weekly" },
+  { path: "add", priority: 0.8, changeFrequency: "monthly" },
+  { path: "margin-trading", priority: 0.8, changeFrequency: "weekly" },
+  { path: "portfolio", priority: 0.6, changeFrequency: "weekly" },
+  { path: "token-listing", priority: 0.7, changeFrequency: "weekly" },
+  { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
+  { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
+];
 
 const url = (locale: string, path: string) => `${SITE_URL}/${locale}/${path}`;
 

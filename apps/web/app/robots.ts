@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_URL, isIndexable } from "@/config/site";
+import { isIndexable, SITE_URL } from "@/config/site";
 
 export default function robots(): MetadataRoute.Robots {
   // The previous public/robots.txt was an unconditional "Disallow: /", which is correct
