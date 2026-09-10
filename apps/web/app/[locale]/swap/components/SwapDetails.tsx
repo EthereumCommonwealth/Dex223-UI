@@ -16,6 +16,7 @@ import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
 import { ThemeColors } from "@/config/theme/colors";
 import { formatFloat } from "@/functions/formatFloat";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { useColorScheme } from "@/lib/color-scheme";
@@ -174,7 +175,7 @@ export default function SwapDetails({
             title={t("minimum_received")}
             value={
               trade
-                ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                 .toSignificant() || "Loading..."
             }
             tooltipText={t("minimum_received_tooltip")}

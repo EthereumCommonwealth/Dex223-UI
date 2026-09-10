@@ -14,6 +14,7 @@ import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMargin
 import { useMarginTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -59,9 +60,7 @@ export default function useMarginSwap() {
     }
 
     return BigInt(
-      trade
-        .minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
-        .quotient.toString(),
+      trade.minimumAmountOut(slippageToPercent(slippage), dependentAmount).quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);
 

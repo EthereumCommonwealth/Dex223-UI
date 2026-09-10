@@ -32,6 +32,7 @@ import OperationStepRow, {
 import { networks } from "@/config/networks";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -351,7 +352,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 title={t("minimum_received")}
                 value={
                   trade
-                    ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                    ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                     .toSignificant() || "Loading..."
                 }
                 tooltipText={t("minimum_received_tooltip")}

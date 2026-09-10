@@ -35,6 +35,7 @@ import { networks } from "@/config/networks";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
@@ -701,7 +702,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 title={t("minimum_received")}
                 value={
                   trade
-                    ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                    ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                     .toSignificant() || "Loading..."
                 }
                 tooltipText={t("minimum_received_tooltip")}
