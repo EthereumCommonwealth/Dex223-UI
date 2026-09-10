@@ -8,6 +8,7 @@ import { PropsWithChildren } from "react";
 import { cookieToInitialState } from "wagmi";
 
 import Providers from "@/app/providers";
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { config } from "@/config/wagmi/config";
 
 const golos_text = Golos_Text({
@@ -32,6 +33,7 @@ export default async function RootLayout({ children, params }: PropsWithChildren
     <html suppressHydrationWarning lang={locale}>
       <body className={clsx(golos_text.className)}>
         <Providers initialState={initialState}>{children}</Providers>
+        <GoogleAnalytics />
       </body>
     </html>
   );
