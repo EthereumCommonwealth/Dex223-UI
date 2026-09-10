@@ -42,7 +42,6 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
     return position.assets.length === position.order.currencyLimit;
   }, [position.assets.length, position.order.currencyLimit]);
 
-
   return (
     <div className="w-[600px] card-spacing-x card-spacing-b bg-primary-bg rounded-5">
       <>

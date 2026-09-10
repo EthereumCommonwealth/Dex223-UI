@@ -61,7 +61,6 @@ export default function FilterTokensSelector({
 
   const items = virtualizer.getVirtualItems();
 
-
   const { refs, floatingStyles, context } = useFloating({
     elements: {
       reference: ref.current,

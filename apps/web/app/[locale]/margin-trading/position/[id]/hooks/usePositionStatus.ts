@@ -17,6 +17,5 @@ export default function usePositionStatus(position: MarginPosition) {
     },
   });
 
-
   return { expectedBalance: data?.[0], actualBalance: data?.[1] };
 }

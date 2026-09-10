@@ -4,7 +4,6 @@ export default function calculateTotalOrderBalance(order: LendingOrder) {
   const now = Date.now();
   const FIXED_POINT = 1_000_000n; // 6 decimal precision
 
-
   const repayableFromPositions = order.positions
     .filter((p) => !p.isClosed && !p.isLiquidated)
     .map((position) => {

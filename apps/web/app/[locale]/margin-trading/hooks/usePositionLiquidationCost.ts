@@ -18,7 +18,6 @@ export default function usePositionLiquidationCost(position: MarginPosition | un
   }, [position?.assets, position?.loanAsset]);
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
 
-
   return useMemo(() => {
     const totalGasAmount = baseLiquidationGasAmount * 2 + baseSwapGasAmount * swapsForLiquidation;
 
