@@ -12,6 +12,7 @@ import Container from "@/components/atoms/Container";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useSwapAnalytics } from "@/hooks/useSwapAnalytics";
 import { useSwapSearchParams } from "@/hooks/useSwapSearchParams";
 
 export default function SwapPage() {
@@ -23,6 +24,9 @@ export default function SwapPage() {
   const chainId = useCurrentChainId();
 
   const { tokenA, tokenB, reset: resetTokens } = useSwapTokensStore();
+
+  // Symbols and chain only - never addresses or amounts. See lib/analytics.ts.
+  useSwapAnalytics({ tokenIn: tokenA?.symbol, tokenOut: tokenB?.symbol, chainId });
 
   const { reset: resetAmount } = useSwapAmountsStore();
 
