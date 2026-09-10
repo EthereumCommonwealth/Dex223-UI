@@ -136,9 +136,18 @@ const DECIMALS = 18n;
 const ONE = 10n ** DECIMALS;
 
 function toFixedWithoutExp(n: number, decimals = 18): string {
-  if (n === 0) return "0";
-  const [integer, decimal = ""] = n.toFixed(decimals).split(".");
-  return `${integer}.${decimal.slice(0, decimals)}`;
+  // Number.prototype.toFixed switches to exponential notation at 1e21 - exactly the
+  // case this helper exists to prevent - so it used to return strings like "1e+21."
+  // for a large 1/ratio. parseUnits rejects that, and the surrounding try/catch turned
+  // the failure into "Invalid borrow amount" or a collateral field that silently
+  // stopped updating. Non-finite input produced "Infinity." and "NaN." the same way.
+  if (!Number.isFinite(n) || n === 0) return "0";
+
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: decimals,
+    minimumFractionDigits: 0,
+    useGrouping: false,
+  }).format(n);
 }
 
 function getFixedPrice(ratio: number): bigint {
