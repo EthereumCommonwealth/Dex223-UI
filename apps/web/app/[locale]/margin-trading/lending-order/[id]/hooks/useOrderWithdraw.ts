@@ -99,7 +99,7 @@ export default function useOrderWithdraw({
         setStatus(OrderWithdrawStatus.ERROR_WITHDRAW);
       }
     } catch (e) {
-      console.log(e);
+      console.error(e);
       setStatus(OrderWithdrawStatus.ERROR_WITHDRAW);
     }
 

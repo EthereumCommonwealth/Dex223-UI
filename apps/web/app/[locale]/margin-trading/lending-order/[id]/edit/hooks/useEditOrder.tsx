@@ -272,7 +272,7 @@ export default function useEditOrder() {
 
         // console.log("Receipt", receipt);
       } catch (e) {
-        console.log(e);
+        console.error(e);
         addToast("Unexpected error", "error");
         setStatus(EditOrderStatus.INITIAL);
       }

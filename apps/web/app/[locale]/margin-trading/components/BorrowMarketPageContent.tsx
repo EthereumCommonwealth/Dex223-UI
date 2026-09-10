@@ -95,7 +95,6 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
     }
   }
 
-  console.log(collateralFilterTokens);
   return (
     <div className="my-10">
       <Container>

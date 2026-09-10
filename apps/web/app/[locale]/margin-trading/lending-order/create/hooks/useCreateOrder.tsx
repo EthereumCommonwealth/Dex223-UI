@@ -283,7 +283,6 @@ export default function useCreateOrder() {
         const createOrderLog = parsedEventLog.find((log) => log.eventName === "OrderCreated");
 
         if (!createOrderLog) {
-          console.log("CREATE ORDER LOG NOT FOUND!");
           return;
         }
 
@@ -492,12 +491,11 @@ export default function useCreateOrder() {
           } else {
             setStatus(CreateOrderStatus.ERROR_DEPOSIT);
           }
-          console.log(receipt);
         }
 
         // console.log("Receipt", receipt);
       } catch (e) {
-        console.log(e);
+        console.error(e);
         addToast("Unexpected error", "error");
         setStatus(CreateOrderStatus.INITIAL);
       }
