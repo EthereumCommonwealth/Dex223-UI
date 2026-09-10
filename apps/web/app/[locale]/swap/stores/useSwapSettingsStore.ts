@@ -1,4 +1,12 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+import {
+  DEFAULT_DEADLINE,
+  DEFAULT_SLIPPAGE,
+  safeDeadline,
+  safeSlippage,
+} from "@/stores/settingsValidation";
 
 export enum SlippageType {
   AUTO,
@@ -34,20 +42,49 @@ interface SwapSettingsStore {
   };
 }
 
-const defaultSlippage = 0.5;
-const defaultDeadline = 20;
+const defaultSlippage = DEFAULT_SLIPPAGE;
+const defaultDeadline = DEFAULT_DEADLINE;
 
-export const useSwapSettingsStore = create<SwapSettingsStore>((set, get) => ({
-  slippage: defaultSlippage,
-  slippageType: SlippageType.MEDIUM,
-  deadline: defaultDeadline,
+const localStorageKey = "swap-transaction-settings";
 
-  setSlippage: (slippage) => set({ slippage }),
-  setDeadline: (deadline) => set({ deadline }),
-  setSlippageType: (slippageType) => set({ slippageType }),
-  computed: {
-    get isModified() {
-      return get().slippage !== defaultSlippage || get().deadline !== defaultDeadline;
+export const useSwapSettingsStore = create<SwapSettingsStore>()(
+  persist(
+    (set, get) => ({
+      slippage: defaultSlippage,
+      slippageType: SlippageType.MEDIUM,
+      deadline: defaultDeadline,
+
+      setSlippage: (slippage) => set({ slippage: safeSlippage(slippage) }),
+      setDeadline: (deadline) => set({ deadline: safeDeadline(deadline) }),
+      setSlippageType: (slippageType) => set({ slippageType }),
+      computed: {
+        get isModified() {
+          return get().slippage !== defaultSlippage || get().deadline !== defaultDeadline;
+        },
+      },
+    }),
+    {
+      name: localStorageKey,
+      // `computed` holds a getter, which cannot round-trip through JSON - persisting it
+      // would store a snapshot that shadows the live getter after rehydration.
+      partialize: (state) => ({
+        slippage: state.slippage,
+        deadline: state.deadline,
+        slippageType: state.slippageType,
+      }),
+      merge: (persisted, current) => {
+        const p = (persisted ?? {}) as Partial<SwapSettingsStore>;
+        const slippageType =
+          p.slippageType !== undefined && SlippageType[p.slippageType] !== undefined
+            ? p.slippageType
+            : SlippageType.MEDIUM;
+        return {
+          ...current,
+          slippage: safeSlippage(p.slippage),
+          deadline: safeDeadline(p.deadline),
+          slippageType,
+        };
+      },
     },
-  },
-}));
+  ),
+);
