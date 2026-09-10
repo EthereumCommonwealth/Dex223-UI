@@ -1,7 +1,7 @@
 "use client";
 
-import Script from "next/script";
 import { usePathname, useSearchParams } from "next/navigation";
+import Script from "next/script";
 import { Suspense, useEffect } from "react";
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
@@ -38,7 +38,14 @@ export function redactPath(pathname: string): string {
  * allowlist is forwarded. Everything else is dropped rather than redacted, because a
  * value we have not thought about is more likely to be sensitive than useful.
  */
-const ALLOWED_QUERY_KEYS = new Set(["tab", "chain", "referrer", "utm_source", "utm_medium", "utm_campaign"]);
+const ALLOWED_QUERY_KEYS = new Set([
+  "tab",
+  "chain",
+  "referrer",
+  "utm_source",
+  "utm_medium",
+  "utm_campaign",
+]);
 
 function sanitizeQuery(params: URLSearchParams): string {
   const kept = new URLSearchParams();
