@@ -7,6 +7,7 @@ import { headers } from "next/headers";
 import { PropsWithChildren } from "react";
 import { cookieToInitialState } from "wagmi";
 
+import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import Providers from "@/app/providers";
 import { config } from "@/config/wagmi/config";
 
@@ -32,6 +33,7 @@ export default async function RootLayout({ children, params }: PropsWithChildren
     <html suppressHydrationWarning lang={locale}>
       <body className={clsx(golos_text.className)}>
         <Providers initialState={initialState}>{children}</Providers>
+        <GoogleAnalytics />
       </body>
     </html>
   );
