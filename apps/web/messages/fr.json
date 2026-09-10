@@ -74,7 +74,19 @@
     "swap_is_unavailable_for_this_pair": "L’échange n’est pas disponible pour cette paire",
     "insufficient_balance": "Solde insuffisant",
     "settings_applied": "Paramètres appliqués",
-    "tokens_in_two_standards_title": "Jetons aux standards ERC-20 et ERC-223"
+    "tokens_in_two_standards_title": "Jetons aux standards ERC-20 et ERC-223",
+    "tokens_in_two_standards_paragraph": "Depuis le 27 juillet 2023, tous les jetons du réseau principal Ethereum existent en deux « versions » : ERC-20 et ERC-223. Vous pouvez toujours convertir une version en l’autre au taux de 1:1 sur DEX223 ou via le <convert>convertisseur</convert>. Les jetons ERC-223 peuvent nécessiter moins de gas pour être échangés contre un autre jeton. La plupart des plateformes centralisées ne prennent pas encore en charge les dépôts ERC-223.",
+    "erc20_tooltip": "ERC-20 est un standard de jetons sur le réseau Ethereum. Il définit la « version » du jeton que vous allez utiliser.",
+    "erc223_tooltip": "ERC-223 est un standard de jetons alternatif sur le réseau Ethereum. Il définit la « version » du jeton que vous allez utiliser. ERC-223 apporte des améliorations de sécurité et des optimisations de gas absentes d’ERC-20.",
+    "network_fee_tooltip": "Les frais de réseau sont prélevés lors de l’envoi de toute transaction sur le réseau {networkName}. Ils sont payés dans la monnaie native du réseau (par exemple ETH sur Ethereum).",
+    "minimum_received_tooltip": "Quantité minimale de jetons que vous recevrez lorsque l’échange sera exécuté. Le prix réel peut différer de celui prévu au moment de la création de la transaction, car votre transaction ne peut être confirmée qu’au bloc suivant alors que les prix proviennent du bloc actuel. En aucun cas vous ne recevrez moins que ce montant minimal, même si le prix évolue pendant que la transaction est en attente.",
+    "price_impact_tooltip": "Impact estimé de votre transaction sur le marché. Lorsque vous achetez ou vendez des actifs, leur prix évolue en conséquence, et cette mesure indique quelle part de cette évolution est due à vos actions.",
+    "trading_fee_tooltip": "Les frais de transaction sont prélevés sur chaque opération et redistribués aux détenteurs du jeton D223.",
+    "route_tooltip": "Si votre transaction a un impact important sur le marché, vous pouvez obtenir de meilleurs prix par arbitrage plutôt qu’en achetant ou vendant la totalité du montant sur un seul pool. La route indique les autres paires de jetons affectées lors de votre échange, le cas échéant.",
+    "maximum_slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation de prix tolérée. Si le prix réel s’écarte du prix attendu de plus que le slippage maximum, la transaction sera automatiquement annulée et vos jetons ne seront pas échangés.",
+    "gas_limit_tooltip": "La limite de gas détermine le nombre d’opérations que votre transaction peut déclencher. Plus les actions déclenchées dans le contrat intelligent sont complexes, plus la limite de gas requise peut être élevée. Une limite plus élevée entraîne des frais de réseau plus élevés.",
+    "deadline_tooltip": "Le délai de transaction définit la période pendant laquelle votre transaction en file d’attente reste valide. Une transaction peut rester en attente assez longtemps en raison de valeurs de gas faibles ou d’une forte charge du réseau. Si elle est confirmée après le délai indiqué, elle sera automatiquement annulée (vous paierez le gas mais aucun échange n’aura lieu).",
+    "slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation tolérée. Un slippage de 5% signifie que si le prix du pool varie de plus de 5% par rapport au prix attendu, votre transaction échouera automatiquement (vous paierez le gas mais aucun échange n’aura lieu)."
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",
@@ -121,7 +133,16 @@
     "cheap": "Moins cher",
     "fast": "Plus rapide",
     "custom": "Personnalisé",
-    "edit": "Modifier"
+    "edit": "Modifier",
+    "cheap_tooltip": "Les valeurs de GAS seront réglées pour minimiser les frais que vous allez payer. La transaction peut rester en attente plus longtemps avant d’être confirmée.",
+    "fast_tooltip": "Les valeurs de GAS seront réglées pour minimiser le temps de confirmation de votre transaction. Cela peut entraîner des frais de gas plus élevés.",
+    "custom_tooltip": "La configuration personnalisée vous permet de définir les valeurs de gas manuellement.",
+    "eip1559_tooltip": "Il existe deux types de transactions : EIP-1559 et legacy. Le type influe sur la formule de calcul des frais de gas. Les transactions EIP-1559 sont recommandées pour les réseaux et portefeuilles qui les prennent en charge.",
+    "legacy_tooltip": "Il existe deux types de transactions : EIP-1559 et legacy. Le type influe sur la formule de calcul des frais de gas. Les transactions legacy permettent de fixer le gasPrice exact que vous paierez. Les transactions EIP-1559 sont recommandées sur les réseaux qui les prennent en charge.",
+    "max_fee_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. Le frais de base dépend de la charge du réseau, le frais de priorité est fixé par l’émetteur. Le gas requis dépend du type d’action réalisée. Le frais maximum fixe la limite supérieure du paiement total autorisé. La transaction ne sera confirmée que lorsque le frais de base sera assez bas pour ne pas dépasser ce maximum.",
+    "priority_fee_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. Un frais de priorité plus élevé peut réduire le temps d’inclusion de votre transaction si la charge du réseau est suffisamment faible pour respecter le frais maximum.",
+    "gas_limit_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. La limite de gas fixe la borne supérieure de la variable gasUsed. Si votre transaction consomme moins que la limite, vous ne paierez que le gas nécessaire et le reste sera remboursé. Une limite trop basse peut faire échouer la transaction si les actions déclenchées nécessitent plus de gas.",
+    "gas_price_tooltip": "Les frais payés avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc."
   },
   "Toast": {
     "successfully_copied": "Copié !"
@@ -306,7 +327,15 @@
     "already_imported": "Ce jeton est déjà importé",
     "import_symbol": "Importer {symbol}",
     "import_list_tooltip": "Vous pouvez importer une liste de jetons sous forme de fichier JSON ou via une URL.",
-    "import_token_tooltip": "Vous pouvez importer un jeton en saisissant son adresse de contrat. Il sera ajouté à votre « liste de jetons personnalisés » dans Dex223."
+    "import_token_tooltip": "Vous pouvez importer un jeton en saisissant son adresse de contrat. Il sera ajouté à votre « liste de jetons personnalisés » dans Dex223.",
+    "tokens_amount": "{amount} {amount, plural, one {jeton} other {jetons}}",
+    "custom_tokens_amount": "{amount} {amount, plural, one {jeton personnalisé} other {jetons personnalisés}}",
+    "found_in": "Trouvé dans {amount} {amount, plural, one {liste de jetons} other {listes de jetons}} :",
+    "confirm_removing_list_text": "Confirmez que vous souhaitez supprimer la liste <bold>«<list></list>»</bold>",
+    "confirm_removing_token_text": "Confirmez que vous souhaitez supprimer le jeton personnalisé <bold>«<token></token>»</bold>.",
+    "adding_list_warning": " La plupart des listes de jetons sont gérées par des tiers ; l’équipe Dex223 ne peut donc pas garantir l’exactitude des données qu’elles contiennent. Partez du principe que n’importe qui peut ajouter n’importe quel jeton à une liste. Vérifiez vous-même les adresses des contrats et contrôlez les données de chaque jeton avant d’effectuer une transaction financière.",
+    "import_token_warning": " Importez des jetons avec prudence : il est possible d’y inclure de fausses versions de jetons existants. Assurez-vous que le jeton importé est compatible avec Dex223. Vous pouvez toujours vérifier les données du jeton via des explorateurs de blockchain publics afin d’éviter les erreurs et les arnaques.",
+    "predicted_alert": "Le jeton au standard ERC-223 n’existe pas encore. Les contrats du convertisseur prédisent l’adresse que vous voyez."
   },
   "Liquidity": {
     "set_default": "Réinitialiser",
@@ -414,6 +443,11 @@
     "button_deposit": "Déposer",
     "button_approve": "Approuver",
     "button_approve_and_deposit": "Approuver et déposer",
-    "approve_transaction_modal_title": "transactions"
+    "approve_transaction_modal_title": "transactions",
+    "init_pool_message": "Ce pool doit être initialisé avant de pouvoir ajouter de la liquidité. Pour l’initialiser, choisissez un prix de départ pour le pool. Saisissez ensuite votre fourchette de prix et le montant du dépôt. Les frais de gas seront plus élevés que d’habitude en raison de la transaction d’initialisation.",
+    "failed_transaction_error_message": "La transaction a échoué par manque de gas ou en raison d’une erreur interne du contrat. Essayez un slippage ou un gas plus élevé pour garantir son exécution. Si le problème persiste, cliquez sur",
+    "gas_price_tooltip": "Les frais que vous payez avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
+    "approved_tooltip": "Pour déposer des jetons ERC-20 dans des contrats, vous devez « autoriser » le contrat à prélever le jeton sur votre solde. L’approbation détermine la quantité de jetons de votre solde qu’un contrat peut déplacer en votre nom. Les jetons ERC-223 ne nécessitent pas d’approbation, vous n’avez donc pas à autoriser un contrat à accéder à votre solde.",
+    "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment."
   }
 }
