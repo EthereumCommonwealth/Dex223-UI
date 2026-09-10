@@ -1,7 +1,7 @@
 import Preloader from "@repo/ui/preloader";
 import { Formik } from "formik";
 import { useTranslations } from "next-intl";
-import { ChangeEvent, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useConnect } from "wagmi";
 
 import DialogHeader from "@/components/atoms/DialogHeader";
@@ -62,6 +62,15 @@ export default function KeystoreConnectDialog({ isOpen, setIsOpen }: Props) {
 
   const { connect } = useConnect();
 
+  // Closing the dialog without unlocking used to leave a typed password sitting in
+  // component state, because the dialog is hidden rather than unmounted.
+  useEffect(() => {
+    if (!isOpen) {
+      setPassword("");
+      setError(null);
+    }
+  }, [isOpen]);
+
   const importKeystoreFileHandler = async () => {
     setIsUnlockingKeystore(true);
     try {
@@ -72,13 +81,22 @@ export default function KeystoreConnectDialog({ isOpen, setIsOpen }: Props) {
         const connector = keystore({ pk: PK });
         connect({ chainId: chainToConnect, connector });
 
+        // The dialog is not unmounted when it closes, so anything left in state stays
+        // in memory and is readable from React devtools. The password is of no further
+        // use once the key has been derived, and the decrypted key itself is only held
+        // inside the connector closure.
+        setPassword("");
+        setKeystore(null);
+        setSelectedFile(null);
+
         setIsOpen(false);
         setConnectWalletDialogOpened(false);
       } else {
         setError(t("wrong_password"));
       }
     } catch (error) {
-      console.log("importKeystoreFileHandler ~ error:", error);
+      // Deliberately not logged: this is the failure path of a decryption routine that
+      // was handed the user's password, and its error can carry the input back out.
       setError(t("wrong_password"));
     } finally {
       setIsUnlockingKeystore(false);
