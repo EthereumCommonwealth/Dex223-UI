@@ -100,7 +100,7 @@ export function Revenue() {
     searchValue && isAddress(searchValue) ? (searchValue as Address) : undefined;
   const {
     userStaked,
-    stakingPercentage,
+    stakingPercentageFormatted,
     isLoadingUserData,
     redTotalSupply,
     isCorrectNetwork,
@@ -376,7 +376,7 @@ export function Revenue() {
                       {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
                     </span>
                     <span className="text-12 md:text-13 xl:text-14 text-secondary-text">
-                      {stakingPercentage}%
+                      {stakingPercentageFormatted}%
                     </span>
                   </div>
 

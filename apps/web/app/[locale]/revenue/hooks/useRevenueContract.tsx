@@ -358,10 +358,16 @@ export default function useRevenueContract({
     if (!userStaked || !redTotalSupply || redTotalSupply === 0n) {
       return 0;
     }
-    const percentage = (Number(userStaked) / Number(redTotalSupply)) * 100;
-    console.log(percentage, "percentage");
-    return percentage;
+    return (Number(userStaked) / Number(redTotalSupply)) * 100;
   }, [userStaked, redTotalSupply]);
+
+  // The raw ratio is tiny against total supply, and rendering the float directly
+  // produced user-visible exponential notation such as "8.811078189098033e-21%".
+  const stakingPercentageFormatted = useMemo(() => {
+    if (!stakingPercentage || !Number.isFinite(stakingPercentage)) return "0";
+    if (stakingPercentage > 0 && stakingPercentage < 0.01) return "<0.01";
+    return stakingPercentage.toFixed(2);
+  }, [stakingPercentage]);
 
   const refetchUserData = useCallback(() => {
     refetchUserStaked();
@@ -628,6 +634,7 @@ export default function useRevenueContract({
     hasStaked,
     hasContribution,
     stakingPercentage,
+    stakingPercentageFormatted,
     unstakeCountdown,
     claimableRewards,
     setRewardTokens,
