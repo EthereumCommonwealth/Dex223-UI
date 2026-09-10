@@ -134,6 +134,21 @@ export default function useRevenueContract({
     },
   });
 
+  // claim() divides by (totalContribution - spentTotalContribution[token]). This is a
+  // global figure, not a per-user one. Older deployments declare totalContribution
+  // without `public` and so expose no getter; the read simply fails there and we fall
+  // back to reporting zero rather than showing a wrong number.
+  const { data: totalContribution } = useReadContract({
+    abi: revenueABI,
+    address: contractAddress,
+    functionName: "totalContribution",
+    chainId: chainId,
+    query: {
+      enabled: Boolean(contractAddress),
+      retry: false,
+    },
+  });
+
   const {
     data: userContribution,
     refetch: refetchUserContribution,
@@ -349,10 +364,18 @@ export default function useRevenueContract({
         };
       }
 
+      // Mirror claim():
+      //   unpaidUserContribution  = contribution[user] - spentContribution[user][token]
+      //   tokenUnpaidContribution = totalContribution  - spentTotalContribution[token]
+      // The second line previously used the user's own contribution in place of the
+      // global total. Those are different quantities and the user's is normally far
+      // smaller than spentTotalContribution, so the subtraction went negative - and
+      // BigInt does not throw on that - producing a negative "claimable" amount.
       const unpaidUserContribution = (userContributionValue as bigint) - spentContribution;
-      const tokenUnpaidContribution = (userContributionValue as bigint) - spentTotal;
+      const tokenUnpaidContribution =
+        totalContribution === undefined ? 0n : (totalContribution as bigint) - spentTotal;
 
-      if (tokenUnpaidContribution === 0n || unpaidUserContribution === 0n) {
+      if (tokenUnpaidContribution <= 0n || unpaidUserContribution <= 0n) {
         return {
           token,
           amount: 0n,
@@ -370,6 +393,7 @@ export default function useRevenueContract({
       };
     });
   }, [
+    totalContribution,
     userContributionValue,
     tokenBalances,
     spentContributions,
