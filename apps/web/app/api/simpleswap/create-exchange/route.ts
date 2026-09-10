@@ -3,9 +3,9 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   const API_URL = `https://api.simpleswap.io/create_exchange?api_key=${process.env.SIMPLE_SWAP_API_KEY}`;
 
+  // Not logged: this body carries the user's destination wallet address and the
+  // amounts being purchased, and it is sent on every onramp order.
   const body = await request.json();
-
-  console.log(body);
 
   try {
     const response = await fetch(API_URL, {
@@ -22,6 +22,9 @@ export async function POST(request: NextRequest) {
       status: response.status,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // The upstream request carries our API key; echoing its failure text back to
+    // the caller risks handing over more than intended. Log it, return a fixed message.
+    console.error("simpleswap request failed:", error?.message);
+    return NextResponse.json({ error: "Upstream request failed" }, { status: 500 });
   }
 }

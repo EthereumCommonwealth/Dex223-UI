@@ -9,7 +9,14 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Missing required parameters" }, { status: 400 });
   }
 
-  const API_URL = `https://api.simpleswap.io/get_pairs?api_key=${process.env.SIMPLE_SWAP_API_KEY}&fixed=${isFixed}&symbol=${symbol}`;
+  // See get-estimated: raw interpolation let a caller inject extra parameters into a
+  // request made with our API key.
+  const query = new URLSearchParams({
+    api_key: process.env.SIMPLE_SWAP_API_KEY ?? "",
+    fixed: isFixed ?? "",
+    symbol,
+  });
+  const API_URL = `https://api.simpleswap.io/get_pairs?${query.toString()}`;
 
   try {
     const response = await fetch(API_URL, {
@@ -24,6 +31,9 @@ export async function GET(request: NextRequest) {
       status: response.status,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // The upstream request carries our API key; echoing its failure text back to
+    // the caller risks handing over more than intended. Log it, return a fixed message.
+    console.error("simpleswap request failed:", error?.message);
+    return NextResponse.json({ error: "Upstream request failed" }, { status: 500 });
   }
 }
