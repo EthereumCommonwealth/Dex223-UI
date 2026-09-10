@@ -26,10 +26,16 @@ function Tabs({
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <ul
           className={clsx(
-            "inline-flex rounded-3  p-1 gap-1",
+            // A tab strip with several titles is wider than a phone viewport and
+            // cannot shrink, which used to push the whole document sideways. Let it
+            // scroll within its own track instead.
+            // min-w-0 is what actually lets this shrink: a flex item will not go
+            // below its content width without it, so overflow-x-auto never engaged
+            // and the strip pushed the whole document sideways instead.
+            "inline-flex rounded-3 p-1 gap-1 max-w-full min-w-0 overflow-x-auto no-scrollbar",
             fullWidth && "w-full",
             colorScheme === "primary" ? "bg-primary-bg" : "bg-secondary-bg",
           )}

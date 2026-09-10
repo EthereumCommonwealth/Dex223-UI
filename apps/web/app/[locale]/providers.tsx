@@ -46,7 +46,7 @@ export function Providers({ children, messages, locale }: Props) {
             style={{ transitionDuration: "500ms" }}
             tabIndex={-1}
             className={clsxMerge(
-              "fixed w-full h-[100vh] top-0 left-0 bottom-0 right-0 bg-global-bg z-[999]",
+              "fixed w-full h-[100dvh] top-0 left-0 bottom-0 right-0 bg-global-bg z-[999]",
               loaded ? "opacity-0 pointer-events-none" : "opacity-100 ",
             )}
           />

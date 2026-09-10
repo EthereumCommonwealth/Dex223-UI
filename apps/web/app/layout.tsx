@@ -42,3 +42,13 @@ export const metadata = {
   description:
     "Next generation decentralized exchange for ERC-223 & ERC-20 tokens with margin trading, 15% cheaper GAS fees and transparent auto-listings for any tokens.",
 };
+
+// Next.js supplies width=device-width, initial-scale=1 by default but nothing else.
+// viewportFit=cover lets the layout extend into the safe areas on notched phones,
+// and themeColor stops the browser chrome rendering a light bar above a dark app.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+  themeColor: "#0F0F0F",
+};
