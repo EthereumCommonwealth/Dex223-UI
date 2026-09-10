@@ -104,6 +104,7 @@ export function Revenue() {
     isLoadingUserData,
     redTotalSupply,
     isCorrectNetwork,
+    isRevenueSupportedChain,
     requiredChainId,
     claimableRewards,
     setRewardTokens,
@@ -281,6 +282,15 @@ export function Revenue() {
       <div className="p-4 md:p-6 xl:p-10 flex flex-col overflow-x-hidden w-full">
         <div className="flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 xl:mb-0 overflow-x-hidden">
           <h1 className="text-24 md:text-32 xl:text-40 font-medium">Revenue</h1>
+          {!isRevenueSupportedChain && (
+            // Without this the page reads a contract address that has no code on the
+            // current chain and silently renders zeros, which is indistinguishable
+            // from a connected user who has nothing staked.
+            <p className="text-14 text-secondary-text mt-2">
+              The revenue contract is not deployed on this network. Switch to a
+              supported network to stake and claim.
+            </p>
+          )}
           <div className="flex flex-col w-full xl:flex-row xl:w-auto gap-y-2 xl:gap-x-3 overflow-x-hidden">
             <WalletSearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
           </div>

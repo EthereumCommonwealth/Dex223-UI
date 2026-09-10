@@ -55,6 +55,13 @@ export const FREE_AUTO_LISTING_ADDRESS: Record<DexChainId, Address> = {
 
 export const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
+// The Revenue (staking / fee distribution) contract is only deployed on Sepolia.
+// Partial on purpose: chains without an entry have no deployment, and the revenue
+// page must say so rather than reading a non-existent address and rendering zeros.
+export const REVENUE_ADDRESS: Partial<Record<DexChainId, Address>> = {
+  [DexChainId.SEPOLIA]: "0x4e38fB6f9243d2aC91C490230375FeDE1E0aD7F2",
+};
+
 export const MARGIN_TRADING_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.MAINNET]: ZERO_ADDRESS,
   [DexChainId.SEPOLIA]: "0xa64c8C9e13185e54dF846a7AC3265b9Be4E96104",

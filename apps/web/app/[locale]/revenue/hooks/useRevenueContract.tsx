@@ -10,6 +10,8 @@ import {
 
 import { ERC20_ABI } from "@/config/abis/erc20";
 import { revenueABI } from "@/config/abis/revenue";
+import { REVENUE_ADDRESS } from "@/sdk_bi/addresses";
+import { DexChainId } from "@/sdk_bi/chains";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Token } from "@/sdk_bi/entities/token";
@@ -24,7 +26,9 @@ import { useRevenueTokens } from "./useRevenueTokens";
 // Contract addresses on Sepolia testnet
 // 0x4e38fB6f9243d2aC91C490230375FeDE1E0aD7F2
 // export const REVENUE_CONTRACT_ADDRESS = "0x4e38fB6f9243d2aC91C490230375FeDE1E0aD7F2" as Address;
-const REVENUE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_REVENUE_CONTRACT_ADDRESS as Address;
+// Optional override for local testing against a custom deployment.
+const REVENUE_CONTRACT_ADDRESS_OVERRIDE = process.env
+  .NEXT_PUBLIC_REVENUE_CONTRACT_ADDRESS as Address | undefined;
 export const RED_ERC20_ADDRESS = "0x1DEf777468F76ed1E74fC87bD32334d3Ccb520d0" as Address;
 export const RED_ERC223_ADDRESS = "0x0a67Cc4D3Ac29a133a597b5Bef3fe9A6028ACad2" as Address;
 
@@ -59,12 +63,32 @@ export interface RevenueContractConfig {
 }
 
 export default function useRevenueContract({
-  contractAddress = REVENUE_CONTRACT_ADDRESS,
+  contractAddress: contractAddressOverride,
   searchAddress,
 }: RevenueContractConfig = {}) {
   const { address: connectedAddress, chainId: walletChainId } = useAccount();
   const targetAddress = searchAddress || connectedAddress;
   const chainId = useCurrentChainId();
+
+  // The Revenue contract only exists on some chains. Previously this was a single
+  // chain-agnostic env var, so on any other chain (mainnet is the default before a
+  // wallet connects) every read targeted an address with no code, returned nothing,
+  // and the page rendered zeros as though the user simply had no stake.
+  //
+  // The env override targets the Sepolia deployment only. It must not sit in front of
+  // the per-chain map, or setting it would resurrect that bug: one address used on
+  // every chain, including those with no deployment.
+  const revenueAddresses = useMemo(
+    () => ({
+      ...REVENUE_ADDRESS,
+      ...(REVENUE_CONTRACT_ADDRESS_OVERRIDE
+        ? { [DexChainId.SEPOLIA]: REVENUE_CONTRACT_ADDRESS_OVERRIDE }
+        : {}),
+    }),
+    [],
+  );
+  const contractAddress = contractAddressOverride ?? revenueAddresses[chainId];
+  const isRevenueSupportedChain = Boolean(revenueAddresses[chainId]);
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
   const { addRecentTransaction } = useRecentTransactionsStore();
@@ -610,6 +634,7 @@ export default function useRevenueContract({
 
   return {
     contractAddress,
+    isRevenueSupportedChain,
     chainId,
     requiredChainId: chainId,
     isCorrectNetwork: walletChainId === chainId,
