@@ -25,6 +25,10 @@ const AUTOLISTING_BLACKLIST = [
   "0x063fd9a30f75c3b8a1ffb22167fc0984dfba1adf",
   "0x5c24027303865b744f2794945aee88eA56F1F5ee",
   "0x8D13f2795228aB18faeFBdF9461E7E46b5853Bc5",
+  // Mainnet core and free autolistings replaced on 2026-09-22. They are bound to older factories
+  // (0x8dae...bc06 and 0xc0c5...8F1f), so a listing there, paid or free, does not reach the current DEX.
+  "0x029f10E06Dc7d6264f9432ACA3F52572543c48e0",
+  "0xa7089d8cbcC47543388A346Dd6EbF0B05106A477",
 ];
 
 const query = gql(`
