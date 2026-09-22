@@ -36,6 +36,7 @@ import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/u
 import { networks } from "@/config/networks";
 import { formatFloat } from "@/functions/formatFloat";
 import { useStoreAllowance } from "@/hooks/useAllowance";
+import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { usePoolBalances } from "@/hooks/usePoolBalances";
@@ -201,6 +202,8 @@ const gasOptionTitle: Record<GasOption, any> = {
 };
 export default function TradeForm() {
   const t = useTranslations("Swap");
+  const { address } = useAccount();
+  const canReceiveERC223 = useCanReceiveERC223(address);
   useTradeComputation();
 
   const chainId = useCurrentChainId();
@@ -648,6 +651,15 @@ export default function TradeForm() {
           }
         }}
       />
+
+      {tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223 && (
+        <div className="mt-5">
+          <Alert
+            text="Your wallet is an EIP-7702 smart account that cannot receive ERC-223 tokens, so this swap would fail. Receive ERC-20 instead."
+            type="warning"
+          />
+        </div>
+      )}
 
       {error === TradeError.NO_LIQUIDITY && (
         <div className="mt-5">
