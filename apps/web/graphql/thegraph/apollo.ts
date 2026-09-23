@@ -24,11 +24,11 @@ const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
   //   "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax?source=uniswap",
   // [ChainId.BASE]:
   //   "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest?source=uniswap",
+  // Studio account 0xeBC4…CBcb; indexes the 2026-09-22 factory (not the old 78wjdc… subgraph).
   [DexChainId.MAINNET]:
-    "https://gateway.thegraph.com/api/subgraphs/id/78wjdcwJTbTmvhnUcyXjZVDPk5kWGFuosEuEWDimvHf2",
+    "https://api.studio.thegraph.com/query/1760635/dex-223-v-1-mainnet/version/latest",
   [DexChainId.SEPOLIA]:
-    "https://gateway.thegraph.com/api/subgraphs/id/9oohHEx5ivUXguYBGVJojrKuBQHLtLzg7df1pUC6mg8w",
-  // "https://api.studio.thegraph.com/query/56540/dex223-v1-sepolia/version/latest",
+    "https://api.studio.thegraph.com/query/1760635/dex-223-v-1-sepolia/version/latest",
   // [DexChainId.CALLISTO]: "",
   [DexChainId.BSC_TESTNET]: "https://api.studio.thegraph.com/query/56540/dex223-v1-chapel/1.0.82",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-eosevm",
