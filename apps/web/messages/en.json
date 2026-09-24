@@ -241,6 +241,8 @@
     "edit": "Edit"
   },
   "Swap": {
+    "high_price_impact_warning": "High price impact ({impact}%). You will receive noticeably less than the current market price.",
+    "very_high_price_impact_warning": "Very high price impact ({impact}%). You would lose a large part of the value of this trade. Try a smaller amount.",
     "swap": "Swap",
     "review_swap": "Review swap",
     "tokens_in_two_standards_title": "Tokens in ERC-20 and ERC-223 standards",

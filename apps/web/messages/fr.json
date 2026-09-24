@@ -33,6 +33,8 @@
     "guidelines": "Guides"
   },
   "Swap": {
+    "high_price_impact_warning": "Impact sur le prix élevé ({impact} %). Vous recevrez nettement moins que le prix actuel du marché.",
+    "very_high_price_impact_warning": "Impact sur le prix très élevé ({impact} %). Vous perdriez une grande partie de la valeur de cet échange. Essayez un montant plus faible.",
     "swap": "Échanger",
     "review_swap": "Vérifier l’échange",
     "you_pay": "Vous payez",

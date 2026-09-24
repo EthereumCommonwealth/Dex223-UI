@@ -33,6 +33,8 @@
     "guidelines": "指南"
   },
   "Swap": {
+    "high_price_impact_warning": "价格影响较高（{impact}%）。你收到的数量将明显低于当前市场价格。",
+    "very_high_price_impact_warning": "价格影响非常高（{impact}%）。这笔交易将损失很大一部分价值。请尝试较小的数量。",
     "swap": "兑换",
     "review_swap": "确认兑换",
     "you_pay": "支付",

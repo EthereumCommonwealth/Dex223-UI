@@ -9,6 +9,7 @@ import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import ConfirmSwapDialog from "@/app/[locale]/swap/components/ConfirmSwapDialog";
+import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
 import { useSwapEstimatedGas, useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
@@ -705,6 +706,8 @@ export default function TradeForm() {
           />
         </div>
       )}
+
+      <PriceImpactWarning trade={trade} className="mt-5" />
 
       {tokenA && tokenB && typedValue ? (
         <div
