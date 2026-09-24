@@ -290,6 +290,7 @@
     "approving_in_progress": "Approving in progress",
     "looking_for_the_best_trade": "Looking for best trade...",
     "swap_is_unavailable_for_this_pair": "Swap is unavailable for this pair",
+    "cannot_receive_erc223": "This wallet cannot receive ERC-223",
     "insufficient_balance": "Insufficient balance",
     "settings_applied": "Settings applied",
     "erc20_tooltip": "ERC-20 is a token standard on Ethereum network. It specifies the \"version\" of the token you are going to use.",

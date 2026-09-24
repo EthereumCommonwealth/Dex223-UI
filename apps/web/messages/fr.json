@@ -80,6 +80,7 @@
     "approving_in_progress": "Approbation en cours",
     "looking_for_the_best_trade": "Recherche de la meilleure route...",
     "swap_is_unavailable_for_this_pair": "L’échange n’est pas disponible pour cette paire",
+    "cannot_receive_erc223": "Ce portefeuille ne peut pas recevoir d’ERC-223",
     "insufficient_balance": "Solde insuffisant",
     "settings_applied": "Paramètres appliqués",
     "tokens_in_two_standards_title": "Jetons aux standards ERC-20 et ERC-223",

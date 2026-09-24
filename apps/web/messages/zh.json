@@ -80,6 +80,7 @@
     "approving_in_progress": "正在授权",
     "looking_for_the_best_trade": "正在寻找最优路径...",
     "swap_is_unavailable_for_this_pair": "该交易对暂不支持兑换",
+    "cannot_receive_erc223": "此钱包无法接收 ERC-223",
     "insufficient_balance": "余额不足",
     "settings_applied": "设置已应用",
     "tokens_in_two_standards_title": "ERC-20 与 ERC-223 标准的代币",
