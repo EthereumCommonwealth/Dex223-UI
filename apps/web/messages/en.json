@@ -27,6 +27,7 @@
     "useful_links": "Useful links",
     "useful_converter": "Token converter",
     "revenue": "Revenue",
+    "governance": "Governance",
     "useful_losses_calculator": "ERC-20 losses calculator",
     "useful_front_page": "ERC-223 front page",
     "useful_page_source_codes": "Page source codes",
@@ -296,7 +297,7 @@
     "network_fee_tooltip": "Network fee is charged when you send any transaction on {networkName} network. It is paid in the networks native currency (i.e. ETH on Ethereum).",
     "minimum_received_tooltip": "Minimal amount of tokens you are going to receive when the swap will be executed. The actual swap price may differ from the price assumed at the moment of the swap transaction creation (because your transaction can be confirmed in the next block only but the prices are pulled from the current block). Under no circumstances you can receive less than this min amount of tokens even due to price changes during the transaction pending.",
     "price_impact_tooltip": "Estimated impact of your transaction on the market. When you buy or sell assets their price changes as the result and this metric demonstrates how much of the change will be caused by your actions.",
-    "trading_fee_tooltip": "Trading fee is charged from each operation and is distributed among D223 token holders.",
+    "trading_fee_tooltip": "Each swap pays a pool trading fee to liquidity providers. A separate protocol fee share can be collected into the Revenue contract for users who stake the staking token there.",
     "route_tooltip": "If your transaction will have high impact on the market you may get better prices through arbitrage instead of selling/buying the whole amount of the asset at one Pool. Route shows other token pairs that will be affected during your trade (if any).",
     "maximum_slippage_tooltip": "The actual swap price may be different than the one specified at the moment of sending the transaction. Slippage determines how much of the price change can be tolerated. If the actual price differs from the expected price by more than the maximum slippage, the transaction will be automatically reverted and your tokens will not be swapped.",
     "gas_limit_tooltip": "Gas Limit determines the amount of operations that your transaction can invoke. The more complex actions are triggered by your transaction in the smart-contract the higher Gas Limit may be required. Higher Gas Limit will result in higher network fee that needs to be paid.",
@@ -571,6 +572,7 @@
     "description": "Stake the protocol staking token to earn a share of collected protocol fees. Protocol fees are delivered by the factory owner; they are not automatic on every swap.",
     "not_deployed": "Revenue is not deployed on this network yet.",
     "not_deployed_hint": "Revenue is live on Sepolia. Switch networks in your wallet to use it.",
+    "governance_link": "Fee voting is coming soon on Governance",
     "status_title": "Your position",
     "your_stake": "Your stake",
     "total_staked": "Total staked",
@@ -600,6 +602,17 @@
     "deposit_title": "Unstaked ERC-223 deposit",
     "deposit_hint": "You have {amount} credited from an ERC-223 transfer that was never staked.",
     "recover_deposit": "Recover deposit"
+  },
+  "Governance": {
+    "title": "Governance",
+    "coming_soon_badge": "Coming soon",
+    "description": "On-chain fee voting is not live yet. This page describes what Phase 2 will cover.",
+    "planned_title": "Planned votes",
+    "planned_listing_fees": "Autolisting payment prices",
+    "planned_protocol_share": "Protocol fee share on pools",
+    "planned_execution": "Stake-weighted signals executed by the factory owner",
+    "phase_note": "Until voting ships, listing prices and protocol fees stay under factory owner control. Stakers use Revenue to earn collected fees.",
+    "revenue_link": "Go to Revenue staking"
   },
   "NotFound": {
     "title": "Page not found",
