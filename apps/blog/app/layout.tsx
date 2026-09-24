@@ -4,6 +4,7 @@ import "@repo/ui/styles.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import clsx from "clsx";
 import { Golos_Text } from "next/font/google";
+import { getLocale } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
 import Providers from "@/app/providers";
@@ -19,14 +20,10 @@ const golos_text = Golos_Text({
   adjustFontFallback: false,
 });
 
-interface Props {
-  params: Promise<{
-    locale: "es" | "en" | "zh";
-  }>;
-}
-
-export default async function RootLayout({ children, params }: PropsWithChildren<Props>) {
-  const locale = (await params).locale;
+export default async function RootLayout({ children }: PropsWithChildren) {
+  // The root layout sits above the [locale] segment, so it has no locale param.
+  // next-intl resolves it from the request instead.
+  const locale = await getLocale();
   return (
     <html suppressHydrationWarning lang={locale}>
       <head>
@@ -46,7 +43,8 @@ export default async function RootLayout({ children, params }: PropsWithChildren
 }
 
 export const metadata = {
+  metadataBase: new URL("https://blog.dex223.io"),
   title: "Dex223 Blog",
   description:
-    "Explore in-depth insights, updates, and guides on Dex223 – your go-to source for decentralized exchange (DEX) development, token standards, and blockchain innovations. Stay ahead in the Web3 ecosystem!",
+    "Explore in-depth insights, updates, and guides on Dex223, your go-to source for decentralized exchange (DEX) development, token standards, and blockchain innovations. Stay ahead in the Web3 ecosystem!",
 };
