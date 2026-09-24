@@ -421,6 +421,7 @@ const MintDialog = ({
                 <div className="items-center flex flex-row gap-2 -mt-1">
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href={getExplorerLink(ExplorerLinkType.TRANSACTION, liquidityHash, chainId)}
                   >
                     <IconButton iconName="forward" />
@@ -712,6 +713,7 @@ const SuccessfulDialog = ({
             {liquidityHash && (
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 href={getExplorerLink(ExplorerLinkType.TRANSACTION, liquidityHash, chainId)}
               >
                 <IconButton iconName="forward" />

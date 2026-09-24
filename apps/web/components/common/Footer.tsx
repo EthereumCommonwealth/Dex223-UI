@@ -91,6 +91,7 @@ export default function Footer() {
                 {t("gas")}{" "}
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                 >
@@ -103,6 +104,7 @@ export default function Footer() {
               {blockNumber ? (
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.BLOCK, blockNumber.toString(), chainId)}
                 >
