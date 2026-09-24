@@ -18,6 +18,7 @@ const ROUTES: {
   { path: "portfolio", priority: 0.6, changeFrequency: "weekly" },
   { path: "token-listing", priority: 0.7, changeFrequency: "weekly" },
   { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
+  { path: "converter", priority: 0.7, changeFrequency: "monthly" },
   { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
 ];
 
