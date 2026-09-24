@@ -49,7 +49,10 @@ export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) 
       <Container>
         <div className="py-4 lg:py-[40px] flex justify-center">
           <div className="w-full max-w-[600px]">
-            <div className="mt-5 w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6">
+            <div
+              role="tablist"
+              className="mt-5 w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6"
+            >
               {platforms.map((platform, index) => (
                 <TabButton
                   key={platform}
@@ -66,7 +69,10 @@ export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) 
 
             {selectedPlatform === "OnRamp" && (
               <Container gutter={false} className="bg-primary-bg rounded-5 p-6 mb-6">
-                <div className="w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6">
+                <div
+                  role="tablist"
+                  className="w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6"
+                >
                   {tabList.map((tab, index) => (
                     <TabButton
                       key={tab}

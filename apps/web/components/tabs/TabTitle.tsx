@@ -11,12 +11,18 @@ interface Props {
 }
 
 function TabTitle({ title, setSelectedTab, index, selectedTab, fullWidth, colorScheme }: Props) {
+  const isSelected = index === selectedTab;
+
   return (
-    <li
-      role="button"
+    <button
+      type="button"
+      role="tab"
+      aria-selected={isSelected}
+      // Only the selected tab sits in the page's tab order; arrow keys move between tabs.
+      tabIndex={isSelected ? 0 : -1}
       className={clsx(
-        "duration-200 hocus:bg-green-bg py-2.5 px-6 flex justify-center border rounded-2",
-        index === selectedTab
+        "transition-colors duration-200 hocus:bg-green-bg py-2.5 px-6 flex justify-center border rounded-2",
+        isSelected
           ? "bg-green-bg text-primary-text border-green"
           : colorScheme === "secondary"
             ? "bg-primary-bg text-secondary-text border-transparent"
@@ -26,7 +32,7 @@ function TabTitle({ title, setSelectedTab, index, selectedTab, fullWidth, colorS
       onClick={() => setSelectedTab(index)}
     >
       {title}
-    </li>
+    </button>
   );
 }
 

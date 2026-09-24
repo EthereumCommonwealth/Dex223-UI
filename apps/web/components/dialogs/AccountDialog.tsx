@@ -178,7 +178,7 @@ function AccountDialogContent({ setIsOpenedAccount, activeTab, setActiveTab }: a
             <Svg iconName="logout" />
           </button>
         </div>
-        <div className="grid grid-cols-2 bg-secondary-bg p-1 gap-1 rounded-3 mb-3">
+        <div role="tablist" className="grid grid-cols-2 bg-secondary-bg p-1 gap-1 rounded-3 mb-3">
           {[t("pinned_tokens"), t("transactions")].map((title, index) => {
             return (
               <TabButton
