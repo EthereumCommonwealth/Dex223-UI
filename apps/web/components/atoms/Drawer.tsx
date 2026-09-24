@@ -83,7 +83,7 @@ export default function Drawer({
           <FloatingFocusManager context={context} modal={false} initialFocus={-1}>
             <div
               className={clsx(
-                "drawer-container bg-primary-bg rounded-t-5",
+                "drawer-container surface surface-modal rounded-t-5",
                 placement === "left" && "h-full",
                 placement === "bottom" && "w-full max-h-[100dvh]",
               )}
