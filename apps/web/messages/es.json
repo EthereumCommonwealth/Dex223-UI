@@ -529,5 +529,25 @@
     "learn_more_subtitle": "Documentación, noticias y estadísticas del protocolo",
     "all_guides_title": "Guías",
     "all_guides_subtitle": "Cómo hacer las tareas más comunes"
+  },
+  "A11y": {
+    "close": "Cerrar",
+    "copy": "Copiar",
+    "delete": "Eliminar",
+    "sort": "Ordenar",
+    "back": "Atrás",
+    "add": "Añadir",
+    "recent_transactions": "Transacciones recientes",
+    "network_fee_settings": "Ajustes de la comisión de red",
+    "swap_settings": "Ajustes de intercambio",
+    "switch_tokens": "Intercambiar tokens",
+    "settings": "Ajustes",
+    "zoom_in": "Acercar",
+    "zoom_out": "Alejar",
+    "reset": "Restablecer",
+    "decrease": "Reducir",
+    "open_link": "Abrir enlace",
+    "increase_price": "Subir precio",
+    "decrease_price": "Bajar precio"
   }
 }

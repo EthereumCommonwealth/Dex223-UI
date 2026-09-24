@@ -529,5 +529,25 @@
     "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계",
     "all_guides_title": "가이드",
     "all_guides_subtitle": "자주 쓰는 기능에 대한 짧은 안내"
+  },
+  "A11y": {
+    "close": "닫기",
+    "copy": "복사",
+    "delete": "삭제",
+    "sort": "정렬",
+    "back": "뒤로",
+    "add": "추가",
+    "recent_transactions": "최근 거래",
+    "network_fee_settings": "네트워크 수수료 설정",
+    "swap_settings": "스왑 설정",
+    "switch_tokens": "토큰 위치 바꾸기",
+    "settings": "설정",
+    "zoom_in": "확대",
+    "zoom_out": "축소",
+    "reset": "초기화",
+    "decrease": "줄이기",
+    "open_link": "링크 열기",
+    "increase_price": "가격 올리기",
+    "decrease_price": "가격 내리기"
   }
 }
