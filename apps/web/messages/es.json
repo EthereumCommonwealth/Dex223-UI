@@ -42,6 +42,8 @@
     "enter_amount": "Introduce el importe",
     "swap_details": "Detalles del intercambio",
     "token_price": "Precio de {symbol}",
+    "price_chart_no_data": "Aún no hay historial de precios.",
+    "price_chart_data_not_available": "Datos de precios no disponibles.",
     "minimum_received": "Mín. recibido",
     "price_impact": "Impacto en el precio",
     "trading_fee": "Comisión de operación",
