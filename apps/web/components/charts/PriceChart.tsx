@@ -1,9 +1,11 @@
 "use client";
 
-import { area, curveMonotoneX, extent, line, scaleLinear, scaleTime } from "d3";
+import { area, bisector, curveMonotoneX, extent, line, scaleLinear, scaleTime } from "d3";
 import { useMemo, useState } from "react";
 
 import { PricePoint } from "@/hooks/usePoolPriceChart";
+
+const dateBisector = bisector<PricePoint, number>((d) => d.date).center;
 
 interface Props {
   series: PricePoint[];
@@ -95,11 +97,16 @@ export default function PriceChart({
   const gradientId = `price-chart-fill-${rising ? "up" : "down"}`;
 
   const handleMove = (event: React.MouseEvent<SVGRectElement>) => {
-    if (!xScale) return;
+    if (!xScale || series.length === 0) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const offset = event.clientX - bounds.left;
-    const ratio = innerWidth === 0 ? 0 : offset / innerWidth;
-    const index = Math.min(series.length - 1, Math.max(0, Math.round(ratio * (series.length - 1))));
+    // Nearest point by date, not by array index. Days can be missing after zero
+    // prices are dropped, so a linear index would land on the wrong candle.
+    const date = xScale.invert(Math.min(innerWidth, Math.max(0, offset)));
+    const index = Math.min(
+      series.length - 1,
+      Math.max(0, dateBisector(series, date.getTime() / 1000)),
+    );
     setHoverIndex(index);
     onHover?.(series[index]);
   };

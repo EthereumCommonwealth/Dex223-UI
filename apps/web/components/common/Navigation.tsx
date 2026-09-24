@@ -11,38 +11,45 @@ import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackD
 import { isMarginModuleEnabled } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
 import { usePathname } from "@/i18n/routing";
+import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 
-function NavigationExternalLink({ href, text }: { href: string; text: string }) {
+function MoreSectionLabel({ children }: { children: ReactNode }) {
   return (
-    <a
-      target="_blank"
-      className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
-        href === "#" && "opacity-50 pointer-events-none",
-      )}
-      href={href}
-    >
-      {text}
-    </a>
+    <div className="px-4 pb-1 text-12 uppercase tracking-[0.06em] text-tertiary-text">
+      {children}
+    </div>
   );
 }
 
-function NavigationExternalLinksContainer({
-  title,
-  links,
+function MoreExternalRow({
+  href,
+  text,
+  iconName,
 }: {
-  title: string;
-  links: { href: string; text: string }[];
+  href: string;
+  text: string;
+  iconName?: IconName;
 }) {
   return (
-    <div className="flex flex-col text-16 text-primary-text gap-1">
-      <div className="text-tertiary-text">{title}</div>
-      <div className="flex flex-col">
-        {links.map((link) => {
-          return <NavigationExternalLink key={link.text} href={link.href} text={link.text} />;
-        })}
-      </div>
-    </div>
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 py-2.5 px-4 text-secondary-text hocus:bg-quaternary-bg hocus:text-primary-text duration-200 group"
+    >
+      {iconName ? (
+        <Svg
+          iconName={iconName}
+          className="text-tertiary-text group-hocus:text-secondary-text duration-200"
+        />
+      ) : null}
+      <span className="flex-grow text-14">{text}</span>
+      <Svg
+        iconName="forward"
+        size={16}
+        className="text-tertiary-text group-hocus:text-secondary-text duration-200 shrink-0"
+      />
+    </a>
   );
 }
 
@@ -107,34 +114,39 @@ const menuItems: Array<
 ];
 
 type SocialLink = {
-  title: any;
+  titleKey:
+    | "social_telegram_announcements"
+    | "social_telegram_discussions"
+    | "social_x_account"
+    | "social_dex_x_account"
+    | "social_discord";
   href: string;
   icon: Extract<IconName, "telegram" | "x" | "discord">;
 };
 
 const socialLinks: SocialLink[] = [
   {
-    title: "Announcements",
+    titleKey: "social_telegram_announcements",
     href: "https://t.me/Dex_223",
     icon: "telegram",
   },
   {
-    title: "Discussions",
+    titleKey: "social_telegram_discussions",
     href: "https://t.me/Dex223_defi",
     icon: "telegram",
   },
   {
-    title: "DEX223",
+    titleKey: "social_x_account",
     href: "https://x.com/Dex_223",
     icon: "x",
   },
   {
-    title: "Dexaran",
+    titleKey: "social_dex_x_account",
     href: "https://x.com/Dexaran",
     icon: "x",
   },
   {
-    title: "Discord",
+    titleKey: "social_discord",
     href: "https://discord.gg/t5bdeGC5Jk",
     icon: "discord",
   },
@@ -143,16 +155,20 @@ const socialLinks: SocialLink[] = [
 function NavigationMoreDropdown() {
   const [isSubmenuOpened, setSubmenuOpened] = useState(false);
   const t = useTranslations("Navigation");
-
   const pathname = usePathname();
-
   const { setIsOpen } = useFeedbackDialogStore();
+  const {
+    setIsOpen: setManageTokensOpen,
+    setActiveTab: setManageTokensActiveTab,
+    setContent: setManageTokensContent,
+  } = useManageTokensDialogStore();
 
   const active = useMemo(() => {
     return (
+      pathname.includes("/converter") ||
+      pathname.includes("/create-token") ||
       pathname.includes("/blog") ||
       pathname.includes("/statistics") ||
-      pathname.includes("/token-lists") ||
       pathname.includes("/guidelines")
     );
   }, [pathname]);
@@ -169,11 +185,13 @@ function NavigationMoreDropdown() {
     <Popover
       isOpened={isSubmenuOpened}
       setIsOpened={setSubmenuOpened}
-      placement="bottom"
+      placement="bottom-end"
       customOffset={12}
       trigger={
         <button
           onClick={() => setSubmenuOpened(!isSubmenuOpened)}
+          aria-expanded={isSubmenuOpened}
+          aria-label={t("more")}
           className={clsx(
             "px-3 py-5 inline-flex items-center gap-1 duration-200 group",
             isSubmenuOpened || active
@@ -193,112 +211,112 @@ function NavigationMoreDropdown() {
         </button>
       }
     >
-      <div className="bg-tertiary-bg rounded-2 shadow-popover shadow-black/70">
-        <div className="flex">
-          <div className="flex flex-col mt-2 mb-2">
+      <div className="bg-tertiary-bg rounded-2 shadow-popover shadow-black/70 overflow-hidden min-w-[640px]">
+        <div className="grid grid-cols-[1.15fr_1fr_0.95fr]">
+          <div className="flex flex-col py-3 border-r border-secondary-border">
+            <MoreSectionLabel>{t("more_product")}</MoreSectionLabel>
+            <MobileLink
+              isActive={pathname === "/converter"}
+              href="/converter"
+              iconName="convert"
+              title={t("useful_converter")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              isActive={pathname === "/create-token"}
+              href="/create-token"
+              iconName="list-tokens"
+              title={t("create_token")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              href="#"
+              iconName="list"
+              title={t("token_lists")}
+              handleClose={() => setSubmenuOpened(false)}
+              handleClick={(e) => {
+                e.preventDefault();
+                setManageTokensContent("default");
+                setManageTokensActiveTab(0);
+                setManageTokensOpen(true);
+              }}
+            />
+            <MobileLink
+              isActive={pathname === "/statistics"}
+              href="/statistics"
+              iconName="statistics"
+              title={t("token_statistics")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              isActive={pathname === "/guidelines"}
+              href="/guidelines"
+              iconName="guidelines"
+              title={t("guidelines")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              href="https://blog.dex223.io/"
+              iconName="blog"
+              title={t("blog")}
+              handleClose={() => setSubmenuOpened(false)}
+              isExternal
+              openInNewTab={false}
+            />
             <MobileLink
               href="#"
               iconName="star"
-              title="Feedback"
+              title={t("feedback")}
               handleClose={() => setSubmenuOpened(false)}
               handleClick={(e) => {
                 e.preventDefault();
                 setIsOpen(true);
               }}
-              linkClassName="pr-10"
-            />
-            <MobileLink
-              href="#"
-              iconName="list"
-              title="Token lists"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-              disabled
-            />
-            <MobileLink
-              href="/create-token"
-              iconName="list-tokens"
-              title="Create a new token"
-              handleClose={() => setSubmenuOpened(false)}
-              linkClassName="pr-10"
-            />
-            <MobileLink
-              isExternal
-              href="https://blog.dex223.io/"
-              iconName="blog"
-              title="Blog"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-            />
-            <MobileLink
-              disabled
-              href="/statistics"
-              iconName="statistics"
-              title="Statistics"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-            />
-            <MobileLink
-              disabled
-              href="#"
-              iconName="guidelines"
-              title="Guidelines"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
             />
           </div>
-          <div className="flex flex-col gap-4 mt-2 pt-3 px-5 pb-3 mb-2 border-l border-r border-secondary-border">
-            <NavigationExternalLinksContainer
-              title={t("useful_links")}
-              links={[
-                {
-                  href: "https://dexaran.github.io/token-converter/",
-                  text: t("useful_converter"),
-                },
-                {
-                  href: "https://dexaran.github.io/erc20-losses/",
-                  text: t("useful_losses_calculator"),
-                },
-                {
-                  href: "https://dexaran.github.io/erc223/",
-                  text: t("useful_front_page"),
-                },
-                {
-                  href: "https://github.com/Dalcor/dex-exchange",
-                  text: t("useful_page_source_codes"),
-                },
-              ]}
-            />
 
-            <NavigationExternalLinksContainer
-              title={t("partners")}
-              links={[
-                {
-                  href: "https://blockzhub.io/",
-                  text: t("partners_eos_support"),
-                },
-              ]}
+          <div className="flex flex-col py-3 border-r border-secondary-border">
+            <MoreSectionLabel>{t("more_resources")}</MoreSectionLabel>
+            <MoreExternalRow
+              href="https://dexaran.github.io/erc20-losses/"
+              text={t("useful_losses_calculator")}
             />
+            <MoreExternalRow
+              href="https://dexaran.github.io/erc223/"
+              text={t("useful_front_page")}
+            />
+            <MoreExternalRow
+              href="https://github.com/Dalcor/dex-exchange"
+              text={t("useful_page_source_codes")}
+            />
+            <div className="mt-3 pt-3 border-t border-secondary-border">
+              <MoreSectionLabel>{t("partners")}</MoreSectionLabel>
+              <MoreExternalRow href="https://blockzhub.io/" text={t("partners_eos_support")} />
+            </div>
           </div>
-          <div className="flex flex-col mt-2 pt-3 px-5">
-            <h4 className="text-tertiary-text">Social media</h4>
 
-            {socialLinks.map((link) => {
-              return (
-                <a
-                  key={link.title}
-                  target="_blank"
-                  href={link.href}
-                  className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200 group"
-                >
-                  <Svg
-                    className="text-tertiary-text group-hocus:text-secondary-text duration-200"
-                    iconName={link.icon}
-                  />{" "}
-                  {link.title}
-                </a>
-              );
-            })}
+          <div className="flex flex-col py-3">
+            <MoreSectionLabel>{t("social_media")}</MoreSectionLabel>
+            {socialLinks.map((link) => (
+              <a
+                key={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                href={link.href}
+                className="flex gap-2 items-center text-secondary-text py-2.5 px-4 hocus:bg-quaternary-bg hocus:text-primary-text duration-200 group"
+              >
+                <Svg
+                  className="text-tertiary-text group-hocus:text-secondary-text duration-200"
+                  iconName={link.icon}
+                />
+                <span className="text-14 flex-grow">{t(link.titleKey)}</span>
+                <Svg
+                  iconName="forward"
+                  size={16}
+                  className="text-tertiary-text group-hocus:text-secondary-text duration-200 shrink-0"
+                />
+              </a>
+            ))}
           </div>
         </div>
       </div>
