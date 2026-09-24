@@ -516,7 +516,21 @@
     "view_all_pools": "Voir toutes les pools",
     "loading": "Chargement des pools…",
     "no_pools": "Aucune pool trouvée sur ce réseau.",
-    "unavailable": "Les statistiques sont indisponibles sur ce réseau pour le moment."
+    "unavailable": "Les statistiques sont indisponibles sur ce réseau pour le moment.",
+    "loading_tokens": "Chargement des jetons…",
+    "no_tokens": "Aucun jeton trouvé sur ce réseau.",
+    "token_not_found": "Jeton introuvable.",
+    "tab_overview": "Aperçu",
+    "tab_tokens": "Jetons",
+    "tab_pools": "Pools",
+    "col_token": "Jeton",
+    "col_volume": "Volume",
+    "col_price": "Prix",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Prix",
+    "chart_empty": "Pas encore de données de graphique",
+    "token_pools": "Pools"
   },
   "Guidelines": {
     "title": "Guides",

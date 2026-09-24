@@ -516,7 +516,21 @@
     "view_all_pools": "모든 풀 보기",
     "loading": "풀 불러오는 중…",
     "no_pools": "이 네트워크에서 풀을 찾을 수 없습니다.",
-    "unavailable": "지금은 이 네트워크의 통계를 사용할 수 없습니다."
+    "unavailable": "지금은 이 네트워크의 통계를 사용할 수 없습니다.",
+    "loading_tokens": "토큰 불러오는 중…",
+    "no_tokens": "이 네트워크에서 토큰을 찾을 수 없습니다.",
+    "token_not_found": "토큰을 찾을 수 없습니다.",
+    "tab_overview": "개요",
+    "tab_tokens": "토큰",
+    "tab_pools": "풀",
+    "col_token": "토큰",
+    "col_volume": "거래량",
+    "col_price": "가격",
+    "chart_tvl": "TVL",
+    "chart_volume": "거래량",
+    "chart_price": "가격",
+    "chart_empty": "차트 데이터가 아직 없습니다",
+    "token_pools": "풀"
   },
   "Guidelines": {
     "title": "가이드",
