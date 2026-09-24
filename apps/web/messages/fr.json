@@ -30,7 +30,12 @@
     "useful_page_source_codes": "Codes source de la page",
     "partners": "Partenaires",
     "partners_eos_support": "BlockzHub",
-    "guidelines": "Guides"
+    "guidelines": "Guides",
+    "coming_soon": "Bientôt disponible",
+    "margin_unavailable_title": "Le trading sur marge n'est pas encore disponible sur ce réseau",
+    "margin_unavailable_switch": "Passez à {networks} dans le sélecteur de réseau pour utiliser le trading sur marge et les prêts.",
+    "margin_unavailable_description": "Le contrat de trading sur marge n'est pas encore déployé sur ce réseau. Vous pouvez continuer à échanger sur Swap.",
+    "margin_unavailable_go_to_swap": "Aller à Swap"
   },
   "Swap": {
     "swap": "Échanger",

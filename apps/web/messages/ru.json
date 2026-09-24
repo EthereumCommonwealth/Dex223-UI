@@ -30,7 +30,12 @@
     "useful_page_source_codes": "Исходный код страницы",
     "partners": "Партнёры",
     "partners_eos_support": "BlockzHub",
-    "guidelines": "Руководства"
+    "guidelines": "Руководства",
+    "coming_soon": "Скоро",
+    "margin_unavailable_title": "Маржинальная торговля пока недоступна в этой сети",
+    "margin_unavailable_switch": "Переключитесь на {networks} в выборе сети, чтобы пользоваться маржинальной торговлей и займами.",
+    "margin_unavailable_description": "Контракт маржинальной торговли пока не развернут в этой сети. Вы можете продолжить торговать в Swap.",
+    "margin_unavailable_go_to_swap": "Перейти к Swap"
   },
   "Swap": {
     "swap": "Обмен",

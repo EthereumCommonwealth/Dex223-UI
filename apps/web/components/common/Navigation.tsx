@@ -8,8 +8,8 @@ import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
 import { MobileLink } from "@/components/common/MobileMenu";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
-import { isMarginModuleEnabled } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
+import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
 import { usePathname } from "@/i18n/routing";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 
@@ -53,6 +53,31 @@ function MoreExternalRow({
   );
 }
 
+function MarginTradingSubmenuLink({
+  isActive,
+  title,
+  handleClose,
+}: {
+  isActive: boolean;
+  title: string;
+  handleClose: () => void;
+}) {
+  const isMarginAvailable = useIsMarginAvailable();
+
+  return (
+    <MobileLink
+      disabled={!isMarginAvailable}
+      isActive={isActive}
+      href="/margin-swap"
+      iconName="margin-trading"
+      title={title}
+      handleClose={handleClose}
+      className={clsx("min-w-[238px]", !isMarginAvailable && "pr-5")}
+      comingSoon={!isMarginAvailable}
+    />
+  );
+}
+
 const menuItems: Array<
   | {
       label: any;
@@ -73,15 +98,10 @@ const menuItems: Array<
           handleClose={handleClose}
           className="min-w-[238px]"
         />
-        <MobileLink
-          disabled={!isMarginModuleEnabled}
+        <MarginTradingSubmenuLink
           isActive={pathname === "/margin-swap"}
-          href="/margin-swap"
-          iconName="margin-trading"
           title={t("margin_trading")}
           handleClose={handleClose}
-          className={clsx("min-w-[238px]", !isMarginModuleEnabled && "pr-5")}
-          comingSoon={!isMarginModuleEnabled}
         />
         <MobileLink
           isActive={pathname === "/buy-crypto"}

@@ -32,7 +32,12 @@
     "useful_front_page": "ERC-223 front page",
     "useful_page_source_codes": "Page source codes",
     "partners": "Partners",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "coming_soon": "Coming soon",
+    "margin_unavailable_title": "Margin trading is not available on this network yet",
+    "margin_unavailable_switch": "Switch to {networks} in the network picker to use margin trading and lending.",
+    "margin_unavailable_description": "The margin trading contract is not deployed on this network yet. You can keep trading on Swap.",
+    "margin_unavailable_go_to_swap": "Go to Swap"
   },
   "RecentTransactions": {
     "transactions": "Transactions",

@@ -30,7 +30,12 @@
     "useful_page_source_codes": "Código fuente de la página",
     "partners": "Socios",
     "partners_eos_support": "BlockzHub",
-    "guidelines": "Guías"
+    "guidelines": "Guías",
+    "coming_soon": "Próximamente",
+    "margin_unavailable_title": "El trading con margen aún no está disponible en esta red",
+    "margin_unavailable_switch": "Cambia a {networks} en el selector de red para usar el trading con margen y los préstamos.",
+    "margin_unavailable_description": "El contrato de trading con margen aún no está desplegado en esta red. Puedes seguir operando en Swap.",
+    "margin_unavailable_go_to_swap": "Ir a Swap"
   },
   "Swap": {
     "swap": "Intercambiar",

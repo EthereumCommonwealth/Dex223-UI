@@ -16,6 +16,7 @@ import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { OperationStepStatus } from "@/components/common/OperationStepRow";
 import { ERC223_ABI } from "@/config/abis/erc223";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
@@ -191,6 +192,11 @@ export default function useCreateMarginPosition(order: LendingOrder) {
 
   const handleCreateMarginPosition = useCallback(
     async (orderId: string, amountToApprove: string, feeAmountToApprove: string) => {
+      // Never build a transaction against the zero address on chains without a margin deployment.
+      if (!isMarginDeployed(chainId)) {
+        return;
+      }
+
       if (
         !values.collateralAmount ||
         !values.collateralToken ||
