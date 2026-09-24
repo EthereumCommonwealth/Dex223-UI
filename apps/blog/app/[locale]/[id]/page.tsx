@@ -227,8 +227,12 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
 
-        <h1 className="mb-2 md:mb-5 text-24 md:text-32">{post.title}</h1>
-        <p className="text-16 md:text-20 mb-8 md:mb-[60px]">{post.description}</p>
+        <h1 className="mb-3 md:mb-5 text-[28px] leading-[36px] md:text-40 md:leading-[52px] font-semibold text-balance">
+          {post.title}
+        </h1>
+        <p className="text-18 md:text-20 text-secondary-text mb-8 md:mb-[60px]">
+          {post.description}
+        </p>
       </PostContainer>
       <Container>
         <div className="w-full relative min-h-[203px] md:min-h-[400px] mb-8 md:mb-[60px]">
