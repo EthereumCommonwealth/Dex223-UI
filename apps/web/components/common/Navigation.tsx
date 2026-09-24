@@ -230,6 +230,14 @@ function NavigationMoreDropdown() {
               handleClose={() => setSubmenuOpened(false)}
             />
             <MobileLink
+              isActive={pathname === "/governance"}
+              href="/governance"
+              iconName="listing"
+              title={t("governance")}
+              handleClose={() => setSubmenuOpened(false)}
+              comingSoon
+            />
+            <MobileLink
               isActive={pathname === "/create-token"}
               href="/create-token"
               iconName="list-tokens"

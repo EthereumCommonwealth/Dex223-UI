@@ -12,6 +12,8 @@ import {
 } from "@/app/[locale]/revenue/hooks/useRevenue";
 import TextField from "@/components/atoms/TextField";
 import Button, { ButtonSize, ButtonVariant } from "@/components/buttons/Button";
+import { Link } from "@/i18n/routing";
+
 function formatDuration(seconds: bigint): string {
   const s = Number(seconds);
   if (!Number.isFinite(s) || s <= 0) return "—";
@@ -57,6 +59,9 @@ export default function RevenuePanel() {
       <div className="bg-primary-bg rounded-5 px-4 py-5 md:px-6 md:py-6 flex flex-col gap-3">
         <p className="text-16 text-secondary-text">{t("not_deployed")}</p>
         <p className="text-14 text-tertiary-text">{t("not_deployed_hint")}</p>
+        <Link href="/governance" className="text-14 text-green hocus:underline w-fit">
+          {t("governance_link")}
+        </Link>
       </div>
     );
   }
@@ -198,6 +203,12 @@ export default function RevenuePanel() {
           </Button>
         </section>
       )}
+
+      <p className="text-14 text-secondary-text px-1">
+        <Link href="/governance" className="text-green hocus:underline">
+          {t("governance_link")}
+        </Link>
+      </p>
     </div>
   );
 }
