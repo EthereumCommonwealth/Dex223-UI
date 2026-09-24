@@ -21,6 +21,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 export function MobileLink({
   href,
   iconName,
@@ -114,10 +115,7 @@ export function MobileLink({
 
 function NavigationInternalLink({ href, text }: { href: string; text: string }) {
   return (
-    <Link
-      className="text-green hocus:text-green-hover duration-200 inline-block py-1"
-      href={href}
-    >
+    <Link className="text-green hocus:text-green-hover duration-200 inline-block py-1" href={href}>
       {text}
     </Link>
   );
@@ -250,6 +248,11 @@ export default function MobileMenu() {
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
+  const {
+    setIsOpen: setManageTokensOpen,
+    setActiveTab: setManageTokensActiveTab,
+    setContent: setManageTokensContent,
+  } = useManageTokensDialogStore();
 
   const handlers = useSwipeable({
     onSwipedLeft: (eventData) => {
@@ -336,6 +339,32 @@ export default function MobileMenu() {
                     href="/create-token"
                     iconName="list-tokens"
                     title={t("create_token")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
+                    href="#"
+                    iconName="list"
+                    title={t("token_lists")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      setManageTokensContent("default");
+                      setManageTokensActiveTab(0);
+                      setManageTokensOpen(true);
+                    }}
+                  />
+                  <MobileLink
+                    isActive={pathname === "/statistics"}
+                    href="/statistics"
+                    iconName="statistics"
+                    title={t("token_statistics")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
+                    isActive={pathname === "/guidelines"}
+                    href="/guidelines"
+                    iconName="guidelines"
+                    title={t("guidelines")}
                     handleClose={() => setMobileMenuOpened(false)}
                   />
                   <MobileLink

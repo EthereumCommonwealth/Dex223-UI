@@ -29,7 +29,8 @@
     "useful_front_page": "ERC-223 메인 페이지",
     "useful_page_source_codes": "페이지 소스 코드",
     "partners": "파트너",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "가이드"
   },
   "Swap": {
     "swap": "스왑",
@@ -500,5 +501,28 @@
     "gas_price_tooltip": "레거시 트랜잭션에서 지불하는 수수료는 gasPrice * gasUsed로 계산됩니다. gasPrice가 최신 블록의 네트워크 가스 가격 이상이 될 때까지 트랜잭션은 확정되지 않습니다.",
     "approved_tooltip": "ERC-20 토큰을 컨트랙트에 입금하려면 컨트랙트가 잔액에서 토큰을 출금하도록 '승인'해야 합니다. 승인은 컨트랙트가 사용자를 대신해 옮길 수 있는 토큰 수량을 결정합니다. ERC-223 토큰은 승인이 필요 없으므로 컨트랙트에 잔액 접근 권한을 부여하지 않아도 됩니다.",
     "deposited_tooltip": "ERC-223 토큰으로 작업하려면 먼저 컨트랙트에 입금해야 합니다. 이 수량은 이미 컨트랙트에 있는 토큰의 양을 나타냅니다. 입금한 ERC-223 토큰은 언제든지 컨트랙트에서 출금할 수 있습니다."
+  },
+  "Statistics": {
+    "title": "통계",
+    "description": "선택한 네트워크의 프로토콜 개요입니다.",
+    "tvl": "TVL",
+    "volume": "총 거래량",
+    "pools": "풀",
+    "transactions": "트랜잭션",
+    "top_pools": "TVL 상위 풀",
+    "view_all_pools": "모든 풀 보기",
+    "loading": "풀 불러오는 중…",
+    "no_pools": "이 네트워크에서 풀을 찾을 수 없습니다.",
+    "unavailable": "지금은 이 네트워크의 통계를 사용할 수 없습니다."
+  },
+  "Guidelines": {
+    "title": "가이드",
+    "description": "Dex223를 시작하기 위한 빠른 링크입니다.",
+    "getting_started_title": "시작하기",
+    "getting_started_subtitle": "플랫폼에서의 첫 단계",
+    "tokens_title": "토큰",
+    "tokens_subtitle": "토큰 상장, 생성 및 관리",
+    "learn_more_title": "자세히 알아보기",
+    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계"
   }
 }

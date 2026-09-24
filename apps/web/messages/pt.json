@@ -29,7 +29,8 @@
     "useful_front_page": "Página inicial ERC-223",
     "useful_page_source_codes": "Códigos-fonte da página",
     "partners": "Parceiros",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "Guias"
   },
   "Swap": {
     "swap": "Trocar",
@@ -500,5 +501,28 @@
     "gas_price_tooltip": "A taxa que vai pagar com uma transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
     "approved_tooltip": "Para depositar tokens ERC-20 em contratos, precisa de «autorizar» o contrato a levantar o token do seu saldo. A aprovação determina quantos tokens do seu saldo um contrato pode movimentar em seu nome. Os tokens ERC-223 não exigem aprovações, pelo que não precisa de autorizar nenhum contrato a aceder ao seu saldo.",
     "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento."
+  },
+  "Statistics": {
+    "title": "Estatísticas",
+    "description": "Visão geral do protocolo na rede selecionada.",
+    "tvl": "TVL",
+    "volume": "Volume total",
+    "pools": "Pools",
+    "transactions": "Transações",
+    "top_pools": "Principais pools por TVL",
+    "view_all_pools": "Ver todas as pools",
+    "loading": "A carregar pools…",
+    "no_pools": "Nenhuma pool encontrada nesta rede.",
+    "unavailable": "As estatísticas estão indisponíveis nesta rede neste momento."
+  },
+  "Guidelines": {
+    "title": "Guias",
+    "description": "Links rápidos para começar no Dex223.",
+    "getting_started_title": "Primeiros passos",
+    "getting_started_subtitle": "Os seus primeiros passos na plataforma",
+    "tokens_title": "Tokens",
+    "tokens_subtitle": "Listar, criar e gerir tokens",
+    "learn_more_title": "Saber mais",
+    "learn_more_subtitle": "Docs, notícias e estatísticas do protocolo"
   }
 }

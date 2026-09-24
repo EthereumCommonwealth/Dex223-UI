@@ -15,6 +15,7 @@
     "token_statistics": "Statistics",
     "token_lists": "Token lists",
     "create_token": "Create a new token",
+    "guidelines": "Guidelines",
     "blog": "Blog",
     "feedback": "Feedback",
     "social_media": "Social media",
@@ -501,5 +502,28 @@
     "add_to_wallets": "Add to my wallets",
     "already_in_wallets": "Wallet is already in your wallets",
     "my_wallets": "My wallets"
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "description": "Protocol overview for the selected network.",
+    "tvl": "TVL",
+    "volume": "Total volume",
+    "pools": "Pools",
+    "transactions": "Transactions",
+    "top_pools": "Top pools by TVL",
+    "view_all_pools": "View all pools",
+    "loading": "Loading pools…",
+    "no_pools": "No pools found for this network.",
+    "unavailable": "Statistics are unavailable for this network right now."
+  },
+  "Guidelines": {
+    "title": "Guidelines",
+    "description": "Quick links to get started on Dex223.",
+    "getting_started_title": "Getting started",
+    "getting_started_subtitle": "Your first steps on the platform",
+    "tokens_title": "Tokens",
+    "tokens_subtitle": "List, create, and manage tokens",
+    "learn_more_title": "Learn more",
+    "learn_more_subtitle": "Docs, news, and protocol stats"
   }
 }
