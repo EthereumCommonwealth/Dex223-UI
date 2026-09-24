@@ -191,6 +191,7 @@ export default function ImportListWithURL({ setContent }: Props) {
               </div>
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 className={clsx(
                   "flex items-center gap-2 py-2 duration-200",
                   "text-green hocus:text-green-hover",

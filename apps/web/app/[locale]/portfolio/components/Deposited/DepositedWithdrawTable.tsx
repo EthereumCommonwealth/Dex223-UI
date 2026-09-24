@@ -305,6 +305,7 @@ const WithdrawMobileTableItem = ({
           <a
             className="flex gap-2 text-14 text-green cursor-pointer items-center hocus:text-green-hover"
             target="_blank"
+            rel="noopener noreferrer"
             href={getExplorerLink(ExplorerLinkType.ADDRESS, deposite.contractAddress, chainId)}
           >
             {truncateMiddle(deposite.contractAddress || "", { charsFromStart: 6, charsFromEnd: 6 })}
