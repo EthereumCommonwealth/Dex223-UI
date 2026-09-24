@@ -63,16 +63,15 @@ const buttonVariantClassnameMap: Record<ButtonVariant, Record<ButtonColor, strin
   },
   [ButtonVariant.OUTLINED]: {
     [ButtonColor.RED]:
-      "border border-primary text-secondary-text hocus:bg-red-bg hocus:border-primary-text hocus:text-primary-text",
+      "border border-primary-border text-secondary-text hocus:bg-red-bg hocus:border-primary-text hocus:text-primary-text",
     [ButtonColor.GREEN]: "border border-green text-primary-text hocus:bg-green-bg",
     [ButtonColor.LIGHT_RED]: "bg-red-light text-black hocus:bg-red-hover",
     [ButtonColor.LIGHT_YELLOW]: "bg-yellow-light text-black hocus:bg-red-hover",
     [ButtonColor.LIGHT_GREEN]:
       "bg-green-bg text-primary-text border-transparent border hocus:border-green",
-    [ButtonColor.PURPLE]:
-      "bg-red-bg text-secondary-text border-transparent border hocus:border-red-light hocus:bg-red-bg-hover hocus:text-primary-text",
+    [ButtonColor.PURPLE]: "border border-purple text-primary-text hocus:bg-purple-bg",
     [ButtonColor.LIGHT_PURPLE]:
-      "bg-red-bg text-secondary-text border-transparent border hocus:border-red-light hocus:bg-red-bg-hover hocus:text-primary-text",
+      "bg-purple-bg text-primary-text border-transparent border hocus:border-purple",
   },
 };
 
