@@ -11,6 +11,7 @@ import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackD
 import { isMarginModuleEnabled } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
 import { usePathname } from "@/i18n/routing";
+import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 
 function MoreSectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -156,6 +157,11 @@ function NavigationMoreDropdown() {
   const t = useTranslations("Navigation");
   const pathname = usePathname();
   const { setIsOpen } = useFeedbackDialogStore();
+  const {
+    setIsOpen: setManageTokensOpen,
+    setActiveTab: setManageTokensActiveTab,
+    setContent: setManageTokensContent,
+  } = useManageTokensDialogStore();
 
   const active = useMemo(() => {
     return (
@@ -163,7 +169,6 @@ function NavigationMoreDropdown() {
       pathname.includes("/create-token") ||
       pathname.includes("/blog") ||
       pathname.includes("/statistics") ||
-      pathname.includes("/token-lists") ||
       pathname.includes("/guidelines")
     );
   }, [pathname]);
@@ -222,6 +227,32 @@ function NavigationMoreDropdown() {
               href="/create-token"
               iconName="list-tokens"
               title={t("create_token")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              href="#"
+              iconName="list"
+              title={t("token_lists")}
+              handleClose={() => setSubmenuOpened(false)}
+              handleClick={(e) => {
+                e.preventDefault();
+                setManageTokensContent("default");
+                setManageTokensActiveTab(0);
+                setManageTokensOpen(true);
+              }}
+            />
+            <MobileLink
+              isActive={pathname === "/statistics"}
+              href="/statistics"
+              iconName="statistics"
+              title={t("token_statistics")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              isActive={pathname === "/guidelines"}
+              href="/guidelines"
+              iconName="guidelines"
+              title={t("guidelines")}
               handleClose={() => setSubmenuOpened(false)}
             />
             <MobileLink

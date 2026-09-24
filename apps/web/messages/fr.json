@@ -29,7 +29,8 @@
     "useful_front_page": "Page d’accueil ERC-223",
     "useful_page_source_codes": "Codes source de la page",
     "partners": "Partenaires",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "Guides"
   },
   "Swap": {
     "swap": "Échanger",
@@ -500,5 +501,28 @@
     "gas_price_tooltip": "Les frais que vous payez avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
     "approved_tooltip": "Pour déposer des jetons ERC-20 dans des contrats, vous devez « autoriser » le contrat à prélever le jeton sur votre solde. L’approbation détermine la quantité de jetons de votre solde qu’un contrat peut déplacer en votre nom. Les jetons ERC-223 ne nécessitent pas d’approbation, vous n’avez donc pas à autoriser un contrat à accéder à votre solde.",
     "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment."
+  },
+  "Statistics": {
+    "title": "Statistiques",
+    "description": "Aperçu du protocole sur le réseau sélectionné.",
+    "tvl": "TVL",
+    "volume": "Volume total",
+    "pools": "Pools",
+    "transactions": "Transactions",
+    "top_pools": "Meilleures pools par TVL",
+    "view_all_pools": "Voir toutes les pools",
+    "loading": "Chargement des pools…",
+    "no_pools": "Aucune pool trouvée sur ce réseau.",
+    "unavailable": "Les statistiques sont indisponibles sur ce réseau pour le moment."
+  },
+  "Guidelines": {
+    "title": "Guides",
+    "description": "Liens rapides pour démarrer sur Dex223.",
+    "getting_started_title": "Pour commencer",
+    "getting_started_subtitle": "Vos premiers pas sur la plateforme",
+    "tokens_title": "Jetons",
+    "tokens_subtitle": "Lister, créer et gérer des jetons",
+    "learn_more_title": "En savoir plus",
+    "learn_more_subtitle": "Docs, actualités et statistiques du protocole"
   }
 }
