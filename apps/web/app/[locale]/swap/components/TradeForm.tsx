@@ -59,10 +59,12 @@ function OpenConfirmDialogButton({
   isSufficientBalance,
   isTradeReady,
   isTradeLoading,
+  cannotReceiveOutput,
 }: {
   isSufficientBalance: boolean;
   isTradeReady: boolean;
   isTradeLoading: boolean;
+  cannotReceiveOutput: boolean;
 }) {
   const tWallet = useTranslations("Wallet");
   const t = useTranslations("Swap");
@@ -180,6 +182,16 @@ function OpenConfirmDialogButton({
     return (
       <Button fullWidth disabled size={ActionButtonSize} mobileSize={MobileActionButtonSize}>
         {t("swap_is_unavailable_for_this_pair")}
+      </Button>
+    );
+  }
+
+  // The warning above the button explains why: an EIP-7702 account rejects ERC-223 transfers,
+  // so the swap would revert on chain.
+  if (cannotReceiveOutput) {
+    return (
+      <Button fullWidth disabled size={ActionButtonSize} mobileSize={MobileActionButtonSize}>
+        {t("cannot_receive_erc223")}
       </Button>
     );
   }
@@ -799,6 +811,9 @@ export default function TradeForm() {
       )}
 
       <OpenConfirmDialogButton
+        cannotReceiveOutput={Boolean(
+          tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223,
+        )}
         isSufficientBalance={
           (tokenAStandard === Standard.ERC20 &&
             (tokenA0Balance && tokenA

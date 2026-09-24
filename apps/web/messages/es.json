@@ -80,6 +80,7 @@
     "approving_in_progress": "Aprobación en curso",
     "looking_for_the_best_trade": "Buscando la mejor operación...",
     "swap_is_unavailable_for_this_pair": "El intercambio no está disponible para este par",
+    "cannot_receive_erc223": "Esta billetera no puede recibir ERC-223",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Ajustes aplicados",
     "tokens_in_two_standards_title": "Tokens en los estándares ERC-20 y ERC-223",

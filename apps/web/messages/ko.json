@@ -80,6 +80,7 @@
     "approving_in_progress": "승인 진행 중",
     "looking_for_the_best_trade": "최적 경로를 찾는 중...",
     "swap_is_unavailable_for_this_pair": "이 페어는 스왑을 지원하지 않습니다",
+    "cannot_receive_erc223": "이 지갑은 ERC-223을 받을 수 없습니다",
     "insufficient_balance": "잔액 부족",
     "settings_applied": "설정이 적용되었습니다",
     "tokens_in_two_standards_title": "ERC-20 및 ERC-223 표준 토큰",

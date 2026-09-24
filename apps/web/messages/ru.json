@@ -80,6 +80,7 @@
     "approving_in_progress": "Выполняется разрешение",
     "looking_for_the_best_trade": "Поиск лучшего маршрута...",
     "swap_is_unavailable_for_this_pair": "Обмен недоступен для этой пары",
+    "cannot_receive_erc223": "Этот кошелек не может получать ERC-223",
     "insufficient_balance": "Недостаточный баланс",
     "settings_applied": "Настройки применены",
     "tokens_in_two_standards_title": "Токены в стандартах ERC-20 и ERC-223",
