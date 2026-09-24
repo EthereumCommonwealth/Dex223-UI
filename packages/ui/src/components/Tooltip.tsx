@@ -33,8 +33,17 @@ interface Props {
     refProps: Record<string, unknown>,
   ) => React.ReactNode;
   customOffset?: number;
+  // Accessible name for the default info-icon trigger; the tooltip text itself is announced as
+  // its description while the tooltip is open.
+  triggerLabel?: string;
 }
-export default function Tooltip({ text, iconSize = 24, renderTrigger, customOffset }: Props) {
+export default function Tooltip({
+  text,
+  iconSize = 24,
+  renderTrigger,
+  customOffset,
+  triggerLabel = "More information",
+}: Props) {
   const [isOpen, setIsOpen] = useState(false);
   const arrowRef = useRef(null);
 
@@ -81,7 +90,10 @@ export default function Tooltip({ text, iconSize = 24, renderTrigger, customOffs
         renderTrigger(refs, getReferenceProps())
       ) : (
         <span
-          className="ui-cursor-pointer ui-text-tertiary-text ui-pointer-events-auto"
+          // Focusable so keyboard users can open the tooltip too (useFocus opens it on focus).
+          tabIndex={0}
+          aria-label={triggerLabel}
+          className="ui-cursor-pointer ui-text-tertiary-text ui-pointer-events-auto ui-rounded-full focus-visible:ui-outline focus-visible:ui-outline-2 focus-visible:ui-outline-offset-2 focus-visible:ui-outline-green-hover"
           ref={refs.setReference}
           {...getReferenceProps()}
           onClick={(e) => e.stopPropagation()}
@@ -92,7 +104,7 @@ export default function Tooltip({ text, iconSize = 24, renderTrigger, customOffs
       <FloatingPortal>
         {isMounted && (
           <div
-            className="ui-py-2 ui-px-5 ui-bg-quaternary-bg ui-border ui-border-secondary-border ui-rounded-2 ui-max-w-max ui-relative ui-z-[100] ui-text-14 ui-text-secondary-text"
+            className="ui-py-2 ui-px-5 ui-bg-quaternary-bg ui-border ui-border-secondary-border ui-rounded-2 ui-shadow-popover ui-shadow-black/70 ui-max-w-max ui-relative ui-z-[100] ui-text-14 ui-text-secondary-text"
             ref={refs.setFloating}
             style={{ ...floatingStyles, ...transitionStyles }}
             {...getFloatingProps()}
