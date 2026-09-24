@@ -85,13 +85,6 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       }
     }
 
-    if (flow === "swap" && asset.coinCode) {
-      config.defaultCoinCode = asset.coinCode;
-      if (asset.network) {
-        config.network = asset.network;
-      }
-    }
-
     return config;
   }, [address, appId, asset.coinCode, asset.network, flow, locale]);
 
@@ -161,9 +154,7 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       ? asset.coinCode
         ? t("cta_buy_asset", { symbol: asset.symbol })
         : t("cta_buy_any")
-      : flow === "sell"
-        ? t("cta_sell")
-        : t("cta_swap");
+      : t("cta_sell");
 
   return (
     <div className="w-full flex flex-col gap-3">

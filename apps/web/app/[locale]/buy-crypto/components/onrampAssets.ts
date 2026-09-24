@@ -1,4 +1,4 @@
-export type OnrampFlow = "buy" | "sell" | "swap";
+export type OnrampFlow = "buy" | "sell";
 
 export type OnrampAssetId = "d223" | "eth" | "usdc" | "usdt" | "any";
 
@@ -57,7 +57,6 @@ export const BUY_ASSETS: OnrampAsset[] = [
 export const FLOW_TYPE_MAP: Record<OnrampFlow, number> = {
   buy: 1,
   sell: 2,
-  swap: 4,
 };
 
 export const ONRAMP_THEME = {

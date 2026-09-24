@@ -15,7 +15,7 @@ import { ColorSchemeProvider } from "@/lib/color-scheme";
 import BuyOnramp from "./BuyOnramp";
 import { BUY_ASSETS, OnrampAsset, OnrampAssetId, OnrampFlow } from "./onrampAssets";
 
-const FLOWS: OnrampFlow[] = ["buy", "sell", "swap"];
+const FLOWS: OnrampFlow[] = ["buy", "sell"];
 
 export default function BuyCryptoPageClient() {
   const t = useTranslations("BuyCrypto");
@@ -43,9 +43,6 @@ export default function BuyCryptoPageClient() {
   const selectAsset = (asset: OnrampAsset) => {
     setAssetId(asset.id);
     setCompletedSymbol(null);
-    if (flow !== "buy" && asset.id === "any") {
-      // Keep sell/swap usable without a forced coin.
-    }
   };
 
   return (
@@ -165,9 +162,9 @@ export default function BuyCryptoPageClient() {
                 </div>
               )}
 
-              {(flow === "sell" || flow === "swap") && (
+              {flow === "sell" && (
                 <div className="bg-secondary-bg rounded-3 px-4 py-3 text-14 text-secondary-text">
-                  {flow === "sell" ? t("sell_hint") : t("swap_hint")}
+                  {t("sell_hint")}
                 </div>
               )}
 
