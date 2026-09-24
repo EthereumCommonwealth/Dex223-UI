@@ -16,6 +16,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
   const post: PostDetails = await res.json();
 
+  // DOMPurify is a module singleton on the server: drop the hook from the previous
+  // request before adding it again, or every render stacks one more copy.
+  DOMPurify.removeHooks("afterSanitizeAttributes");
   DOMPurify.addHook("afterSanitizeAttributes", (node: Element) => {
     // Restrict iframe sources
     if (node.tagName === "IFRAME") {
@@ -24,7 +27,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         node.remove();
       } else {
         node.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups");
-        node.setAttribute("referrerpolicy", "no-referrer");
+        // YouTube refuses to play without a referrer (error 153), so send the origin only.
+        node.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
       }
     }
 
@@ -158,10 +162,13 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         "autoplay",
         "style",
       ],
-    }).replace(
-      /<iframe([\s\S]*?)<\/iframe>/gi,
-      '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
-    ),
+    })
+      .replace(
+        /<iframe([\s\S]*?)<\/iframe>/gi,
+        '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
+      )
+      // Let wide tables scroll sideways on phones instead of crushing their columns.
+      .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
   if (!post) {
@@ -242,7 +249,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         </div>
       </Container>
       <PostContainer>
-        <div className="prose last:prose-th:pr-4 last:prose-td:pr-4 prose-th:align-top prose-th:py-2 prose-headings:text-primary-text first:prose-th:pl-5 first:prose-td:pl-5 prose-table:rounded-5 prose-table:overflow-hidden prose-td:bg-primary-bg prose-tr:border-secondary-border prose-th:bg-quaternary-bg [&>p]:prose-li:my-2 text-primary-text prose-li:my-2 prose-li:text-secondary-text prose-li:marker:text-secondary-text hover:prose-a:text-green-hover prose-a:duration-200 prose-a:cursor-pointer prose-lg max-lg:prose-base prose-p:text-secondary-text prose-strong:text-inherit max-w-none prose-a:text-green prose-headings::text-primary-text  prose-a:font-normal">
+        <div className="post-content prose last:prose-th:pr-4 last:prose-td:pr-4 prose-th:align-top prose-th:py-2 prose-headings:text-primary-text first:prose-th:pl-5 first:prose-td:pl-5 prose-table:rounded-5 prose-table:overflow-hidden prose-td:bg-primary-bg prose-tr:border-secondary-border prose-th:bg-quaternary-bg [&>p]:prose-li:my-2 text-primary-text prose-li:my-2 prose-li:text-secondary-text prose-li:marker:text-secondary-text hover:prose-a:text-green-hover prose-a:duration-200 prose-a:cursor-pointer prose-lg max-lg:prose-base prose-p:text-secondary-text prose-strong:text-inherit max-w-none prose-a:text-green prose-headings::text-primary-text  prose-a:font-normal">
           <div dangerouslySetInnerHTML={sanitizedData()} />
         </div>
       </PostContainer>
