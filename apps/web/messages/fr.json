@@ -378,6 +378,7 @@
     "must_be_at_least": "Doit être au moins {val}",
     "token_starting_price": "Prix initial de {symbol}",
     "pools_not_found": "Aucun pool trouvé",
+    "pools_load_error": "Impossible de charger les pools. Vérifiez votre connexion et réessayez.",
     "amount_title": "Montant",
     "enter_correct_values": "Saisissez des valeurs correctes",
     "collecting_fee_message": "Percevoir les frais retirera les frais actuellement disponibles",
