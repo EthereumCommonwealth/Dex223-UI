@@ -298,7 +298,7 @@ export default function ConfirmListingDialog() {
                       address={autoListing?.id!}
                       title={autoListing?.name || "Unknown"}
                       underlineText={
-                        isMobile ? "In the auto-listing" : "In the auto-listing сontract"
+                        isMobile ? "In the auto-listing" : "In the auto-listing contract"
                       }
                     />
                   </div>
@@ -331,7 +331,7 @@ export default function ConfirmListingDialog() {
                     <SingleCard
                       address={autoListing?.id!}
                       title={autoListing?.name || "Unknown"}
-                      underlineText="In the auto-listing сontract"
+                      underlineText="In the auto-listing contract"
                     />
                   </>
                 )}
