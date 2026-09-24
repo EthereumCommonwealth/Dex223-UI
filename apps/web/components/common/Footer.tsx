@@ -9,6 +9,7 @@ import Svg from "@/components/atoms/Svg";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { linkTargetProps } from "@/functions/linkTarget";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -58,7 +59,7 @@ function FooterLink({ href, title, icon }: SocialLink) {
   return (
     <>
       <a
-        target="_blank"
+        {...linkTargetProps(href)}
         href={href}
         className={clsx(
           "lg:w-auto text-12 lg:text-16 flex gap-2 bg-primary-bg rounded-5 lg:py-2 lg:pr-4 lg:pl-5 p-2 hocus:bg-green-bg hocus:text-primary-text text-secondary-text duration-200 w-full whitespace-nowrap justify-center items-center",
