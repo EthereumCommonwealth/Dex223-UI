@@ -105,8 +105,13 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
           }}
           activeTab={activeTab}
           rightContent={
-            <Link href={"/margin-trading/lending-order/create"}>
-              <Button endIcon="add">New lending order</Button>
+            <Link
+              href={"/margin-trading/lending-order/create"}
+              className="self-stretch sm:self-auto sm:shrink-0"
+            >
+              <Button endIcon="add" className="w-full sm:w-auto whitespace-nowrap">
+                New lending order
+              </Button>
             </Link>
           }
         >

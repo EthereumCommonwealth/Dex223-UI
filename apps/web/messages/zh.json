@@ -398,6 +398,7 @@
     "must_be_at_least": "不得小于 {val}",
     "token_starting_price": "{symbol} 初始价格",
     "pools_not_found": "未找到流动性池",
+    "pools_load_error": "无法加载流动性池。请检查网络连接后重试。",
     "amount_title": "数量",
     "enter_correct_values": "请输入正确的数值",
     "collecting_fee_message": "领取手续费将提取当前可用的手续费",
@@ -525,6 +526,8 @@
     "tokens_title": "代币",
     "tokens_subtitle": "上架、创建和管理代币",
     "learn_more_title": "了解更多",
-    "learn_more_subtitle": "文档、新闻和协议统计"
+    "learn_more_subtitle": "文档、新闻和协议统计",
+    "all_guides_title": "指南",
+    "all_guides_subtitle": "常见操作的简短说明"
   }
 }

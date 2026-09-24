@@ -448,6 +448,7 @@ export default function MobileMenu() {
                     {tFooter("gas")}{" "}
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                     >
@@ -460,6 +461,7 @@ export default function MobileMenu() {
                   {blockNumber ? (
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(
                         ExplorerLinkType.BLOCK,
