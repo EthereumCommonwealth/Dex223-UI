@@ -515,7 +515,21 @@
     "view_all_pools": "查看全部流动性池",
     "loading": "正在加载流动性池…",
     "no_pools": "该网络暂无流动性池。",
-    "unavailable": "该网络的统计数据暂时不可用。"
+    "unavailable": "该网络的统计数据暂时不可用。",
+    "loading_tokens": "正在加载代币…",
+    "no_tokens": "该网络暂无代币。",
+    "token_not_found": "未找到代币。",
+    "tab_overview": "概览",
+    "tab_tokens": "代币",
+    "tab_pools": "流动性池",
+    "col_token": "代币",
+    "col_volume": "交易量",
+    "col_price": "价格",
+    "chart_tvl": "TVL",
+    "chart_volume": "交易量",
+    "chart_price": "价格",
+    "chart_empty": "暂无图表数据",
+    "token_pools": "流动性池"
   },
   "Guidelines": {
     "title": "指南",

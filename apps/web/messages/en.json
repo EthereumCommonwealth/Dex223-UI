@@ -515,8 +515,22 @@
     "top_pools": "Top pools by TVL",
     "view_all_pools": "View all pools",
     "loading": "Loading pools…",
+    "loading_tokens": "Loading tokens…",
     "no_pools": "No pools found for this network.",
-    "unavailable": "Statistics are unavailable for this network right now."
+    "no_tokens": "No tokens found for this network.",
+    "token_not_found": "Token not found.",
+    "unavailable": "Statistics are unavailable for this network right now.",
+    "tab_overview": "Overview",
+    "tab_tokens": "Tokens",
+    "tab_pools": "Pools",
+    "col_token": "Token",
+    "col_volume": "Volume",
+    "col_price": "Price",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Price",
+    "chart_empty": "No chart data yet",
+    "token_pools": "Pools"
   },
   "Guidelines": {
     "title": "Guidelines",

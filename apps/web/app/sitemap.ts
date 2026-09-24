@@ -21,6 +21,8 @@ const ROUTES: {
   { path: "converter", priority: 0.7, changeFrequency: "monthly" },
   { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
   { path: "statistics", priority: 0.7, changeFrequency: "daily" },
+  { path: "statistics/tokens", priority: 0.6, changeFrequency: "daily" },
+  { path: "statistics/pools", priority: 0.6, changeFrequency: "daily" },
 ];
 
 const url = (locale: string, path: string) => `${SITE_URL}/${locale}/${path}`;

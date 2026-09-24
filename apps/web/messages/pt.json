@@ -515,7 +515,21 @@
     "view_all_pools": "Ver todas as pools",
     "loading": "A carregar pools…",
     "no_pools": "Nenhuma pool encontrada nesta rede.",
-    "unavailable": "As estatísticas estão indisponíveis nesta rede neste momento."
+    "unavailable": "As estatísticas estão indisponíveis nesta rede neste momento.",
+    "loading_tokens": "A carregar tokens…",
+    "no_tokens": "Nenhum token encontrado nesta rede.",
+    "token_not_found": "Token não encontrado.",
+    "tab_overview": "Visão geral",
+    "tab_tokens": "Tokens",
+    "tab_pools": "Pools",
+    "col_token": "Token",
+    "col_volume": "Volume",
+    "col_price": "Preço",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Preço",
+    "chart_empty": "Ainda sem dados de gráfico",
+    "token_pools": "Pools"
   },
   "Guidelines": {
     "title": "Guias",
