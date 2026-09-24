@@ -47,6 +47,26 @@ div[role="dialog"]:focus {
   outline: none;
 }
 
+/* Keyboard users still get a clear, on-brand focus ring. Mouse focus stays clean. */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid theme("colors.green-hover");
+  outline-offset: 2px;
+}
+
+/* Loading spinners keep animating; only UI transitions are shortened. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .Dialog-overlay {
   backdrop-filter: blur(4px);
   background: rgba(0, 0, 0, 0.7);
