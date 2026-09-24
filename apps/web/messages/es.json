@@ -539,6 +539,8 @@
     "tokens_title": "Tokens",
     "tokens_subtitle": "Lista, crea y gestiona tokens",
     "learn_more_title": "Más información",
-    "learn_more_subtitle": "Documentación, noticias y estadísticas del protocolo"
+    "learn_more_subtitle": "Documentación, noticias y estadísticas del protocolo",
+    "all_guides_title": "Guías",
+    "all_guides_subtitle": "Cómo hacer las tareas más comunes"
   }
 }

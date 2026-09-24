@@ -21,13 +21,14 @@ function TabTitle({ title, setSelectedTab, index, selectedTab, fullWidth, colorS
       // Only the selected tab sits in the page's tab order; arrow keys move between tabs.
       tabIndex={isSelected ? 0 : -1}
       className={clsx(
-        "transition-colors duration-200 hocus:bg-green-bg py-2.5 px-6 flex justify-center border rounded-2",
+        // Titles stay on one line; the strip scrolls sideways instead of wrapping them.
+        "transition-colors duration-200 hocus:bg-green-bg py-2.5 px-6 flex justify-center border rounded-2 whitespace-nowrap",
         isSelected
           ? "bg-green-bg text-primary-text border-green"
           : colorScheme === "secondary"
             ? "bg-primary-bg text-secondary-text border-transparent"
             : "bg-secondary-bg text-secondary-text border-transparent",
-        fullWidth && "w-full",
+        fullWidth ? "w-full" : "shrink-0",
       )}
       onClick={() => setSelectedTab(index)}
     >

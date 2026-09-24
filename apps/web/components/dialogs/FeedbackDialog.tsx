@@ -143,10 +143,17 @@ export default function FeedbackDialog() {
                 github: (chunks) => (
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://github.com/EthereumCommonwealth/Dex223-UI/issues"
                     className="text-green underline hocus:text-green-hover duration-200"
                   >
                     {chunks}
+                    <Svg
+                      iconName="forward"
+                      size={16}
+                      aria-hidden
+                      className="inline-block align-[-3px] ml-0.5"
+                    />
                   </a>
                 ),
               })}

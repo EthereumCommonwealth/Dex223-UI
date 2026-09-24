@@ -14,7 +14,7 @@ import EmptyStateIcon from "@/components/atoms/EmptyStateIcon";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import RangeBadge, { PositionRangeStatus } from "@/components/badges/RangeBadge";
-import Button from "@/components/buttons/Button";
+import Button, { ButtonColor } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { clsxMerge } from "@/functions/clsxMerge";
@@ -421,6 +421,7 @@ const MintDialog = ({
                 <div className="items-center flex flex-row gap-2 -mt-1">
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     href={getExplorerLink(ExplorerLinkType.TRANSACTION, liquidityHash, chainId)}
                   >
                     <IconButton iconName="forward" />
@@ -681,12 +682,28 @@ const SuccessfulDialog = ({
           </span>
         </div>
         {isError ? null : (
-          <Link href="/pools/positions">
-            <div className="flex gap-2 text-green justify-center" onClick={() => setIsOpen(false)}>
-              View my liquidity positions
-              <Svg iconName="forward" />
-            </div>
-          </Link>
+          <div className="flex flex-col items-center gap-3 mb-3">
+            <Link href="/pools/positions">
+              <div
+                className="flex gap-2 text-green justify-center"
+                onClick={() => setIsOpen(false)}
+              >
+                View my liquidity positions
+                <Svg iconName="forward" />
+              </div>
+            </Link>
+            {tokenA?.wrapped.address0 && tokenB?.wrapped.address0 && (
+              <Link
+                href={`/token-listing/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
+                onClick={() => setIsOpen(false)}
+                className="w-full"
+              >
+                <Button fullWidth colorScheme={ButtonColor.LIGHT_GREEN}>
+                  List token
+                </Button>
+              </Link>
+            )}
+          </div>
         )}
         <div className="h-px w-full bg-secondary-border mb-4 mt-5" />
         {/* <ApproveRow /> */}
@@ -712,6 +729,7 @@ const SuccessfulDialog = ({
             {liquidityHash && (
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 href={getExplorerLink(ExplorerLinkType.TRANSACTION, liquidityHash, chainId)}
               >
                 <IconButton iconName="forward" />

@@ -38,6 +38,7 @@ export default function TokenAddressWithStandard({
       <a
         href={getExplorerLink(ExplorerLinkType.ADDRESS, tokenAddress, chainId)}
         target="_blank"
+        rel="noopener noreferrer"
         className="bg-quaternary-bg pl-2 pr-1 flex gap-1 py-px text-secondary-text hocus:text-primary-text
          hocus:bg-green-bg duration-200 border border-secondary-border rounded-r-2 items-center border-l-0"
       >

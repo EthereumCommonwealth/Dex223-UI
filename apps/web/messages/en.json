@@ -540,6 +540,8 @@
     "tokens_title": "Tokens",
     "tokens_subtitle": "List, create, and manage tokens",
     "learn_more_title": "Learn more",
-    "learn_more_subtitle": "Docs, news, and protocol stats"
+    "learn_more_subtitle": "Docs, news, and protocol stats",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Short how-tos for common flows"
   }
 }

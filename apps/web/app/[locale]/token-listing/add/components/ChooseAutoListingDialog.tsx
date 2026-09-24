@@ -90,6 +90,7 @@ export default function ChooseAutoListingDialog() {
                   />
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     onClick={(e) => e.stopPropagation()}
                     href={`/${locale}/token-listing/contracts/${a.id}`}
                   >
