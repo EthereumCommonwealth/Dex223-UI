@@ -332,6 +332,7 @@
     "wallet_connection_notice": "Tu monedero se conectará automáticamente al continuar"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "Este archivo no contiene tokens válidos para la red seleccionada.",
     "manage_lists": "Gestionar listas",
     "manage_tokens": "Gestionar tokens",
     "tokens": "Tokens",

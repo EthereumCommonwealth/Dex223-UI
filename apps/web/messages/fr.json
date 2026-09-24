@@ -332,6 +332,7 @@
     "wallet_connection_notice": "Votre portefeuille sera connecté automatiquement lorsque vous continuerez"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "Ce fichier ne contient aucun jeton valide pour le réseau sélectionné.",
     "manage_lists": "Gérer les listes",
     "manage_tokens": "Gérer les jetons",
     "tokens": "Jetons",

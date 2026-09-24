@@ -332,6 +332,7 @@
     "wallet_connection_notice": "A sua carteira será ligada automaticamente ao prosseguir"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "Este arquivo não contém tokens válidos para a rede selecionada.",
     "manage_lists": "Gerir listas",
     "manage_tokens": "Gerir tokens",
     "tokens": "Tokens",

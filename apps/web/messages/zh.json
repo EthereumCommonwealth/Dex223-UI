@@ -332,6 +332,7 @@
     "wallet_connection_notice": "继续操作时将自动连接您的钱包"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "此文件中没有适用于所选网络的有效代币。",
     "manage_lists": "管理列表",
     "manage_tokens": "管理代币",
     "tokens": "代币",
