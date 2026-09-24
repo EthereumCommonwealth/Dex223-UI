@@ -8,6 +8,11 @@
     "pools": "Poolsio",
     "token-listing": "Token listingio",
     "lib": "Libio"
+  },
+  "BlogFilters": {
+    "no_results": "没有符合搜索条件的文章或视频",
+    "no_posts": "暂无文章",
+    "clear_filters": "清除筛选"
   }
 }
 

@@ -25,5 +25,10 @@
       "useful_page_source_codes": "Page source codes",
       "partners": "Partners",
       "partners_eos_support": "BlockzHub"
-    }
+    },
+  "BlogFilters": {
+    "no_results": "Ningún artículo o video coincide con tu búsqueda",
+    "no_posts": "Aún no hay artículos",
+    "clear_filters": "Borrar filtros"
+  }
 }

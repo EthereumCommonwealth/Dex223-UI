@@ -1,6 +1,7 @@
 "use client";
 
 import debounce from "lodash.debounce";
+import { useSearchParams } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import PostsContent from "@/app/[locale]/components/PostsContent";
@@ -13,6 +14,11 @@ import { IIFE } from "@/functions/iife";
 
 const INITAL_LOAD = 10;
 const POSTS_LIMIT = 6;
+
+// The first request returns INITAL_LOAD posts and every later page POSTS_LIMIT more.
+function loadedPostsCount(page: number) {
+  return INITAL_LOAD + (page - 1) * POSTS_LIMIT;
+}
 
 function useAllTags() {
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
@@ -106,11 +112,7 @@ function useAllPosts({
       setPosts((_posts) => [..._posts, ...posts.data]);
       pageRef.current += 1;
 
-      if (posts.total < INITAL_LOAD + pageRef.current * POSTS_LIMIT) {
-        setAllLoaded(true);
-      } else {
-        setAllLoaded(false);
-      }
+      setAllLoaded(posts.total <= loadedPostsCount(pageRef.current));
     }
 
     isLoadingMoreRef.current = false;
@@ -155,12 +157,10 @@ function useAllPosts({
 
         if (postsResponse.data) {
           setPosts(postsResponse.data);
+          // A new search or filter starts again from the first page.
+          pageRef.current = 1;
 
-          if (postsResponse.total < INITAL_LOAD + pageRef.current * POSTS_LIMIT) {
-            setAllLoaded(true);
-          } else {
-            setAllLoaded(false);
-          }
+          setAllLoaded(postsResponse.total <= loadedPostsCount(pageRef.current));
         }
       } catch (e) {
         console.error(e);
@@ -191,11 +191,54 @@ const filterMap: Record<ContentType, string> = {
   vide_and_content: "Articles and video",
 };
 
+const DEFAULT_TAG = "all";
+const DEFAULT_CONTENT_TYPE: ContentType = "vide_and_content";
+
+function isContentType(value: string | null): value is ContentType {
+  return !!value && value in filterMap;
+}
+
 export default function BlogPage() {
-  const [searchValue, setSearchValue] = useState("");
-  const [tag, setTag] = useState("all");
-  const [contentType, setContentType] = useState<ContentType>("vide_and_content");
+  // Filters live in the URL so they survive opening a post and coming back,
+  // and a filtered view can be shared.
+  const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(() => searchParams.get("q") ?? "");
+  const [tag, setTag] = useState(() => searchParams.get("tag") || DEFAULT_TAG);
+  const [contentType, setContentType] = useState<ContentType>(() => {
+    const type = searchParams.get("type");
+    return isContentType(type) ? type : DEFAULT_CONTENT_TYPE;
+  });
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const setOrDelete = (key: string, value: string, defaultValue: string) => {
+      if (value && value !== defaultValue) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    };
+
+    setOrDelete("q", searchValue.trim(), "");
+    setOrDelete("tag", tag, DEFAULT_TAG);
+    setOrDelete("type", contentType, DEFAULT_CONTENT_TYPE);
+
+    const query = params.toString();
+    const url = `${window.location.pathname}${query ? `?${query}` : ""}`;
+    if (url !== `${window.location.pathname}${window.location.search}`) {
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, [searchValue, tag, contentType]);
+
+  const hasActiveFilters =
+    !!searchValue.trim() || tag !== DEFAULT_TAG || contentType !== DEFAULT_CONTENT_TYPE;
+
+  const resetFilters = useCallback(() => {
+    setSearchValue("");
+    setTag(DEFAULT_TAG);
+    setContentType(DEFAULT_CONTENT_TYPE);
+  }, []);
 
   const { getMorePosts, posts, isLoadingMore, internalSearchValue, isAllLoaded } = useAllPosts({
     searchValue,
@@ -254,6 +297,7 @@ export default function BlogPage() {
         getMorePosts={getMorePosts}
         isLoadingMore={isLoadingMore}
         isAllLoaded={isAllLoaded}
+        onResetFilters={hasActiveFilters ? resetFilters : undefined}
       />
       <ScrollToTopButton />
     </Container>
