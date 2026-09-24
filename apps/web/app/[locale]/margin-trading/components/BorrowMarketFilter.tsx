@@ -17,7 +17,12 @@ function ButtonRow({ children }: PropsWithChildren) {
 
 function ExternalIconLink({ href }: { href: string }) {
   return (
-    <a href={href} className="w-10 h-10 flex items-center justify-center" target="_blank">
+    <a
+      href={href}
+      className="w-10 h-10 flex items-center justify-center"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <Svg iconName="forward" />
     </a>
   );
