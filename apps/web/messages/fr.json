@@ -546,7 +546,144 @@
     "learn_more_title": "En savoir plus",
     "learn_more_subtitle": "Docs, actualités et statistiques du protocole",
     "all_guides_title": "Guides",
-    "all_guides_subtitle": "Tutoriels courts pour les flux courants"
+    "all_guides_subtitle": "Tutoriels courts pour les flux courants",
+    "back": "Guides",
+    "steps_label": "Étapes",
+    "guides": {
+      "swap": {
+        "title": "Comment faire un swap",
+        "description": "Échangez des jetons sur Dex223 en quelques étapes.",
+        "cta": "Ouvrir Swap",
+        "sections": {
+          "before": {
+            "heading": "Avant de commencer",
+            "body": "Connectez un portefeuille qui contient le jeton que vous voulez vendre, ainsi que suffisamment de gas pour le réseau sélectionné."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Swap</b> depuis le menu Échanger.",
+              "s2": "Choisissez le jeton avec lequel vous payez et le jeton que vous recevez.",
+              "s3": "Saisissez un montant. Vérifiez le prix proposé et l’impact sur le prix.",
+              "s4": "Confirmez le swap dans votre portefeuille lorsque cela vous est demandé."
+            }
+          },
+          "tips": {
+            "heading": "Conseils",
+            "items": {
+              "s1": "Privilégiez les pools liquides pour obtenir des cotations plus serrées.",
+              "s2": "S'il manque un jeton, ouvrez <b>Gérer les jetons</b> dans le sélecteur de jetons ou collez l'adresse de son contrat.",
+              "s3": "Les versions ERC-20 et ERC-223 d’un même actif peuvent apparaître toutes les deux. Choisissez le standard attendu par votre portefeuille et par la destination."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Convertir entre ERC-20 et ERC-223",
+        "description": "Faites passer n’importe quel jeton pris en charge d’un standard à l’autre au taux de 1:1.",
+        "cta": "Ouvrir Convertisseur de jetons",
+        "sections": {
+          "what": {
+            "heading": "À quoi il sert",
+            "body": "Le convertisseur encapsule ou désencapsule un jeton entre ERC-20 et ERC-223 au taux de <b>1:1</b>, sans frais de protocole."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Convertisseur de jetons</b> depuis le menu Plus.",
+              "s2": "Sélectionnez le jeton et le sens de conversion (vers ERC-20 ou vers ERC-223).",
+              "s3": "Saisissez le montant et confirmez dans votre portefeuille."
+            }
+          },
+          "when": {
+            "heading": "Quand l’utiliser",
+            "items": {
+              "s1": "Vous avez reçu de l’ERC-223 mais une dapp n’accepte que l’ERC-20 (ou l’inverse).",
+              "s2": "Vous préparez de la liquidité ou un swap qui exige un standard précis."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Gérer les listes de jetons",
+        "description": "Activez, importez et organisez les listes qui alimentent le sélecteur de jetons.",
+        "cta": "Ouvrir Listes de jetons",
+        "sections": {
+          "why": {
+            "heading": "Pourquoi les listes comptent",
+            "body": "Dex223 n’affiche que les jetons des listes que vous activez. Si un jeton manque dans Swap ou dans le convertisseur, vérifiez d’abord vos listes."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Listes de jetons</b> depuis le menu Plus, ou <b>Gérer les jetons</b> dans le sélecteur de jetons.",
+              "s2": "Dans l’onglet <b>Listes</b>, activez les listes auxquelles vous faites confiance.",
+              "s3": "Importez une liste personnalisée par URL, JSON ou contrat si nécessaire.",
+              "s4": "Dans l’onglet <b>Jetons</b>, épinglez vos favoris ou importez un jeton précis à partir de son adresse."
+            }
+          },
+          "safety": {
+            "heading": "Sécurité",
+            "body": "N’activez que des listes provenant de sources de confiance. Des listes malveillantes peuvent faire apparaître des jetons frauduleux aux noms familiers."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "Lister un jeton",
+        "description": "Soumettez un jeton à un contrat d’autolisting pour qu’il puisse s’échanger sur Dex223.",
+        "cta": "Ouvrir Listing de jetons",
+        "sections": {
+          "overview": {
+            "heading": "Présentation",
+            "body": "Le listing de jetons enregistre votre jeton auprès d’un contrat d’autolisting Dex223 afin que les pools et l’interface puissent le trouver."
+          },
+          "before": {
+            "heading": "Avant de commencer",
+            "body": "Le contrat d'autolisting nécessite un pool existant. Créez un pool pour votre jeton et son jeton apparié dans <b>Pools</b>, puis ajoutez de la liquidité pour que les traders obtiennent une cotation."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Listing de jetons</b> depuis la navigation principale.",
+              "s2": "Choisissez le contrat de listing, votre jeton et le <b>Paired token</b> (jeton apparié).",
+              "s3": "Vérifiez les frais et les conditions de cette liste.",
+              "s4": "Confirmez la transaction de listing dans votre portefeuille."
+            }
+          },
+          "after": {
+            "heading": "Après le listing",
+            "body": "Utilisez <b>Statistiques</b> pour vérifier que le pool apparaît une fois l'indexation du subgraph terminée."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Acheter de la crypto en fiat",
+        "description": "Alimentez votre portefeuille via Onramp sans quitter Dex223.",
+        "cta": "Ouvrir Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Présentation",
+            "body": "La page Fiat utilise Onramp pour vous permettre d’acheter (ou de vendre) les actifs pris en charge avec des moyens de paiement locaux."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Fiat</b> depuis le menu Échanger.",
+              "s2": "Connectez le portefeuille qui doit recevoir les fonds.",
+              "s3": "Choisissez d’acheter ou de vendre, puis suivez le widget Onramp.",
+              "s4": "Une fois le transfert effectué, revenez à <b>Swap</b> ou à <b>Portefeuille</b> pour utiliser votre solde."
+            }
+          },
+          "notes": {
+            "heading": "Remarques",
+            "items": {
+              "s1": "La disponibilité dépend de votre région et des moyens de paiement pris en charge par Onramp.",
+              "s2": "Les swaps Dex223 se font sur Dex223. Utilisez la page Swap pour les échanges de crypto à crypto."
+            }
+          }
+        }
+      }
+    }
   },
   "A11y": {
     "close": "Fermer",

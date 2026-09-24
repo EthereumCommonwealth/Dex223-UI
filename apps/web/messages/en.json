@@ -575,7 +575,7 @@
             "heading": "Tips",
             "items": {
               "s1": "Prefer liquid pools for tighter quotes.",
-              "s2": "If a token is missing, import it from <b>Token lists</b> or paste its contract address.",
+              "s2": "If a token is missing, open <b>Manage tokens</b> in the token picker or paste its contract address.",
               "s3": "ERC-20 and ERC-223 versions of the same asset may both appear. Pick the standard your wallet and destination expect."
             }
           }
@@ -619,7 +619,7 @@
           "steps": {
             "heading": "Steps",
             "items": {
-              "s1": "Open <b>Token lists</b> from More, Product (or from the token picker).",
+              "s1": "Open <b>Token lists</b> from the More menu, or <b>Manage tokens</b> in the token picker.",
               "s2": "On the <b>Lists</b> tab, enable the lists you trust.",
               "s3": "Import a custom list by URL, JSON, or contract when needed.",
               "s4": "On the <b>Tokens</b> tab, pin favorites or import a single token by address."
@@ -640,18 +640,22 @@
             "heading": "Overview",
             "body": "Token listing registers your token with a Dex223 autolisting contract so pools and the UI can discover it."
           },
+          "before": {
+            "heading": "Before you start",
+            "body": "The listing contract needs an existing pool. Create a pool for your token and its paired token on <b>Pools</b>, and add liquidity so traders can get a quote."
+          },
           "steps": {
             "heading": "Steps",
             "items": {
               "s1": "Open <b>Token listing</b> from the main navigation.",
-              "s2": "Choose the listing contract and the token address (and ERC-223 twin if required).",
+              "s2": "Choose the listing contract, your token, and the <b>Paired token</b>.",
               "s3": "Review fees and requirements for that list.",
               "s4": "Confirm the listing transaction in your wallet."
             }
           },
           "after": {
             "heading": "After listing",
-            "body": "Create a pool and add liquidity so traders can get a quote. Use <b>Statistics</b> to confirm the pool appears once subgraph indexing catches up."
+            "body": "Use <b>Statistics</b> to confirm the pool appears once subgraph indexing catches up."
           }
         }
       },
