@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { ReactNode } from "react";
 import { useSwipeable } from "react-swipeable";
 
+import { useDialogLabelIds } from "@/components/atoms/DialogLabelContext";
 import IconButton, { IconButtonSize, IconButtonVariant } from "@/components/buttons/IconButton";
 import { clsxMerge } from "@/functions/clsxMerge";
 
@@ -23,6 +24,8 @@ export default function DialogHeader({
   titlePosition = "left",
   className,
 }: Props) {
+  const { headingId, descriptionId } = useDialogLabelIds();
+
   const handlers = useSwipeable({
     onSwipedDown: (eventData) => {
       onClose();
@@ -58,6 +61,7 @@ export default function DialogHeader({
           )}
           {!onBack && titlePosition === "center" && <span />}
           <h2
+            id={headingId}
             className={clsx(
               "text-18 md:text-20 font-bold flex items-center text-nowrap text-primary-text",
               (onBack || titlePosition === "center") && "justify-center",
@@ -71,7 +75,11 @@ export default function DialogHeader({
           </div>
         </div>
       </div>
-      {paragraph && <p className="mt-2 text-16 text-secondary-text">{paragraph}</p>}
+      {paragraph && (
+        <p id={descriptionId} className="mt-2 text-16 text-secondary-text">
+          {paragraph}
+        </p>
+      )}
     </div>
   );
 }

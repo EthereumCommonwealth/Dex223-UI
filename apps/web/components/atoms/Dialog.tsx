@@ -11,6 +11,8 @@ import {
 } from "@floating-ui/react";
 import { PropsWithChildren, useId } from "react";
 
+import { DialogLabelContext } from "@/components/atoms/DialogLabelContext";
+
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -75,7 +77,9 @@ export default function Dialog({ isOpen, setIsOpen, children }: PropsWithChildre
                 aria-describedby={descriptionId}
                 {...getFloatingProps()}
               >
-                {children}
+                <DialogLabelContext.Provider value={{ headingId, descriptionId }}>
+                  {children}
+                </DialogLabelContext.Provider>
               </div>
             </FloatingFocusManager>
           </FloatingOverlay>
