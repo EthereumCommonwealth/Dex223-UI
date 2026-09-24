@@ -70,9 +70,9 @@ export default function ImportListWithURL({ setContent }: Props) {
             list: {
               ...data,
               tokens: filteredTokenList,
-              logoURI: data.logoURI!.startsWith("ipfs://")
-                ? (data.logoURI!.replace("ipfs://", "https://ipfs.io/ipfs/") as string)
-                : (data.logoURI as string),
+              logoURI: data.logoURI?.startsWith("ipfs://")
+                ? data.logoURI.replace("ipfs://", "https://ipfs.io/ipfs/")
+                : data.logoURI || "/images/token-list-placeholder.svg",
             },
           });
         } else {
