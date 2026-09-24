@@ -631,7 +631,7 @@ export default function TradeForm({
   const colorScheme = useColorScheme();
 
   return (
-    <div className="card-spacing pt-2.5 bg-primary-bg rounded-5">
+    <div className="card-spacing pt-2.5 surface rounded-5">
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">

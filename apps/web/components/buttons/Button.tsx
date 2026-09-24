@@ -50,7 +50,8 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> &
 const buttonVariantClassnameMap: Record<ButtonVariant, Record<ButtonColor, string>> = {
   [ButtonVariant.CONTAINED]: {
     [ButtonColor.RED]: "bg-red text-primary-text hocus:bg-red-hover",
-    [ButtonColor.GREEN]: "bg-green text-black hocus:bg-green-hover",
+    [ButtonColor.GREEN]:
+      "bg-green text-black hocus:bg-green-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] hocus:shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_10px_30px_-12px_rgba(165,231,197,0.6)]",
     [ButtonColor.LIGHT_RED]:
       "bg-red-bg text-secondary-text border-transparent border hocus:border-red-light hocus:bg-red-bg-hover hocus:text-primary-text",
     [ButtonColor.LIGHT_YELLOW]:
@@ -59,7 +60,8 @@ const buttonVariantClassnameMap: Record<ButtonVariant, Record<ButtonColor, strin
       "bg-green-bg text-secondary-text border-transparent border hocus:border-green hocus:bg-green-bg-hover hocus:text-primary-text",
     [ButtonColor.LIGHT_PURPLE]:
       "bg-purple-bg text-secondary-text border-transparent border hocus:border-purple-hover hocus:bg-purple-bg-hover hocus:text-primary-text",
-    [ButtonColor.PURPLE]: "bg-purple text-secondary-bg hocus:bg-purple-hover",
+    [ButtonColor.PURPLE]:
+      "bg-purple text-secondary-bg hocus:bg-purple-hover shadow-[inset_0_1px_0_rgba(255,255,255,0.3)] hocus:shadow-[inset_0_1px_0_rgba(255,255,255,0.4),0_10px_30px_-12px_rgba(165,174,231,0.6)]",
   },
   [ButtonVariant.OUTLINED]: {
     [ButtonColor.RED]:
@@ -124,7 +126,7 @@ export default function Button({
   return (
     <button
       className={clsxMerge(
-        "flex items-center justify-center gap-2 duration-200 disabled:pointer-events-none",
+        "flex items-center justify-center gap-2 transition-[background-color,border-color,color,box-shadow,transform] duration-200 ease-out active:scale-[0.98] disabled:pointer-events-none",
         buttonVariantClassnameMap[variant][colorScheme],
         buttonSizeClassnameMap[size],
         tabletButtonSizeClassnameMap[_tabletSize],
