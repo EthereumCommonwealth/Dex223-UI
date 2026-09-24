@@ -234,12 +234,6 @@ export default function ConfirmListingDialog() {
 
   const { autoListingContract } = useAutoListingContractStore();
 
-  useEffect(() => {
-    if (paymentToken) {
-      setAmountToApprove(formatUnits(paymentToken.price, paymentToken.token.decimals));
-    }
-  }, [paymentToken]);
-
   const isFree = useMemo(() => {
     return !autoListing?.tokensToPay.length;
   }, [autoListing]);
@@ -355,7 +349,10 @@ export default function ConfirmListingDialog() {
                           paymentToken.token.decimals ?? 18,
                         ).slice(0, 7) === "0.00000"
                           ? truncateMiddle(
-                              formatUnits(paymentToken.price, paymentToken.token.decimals ?? 18),
+                              formatUnits(
+                                paymentToken.price * BigInt(tokensToList.length),
+                                paymentToken.token.decimals ?? 18,
+                              ),
                               {
                                 charsFromStart: 3,
                                 charsFromEnd: 2,
@@ -363,7 +360,7 @@ export default function ConfirmListingDialog() {
                             )
                           : formatFloat(
                               formatUnits(
-                                paymentToken.price,
+                                paymentToken.price * BigInt(tokensToList.length),
                                 paymentToken.token.decimals != null
                                   ? paymentToken.token.decimals
                                   : 18,
