@@ -543,7 +543,140 @@
     "learn_more_title": "Learn more",
     "learn_more_subtitle": "Docs, news, and protocol stats",
     "all_guides_title": "Guides",
-    "all_guides_subtitle": "Short how-tos for common flows"
+    "all_guides_subtitle": "Short how-tos for common flows",
+    "back": "Guidelines",
+    "steps_label": "Steps",
+    "guides": {
+      "swap": {
+        "title": "How to swap",
+        "description": "Trade tokens on Dex223 in a few steps.",
+        "cta": "Open Swap",
+        "sections": {
+          "before": {
+            "heading": "Before you start",
+            "body": "Connect a wallet that holds the token you want to sell, and enough gas for the network you selected."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Swap</b> from the Trade menu.",
+              "s2": "Choose the token you pay with and the token you receive.",
+              "s3": "Enter an amount. Review the quoted price and price impact.",
+              "s4": "Confirm the swap in your wallet when prompted."
+            }
+          },
+          "tips": {
+            "heading": "Tips",
+            "items": {
+              "s1": "Prefer liquid pools for tighter quotes.",
+              "s2": "If a token is missing, import it from <b>Token lists</b> or paste its contract address.",
+              "s3": "ERC-20 and ERC-223 versions of the same asset may both appear. Pick the standard your wallet and destination expect."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Convert ERC-20 and ERC-223",
+        "description": "Move any supported token between standards at a 1:1 rate.",
+        "cta": "Open Converter",
+        "sections": {
+          "what": {
+            "heading": "What it does",
+            "body": "The converter wraps or unwraps a token between ERC-20 and ERC-223 at a <b>1:1</b> rate with no protocol fee."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token converter</b> from the More menu.",
+              "s2": "Select the token and the direction (to ERC-20 or to ERC-223).",
+              "s3": "Enter the amount and confirm in your wallet."
+            }
+          },
+          "when": {
+            "heading": "When to use it",
+            "items": {
+              "s1": "You received ERC-223 but a dapp only accepts ERC-20 (or the reverse).",
+              "s2": "You are preparing liquidity or a swap that expects a specific standard."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Manage token lists",
+        "description": "Enable, import, and organize the lists that power the token picker.",
+        "cta": "Open Token lists",
+        "sections": {
+          "why": {
+            "heading": "Why lists matter",
+            "body": "Dex223 only shows tokens from lists you enable. If a token is missing in Swap or Convert, check your lists first."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token lists</b> from More, Product (or from the token picker).",
+              "s2": "On the <b>Lists</b> tab, enable the lists you trust.",
+              "s3": "Import a custom list by URL, JSON, or contract when needed.",
+              "s4": "On the <b>Tokens</b> tab, pin favorites or import a single token by address."
+            }
+          },
+          "safety": {
+            "heading": "Safety",
+            "body": "Only enable lists from sources you trust. Malicious lists can surface scam tokens with familiar names."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "List a token",
+        "description": "Submit a token to an autolisting contract so it can trade on Dex223.",
+        "cta": "Open Token listing",
+        "sections": {
+          "overview": {
+            "heading": "Overview",
+            "body": "Token listing registers your token with a Dex223 autolisting contract so pools and the UI can discover it."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token listing</b> from the main navigation.",
+              "s2": "Choose the listing contract and the token address (and ERC-223 twin if required).",
+              "s3": "Review fees and requirements for that list.",
+              "s4": "Confirm the listing transaction in your wallet."
+            }
+          },
+          "after": {
+            "heading": "After listing",
+            "body": "Create a pool and add liquidity so traders can get a quote. Use <b>Statistics</b> to confirm the pool appears once subgraph indexing catches up."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Buy crypto with fiat",
+        "description": "Fund your wallet through Onramp without leaving Dex223.",
+        "cta": "Open Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Overview",
+            "body": "The Fiat page uses Onramp so you can buy (or sell) supported assets with local payment methods."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Fiat</b> from the Trade menu.",
+              "s2": "Connect the wallet that should receive funds.",
+              "s3": "Choose buy or sell, then follow the Onramp widget.",
+              "s4": "When the transfer settles, return to <b>Swap</b> or <b>Portfolio</b> to use your balance."
+            }
+          },
+          "notes": {
+            "heading": "Notes",
+            "items": {
+              "s1": "Availability depends on your region and Onramp's supported rails.",
+              "s2": "Dex223 swaps stay on Dex223. Use the Swap page for crypto-to-crypto trades."
+            }
+          }
+        }
+      }
+    }
   },
   "A11y": {
     "close": "Close",
