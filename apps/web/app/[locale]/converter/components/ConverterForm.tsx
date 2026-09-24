@@ -17,8 +17,8 @@ import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { formatFloat } from "@/functions/formatFloat";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { useTokens } from "@/hooks/useTokenLists";
 import useTokenBalances from "@/hooks/useTokenBalances";
+import { useTokens } from "@/hooks/useTokenLists";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
@@ -258,11 +258,7 @@ export default function ConverterForm() {
       />
 
       <div className="relative h-4 md:h-5 z-10">
-        <SwapButton
-          aria-label={t("flip_direction")}
-          onClick={flipStandards}
-          disabled={!tokenA}
-        />
+        <SwapButton aria-label={t("flip_direction")} onClick={flipStandards} disabled={!tokenA} />
       </div>
 
       <TokenInput

@@ -405,6 +405,7 @@ export default function RecentTransaction({
                     <a
                       className="relative w-10 h-6 flex items-center justify-center"
                       target="_blank"
+                      rel="noopener noreferrer"
                       href={getExplorerLink(
                         ExplorerLinkType.TRANSACTION,
                         transaction.hash,

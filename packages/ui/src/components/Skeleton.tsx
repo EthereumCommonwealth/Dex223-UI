@@ -1,4 +1,4 @@
-import { HTMLAttributes } from "react";
+import { CSSProperties, HTMLAttributes } from "react";
 
 import { clsxMerge } from "../functions/clsxMerge";
 
@@ -18,7 +18,7 @@ export default function Skeleton({ shape = "rect", animationDuration = "1.5s", c
         shape === "rect" ? "ui-rounded-2" : "ui-rounded-full",
         className,
       )}
-      style={{ animationDuration }}
+      style={{ "--shimmer-duration": animationDuration } as CSSProperties}
     />
   );
 }

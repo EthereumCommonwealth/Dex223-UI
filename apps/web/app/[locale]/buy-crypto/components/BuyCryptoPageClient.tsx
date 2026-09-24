@@ -54,7 +54,9 @@ export default function BuyCryptoPageClient() {
               <p className="text-12 uppercase tracking-[0.08em] text-purple mb-2">
                 {t("powered_by_onramp")}
               </p>
-              <h1 className="text-24 md:text-32 font-medium text-primary-text mb-2">{t("title")}</h1>
+              <h1 className="text-24 md:text-32 font-medium text-primary-text mb-2">
+                {t("title")}
+              </h1>
               <p className="text-14 md:text-16 text-secondary-text">{t("description")}</p>
             </header>
 
@@ -175,7 +177,12 @@ export default function BuyCryptoPageClient() {
                 </div>
               )}
 
-              <BuyOnramp appId={appId} flow={flow} asset={selectedAsset} onCompleted={handleCompleted} />
+              <BuyOnramp
+                appId={appId}
+                flow={flow}
+                asset={selectedAsset}
+                onCompleted={handleCompleted}
+              />
             </section>
 
             {completedSymbol && (
