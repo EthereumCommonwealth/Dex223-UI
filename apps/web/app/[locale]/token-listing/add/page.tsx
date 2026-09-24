@@ -291,6 +291,11 @@ export default function ListTokenPage() {
   const { setIsOpen: setAutoListingSelectOpened } = useChooseAutoListingDialogStore();
 
   const tokensToList = useTokensToList();
+  // The auto-listing contract charges its price once for every token of the pair that is not
+  // listed yet, so show the total the user will actually pay.
+  const listingPayment = paymentToken
+    ? paymentToken.price * BigInt(Math.max(tokensToList.length, 1))
+    : undefined;
 
   const { baseFee, gasPrice } = useGlobalFees();
 
@@ -552,14 +557,11 @@ export default function ListTokenPage() {
                           <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center pl-5 pr-1">
                             {paymentToken
                               ? formatUnits(
-                                  paymentToken.price,
+                                  listingPayment!,
                                   paymentToken.token.decimals ?? 18,
                                 ).slice(0, 7) === "0.00000"
                                 ? truncateMiddle(
-                                    formatUnits(
-                                      paymentToken.price,
-                                      paymentToken.token.decimals ?? 18,
-                                    ),
+                                    formatUnits(listingPayment!, paymentToken.token.decimals ?? 18),
                                     {
                                       charsFromStart: 3,
                                       charsFromEnd: 2,
@@ -567,7 +569,7 @@ export default function ListTokenPage() {
                                   )
                                 : formatFloat(
                                     formatUnits(
-                                      paymentToken.price,
+                                      listingPayment!,
                                       paymentToken.token.decimals != null
                                         ? paymentToken.token.decimals
                                         : 18,
@@ -608,7 +610,7 @@ export default function ListTokenPage() {
                           />
                           {paymentToken && (
                             <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center px-5">
-                              {formatUnits(paymentToken.price, paymentToken.token.decimals ?? 18)}
+                              {formatUnits(listingPayment!, paymentToken.token.decimals ?? 18)}
                               <span className="flex items-center gap-2">
                                 <Image
                                   src="/images/tokens/placeholder.svg"
