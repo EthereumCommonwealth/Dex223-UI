@@ -108,7 +108,10 @@ export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) 
             )}
             {selectedPlatform === "SimpleSwap" && (
               <div className="flex items-center justify-center">
-                <Container gutter={false} className="bg-primary-bg rounded-5 p-4 md:p-6 mb-6 w-full">
+                <Container
+                  gutter={false}
+                  className="bg-primary-bg rounded-5 p-4 md:p-6 mb-6 w-full"
+                >
                   <ExchangePageClient tokens={tokens} initialExchange={initialExchange} />
                 </Container>
               </div>
