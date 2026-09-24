@@ -18,7 +18,14 @@ const ROUTES: {
   { path: "portfolio", priority: 0.6, changeFrequency: "weekly" },
   { path: "token-listing", priority: 0.7, changeFrequency: "weekly" },
   { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
+  { path: "converter", priority: 0.7, changeFrequency: "monthly" },
   { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
+  { path: "guidelines/swap", priority: 0.4, changeFrequency: "yearly" },
+  { path: "guidelines/converter", priority: 0.4, changeFrequency: "yearly" },
+  { path: "guidelines/token-lists", priority: 0.4, changeFrequency: "yearly" },
+  { path: "guidelines/token-listing", priority: 0.4, changeFrequency: "yearly" },
+  { path: "guidelines/fiat", priority: 0.4, changeFrequency: "yearly" },
+  { path: "statistics", priority: 0.7, changeFrequency: "daily" },
 ];
 
 const url = (locale: string, path: string) => `${SITE_URL}/${locale}/${path}`;

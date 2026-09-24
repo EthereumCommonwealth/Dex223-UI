@@ -1,8 +1,9 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
+import { useTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import PriceChart from "@/components/charts/PriceChart";
 import { ChartRange, PricePoint, usePoolPriceChart } from "@/hooks/usePoolPriceChart";
 import { FeeAmount } from "@/sdk_bi/constants";
@@ -10,6 +11,8 @@ import { Currency } from "@/sdk_bi/entities/currency";
 import { useComputePoolAddressDex } from "@/sdk_bi/utils/computePoolAddress";
 
 const RANGES: ChartRange[] = [7, 30, 90];
+const DEFAULT_WIDTH = 440;
+const CHART_HEIGHT = 180;
 
 function formatPrice(value: number): string {
   if (!Number.isFinite(value)) return "—";
@@ -21,19 +24,22 @@ function formatPrice(value: number): string {
 export default function SwapPriceChart({
   tokenA,
   tokenB,
-  feeTier = FeeAmount.MEDIUM,
-  width = 440,
-  height = 180,
+  height = CHART_HEIGHT,
 }: {
   tokenA?: Currency;
   tokenB?: Currency;
-  feeTier?: FeeAmount;
-  width?: number;
   height?: number;
 }) {
-  const t = useTranslations("Liquidity");
+  const t = useTranslations("Swap");
   const [days, setDays] = useState<ChartRange>(30);
   const [hovered, setHovered] = useState<PricePoint | null>(null);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const chartRef = useRef<HTMLDivElement>(null);
+
+  // Follow the routed pool's fee once a quote exists; otherwise fall back to medium
+  // so the chart still loads before the user types an amount.
+  const { trade } = useTrade();
+  const feeTier = (trade?.route.pools?.[0]?.fee as FeeAmount | undefined) ?? FeeAmount.MEDIUM;
 
   const { poolAddress, poolAddressLoading } = useComputePoolAddressDex({
     tokenA,
@@ -54,6 +60,25 @@ export default function SwapPriceChart({
     days,
     inverted,
   });
+
+  useEffect(() => {
+    const el = chartRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    const apply = (next: number) => {
+      const floored = Math.floor(next);
+      if (floored > 0) setWidth(floored);
+    };
+
+    apply(el.clientWidth);
+
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) apply(entry.contentRect.width);
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const loading = isLoading || Boolean(poolAddressLoading);
 
@@ -101,16 +126,16 @@ export default function SwapPriceChart({
         </div>
       </div>
 
-      <PriceChart
-        series={series}
-        width={width}
-        height={height}
-        isLoading={loading}
-        // Reuses the message that already existed for the liquidity chart rather than
-        // adding a new key, so it is translated in every locale from day one.
-        emptyLabel={isEmpty ? t("price_chart_no_data") : t("price_chart_data_not_available")}
-        onHover={setHovered}
-      />
+      <div ref={chartRef} className="w-full min-w-0">
+        <PriceChart
+          series={series}
+          width={width}
+          height={height}
+          isLoading={loading}
+          emptyLabel={isEmpty ? t("price_chart_no_data") : t("price_chart_data_not_available")}
+          onHover={setHovered}
+        />
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ import Svg from "@/components/atoms/Svg";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { linkTargetProps } from "@/functions/linkTarget";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -58,7 +59,7 @@ function FooterLink({ href, title, icon }: SocialLink) {
   return (
     <>
       <a
-        target="_blank"
+        {...linkTargetProps(href)}
         href={href}
         className={clsx(
           "sm:w-auto text-12 xl:text-16 flex gap-2 bg-primary-bg rounded-5 xl:py-2 xl:pr-4 xl:pl-5 p-2 hocus:bg-green-bg hocus:text-primary-text text-secondary-text duration-200 w-full whitespace-nowrap justify-center items-center",
@@ -91,6 +92,7 @@ export default function Footer() {
                 {t("gas")}{" "}
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                 >
@@ -103,6 +105,7 @@ export default function Footer() {
               {blockNumber ? (
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.BLOCK, blockNumber.toString(), chainId)}
                 >
