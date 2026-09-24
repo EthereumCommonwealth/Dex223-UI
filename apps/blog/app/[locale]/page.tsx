@@ -234,7 +234,7 @@ export default function BlogPage() {
 
           <div className="max-lg:w-full lg:w-[386px]">
             <SearchInput
-              className="bg-primary-bg rounded-2 md:rounded-3 h-10 md:h-12"
+              className="bg-primary-bg rounded-2 md:rounded-3 h-11 md:h-12"
               placeholder="Search article or video"
               value={searchValue}
               onChange={(e) => {
