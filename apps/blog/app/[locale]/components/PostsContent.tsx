@@ -1,4 +1,5 @@
 import Preloader from "@repo/ui/preloader";
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 
 import LatestPosts from "@/app/[locale]/components/LatestPosts";
@@ -24,6 +25,7 @@ export default function PostsContent({
   getMorePosts: any;
   isAllLoaded: boolean;
 }) {
+  const t = useTranslations("Blog");
   const showLatestNews = useMemo(() => {
     return !searchValue && contentType === "vide_and_content" && tag === "all";
   }, [searchValue, contentType, tag]);
@@ -50,7 +52,7 @@ export default function PostsContent({
         <>
           <LatestPosts posts={posts.slice(0, 4) as [Post, Post, Post, Post]} />
           <div className="h-px bg-secondary-border mt-6 mb-4 md:mt-10 md:mb-8" />
-          <h2 className="text-24 md:text-32 mb-5 ">All news</h2>
+          <h2 className="text-24 md:text-32 mb-5 ">{t("all_news")}</h2>
         </>
       )}
       <Posts posts={showLatestNews ? posts.slice(4) : posts} />

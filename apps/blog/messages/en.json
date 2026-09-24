@@ -1,4 +1,15 @@
 {
+  "Blog": {
+    "title": "Blog",
+    "latest_news": "Latest news",
+    "all_news": "All news",
+    "search_placeholder": "Search articles and videos",
+    "all_categories": "All categories",
+    "content_all": "Articles and videos",
+    "content_articles": "Articles",
+    "content_video": "Videos",
+    "video_badge": "Video"
+  },
   "Navigation": {
     "trade": "Trade",
     "swap": "Swap",

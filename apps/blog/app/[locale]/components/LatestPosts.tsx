@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { CategoryTag, YoutubeTag } from "@/app/[locale]/components/PostTag";
@@ -7,6 +8,7 @@ import { Post } from "@/app/[locale]/types/Post";
 import { Link } from "@/i18n/routing";
 
 export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post] }) {
+  const t = useTranslations("Blog");
   const latestPost = useMemo(() => {
     return posts[0];
   }, [posts]);
@@ -21,7 +23,7 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
 
   return (
     <div>
-      <h2 className="text-20 md:text-32 mb-4 md:mb-5">Latest news</h2>
+      <h2 className="text-20 md:text-32 mb-4 md:mb-5">{t("latest_news")}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] xl:grid-cols-[7fr_4fr] gap-4 md:gap-5">
         <Link
           href={`/${latestPost.id}?slug=${latestPost.slug}`}
