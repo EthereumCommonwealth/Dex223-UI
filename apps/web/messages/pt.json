@@ -568,7 +568,7 @@
             "heading": "Dicas",
             "items": {
               "s1": "Prefira pools com boa liquidez para obter cotações mais justas.",
-              "s2": "Se faltar um token, importe-o a partir de <b>Listas de tokens</b> ou cole o endereço do contrato.",
+              "s2": "Se faltar um token, abra <b>Gerir tokens</b> no seletor de tokens ou cole o endereço do contrato.",
               "s3": "As versões ERC-20 e ERC-223 do mesmo ativo podem aparecer ambas. Escolha o padrão que a sua carteira e o destino esperam."
             }
           }
@@ -612,7 +612,7 @@
           "steps": {
             "heading": "Passos",
             "items": {
-              "s1": "Abra <b>Listas de tokens</b> em Mais, Produto (ou a partir do seletor de tokens).",
+              "s1": "Abra <b>Listas de tokens</b> a partir do menu Mais, ou <b>Gerir tokens</b> no seletor de tokens.",
               "s2": "No separador <b>Listas</b>, ative as listas em que confia.",
               "s3": "Importe uma lista personalizada por URL, JSON ou contrato quando precisar.",
               "s4": "No separador <b>Tokens</b>, fixe os seus favoritos ou importe um token individual pelo endereço."
@@ -633,18 +633,22 @@
             "heading": "Visão geral",
             "body": "A listagem de tokens regista o seu token num contrato de autolistagem do Dex223 para que os pools e a interface o possam encontrar."
           },
+          "before": {
+            "heading": "Antes de começar",
+            "body": "O contrato de autolistagem precisa de uma pool existente. Crie uma pool para o seu token e o token emparelhado em <b>Pools</b> e adicione liquidez para que os traders obtenham uma cotação."
+          },
           "steps": {
             "heading": "Passos",
             "items": {
               "s1": "Abra <b>Listagem de tokens</b> na navegação principal.",
-              "s2": "Escolha o contrato de listagem e o endereço do token (e o gémeo ERC-223, se necessário).",
+              "s2": "Escolha o contrato de listagem, o seu token e o <b>Paired token</b> (token emparelhado).",
               "s3": "Reveja as taxas e os requisitos dessa lista.",
               "s4": "Confirme a transação de listagem na sua carteira."
             }
           },
           "after": {
             "heading": "Depois da listagem",
-            "body": "Crie um pool e adicione liquidez para que os traders possam obter uma cotação. Use <b>Estatísticas</b> para confirmar que o pool aparece quando a indexação do subgraph estiver atualizada."
+            "body": "Use <b>Estatísticas</b> para confirmar que a pool aparece quando a indexação do subgraph terminar."
           }
         }
       },

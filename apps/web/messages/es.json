@@ -568,7 +568,7 @@
             "heading": "Consejos",
             "items": {
               "s1": "Prefiere pools con buena liquidez para obtener cotizaciones más ajustadas.",
-              "s2": "Si falta un token, impórtalo desde <b>Listas de tokens</b> o pega la dirección de su contrato.",
+              "s2": "Si falta un token, abre <b>Gestionar tokens</b> en el selector de tokens o pega su dirección de contrato.",
               "s3": "Pueden aparecer las versiones ERC-20 y ERC-223 del mismo activo. Elige el estándar que esperan tu monedero y el destino."
             }
           }
@@ -612,7 +612,7 @@
           "steps": {
             "heading": "Pasos",
             "items": {
-              "s1": "Abre <b>Listas de tokens</b> desde Más, Producto (o desde el selector de tokens).",
+              "s1": "Abre <b>Listas de tokens</b> desde el menú Más, o <b>Gestionar tokens</b> en el selector de tokens.",
               "s2": "En la pestaña <b>Listas</b>, activa las listas en las que confías.",
               "s3": "Importa una lista personalizada por URL, JSON o contrato cuando lo necesites.",
               "s4": "En la pestaña <b>Tokens</b>, fija tus favoritos o importa un token individual por su dirección."
@@ -633,18 +633,22 @@
             "heading": "Resumen",
             "body": "El listado de tokens registra tu token en un contrato de autolistado de Dex223 para que los pools y la interfaz puedan encontrarlo."
           },
+          "before": {
+            "heading": "Antes de empezar",
+            "body": "El contrato de autolistado necesita un pool existente. Crea un pool para tu token y su token emparejado en <b>Pools</b> y añade liquidez para que los traders puedan obtener una cotización."
+          },
           "steps": {
             "heading": "Pasos",
             "items": {
               "s1": "Abre <b>Listado de tokens</b> desde la navegación principal.",
-              "s2": "Elige el contrato de listado y la dirección del token (y su gemelo ERC-223 si es necesario).",
+              "s2": "Elige el contrato de listado, tu token y el <b>Paired token</b> (token emparejado).",
               "s3": "Revisa las comisiones y los requisitos de esa lista.",
               "s4": "Confirma la transacción de listado en tu monedero."
             }
           },
           "after": {
             "heading": "Después del listado",
-            "body": "Crea un pool y añade liquidez para que los traders puedan obtener una cotización. Usa <b>Estadísticas</b> para confirmar que el pool aparece cuando la indexación del subgraph se ponga al día."
+            "body": "Usa <b>Estadísticas</b> para confirmar que el pool aparece cuando el subgraph termine de indexarlo."
           }
         }
       },

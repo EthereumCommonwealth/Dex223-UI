@@ -568,7 +568,7 @@
             "heading": "Conseils",
             "items": {
               "s1": "Privilégiez les pools liquides pour obtenir des cotations plus serrées.",
-              "s2": "Si un jeton est absent, importez-le depuis <b>Listes de jetons</b> ou collez l’adresse de son contrat.",
+              "s2": "S'il manque un jeton, ouvrez <b>Gérer les jetons</b> dans le sélecteur de jetons ou collez l'adresse de son contrat.",
               "s3": "Les versions ERC-20 et ERC-223 d’un même actif peuvent apparaître toutes les deux. Choisissez le standard attendu par votre portefeuille et par la destination."
             }
           }
@@ -612,7 +612,7 @@
           "steps": {
             "heading": "Étapes",
             "items": {
-              "s1": "Ouvrez <b>Listes de jetons</b> depuis Plus, Produit (ou depuis le sélecteur de jetons).",
+              "s1": "Ouvrez <b>Listes de jetons</b> depuis le menu Plus, ou <b>Gérer les jetons</b> dans le sélecteur de jetons.",
               "s2": "Dans l’onglet <b>Listes</b>, activez les listes auxquelles vous faites confiance.",
               "s3": "Importez une liste personnalisée par URL, JSON ou contrat si nécessaire.",
               "s4": "Dans l’onglet <b>Jetons</b>, épinglez vos favoris ou importez un jeton précis à partir de son adresse."
@@ -633,18 +633,22 @@
             "heading": "Présentation",
             "body": "Le listing de jetons enregistre votre jeton auprès d’un contrat d’autolisting Dex223 afin que les pools et l’interface puissent le trouver."
           },
+          "before": {
+            "heading": "Avant de commencer",
+            "body": "Le contrat d'autolisting nécessite un pool existant. Créez un pool pour votre jeton et son jeton apparié dans <b>Pools</b>, puis ajoutez de la liquidité pour que les traders obtiennent une cotation."
+          },
           "steps": {
             "heading": "Étapes",
             "items": {
               "s1": "Ouvrez <b>Listing de jetons</b> depuis la navigation principale.",
-              "s2": "Choisissez le contrat de listing et l’adresse du jeton (ainsi que son jumeau ERC-223 si nécessaire).",
+              "s2": "Choisissez le contrat de listing, votre jeton et le <b>Paired token</b> (jeton apparié).",
               "s3": "Vérifiez les frais et les conditions de cette liste.",
               "s4": "Confirmez la transaction de listing dans votre portefeuille."
             }
           },
           "after": {
             "heading": "Après le listing",
-            "body": "Créez un pool et ajoutez de la liquidité pour que les traders puissent obtenir une cotation. Utilisez <b>Statistiques</b> pour vérifier que le pool apparaît une fois l’indexation du subgraph à jour."
+            "body": "Utilisez <b>Statistiques</b> pour vérifier que le pool apparaît une fois l'indexation du subgraph terminée."
           }
         }
       },
