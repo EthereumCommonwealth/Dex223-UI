@@ -202,6 +202,7 @@ const gasOptionTitle: Record<GasOption, any> = {
 };
 export default function TradeForm() {
   const t = useTranslations("Swap");
+  const tA11y = useTranslations("A11y");
   const { address } = useAccount();
   const canReceiveERC223 = useCanReceiveERC223(address);
   useTradeComputation();
@@ -479,11 +480,13 @@ export default function TradeForm() {
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}
             iconName="recent-transactions"
+            aria-label={tA11y("recent_transactions")}
             onClick={() => setShowRecentTransactions(!showRecentTransactions)}
           />
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             iconName="gas-edit"
+            aria-label={tA11y("network_fee_settings")}
             onClick={() => setIsOpenedFee(true)}
           />
 
@@ -492,6 +495,7 @@ export default function TradeForm() {
               buttonSize={IconButtonSize.LARGE}
               iconSize={24}
               iconName="settings"
+              aria-label={tA11y("swap_settings")}
               onClick={() => setIsOpen(true)}
             />
             {computed.isModified && (

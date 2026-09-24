@@ -526,5 +526,25 @@
     "tokens_subtitle": "Listar, criar e gerir tokens",
     "learn_more_title": "Saber mais",
     "learn_more_subtitle": "Docs, notícias e estatísticas do protocolo"
+  },
+  "A11y": {
+    "close": "Fechar",
+    "copy": "Copiar",
+    "delete": "Eliminar",
+    "sort": "Ordenar",
+    "back": "Voltar",
+    "add": "Adicionar",
+    "recent_transactions": "Transações recentes",
+    "network_fee_settings": "Definições da taxa de rede",
+    "swap_settings": "Definições de troca",
+    "switch_tokens": "Trocar tokens de posição",
+    "settings": "Definições",
+    "zoom_in": "Aumentar zoom",
+    "zoom_out": "Diminuir zoom",
+    "reset": "Repor",
+    "decrease": "Diminuir",
+    "open_link": "Abrir link",
+    "increase_price": "Aumentar preço",
+    "decrease_price": "Diminuir preço"
   }
 }

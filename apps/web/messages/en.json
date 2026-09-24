@@ -527,5 +527,25 @@
     "tokens_subtitle": "List, create, and manage tokens",
     "learn_more_title": "Learn more",
     "learn_more_subtitle": "Docs, news, and protocol stats"
+  },
+  "A11y": {
+    "close": "Close",
+    "copy": "Copy",
+    "delete": "Delete",
+    "sort": "Sort",
+    "back": "Back",
+    "add": "Add",
+    "recent_transactions": "Recent transactions",
+    "network_fee_settings": "Network fee settings",
+    "swap_settings": "Swap settings",
+    "switch_tokens": "Switch tokens",
+    "settings": "Settings",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "reset": "Reset",
+    "decrease": "Decrease",
+    "open_link": "Open link",
+    "increase_price": "Increase price",
+    "decrease_price": "Decrease price"
   }
 }
