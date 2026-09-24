@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
@@ -9,20 +9,24 @@ import Svg from "@/components/atoms/Svg";
 import { MobileLink } from "@/components/common/MobileMenu";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
+import { isExternalHref, linkTargetProps } from "@/functions/linkTarget";
 import { useRouter } from "@/i18n/routing";
 import { usePathname } from "@/i18n/routing";
 
 function NavigationExternalLink({ href, text }: { href: string; text: string }) {
   return (
     <a
-      target="_blank"
+      {...linkTargetProps(href)}
       className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
+        "text-green hocus:text-green-hover duration-200 inline-flex items-center gap-0.5 py-1",
         href === "#" && "opacity-50 pointer-events-none",
       )}
       href={href}
     >
       {text}
+      {isExternalHref(href) && (
+        <Svg iconName="forward" size={16} aria-hidden="true" className="flex-shrink-0" />
+      )}
     </a>
   );
 }
@@ -138,6 +142,7 @@ const socialLinks: SocialLink[] = [
 function NavigationMoreDropdown() {
   const [isSubmenuOpened, setSubmenuOpened] = useState(false);
   const t = useTranslations("Navigation");
+  const locale = useLocale();
 
   const router = useRouter();
   const pathname = usePathname();
@@ -196,7 +201,7 @@ function NavigationMoreDropdown() {
               disabled
             />
             <MobileLink
-              href="#"
+              href={`/${locale}`}
               iconName="blog"
               title="Blog"
               handleClick={(e) => {
@@ -274,7 +279,7 @@ function NavigationMoreDropdown() {
               return (
                 <a
                   key={link.title}
-                  target="_blank"
+                  {...linkTargetProps(link.href)}
                   href={link.href}
                   className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200"
                 >

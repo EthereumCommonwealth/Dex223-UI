@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 
@@ -12,7 +12,8 @@ import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
 import { clsxMerge } from "@/functions/clsxMerge";
-import { Link, usePathname } from "@/i18n/routing";
+import { isExternalHref, linkTargetProps } from "@/functions/linkTarget";
+import { usePathname, useRouter } from "@/i18n/routing";
 
 export function MobileLink({
   href,
@@ -42,8 +43,11 @@ export function MobileLink({
 
         handleClose();
       }}
-      target="_blank"
+      {...linkTargetProps(href)}
       href={href}
+      aria-current={isActive ? "page" : undefined}
+      aria-disabled={disabled || undefined}
+      tabIndex={disabled ? -1 : undefined}
       className={clsxMerge(
         "flex items-center gap-2 py-3 px-4 duration-200",
         isActive ? "text-green pointer-events-none" : "hocus:bg-quaternary-bg text-secondary-text",
@@ -60,14 +64,17 @@ export function MobileLink({
 function NavigationExternalLink({ href, text }: { href: string; text: string }) {
   return (
     <a
-      target="_blank"
+      {...linkTargetProps(href)}
       className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
+        "text-green hocus:text-green-hover duration-200 inline-flex items-center gap-0.5 py-1",
         href === "#" && "opacity-50 pointer-events-none",
       )}
       href={href}
     >
       {text}
+      {isExternalHref(href) && (
+        <Svg iconName="forward" size={16} aria-hidden="true" className="flex-shrink-0" />
+      )}
     </a>
   );
 }
@@ -168,6 +175,8 @@ export default function MobileMenu() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
+  const locale = useLocale();
+  const router = useRouter();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
 
   const handlers = useSwipeable({
@@ -234,9 +243,13 @@ export default function MobileMenu() {
                     disabled
                   />
                   <MobileLink
-                    href="/blog"
+                    href={`/${locale}`}
                     iconName="blog"
                     title="Blog"
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      router.push("/");
+                    }}
                     handleClose={() => setMobileMenuOpened(false)}
                     className="pr-5"
                   />
@@ -297,7 +310,7 @@ export default function MobileMenu() {
                     return (
                       <a
                         key={link.title}
-                        target="_blank"
+                        {...linkTargetProps(link.href)}
                         href={link.href}
                         className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200"
                       >

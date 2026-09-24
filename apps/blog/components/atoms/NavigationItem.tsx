@@ -15,7 +15,6 @@ interface Props {
 export default function NavigationItem({ href, title, active, flag }: Props) {
   return (
     <a
-      target="_blank"
       className={clsx(
         "px-3 py-5 duration-200 inline-flex",
         active
