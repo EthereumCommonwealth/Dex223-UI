@@ -9,10 +9,18 @@ import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
 import Svg from "@/components/atoms/Svg";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
+import {
+  MoreProductLinks,
+  partnerLinks,
+  resourceLinks,
+  socialLinks,
+  topLinks,
+  tradeLinks,
+  useDappHref,
+} from "@/components/common/navigationLinks";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
 import { clsxMerge } from "@/functions/clsxMerge";
-import { Link, usePathname } from "@/i18n/routing";
 
 export function MobileLink({
   href,
@@ -21,6 +29,7 @@ export function MobileLink({
   handleClose,
   isActive,
   disabled = false,
+  badge,
   className = "",
   handleClick,
 }: {
@@ -30,6 +39,7 @@ export function MobileLink({
   handleClose: () => void;
   isActive?: boolean;
   disabled?: boolean;
+  badge?: string;
   className?: string;
   handleClick?: (e: any) => void;
 }) {
@@ -42,17 +52,24 @@ export function MobileLink({
 
         handleClose();
       }}
-      target="_blank"
-      href={href}
+      href={disabled ? undefined : href}
+      aria-current={isActive ? "page" : undefined}
+      aria-disabled={disabled || undefined}
+      tabIndex={disabled ? -1 : undefined}
       className={clsxMerge(
         "flex items-center gap-2 py-3 px-4 duration-200",
         isActive ? "text-green pointer-events-none" : "hocus:bg-quaternary-bg text-secondary-text",
-        disabled && "pointer-events-none opacity-50",
+        disabled && "pointer-events-none",
         className,
       )}
     >
-      <Svg iconName={iconName} />
-      {title}
+      <Svg iconName={iconName} className={clsx(disabled && "opacity-50")} />
+      <span className={clsx(disabled && "opacity-50")}>{title}</span>
+      {badge && (
+        <span className="ml-auto text-10 leading-4 px-2 py-0.5 rounded-20 border border-green/40 text-green whitespace-nowrap">
+          {badge}
+        </span>
+      )}
     </a>
   );
 }
@@ -61,13 +78,12 @@ function NavigationExternalLink({ href, text }: { href: string; text: string }) 
   return (
     <a
       target="_blank"
-      className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
-        href === "#" && "opacity-50 pointer-events-none",
-      )}
+      rel="noopener noreferrer"
+      className="text-secondary-text hocus:text-primary-text duration-200 inline-flex items-center gap-2 py-1.5"
       href={href}
     >
-      {text}
+      <span className="flex-grow">{text}</span>
+      <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
     </a>
   );
 }
@@ -81,7 +97,7 @@ function NavigationExternalLinksContainer({
 }) {
   return (
     <div className="text-primary-text">
-      <div className="text-tertiary-text">{title}</div>
+      <div className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">{title}</div>
       <div className="flex flex-col">
         {links.map((link) => {
           return <NavigationExternalLink key={link.text} href={link.href} text={link.text} />;
@@ -91,83 +107,13 @@ function NavigationExternalLinksContainer({
   );
 }
 
-const mobileLinks: {
-  href: string;
-  iconName: IconName;
-  title: any;
-}[] = [
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/swap`,
-    iconName: "swap",
-    title: "swap",
-  },
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/margin-trading`,
-    iconName: "margin-trading",
-    title: "margin_trading",
-  },
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/pools`,
-    iconName: "pools",
-    title: "pools",
-  },
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/borrow`,
-    iconName: "borrow",
-    title: "borrow_lend",
-  },
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/portfolio`,
-    iconName: "portfolio",
-    title: "portfolio",
-  },
-  {
-    href: `${process.env.NEXT_PUBLIC_DAPP_URL}/token-listing`,
-    iconName: "listing",
-    title: "token_listing",
-  },
-];
-
-type SocialLink = {
-  title: any;
-  href: string;
-  icon: Extract<IconName, "telegram" | "x" | "discord">;
-};
-
-const socialLinks: SocialLink[] = [
-  {
-    title: "Announcements",
-    href: "https://t.me/Dex_223",
-    icon: "telegram",
-  },
-  {
-    title: "Discussions",
-    href: "https://t.me/Dex223_defi",
-    icon: "telegram",
-  },
-  {
-    title: "DEX223",
-    href: "https://x.com/Dex_223",
-    icon: "x",
-  },
-  {
-    title: "Dexaran",
-    href: "https://x.com/Dexaran",
-    icon: "x",
-  },
-  {
-    title: "Discord",
-    href: "https://discord.gg/t5bdeGC5Jk",
-    icon: "discord",
-  },
-];
 export default function MobileMenu() {
   const t = useTranslations("Navigation");
   const tFeedback = useTranslations("Feedback");
+  const dapp = useDappHref();
 
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
-  const pathname = usePathname();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
 
   const handlers = useSwipeable({
@@ -184,31 +130,23 @@ export default function MobileMenu() {
         isOpen={mobileMenuOpened}
         setIsOpen={setMobileMenuOpened}
       >
-        <div className="flex flex-col justify-between h-full">
+        <div className="flex flex-col justify-between h-full min-w-[300px]">
           <div className="py-6 grid gap-1">
-            {[
-              mobileLinks.map(({ href, iconName, title }) => {
-                return (
-                  <MobileLink
-                    key={href}
-                    href={href}
-                    iconName={iconName}
-                    title={t(title)}
-                    handleClose={() => setMobileMenuOpened(false)}
-                    isActive={pathname.includes(href)}
-                    disabled={
-                      !href.includes("/swap") &&
-                      !href.includes("/pools") &&
-                      !href.includes("/portfolio") &&
-                      !href.includes("/token-listing")
-                    }
-                  />
-                );
-              }),
-            ]}
+            {[...tradeLinks, ...topLinks].map(({ path, iconName, title, comingSoon }) => (
+              <MobileLink
+                key={path}
+                href={dapp(path)}
+                iconName={iconName}
+                title={t(title)}
+                disabled={comingSoon}
+                badge={comingSoon ? t("coming_soon") : undefined}
+                handleClose={() => setMobileMenuOpened(false)}
+              />
+            ))}
             <div>
               <button
                 onClick={() => setMoreOpened(!moreOpened)}
+                aria-expanded={moreOpened}
                 className={clsx(
                   "flex w-full items-center justify-between py-3 px-4 hocus:text-green duration-200 text-secondary-text",
                   moreOpened && "bg-navigation-active-mobile text-green",
@@ -225,83 +163,44 @@ export default function MobileMenu() {
               </button>
               <Collapse open={moreOpened}>
                 <div className="py-2 border-b border-secondary-border">
-                  <MobileLink
-                    href="#"
-                    iconName="list"
-                    title="Token lists"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                    disabled
-                  />
-                  <MobileLink
-                    href="/blog"
-                    iconName="blog"
-                    title="Blog"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
-                    href="/statistics"
-                    iconName="statistics"
-                    title="Statistics"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
-                    href="#"
-                    iconName="guidelines"
-                    title="Guidelines"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
+                  <div className="px-4 pb-1 text-12 uppercase tracking-[0.06em] text-tertiary-text">
+                    {t("more_product")}
+                  </div>
+                  <MoreProductLinks handleClose={() => setMobileMenuOpened(false)} />
                 </div>
-                <div className="flex flex-col py-4 px-4 bg-primary-bg rounded-2 gap-3">
+                <div className="flex flex-col py-4 px-4 bg-primary-bg gap-4">
                   <NavigationExternalLinksContainer
-                    title={t("useful_links")}
-                    links={[
-                      {
-                        href: "https://dexaran.github.io/token-converter/",
-                        text: t("useful_converter"),
-                      },
-                      {
-                        href: "https://dexaran.github.io/erc20-losses/",
-                        text: t("useful_losses_calculator"),
-                      },
-                      {
-                        href: "https://dexaran.github.io/erc223/",
-                        text: t("useful_front_page"),
-                      },
-                      {
-                        href: "https://github.com/Dalcor/dex-exchange",
-                        text: t("useful_page_source_codes"),
-                      },
-                    ]}
+                    title={t("more_resources")}
+                    links={resourceLinks.map((link) => ({
+                      href: link.href,
+                      text: t(link.titleKey),
+                    }))}
                   />
-
                   <NavigationExternalLinksContainer
                     title={t("partners")}
-                    links={[
-                      {
-                        href: "https://blockzhub.io/",
-                        text: t("partners_eos_support"),
-                      },
-                    ]}
+                    links={partnerLinks.map((link) => ({
+                      href: link.href,
+                      text: t(link.titleKey),
+                    }))}
                   />
                 </div>
-                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border">
-                  <h4 className="text-tertiary-text">Social media</h4>
+                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border pb-2">
+                  <h4 className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">
+                    {t("social_media")}
+                  </h4>
 
                   {socialLinks.map((link) => {
                     return (
                       <a
-                        key={link.title}
+                        key={link.href}
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={link.href}
-                        className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200"
+                        className="flex gap-2 items-center text-secondary-text py-2 hocus:text-primary-text duration-200"
                       >
-                        <Svg iconName={link.icon} className="text-tertiary-text" /> {link.title}
+                        <Svg iconName={link.icon} className="text-tertiary-text" />
+                        <span className="flex-grow">{t(link.titleKey)}</span>
+                        <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
                       </a>
                     );
                   })}
