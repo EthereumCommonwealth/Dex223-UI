@@ -215,7 +215,10 @@ export default function PoolsPage() {
     <Container>
       <div className="py-4 lg:p-10 flex flex-col items-center">
         <div className="flex flex-col lg:flex-row w-full justify-between items-center mb-6 gap-2 px-4 lg:px-0">
-          <div className="w-full lg:w-[384px] grid grid-cols-2 bg-primary-bg p-1 gap-1 rounded-3">
+          <div
+            role="tablist"
+            className="w-full lg:w-[384px] grid grid-cols-2 bg-primary-bg p-1 gap-1 rounded-3"
+          >
             <TabButton
               inactiveBackground="bg-secondary-bg"
               size={48}

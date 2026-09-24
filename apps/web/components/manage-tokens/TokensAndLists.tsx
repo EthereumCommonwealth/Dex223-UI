@@ -24,7 +24,10 @@ export default function TokensAndLists({ setContent, handleClose, setTokenForPor
       <DialogHeader onClose={handleClose} title={t("manage_tokens")} />
 
       <div className="w-full md:w-[600px] h-[580px] flex flex-col">
-        <div className="grid grid-cols-2 bg-secondary-bg p-1 gap-1 rounded-3  mb-3 mx-4 md:mx-10">
+        <div
+          role="tablist"
+          className="grid grid-cols-2 bg-secondary-bg p-1 gap-1 rounded-3  mb-3 mx-4 md:mx-10"
+        >
           {[t("lists"), t("tokens")].map((title, index) => {
             return (
               <TabButton

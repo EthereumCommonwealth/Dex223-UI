@@ -17,8 +17,11 @@ export default function TabButton({
 }: PropsWithChildren<Props>) {
   return (
     <button
+      type="button"
+      role="tab"
+      aria-selected={active}
       className={clsx(
-        "rounded-2 md:hocus:bg-green-bg duration-200 border md:px-4 px-2",
+        "rounded-2 md:hocus:bg-green-bg transition-colors duration-200 border md:px-4 px-2",
         size === 28 && "h-7 text-12",
         size === 32 && "h-8 text-12",
         size === 40 && "h-10 text-16",

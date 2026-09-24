@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { ReactElement, ReactNode, useState } from "react";
+import React, { KeyboardEvent, ReactElement, ReactNode, useState } from "react";
 
 import TabTitle from "./TabTitle";
 
@@ -24,10 +24,31 @@ function Tabs({
 }: Props) {
   const [selectedTab, setSelectedTab] = useState(defaultTab || 0);
 
+  const currentTab = activeTab || selectedTab;
+  const selectTab = setActiveTab || setSelectedTab;
+
+  // Arrow keys, Home and End move between tabs, as in the WAI-ARIA tabs pattern.
+  const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+    const last = children.length - 1;
+    let next: number | null = null;
+    if (e.key === "ArrowRight") next = currentTab === last ? 0 : currentTab + 1;
+    if (e.key === "ArrowLeft") next = currentTab === 0 ? last : currentTab - 1;
+    if (e.key === "Home") next = 0;
+    if (e.key === "End") next = last;
+    if (next === null) return;
+
+    e.preventDefault();
+    selectTab(next);
+    const tabs = e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="tab"]');
+    tabs[next]?.focus();
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between gap-2">
-        <ul
+        <div
+          role="tablist"
+          onKeyDown={handleKeyDown}
           className={clsx(
             // A tab strip with several titles is wider than a phone viewport and
             // cannot shrink, which used to push the whole document sideways. Let it
@@ -45,17 +66,17 @@ function Tabs({
               colorScheme={colorScheme}
               fullWidth={fullWidth}
               key={index}
-              selectedTab={activeTab || selectedTab}
+              selectedTab={currentTab}
               title={item.props.title}
               index={index}
-              setSelectedTab={setActiveTab || setSelectedTab}
+              setSelectedTab={selectTab}
             />
           ))}
-        </ul>
+        </div>
         {rightContent}
       </div>
 
-      {children[activeTab || selectedTab]}
+      {children[currentTab]}
     </div>
   );
 }
