@@ -613,5 +613,11 @@
     "planned_execution": "Stake-weighted signals executed by the factory owner",
     "phase_note": "Until voting ships, listing prices and protocol fees stay under factory owner control. Stakers use Revenue to earn collected fees.",
     "revenue_link": "Go to Revenue staking"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or has moved. Check the address, or head back to trading.",
+    "go_to_swap": "Go to swap",
+    "view_pools": "View pools"
   }
 }

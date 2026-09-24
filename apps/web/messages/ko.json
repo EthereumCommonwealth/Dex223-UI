@@ -563,5 +563,11 @@
     "open_link": "링크 열기",
     "increase_price": "가격 올리기",
     "decrease_price": "가격 내리기"
+  },
+  "NotFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "이 페이지는 존재하지 않거나 이동되었습니다. 주소를 확인하거나 거래로 돌아가세요.",
+    "go_to_swap": "스왑으로 이동",
+    "view_pools": "풀 보기"
   }
 }
