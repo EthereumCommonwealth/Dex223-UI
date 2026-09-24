@@ -335,6 +335,7 @@
     "wallet_connection_notice": "진행하면 지갑이 자동으로 연결됩니다"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "이 파일에는 선택한 네트워크에서 사용할 수 있는 유효한 토큰이 없습니다.",
     "manage_lists": "목록 관리",
     "manage_tokens": "토큰 관리",
     "tokens": "토큰",
