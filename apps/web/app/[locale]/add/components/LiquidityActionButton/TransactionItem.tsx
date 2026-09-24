@@ -118,6 +118,7 @@ export const TransactionItem = ({
             {hash && (
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
               >
                 <IconButton iconName="forward" />

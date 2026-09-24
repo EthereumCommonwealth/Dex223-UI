@@ -311,11 +311,13 @@ const PoolsTableMobile = ({
   currentPage,
   handleSort,
   sorting,
+  isLoading = false,
 }: {
   tableData: any[];
   currentPage: number;
   handleSort: () => any;
   sorting: SortingType;
+  isLoading?: boolean;
 }) => {
   return (
     <>
@@ -332,6 +334,13 @@ const PoolsTableMobile = ({
         />
       </div>
       <div className="flex lg:hidden flex-col gap-4">
+        {isLoading &&
+          [...Array(5)].map((_, index) => (
+            <div
+              key={index}
+              className="h-[148px] bg-primary-bg rounded-3 motion-safe:animate-pulse"
+            />
+          ))}
         {tableData.map((pool: any, index: number) => {
           return (
             <PoolsTableItemMobile
@@ -390,7 +399,7 @@ export default function PoolsTable({
   const [currentPage, setCurrentPage] = useState(1);
 
   const chainId = useCurrentChainId();
-  const { data, loading } = usePoolsData({
+  const { data, loading, error, refetch } = usePoolsData({
     chainId,
     orderDirection: undefined, //sorting],
     filter,
@@ -411,7 +420,18 @@ export default function PoolsTable({
     <>
       <div className="min-h-[640px] mb-5 w-full">
         <>
-          {pools.length > 0 ? (
+          {error && pools.length === 0 ? (
+            <div className="min-h-[340px] bg-primary-bg flex flex-col gap-4 items-center justify-center w-full rounded-5 px-4 text-center">
+              <p className="text-secondary-text">{t("pools_load_error")}</p>
+              <Button
+                size={ButtonSize.MEDIUM}
+                colorScheme={ButtonColor.LIGHT_GREEN}
+                onClick={() => refetch()}
+              >
+                {t("try_again")}
+              </Button>
+            </div>
+          ) : loading || pools.length > 0 ? (
             <>
               <PoolsTableDesktop
                 isLoading={loading}
@@ -421,6 +441,7 @@ export default function PoolsTable({
                 handleSort={handleSort}
               />
               <PoolsTableMobile
+                isLoading={loading}
                 tableData={currentTableData}
                 sorting={sorting}
                 currentPage={currentPage}

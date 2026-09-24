@@ -309,6 +309,7 @@
     "must_be_at_least": "Must be at least {val}",
     "token_starting_price": "Starting {symbol} price",
     "pools_not_found": "Pools not found",
+    "pools_load_error": "We couldn't load pools. Check your connection and try again.",
     "amount_title": "Amount",
     "enter_correct_values": "Enter correct values",
     "collecting_fee_message": "Collecting fees will withdraw currently available fees for you",
@@ -526,7 +527,9 @@
     "tokens_title": "Tokens",
     "tokens_subtitle": "List, create, and manage tokens",
     "learn_more_title": "Learn more",
-    "learn_more_subtitle": "Docs, news, and protocol stats"
+    "learn_more_subtitle": "Docs, news, and protocol stats",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Short how-tos for common flows"
   },
   "NotFound": {
     "title": "Page not found",

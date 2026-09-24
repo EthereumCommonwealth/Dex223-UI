@@ -398,6 +398,7 @@
     "must_be_at_least": "Doit être au moins {val}",
     "token_starting_price": "Prix initial de {symbol}",
     "pools_not_found": "Aucun pool trouvé",
+    "pools_load_error": "Impossible de charger les pools. Vérifiez votre connexion et réessayez.",
     "amount_title": "Montant",
     "enter_correct_values": "Saisissez des valeurs correctes",
     "collecting_fee_message": "Percevoir les frais retirera les frais actuellement disponibles",
@@ -525,7 +526,9 @@
     "tokens_title": "Jetons",
     "tokens_subtitle": "Lister, créer et gérer des jetons",
     "learn_more_title": "En savoir plus",
-    "learn_more_subtitle": "Docs, actualités et statistiques du protocole"
+    "learn_more_subtitle": "Docs, actualités et statistiques du protocole",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Tutoriels courts pour les flux courants"
   },
   "NotFound": {
     "title": "Page introuvable",

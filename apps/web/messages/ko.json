@@ -398,6 +398,7 @@
     "must_be_at_least": "{val} 이상이어야 합니다",
     "token_starting_price": "{symbol} 시작 가격",
     "pools_not_found": "풀을 찾을 수 없습니다",
+    "pools_load_error": "풀을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.",
     "amount_title": "수량",
     "enter_correct_values": "올바른 값을 입력하세요",
     "collecting_fee_message": "수수료를 수령하면 현재 사용 가능한 수수료가 출금됩니다",
@@ -525,7 +526,9 @@
     "tokens_title": "토큰",
     "tokens_subtitle": "토큰 상장, 생성 및 관리",
     "learn_more_title": "자세히 알아보기",
-    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계"
+    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계",
+    "all_guides_title": "가이드",
+    "all_guides_subtitle": "자주 쓰는 기능에 대한 짧은 안내"
   },
   "NotFound": {
     "title": "페이지를 찾을 수 없습니다",
