@@ -398,6 +398,7 @@
     "must_be_at_least": "{val} 이상이어야 합니다",
     "token_starting_price": "{symbol} 시작 가격",
     "pools_not_found": "풀을 찾을 수 없습니다",
+    "pools_load_error": "풀을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.",
     "amount_title": "수량",
     "enter_correct_values": "올바른 값을 입력하세요",
     "collecting_fee_message": "수수료를 수령하면 현재 사용 가능한 수수료가 출금됩니다",
