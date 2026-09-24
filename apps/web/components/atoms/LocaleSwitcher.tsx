@@ -34,18 +34,22 @@ const localesMap: {
     symbol: "Zh",
   },
   ko: {
+    img: "/images/locales/ko.svg",
     label: "한국어",
     symbol: "Ko",
   },
   fr: {
+    img: "/images/locales/fr.svg",
     label: "Français",
     symbol: "Fr",
   },
   pt: {
+    img: "/images/locales/pt.svg",
     label: "Português",
     symbol: "Pt",
   },
   ru: {
+    img: "/images/locales/ru.svg",
     label: "Русский",
     symbol: "Ru",
   },
