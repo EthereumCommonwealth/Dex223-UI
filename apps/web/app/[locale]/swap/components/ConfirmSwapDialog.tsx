@@ -105,7 +105,11 @@ function ApproveRow({
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
-          <a target="_blank" href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
+          >
             <IconButton iconName="forward" />
           </a>
         )}
@@ -177,7 +181,11 @@ function SwapRow({
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
-          <a target="_blank" href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
+          >
             <IconButton iconName="forward" />
           </a>
         )}

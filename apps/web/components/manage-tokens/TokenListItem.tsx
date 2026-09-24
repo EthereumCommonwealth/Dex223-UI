@@ -69,6 +69,7 @@ function ListPopoverOption(props: Props) {
       return (
         <a
           target="_blank"
+          rel="noopener noreferrer"
           className={clsx(
             commonClassName,
             "text-green hocus:text-green-hover",
