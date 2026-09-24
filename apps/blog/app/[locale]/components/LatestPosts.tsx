@@ -1,9 +1,11 @@
 import clsx from "clsx";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { CategoryTag, YoutubeTag } from "@/app/[locale]/components/PostTag";
 import { Post } from "@/app/[locale]/types/Post";
+import { formatPostDate } from "@/functions/formatPostDate";
 import { Link } from "@/i18n/routing";
 
 export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post] }) {
@@ -11,6 +13,7 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
     return posts[0];
   }, [posts]);
 
+  const locale = useLocale();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
@@ -41,6 +44,9 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
             />
           </div>
           <div className="px-4 md:px-5 pt-4 pb-4 md:pb-6 flex flex-col gap-1 bg-primary-bg rounded-b-3 md:rounded-b-5 group-hocus:bg-tertiary-bg duration-200">
+            <time dateTime={latestPost.createdAt} className="text-12 md:text-14 text-tertiary-text">
+              {formatPostDate(latestPost.createdAt, locale, "short")}
+            </time>
             <h3 className="font-medium md:line-clamp-3 lg:line-clamp-1 text-20 md:text-24 group-hocus:text-green duration-200">
               {latestPost.title}
             </h3>
@@ -58,7 +64,7 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
                 key={post.id}
                 className={clsx("flex max-md:flex-col cursor-pointer", !isTouchDevice && "group")}
               >
-                <div className="md:h-[132px] aspect-[16/9] md:aspect-[1/1] lg:aspect-[16/9] relative flex-shrink-0">
+                <div className="relative flex-shrink-0 aspect-[16/9] md:aspect-auto md:w-[132px] lg:w-[235px] md:min-h-[132px]">
                   {!!post.links[0] && <YoutubeTag />}
                   <Image
                     className="rounded-t-3 md:rounded-tr-0 md:rounded-l-5 object-cover"
@@ -69,6 +75,9 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
                   />{" "}
                 </div>
                 <div className="px-5 pt-4 pb-6 flex flex-col gap-1 bg-primary-bg rounded-b-3 md:rounded-bl-0 md:rounded-r-5  group-hocus:bg-tertiary-bg duration-200">
+                  <time dateTime={post.createdAt} className="text-12 text-tertiary-text">
+                    {formatPostDate(post.createdAt, locale, "short")}
+                  </time>
                   <h3 className="font-medium md:line-clamp-2 lg:line-clamp-2 group-hocus:text-green duration-200">
                     {post.title}
                   </h3>

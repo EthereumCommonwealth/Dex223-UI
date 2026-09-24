@@ -1,12 +1,15 @@
 import clsx from "clsx";
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import React, { useEffect, useState } from "react";
 
 import { CategoryTag, YoutubeTag } from "@/app/[locale]/components/PostTag";
 import { Post } from "@/app/[locale]/types/Post";
+import { formatPostDate } from "@/functions/formatPostDate";
 import { Link } from "@/i18n/routing";
 
 export default function Posts({ posts }: { posts: Post[] }) {
+  const locale = useLocale();
   const [isTouchDevice, setIsTouchDevice] = useState(false);
 
   useEffect(() => {
@@ -36,6 +39,9 @@ export default function Posts({ posts }: { posts: Post[] }) {
               />
             </div>
             <div className="px-4 md:px-5 pt-4 pb-4 md:pb-6 flex flex-col gap-1 bg-primary-bg md:flex-grow rounded-b-3 md:rounded-b-5 group-hocus:bg-tertiary-bg duration-200 cursor-pointer">
+              <time dateTime={post.createdAt} className="text-12 md:text-14 text-tertiary-text">
+                {formatPostDate(post.createdAt, locale, "short")}
+              </time>
               <h3 className="font-medium line-clamp-2 md:text-20 group-hocus:text-green duration-200">
                 {post.title}
               </h3>

@@ -25,5 +25,13 @@
       "useful_page_source_codes": "Page source codes",
       "partners": "Partners",
       "partners_eos_support": "BlockzHub"
-    }
+    },
+  "Post": {
+    "back_to_blog": "Volver al blog",
+    "published": "Publicado",
+    "author": "Autor",
+    "copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado",
+    "link_copy_failed": "No se pudo copiar el enlace"
+  }
 }

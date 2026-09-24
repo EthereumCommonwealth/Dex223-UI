@@ -1,18 +1,26 @@
 import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image";
+import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
+import CopyLinkButton from "@/app/[locale]/components/CopyLinkButton";
 import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { formatPostDate } from "@/functions/formatPostDate";
 import { Link } from "@/i18n/routing";
 
 function PostContainer({ children }: PropsWithChildren<{}>) {
   return <div className="w-full max-w-[728px] mx-auto px-4">{children}</div>;
 }
-export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params;
+export default async function PostPage({
+  params,
+}: {
+  params: Promise<{ id: string; locale: string }>;
+}) {
+  const { id, locale } = await params;
+  const t = await getTranslations("Post");
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
   const post: PostDetails = await res.json();
 
@@ -180,7 +188,7 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
             className="flex items-center gap-2 text-secondary-text py-2 hocus:text-green-hover duration-200 font-medium"
           >
             <Svg iconName="back" />
-            Back to blog
+            {t("back_to_blog")}
           </Link>
 
           <div className="flex gap-3 flex-wrap">
@@ -201,16 +209,10 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                 iconName="date"
                 size={20}
               />
-              <span className="text-tertiary-text">Publication date:</span>
-              <span className="text-secondary-text">
-                {new Date(post.createdAt)
-                  .toLocaleString("en", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                  .replace(/\//g, ".")}
-              </span>
+              <span className="text-tertiary-text">{t("published")}</span>
+              <time dateTime={post.createdAt} className="text-secondary-text">
+                {formatPostDate(post.createdAt, locale)}
+              </time>
             </div>
 
             {post.author && (
@@ -220,10 +222,12 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
                   iconName="author"
                   size={20}
                 />
-                <span className="text-tertiary-text">Author:</span>
+                <span className="text-tertiary-text">{t("author")}</span>
                 <span className="text-secondary-text">{post.author.username}</span>
               </div>
             )}
+
+            <CopyLinkButton />
           </div>
         </div>
 

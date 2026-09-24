@@ -374,6 +374,14 @@
     "something_went_wrong": "Something went wrong, try again later",
     "thank_you_for_the_feedback": "Thank you for your feedback! We'll be in touch soon. Feel free to reach us via <telegram>Telegram</telegram> or <discord>Discord</discord>."
   },
+  "Post": {
+    "back_to_blog": "Back to blog",
+    "published": "Published",
+    "author": "Author",
+    "copy_link": "Copy link",
+    "link_copied": "Link copied",
+    "link_copy_failed": "Could not copy the link"
+  },
   "Toast": {
     "successfully_copied": "Successfully copied!"
   },
