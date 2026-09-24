@@ -530,5 +530,25 @@
     "learn_more_subtitle": "Docs, news, and protocol stats",
     "all_guides_title": "Guides",
     "all_guides_subtitle": "Short how-tos for common flows"
+  },
+  "A11y": {
+    "close": "Close",
+    "copy": "Copy",
+    "delete": "Delete",
+    "sort": "Sort",
+    "back": "Back",
+    "add": "Add",
+    "recent_transactions": "Recent transactions",
+    "network_fee_settings": "Network fee settings",
+    "swap_settings": "Swap settings",
+    "switch_tokens": "Switch tokens",
+    "settings": "Settings",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "reset": "Reset",
+    "decrease": "Decrease",
+    "open_link": "Open link",
+    "increase_price": "Increase price",
+    "decrease_price": "Decrease price"
   }
 }

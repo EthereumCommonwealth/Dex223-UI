@@ -529,5 +529,25 @@
     "learn_more_subtitle": "Docs, actualités et statistiques du protocole",
     "all_guides_title": "Guides",
     "all_guides_subtitle": "Tutoriels courts pour les flux courants"
+  },
+  "A11y": {
+    "close": "Fermer",
+    "copy": "Copier",
+    "delete": "Supprimer",
+    "sort": "Trier",
+    "back": "Retour",
+    "add": "Ajouter",
+    "recent_transactions": "Transactions récentes",
+    "network_fee_settings": "Paramètres des frais de réseau",
+    "swap_settings": "Paramètres d'échange",
+    "switch_tokens": "Inverser les jetons",
+    "settings": "Paramètres",
+    "zoom_in": "Zoom avant",
+    "zoom_out": "Zoom arrière",
+    "reset": "Réinitialiser",
+    "decrease": "Diminuer",
+    "open_link": "Ouvrir le lien",
+    "increase_price": "Augmenter le prix",
+    "decrease_price": "Baisser le prix"
   }
 }

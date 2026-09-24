@@ -32,6 +32,7 @@ export default function PriceRangeInput({
   handleBlur,
 }: Props) {
   const t = useTranslations("Liquidity");
+  const tA11y = useTranslations("A11y");
 
   const [localValue, setLocalValue] = useState("");
   const [useLocalValue, setUseLocalValue] = useState(false);
@@ -88,12 +89,14 @@ export default function PriceRangeInput({
           variant={IconButtonVariant.CONTROL}
           iconName="add"
           onClick={increment}
+          aria-label={tA11y("increase_price")}
           // disabled={noLiquidity}
         />
         <IconButton
           variant={IconButtonVariant.CONTROL}
           iconName="minus"
           onClick={decrement}
+          aria-label={tA11y("decrease_price")}
           // disabled={noLiquidity}
         />
       </div>
