@@ -273,7 +273,7 @@ export default function AutoListingContractDetails({
   return (
     <>
       <Container>
-        <div className="mb-2 mt-4 xl:my-10 px-4 flex">
+        <div className="mb-2 mt-4 xl:my-10 flex">
           <Link href="/token-listing/contracts">
             <span className="flex items-center gap-2 text-secondary-text hocus:text-green-hover duration-200">
               <Svg iconName="back" />
@@ -281,7 +281,7 @@ export default function AutoListingContractDetails({
             </span>
           </Link>
         </div>
-        <div className="mt-2 mb-4 xl:my-10 px-4">
+        <div className="mt-2 mb-4 xl:my-10">
           <div className="flex justify-between mb-2 xl:mb-5">
             <h1 className="text-24 xl:text-40 font-medium">Listing contract details</h1>
             <Link

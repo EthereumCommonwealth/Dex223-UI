@@ -188,7 +188,7 @@ export default function ExchangePageClient({
   console.log(exchange);
 
   return (
-    <Container className="px-0 md:px-4">
+    <Container gutter={false} className="px-0 md:px-4">
       <div className="mx-auto w-full max-w-[520px]">
         {exchange ? (
           <>

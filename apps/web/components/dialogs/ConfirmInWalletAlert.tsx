@@ -16,7 +16,7 @@ export default function ConfirmInWalletAlert() {
     <>
       {isOpened && (
         <div className="z-[1000] fixed w-full bg-green-bg border-green border-t shadow-notification bottom-0">
-          <Container>
+          <Container gutter={false}>
             <div className={clsx("py-4 pl-4 pr-1 md:px-5")}>
               <div className={clsx("flex justify-between md:text-16 text-14 items-center")}>
                 <div className="flex gap-3 items-center">
