@@ -563,5 +563,11 @@
     "open_link": "打开链接",
     "increase_price": "提高价格",
     "decrease_price": "降低价格"
+  },
+  "NotFound": {
+    "title": "页面未找到",
+    "description": "此页面不存在或已被移动。请检查地址，或返回交易。",
+    "go_to_swap": "前往兑换",
+    "view_pools": "查看资金池"
   }
 }

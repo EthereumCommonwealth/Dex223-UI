@@ -563,5 +563,11 @@
     "open_link": "Abrir enlace",
     "increase_price": "Subir precio",
     "decrease_price": "Bajar precio"
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "description": "Esta página no existe o se ha movido. Revisa la dirección o vuelve a operar.",
+    "go_to_swap": "Ir a intercambiar",
+    "view_pools": "Ver pools"
   }
 }
