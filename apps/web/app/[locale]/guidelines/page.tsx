@@ -34,10 +34,10 @@ export default function GuidelinesPage() {
   return (
     <>
       <Container>
-        <div className="md:py-5 px-4 py-4">
+        <div className="md:py-5 py-4">
           <h1 className="mb-3 text-24 lg:text-40">Guidelines</h1>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 px-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
           <GuidelineCard
             title="Getting started "
             subtitle="Your first steps on the platform"

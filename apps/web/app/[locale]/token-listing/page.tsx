@@ -51,14 +51,14 @@ export default function TokenListingPage() {
   return (
     <>
       <Container>
-        <div className="md:py-5 px-4 py-4">
+        <div className="md:py-5 py-4">
           <h1 className="mb-3 text-24 lg:text-40">Token listing</h1>
           <p className="text-14 text-secondary-text">
             Listing your token on our platform is straightforward. You can choose one of the
             following methods to get your token listed:
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 px-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-6">
           <ListingVariantCard
             heading="Default listing"
             paragraphText={

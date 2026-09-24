@@ -46,7 +46,7 @@ export default function TokenListingPage() {
   return (
     <>
       <Container>
-        <div className="my-3 md:my-10 px-4 flex">
+        <div className="my-3 md:my-10 flex">
           <Link href="/token-listing">
             <span className="flex items-center gap-2 text-secondary-text hocus:text-green-hover duration-200">
               <Svg iconName="back" />
@@ -55,7 +55,7 @@ export default function TokenListingPage() {
           </Link>
         </div>
         <div className="xl:pb-5 pb-4">
-          <div className="flex justify-between flex-col gap-2 xl:flex-row px-4">
+          <div className="flex justify-between flex-col gap-2 xl:flex-row">
             <h1 className="font-medium  text-24 lg:text-40">Auto-listing contracts</h1>
             <div className="w-full md:w-[480px]">
               <SearchInput
@@ -70,7 +70,7 @@ export default function TokenListingPage() {
 
         {(!searchValue || (searchValue && !!filteredAutoListings.length)) && (
           <>
-            <div className="grid grid-cols-1 xl:hidden px-4 gap-4 pb-4">
+            <div className="grid grid-cols-1 xl:hidden gap-4 pb-4">
               {filteredAutoListings.map((autoListing) => {
                 return (
                   <div
@@ -172,7 +172,7 @@ export default function TokenListingPage() {
               })}
             </div>
 
-            <div className="px-4 max-xl:hidden">
+            <div className="max-xl:hidden">
               <div className="hidden xl:grid rounded-2 overflow-hidden bg-table-gradient pb-2.5 grid-cols-[minmax(50px,1.67fr),_minmax(77px,1.33fr),_minmax(87px,2.67fr),_minmax(55px,1.33fr),_minmax(50px,max-content)]">
                 <div className="contents text-tertiary-text">
                   <div className="pl-5 h-[60px] flex items-center relative mb-2.5">
