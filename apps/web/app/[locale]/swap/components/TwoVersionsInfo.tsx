@@ -5,6 +5,7 @@ import React from "react";
 import { useTwoVersionsInfoStore } from "@/app/[locale]/swap/stores/useTwoVersionsInfoStore";
 import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
+import { Link } from "@/i18n/routing";
 
 export default function TwoVersionsInfo() {
   const t = useTranslations("Swap");
@@ -26,13 +27,12 @@ export default function TwoVersionsInfo() {
         <div className="px-4 sm:px-6 lg:px-5 py-3 text-tertiary-text">
           {t.rich("tokens_in_two_standards_paragraph", {
             convert: (chunks) => (
-              <a
-                target="_blank"
-                href="https://dexaran.github.io/token-converter/"
+              <Link
+                href="/converter"
                 className="text-green underline hocus:text-green-hover duration-200"
               >
                 {chunks}
-              </a>
+              </Link>
             ),
           })}
         </div>
