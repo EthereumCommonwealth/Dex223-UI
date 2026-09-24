@@ -525,6 +525,8 @@
     "tokens_title": "Tokens",
     "tokens_subtitle": "Listar, criar e gerir tokens",
     "learn_more_title": "Saber mais",
-    "learn_more_subtitle": "Docs, notícias e estatísticas do protocolo"
+    "learn_more_subtitle": "Docs, notícias e estatísticas do protocolo",
+    "all_guides_title": "Guias",
+    "all_guides_subtitle": "Como fazer as tarefas mais comuns"
   }
 }
