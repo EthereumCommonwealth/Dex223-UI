@@ -15,6 +15,8 @@ import { clsxMerge } from "@/functions/clsxMerge";
 import { isExternalHref, linkTargetProps } from "@/functions/linkTarget";
 import { usePathname, useRouter } from "@/i18n/routing";
 
+import AppProductLinks from "./AppProductLinks";
+
 export function MobileLink({
   href,
   iconName,
@@ -234,50 +236,15 @@ export default function MobileMenu() {
               </button>
               <Collapse open={moreOpened}>
                 <div className="py-2 border-b border-secondary-border">
-                  <MobileLink
-                    href="#"
-                    iconName="list"
-                    title="Token lists"
+                  <AppProductLinks
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                    disabled
-                  />
-                  <MobileLink
-                    href={`/${locale}`}
-                    iconName="blog"
-                    title="Blog"
-                    handleClick={(e) => {
-                      e.preventDefault();
-                      router.push("/");
-                    }}
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
-                    href="/statistics"
-                    iconName="statistics"
-                    title="Statistics"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
-                    href="#"
-                    iconName="guidelines"
-                    title="Guidelines"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
+                    withFeedback={false}
                   />
                 </div>
                 <div className="flex flex-col py-4 px-4 bg-primary-bg rounded-2 gap-3">
                   <NavigationExternalLinksContainer
                     title={t("useful_links")}
                     links={[
-                      {
-                        href: "https://dexaran.github.io/token-converter/",
-                        text: t("useful_converter"),
-                      },
                       {
                         href: "https://dexaran.github.io/erc20-losses/",
                         text: t("useful_losses_calculator"),

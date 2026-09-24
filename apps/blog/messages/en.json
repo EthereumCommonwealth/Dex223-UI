@@ -23,7 +23,13 @@
     "useful_front_page": "ERC223 front page",
     "useful_page_source_codes": "Page source codes",
     "partners": "Partners",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "app_token_converter": "Token converter",
+    "app_token_lists": "Token lists",
+    "app_statistics": "Statistics",
+    "app_guidelines": "Guidelines",
+    "app_blog": "Blog",
+    "app_feedback": "Feedback"
   },
   "RecentTransactions": {
     "transactions": "Transactions",

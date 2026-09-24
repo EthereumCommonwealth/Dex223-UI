@@ -8,6 +8,13 @@
     "pools": "Poolsio",
     "token-listing": "Token listingio",
     "lib": "Libio"
+  },
+  "Navigation": {
+    "app_token_converter": "代币转换器",
+    "app_token_lists": "代币列表",
+    "app_statistics": "统计数据",
+    "app_guidelines": "指南",
+    "app_blog": "博客",
+    "app_feedback": "反馈"
   }
 }
-

@@ -1,16 +1,15 @@
 import clsx from "clsx";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
 import NavigationItem, { NavigationItemWithSubmenu } from "@/components/atoms/NavigationItem";
 import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
+import AppProductLinks from "@/components/common/AppProductLinks";
 import { MobileLink } from "@/components/common/MobileMenu";
-import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
 import { isExternalHref, linkTargetProps } from "@/functions/linkTarget";
-import { useRouter } from "@/i18n/routing";
 import { usePathname } from "@/i18n/routing";
 
 function NavigationExternalLink({ href, text }: { href: string; text: string }) {
@@ -142,12 +141,8 @@ const socialLinks: SocialLink[] = [
 function NavigationMoreDropdown() {
   const [isSubmenuOpened, setSubmenuOpened] = useState(false);
   const t = useTranslations("Navigation");
-  const locale = useLocale();
 
-  const router = useRouter();
   const pathname = usePathname();
-
-  const { setIsOpen } = useFeedbackDialogStore();
 
   const active = useMemo(() => {
     return true;
@@ -169,6 +164,8 @@ function NavigationMoreDropdown() {
       customOffset={12}
       trigger={
         <button
+          aria-label={t("more")}
+          aria-expanded={isSubmenuOpened}
           onClick={() => setSubmenuOpened(!isSubmenuOpened)}
           className={clsx(
             "px-3 py-5 inline-flex items-center gap-1 duration-200 group",
@@ -192,61 +189,12 @@ function NavigationMoreDropdown() {
       <div className="bg-tertiary-bg rounded-2 shadow-popover shadow-black/70">
         <div className="flex">
           <div className="flex flex-col mt-2 mb-2">
-            <MobileLink
-              href="#"
-              iconName="list"
-              title="Token lists"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-              disabled
-            />
-            <MobileLink
-              href={`/${locale}`}
-              iconName="blog"
-              title="Blog"
-              handleClick={(e) => {
-                e.preventDefault();
-                router.push("/");
-              }}
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-            />
-            <MobileLink
-              href="#"
-              iconName="star"
-              title="Feedback"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-              handleClick={(e) => {
-                e.preventDefault();
-                setIsOpen(true);
-              }}
-            />
-            <MobileLink
-              disabled
-              href="/statistics"
-              iconName="statistics"
-              title="Statistics"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-            />
-            <MobileLink
-              disabled
-              href="#"
-              iconName="guidelines"
-              title="Guidelines"
-              handleClose={() => setSubmenuOpened(false)}
-              className="pr-5"
-            />
+            <AppProductLinks handleClose={() => setSubmenuOpened(false)} />
           </div>
           <div className="flex flex-col gap-4 mt-2 pt-3 px-5 pb-3 mb-2 border-l border-r border-secondary-border">
             <NavigationExternalLinksContainer
               title={t("useful_links")}
               links={[
-                {
-                  href: "https://dexaran.github.io/token-converter/",
-                  text: t("useful_converter"),
-                },
                 {
                   href: "https://dexaran.github.io/erc20-losses/",
                   text: t("useful_losses_calculator"),
