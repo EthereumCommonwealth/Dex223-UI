@@ -8,12 +8,7 @@ import { useAccount } from "wagmi";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 
-import {
-  FLOW_TYPE_MAP,
-  ONRAMP_THEME,
-  OnrampAsset,
-  OnrampFlow,
-} from "./onrampAssets";
+import { FLOW_TYPE_MAP, ONRAMP_THEME, OnrampAsset, OnrampFlow } from "./onrampAssets";
 
 type TxCompletedPayload = {
   transactionHash?: string;
@@ -104,7 +99,9 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
 
     try {
       closeSdk();
-      const instance = new OnrampWebSDK(buildConfig() as ConstructorParameters<typeof OnrampWebSDK>[0]);
+      const instance = new OnrampWebSDK(
+        buildConfig() as ConstructorParameters<typeof OnrampWebSDK>[0],
+      );
       sdkRef.current = instance;
 
       const handleTxEvents = (e: { type?: string; data?: TxCompletedPayload }) => {
@@ -137,16 +134,7 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       setError(t("widget_failed"));
       setIsOpening(false);
     }
-  }, [
-    address,
-    appId,
-    buildConfig,
-    closeSdk,
-    isConnected,
-    onCompleted,
-    setWalletConnectOpened,
-    t,
-  ]);
+  }, [address, appId, buildConfig, closeSdk, isConnected, onCompleted, setWalletConnectOpened, t]);
 
   const label = !isConnected
     ? tWallet("connect_wallet")
@@ -159,7 +147,9 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
   return (
     <div className="w-full flex flex-col gap-3">
       {error && (
-        <div className="text-14 text-red bg-red-bg border border-red rounded-3 px-4 py-3">{error}</div>
+        <div className="text-14 text-red bg-red-bg border border-red rounded-3 px-4 py-3">
+          {error}
+        </div>
       )}
       <Button
         onClick={openWidget}

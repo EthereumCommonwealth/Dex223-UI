@@ -4,6 +4,7 @@ import ExternalTextLink from "@repo/ui/external-text-link";
 import { useTranslations } from "next-intl";
 import React from "react";
 
+import { GUIDES } from "@/app/[locale]/guidelines/guides";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import { Link } from "@/i18n/routing";
@@ -45,6 +46,8 @@ export default function GuidelinesPage() {
     setContent: setManageTokensContent,
   } = useManageTokensDialogStore();
 
+  const guideBySlug = Object.fromEntries(GUIDES.map((g) => [g.slug, g]));
+
   return (
     <Container>
       <div className="md:py-5 py-4">
@@ -56,15 +59,21 @@ export default function GuidelinesPage() {
             title={t("getting_started_title")}
             subtitle={t("getting_started_subtitle")}
           >
-            <InternalTextLink href="/swap" text={tNav("swap")} />
-            <InternalTextLink href="/converter" text={tNav("useful_converter")} />
-            <InternalTextLink href="/buy-crypto" text={tNav("buy_crypto")} />
+            <InternalTextLink href="/guidelines/swap" text={guideBySlug.swap.title} />
+            <InternalTextLink href="/guidelines/converter" text={guideBySlug.converter.title} />
+            <InternalTextLink href="/guidelines/fiat" text={guideBySlug.fiat.title} />
             <InternalTextLink href="/portfolio" text={tNav("portfolio")} />
           </GuidelineCard>
 
           <GuidelineCard title={t("tokens_title")} subtitle={t("tokens_subtitle")}>
-            <InternalTextLink href="/token-listing" text={tNav("token_listing")} />
-            <InternalTextLink href="/create-token" text={tNav("create_token")} />
+            <InternalTextLink
+              href="/guidelines/token-listing"
+              text={guideBySlug["token-listing"].title}
+            />
+            <InternalTextLink
+              href="/guidelines/token-lists"
+              text={guideBySlug["token-lists"].title}
+            />
             <button
               type="button"
               onClick={() => {
@@ -77,7 +86,7 @@ export default function GuidelinesPage() {
               <span>{tNav("token_lists")}</span>
               <Svg iconName="forward" size={24} className="flex-shrink-0" />
             </button>
-            <InternalTextLink href="/pools" text={tNav("pools")} />
+            <InternalTextLink href="/create-token" text={tNav("create_token")} />
           </GuidelineCard>
 
           <GuidelineCard title={t("learn_more_title")} subtitle={t("learn_more_subtitle")}>
@@ -97,6 +106,16 @@ export default function GuidelinesPage() {
               href="https://dexaran.github.io/erc20-losses/"
             />
             <InternalTextLink href="/statistics" text={tNav("token_statistics")} />
+          </GuidelineCard>
+
+          <GuidelineCard title={t("all_guides_title")} subtitle={t("all_guides_subtitle")}>
+            {GUIDES.map((guide) => (
+              <InternalTextLink
+                key={guide.slug}
+                href={`/guidelines/${guide.slug}`}
+                text={guide.title}
+              />
+            ))}
           </GuidelineCard>
         </div>
       </div>

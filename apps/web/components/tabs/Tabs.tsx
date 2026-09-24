@@ -45,7 +45,8 @@ function Tabs({
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-2">
+      {/* On phones the action next to the tabs moves onto its own row instead of squeezing them. */}
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
         <div
           role="tablist"
           onKeyDown={handleKeyDown}

@@ -520,6 +520,7 @@ export default function DecreaseLiquidityPage({
                   <a
                     className="flex items-center -mt-2 justify-center"
                     target="_blank"
+                    rel="noopener noreferrer"
                     href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
                   >
                     <IconButton iconName="forward" />

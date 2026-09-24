@@ -525,6 +525,8 @@
     "tokens_title": "토큰",
     "tokens_subtitle": "토큰 상장, 생성 및 관리",
     "learn_more_title": "자세히 알아보기",
-    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계"
+    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계",
+    "all_guides_title": "가이드",
+    "all_guides_subtitle": "자주 쓰는 기능에 대한 짧은 안내"
   }
 }
