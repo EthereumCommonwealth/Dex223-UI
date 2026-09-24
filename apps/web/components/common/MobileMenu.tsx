@@ -336,6 +336,13 @@ export default function MobileMenu() {
                     handleClose={() => setMobileMenuOpened(false)}
                   />
                   <MobileLink
+                    isActive={pathname === "/revenue"}
+                    href="/revenue"
+                    iconName="staked"
+                    title={t("revenue")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
                     href="/create-token"
                     iconName="list-tokens"
                     title={t("create_token")}
