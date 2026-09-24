@@ -525,6 +525,8 @@
     "tokens_title": "Jetons",
     "tokens_subtitle": "Lister, créer et gérer des jetons",
     "learn_more_title": "En savoir plus",
-    "learn_more_subtitle": "Docs, actualités et statistiques du protocole"
+    "learn_more_subtitle": "Docs, actualités et statistiques du protocole",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Tutoriels courts pour les flux courants"
   }
 }
