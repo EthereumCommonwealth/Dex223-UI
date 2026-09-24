@@ -54,7 +54,7 @@ export const SelectButton = forwardRef(
             (colorScheme === ThemeColors.GREEN
               ? "bg-green-bg border-green"
               : " bg-purple-bg border-purple"),
-          size === "large" && "p-2 lg:px-5 lg:py-2.5 lg:text-24 min-h-12",
+          size === "large" && "p-2 lg:px-5 lg:py-2.5 lg:text-20 lg:font-medium min-h-12",
           size === "regular" && "py-2 px-3",
           size === "medium" && "py-2 lg:py-3 px-3",
           fullWidth && withArrow && "w-full justify-between",

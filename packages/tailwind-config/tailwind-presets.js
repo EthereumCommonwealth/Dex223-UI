@@ -228,7 +228,7 @@ const config = {
 
       "primary-text": "#D1DEDF",
       "secondary-text": "#A2AAA9",
-      "tertiary-text": "#798180",
+      "tertiary-text": "#858D8C",
 
       "erc-20-text": "#97B9B6",
       "erc-223-text": "#949ED4",

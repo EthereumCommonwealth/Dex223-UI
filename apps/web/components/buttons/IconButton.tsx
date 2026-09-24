@@ -57,7 +57,7 @@ function IconButtonFrame({
         buttonSize === IconButtonSize.LARGE && "w-12 h-12",
         clickableAreaSize === ClickableAreaSize.SMALL && "after:w-8 after:h-8",
         clickableAreaSize === ClickableAreaSize.REGULAR && "after:w-10 after:h-10",
-        clickableAreaSize === ClickableAreaSize.SMALL && "after:w-12 after:h-12",
+        clickableAreaSize === ClickableAreaSize.LARGE && "after:w-12 after:h-12",
         "flex justify-center items-center disabled:opacity-50 disabled:pointer-events-none relative after:absolute after:left-1/2 after:top-1/2 after:-translate-x-1/2 after:-translate-y-1/2",
         className,
       )}

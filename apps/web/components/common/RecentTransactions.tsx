@@ -129,7 +129,7 @@ export default function RecentTransactions({
     <>
       {showRecentTransactions && (
         <div id="recent-transactions-container" ref={componentRef}>
-          <div className="card-spacing pt-2.5 pb-5 bg-primary-bg rounded-5">
+          <div className="card-spacing pt-2.5 pb-5 surface rounded-5">
             <div className="flex justify-between items-center mb-2.5">
               <h3 className="font-bold text-20">{t("transactions")}</h3>
               <div className="flex items-center relative -right-3">
