@@ -12,6 +12,8 @@ import {
 import clsx from "clsx";
 import { PropsWithChildren, useId } from "react";
 
+import { DialogLabelContext } from "@/components/atoms/DialogLabelContext";
+
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -98,7 +100,9 @@ export default function Drawer({
                 ...(placement === "left" ? { width: "auto" } : {}),
               }}
             >
-              {children}
+              <DialogLabelContext.Provider value={{ headingId, descriptionId }}>
+                {children}
+              </DialogLabelContext.Provider>
             </div>
           </FloatingFocusManager>
         )}
