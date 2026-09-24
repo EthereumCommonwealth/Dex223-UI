@@ -28,8 +28,8 @@ export default function Toast({ text, type = "success", onDismiss }: Props) {
         flex
         justify-between
         items-center
-        outline-1
-        outline
+        ring-1
+        ring-inset
         rounded-2
         gap-3
         md:gap-5
@@ -43,10 +43,10 @@ export default function Toast({ text, type = "success", onDismiss }: Props) {
         lg:pr-3
         max-md:text-14
         `,
-        type === "success" && "outline-green bg-green-bg",
-        type === "error" && "outline-red-light bg-red-bg",
-        type === "warning" && "outline-orange bg-orange-bg",
-        type === "info" && "outline-blue bg-blue-bg",
+        type === "success" && "ring-green bg-green-bg",
+        type === "error" && "ring-red-light bg-red-bg",
+        type === "warning" && "ring-orange bg-orange-bg",
+        type === "info" && "ring-blue bg-blue-bg",
       )}
     >
       <div className="flex gap-1 md:gap-2 items-center">

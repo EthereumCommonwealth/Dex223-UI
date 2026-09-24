@@ -83,7 +83,7 @@ export default function Footer() {
   return (
     <>
       <div>
-        <Container className="max-w-[1920px]">
+        <Container gutter={false} className="max-w-[1920px]">
           <div className="py-5 px-5 flex justify-end items-center gap-2 max-lg:hidden">
             <div className="flex items-center gap-1 text-12 text-secondary-text">
               <Svg size={16} className="text-tertiary-text" iconName="gas" />
@@ -120,7 +120,7 @@ export default function Footer() {
         </Container>
       </div>
       <footer className="before:h-[1px] before:bg-gradient-to-r before:from-secondary-border/20 before:via-50% before:via-secondary-border before:to-secondary-border/20 before:w-full before:absolute relative before:top-0 before:left-0 pb-[64px] md:pb-0">
-        <Container className="max-w-[1920px]">
+        <Container gutter={false} className="max-w-[1920px]">
           <div className="flex justify-between pt-4 pb-3 px-5 items-center flex-col-reverse sm:flex-row gap-3">
             <span className="text-12 text-secondary-text">
               © {new Date(Date.now()).getFullYear()} DEX223

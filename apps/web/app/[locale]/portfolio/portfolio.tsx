@@ -555,7 +555,10 @@ export function Portfolio() {
 
   const chainId = useCurrentChainId();
   const t = useTranslations("Portfolio");
+  const tWallet = useTranslations("Wallet");
   const isMobile = useMediaQuery({ query: "(max-width: 600px)" });
+  const { isConnected } = useAccount();
+  const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
 
   const { activeTab, setActiveTab } = usePortfolioActiveTabStore();
   const { showFromSearch, hasSearchWallet, addWallet } = usePortfolioStore();
@@ -571,7 +574,7 @@ export function Portfolio() {
 
   return (
     <Container>
-      <div className="p-4 lg:p-10 flex flex-col max-w-[100dvw]">
+      <div className="py-4 lg:py-10 flex flex-col max-w-[100dvw]">
         <div className="flex flex-col lg:flex-row w-full justify-between gap-3 lg:gap-0">
           <h1 className="text-24 lg:text-40 font-medium">{t("title")}</h1>
           <div className="flex flex-col lg:flex-row gap-y-2 lg:gap-x-3">
@@ -639,10 +642,21 @@ export function Portfolio() {
               )}
             </div>
           ) : (
-            <div className="min-h-[72px] md:min-h-[40px] flex items-center w-full relative -mt-5 md:mt-0 pt-1 md:py-0 md:gap-x-3 px-4 lg:px-5 lg:pb-0">
-              <span className="text-secondary-text flex w-full mr-[80px] md:mr-auto text-16 items-center ">
+            <div className="min-h-[72px] md:min-h-[40px] flex flex-col items-start md:flex-row md:items-center gap-3 w-full relative -mt-5 md:mt-0 pt-1 pb-4 md:py-0 px-4 lg:px-5 lg:pb-0">
+              <span className="text-secondary-text flex pr-[80px] md:pr-0 md:w-full md:mr-auto text-16 items-center">
                 {t("connect_wallet_placeholder")}
               </span>
+              {/* The obvious next step: open the same connect flow as the header button. */}
+              {!isConnected && (
+                <Button
+                  size={ButtonSize.MEDIUM}
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  onClick={() => setWalletConnectOpened(true)}
+                  className="relative z-10 flex-shrink-0 md:mr-[96px]"
+                >
+                  {tWallet("connect_wallet")}
+                </Button>
+              )}
               <EmptyStateIcon
                 iconName="wallet"
                 size={isMobile ? 72 : 80}
