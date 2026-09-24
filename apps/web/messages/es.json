@@ -526,5 +526,11 @@
     "tokens_subtitle": "Lista, crea y gestiona tokens",
     "learn_more_title": "Más información",
     "learn_more_subtitle": "Documentación, noticias y estadísticas del protocolo"
+  },
+  "NotFound": {
+    "title": "Página no encontrada",
+    "description": "Esta página no existe o se ha movido. Revisa la dirección o vuelve a operar.",
+    "go_to_swap": "Ir a intercambiar",
+    "view_pools": "Ver pools"
   }
 }

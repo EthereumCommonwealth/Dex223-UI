@@ -526,5 +526,11 @@
     "tokens_subtitle": "Lister, créer et gérer des jetons",
     "learn_more_title": "En savoir plus",
     "learn_more_subtitle": "Docs, actualités et statistiques du protocole"
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez au trading.",
+    "go_to_swap": "Aller à l'échange",
+    "view_pools": "Voir les pools"
   }
 }
