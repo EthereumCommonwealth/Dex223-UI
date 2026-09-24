@@ -1,5 +1,6 @@
 import DOMPurify from "isomorphic-dompurify";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { PropsWithChildren } from "react";
 
 import { PostDetails } from "@/app/[locale]/types/Post";
@@ -14,7 +15,18 @@ function PostContainer({ children }: PropsWithChildren<{}>) {
 export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+
+  // The API answers 404 for unknown ids and 422 for anything that is not a UUID
+  // (for example /en/blog). Show the not-found page instead of an empty post.
+  if (!res.ok) {
+    notFound();
+  }
+
   const post: PostDetails = await res.json();
+
+  if (!post?.id) {
+    notFound();
+  }
 
   DOMPurify.addHook("afterSanitizeAttributes", (node: Element) => {
     // Restrict iframe sources
@@ -164,13 +176,6 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
     ),
   });
 
-  if (!post) {
-    return (
-      <div>
-        <h1>Post not found</h1>
-      </div>
-    );
-  }
   return (
     <>
       <PostContainer>

@@ -1,4 +1,9 @@
 {
+  "NotFound": {
+    "title": "Publicación no encontrada",
+    "description": "Es posible que esta publicación se haya movido o eliminado. Explora los artículos y videos más recientes del blog.",
+    "back_to_blog": "Volver al blog"
+  },
     "Navigation": {
       "trade": "Tradio",
       "swap": "Swapio",

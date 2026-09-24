@@ -1,4 +1,9 @@
 {
+  "NotFound": {
+    "title": "未找到文章",
+    "description": "该文章可能已被移动或删除。浏览博客中的最新文章和视频。",
+    "back_to_blog": "返回博客"
+  },
   "Trade": {
     "trade": "交易",
     "swap": "交易cio",
