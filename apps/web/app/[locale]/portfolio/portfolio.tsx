@@ -571,7 +571,7 @@ export function Portfolio() {
 
   return (
     <Container>
-      <div className="p-4 lg:p-10 flex flex-col max-w-[100dvw]">
+      <div className="py-4 lg:py-10 flex flex-col max-w-[100dvw]">
         <div className="flex flex-col lg:flex-row w-full justify-between gap-3 lg:gap-0">
           <h1 className="text-24 lg:text-40 font-medium">{t("title")}</h1>
           <div className="flex flex-col lg:flex-row gap-y-2 lg:gap-x-3">

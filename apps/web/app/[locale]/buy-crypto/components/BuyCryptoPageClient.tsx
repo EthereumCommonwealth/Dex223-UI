@@ -65,7 +65,7 @@ export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) 
             </div>
 
             {selectedPlatform === "OnRamp" && (
-              <Container className="bg-primary-bg rounded-5 p-6 mb-6">
+              <Container gutter={false} className="bg-primary-bg rounded-5 p-6 mb-6">
                 <div className="w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6">
                   {tabList.map((tab, index) => (
                     <TabButton
@@ -108,7 +108,7 @@ export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) 
             )}
             {selectedPlatform === "SimpleSwap" && (
               <div className="flex items-center justify-center">
-                <Container className="bg-primary-bg rounded-5 p-6 mb-6">
+                <Container gutter={false} className="bg-primary-bg rounded-5 p-6 mb-6">
                   <ExchangePageClient tokens={tokens} initialExchange={initialExchange} />
                 </Container>
               </div>
