@@ -312,7 +312,6 @@ export default function Navigation() {
         return (
           <li key={menuItem.label}>
             <NavigationItem
-              id={menuItem.label}
               title={t(menuItem.label)}
               href={menuItem.href}
               active={pathname.includes(menuItem.href)}
