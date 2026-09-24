@@ -28,6 +28,13 @@ export const REVENUE_ABI = [
   },
   {
     type: "function",
+    name: "delivery",
+    stateMutability: "nonpayable",
+    inputs: [{ name: "pools", type: "address[]" }],
+    outputs: [],
+  },
+  {
+    type: "function",
     name: "withdrawDeposit",
     stateMutability: "nonpayable",
     inputs: [{ name: "_token", type: "address" }],
