@@ -8,6 +8,7 @@ import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Address, formatEther, formatGwei, parseUnits } from "viem";
 
+import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetailsRow from "@/app/[locale]/swap/components/SwapDetailsRow";
 import useSwap, { useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
 import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
@@ -748,6 +749,8 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 }
                 tooltipText={t("gas_limit_tooltip")}
               />
+
+              <PriceImpactWarning trade={trade} className="mt-2" />
 
               {tokenA?.isToken && tokenAStandard === Standard.ERC20 && !isAllowedA && (
                 <div
