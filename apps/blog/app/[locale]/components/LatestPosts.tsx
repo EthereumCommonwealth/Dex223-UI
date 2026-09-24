@@ -33,10 +33,9 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
             <Image
               className="rounded-t-3 md:rounded-t-5 object-cover"
               src={latestPost.thumbnail.link}
-              layout="fill"
-              priority={true}
-              // objectFit="cover"
-              alt={latestPost.thumbnail.alt}
+              fill
+              priority
+              alt={latestPost.thumbnail.alt ?? ""}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 70vw"
             />
           </div>
@@ -63,8 +62,8 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
                   <Image
                     className="rounded-t-3 md:rounded-tr-0 md:rounded-l-5 object-cover"
                     src={post.thumbnail.link}
-                    layout="fill"
-                    alt={post.thumbnail.alt}
+                    fill
+                    alt={post.thumbnail.alt ?? ""}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />{" "}
                 </div>

@@ -30,8 +30,8 @@ export default function Posts({ posts }: { posts: Post[] }) {
               <Image
                 className="rounded-t-5  object-cover"
                 src={post.thumbnail.link}
-                layout="fill"
-                alt={post.thumbnail.alt}
+                fill
+                alt={post.thumbnail.alt ?? ""}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
