@@ -24,8 +24,15 @@ export default function Header() {
         <Container gutter={false} className="pl-4 pr-1 md:px-5 max-w-[1920px]">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-5">
-              <Link className="relative w-7 h-8 xl:w-[35px] xl:h-10" href="/">
-                <Image src="/images/logo-short.svg" alt="" fill />
+              {/* The padding gives the logo a 44px touch target on phones without moving it. */}
+              <Link
+                className="relative block p-2 -m-2 xl:p-0 xl:m-0"
+                href="/"
+                aria-label="Dex223 home"
+              >
+                <span className="relative block w-7 h-8 xl:w-[35px] xl:h-10">
+                  <Image src="/images/logo-short.svg" alt="" fill />
+                </span>
               </Link>
               <Navigation />
             </div>
