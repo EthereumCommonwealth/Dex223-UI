@@ -600,5 +600,11 @@
     "deposit_title": "Unstaked ERC-223 deposit",
     "deposit_hint": "You have {amount} credited from an ERC-223 transfer that was never staked.",
     "recover_deposit": "Recover deposit"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or has moved. Check the address, or head back to trading.",
+    "go_to_swap": "Go to swap",
+    "view_pools": "View pools"
   }
 }

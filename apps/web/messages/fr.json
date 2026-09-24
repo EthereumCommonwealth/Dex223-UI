@@ -563,5 +563,11 @@
     "open_link": "Ouvrir le lien",
     "increase_price": "Augmenter le prix",
     "decrease_price": "Baisser le prix"
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez au trading.",
+    "go_to_swap": "Aller à l'échange",
+    "view_pools": "Voir les pools"
   }
 }
