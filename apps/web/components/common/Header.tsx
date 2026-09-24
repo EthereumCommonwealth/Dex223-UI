@@ -31,12 +31,12 @@ export default function Header() {
             </div>
             <div className="flex items-center gap-2 md:gap-3">
               <LocaleSwitcher />
-              <div className="fixed w-[calc(50%-20px)] bottom-4 left-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
+              <div className="fixed w-[calc(50%-20px)] bottom-3 left-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
                 <TokenListsSettings />
               </div>
               <NetworkPicker />
 
-              <div className="fixed w-[calc(50%-20px)] bottom-4 right-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
+              <div className="fixed w-[calc(50%-20px)] bottom-3 right-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
                 <AccountDialog />
               </div>
 
