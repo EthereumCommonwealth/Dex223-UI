@@ -48,6 +48,8 @@
     "enter_amount": "금액 입력",
     "swap_details": "스왑 상세",
     "token_price": "{symbol} 가격",
+    "price_chart_no_data": "아직 가격 기록이 없습니다.",
+    "price_chart_data_not_available": "가격 데이터를 사용할 수 없습니다.",
     "minimum_received": "최소 수령량",
     "price_impact": "가격 영향",
     "trading_fee": "거래 수수료",

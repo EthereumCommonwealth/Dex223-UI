@@ -256,6 +256,8 @@
     "enter_amount": "Enter amount",
     "swap_details": "Swap details",
     "token_price": "{symbol} Price",
+    "price_chart_no_data": "No price history yet.",
+    "price_chart_data_not_available": "Price data not available.",
     "minimum_received": "Min. received",
     "price_impact": "Price impact",
     "trading_fee": "Trading fee",

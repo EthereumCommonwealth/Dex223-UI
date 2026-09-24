@@ -48,6 +48,8 @@
     "enter_amount": "输入数量",
     "swap_details": "兑换详情",
     "token_price": "{symbol} 价格",
+    "price_chart_no_data": "暂无价格历史。",
+    "price_chart_data_not_available": "价格数据不可用。",
     "minimum_received": "最少收到",
     "price_impact": "价格影响",
     "trading_fee": "交易费用",

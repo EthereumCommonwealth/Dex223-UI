@@ -48,6 +48,8 @@
     "enter_amount": "Введите сумму",
     "swap_details": "Детали обмена",
     "token_price": "Цена {symbol}",
+    "price_chart_no_data": "Истории цен пока нет.",
+    "price_chart_data_not_available": "Данные о ценах недоступны.",
     "minimum_received": "Мин. получено",
     "price_impact": "Влияние на цену",
     "trading_fee": "Торговая комиссия",
