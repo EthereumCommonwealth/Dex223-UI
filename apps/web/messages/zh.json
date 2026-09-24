@@ -398,6 +398,7 @@
     "must_be_at_least": "不得小于 {val}",
     "token_starting_price": "{symbol} 初始价格",
     "pools_not_found": "未找到流动性池",
+    "pools_load_error": "无法加载流动性池。请检查网络连接后重试。",
     "amount_title": "数量",
     "enter_correct_values": "请输入正确的数值",
     "collecting_fee_message": "领取手续费将提取当前可用的手续费",
