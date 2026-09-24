@@ -42,6 +42,7 @@ import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { usePoolBalances } from "@/hooks/usePoolBalances";
 import useTokenBalances from "@/hooks/useTokenBalances";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
+import { Link } from "@/i18n/routing";
 import { ROUTER_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { CurrencyAmount } from "@/sdk_bi/entities/fractions/currencyAmount";
@@ -676,13 +677,12 @@ export default function TradeForm() {
             text={
               <span>
                 The requested pool does not exist. You can{" "}
-                <a
+                <Link
                   className="text-green hover:text-green-hover duration-200"
-                  target="_blank"
                   href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
                 >
                   create a new pool
-                </a>
+                </Link>
               </span>
             }
             type="warning"

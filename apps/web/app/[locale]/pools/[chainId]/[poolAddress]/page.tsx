@@ -113,6 +113,7 @@ export default function ExplorePoolPage({
               {!loading && (
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   href={getExplorerLink(ExplorerLinkType.ADDRESS, pool?.id, chainId as any)}
                   className="w-max"
                 >

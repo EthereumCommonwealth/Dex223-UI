@@ -21,6 +21,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 export function MobileLink({
   href,
   iconName,
@@ -33,6 +34,7 @@ export function MobileLink({
   handleClick,
   isMenu = false,
   isExternal = false,
+  openInNewTab,
   comingSoon = false,
 }: {
   href: string;
@@ -46,12 +48,17 @@ export function MobileLink({
   handleClick?: (e: any) => void;
   isMenu?: boolean;
   isExternal?: boolean;
+  /** Defaults to true when isExternal. Set false for first-party sites like blog.dex223.io. */
+  openInNewTab?: boolean;
   comingSoon?: boolean;
 }) {
+  const shouldOpenInNewTab = openInNewTab ?? isExternal;
+
   if (isExternal) {
     return (
       <a
-        target="_blank"
+        target={shouldOpenInNewTab ? "_blank" : undefined}
+        rel={shouldOpenInNewTab ? "noopener noreferrer" : undefined}
         onClick={(e) => {
           if (handleClick) {
             handleClick(e);
@@ -70,7 +77,10 @@ export function MobileLink({
         )}
       >
         <Svg iconName={iconName} />
-        {title}
+        <span className="flex-grow">{title}</span>
+        {shouldOpenInNewTab ? (
+          <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
+        ) : null}
       </a>
     );
   }
@@ -103,17 +113,27 @@ export function MobileLink({
   );
 }
 
+function NavigationInternalLink({ href, text }: { href: string; text: string }) {
+  return (
+    <Link className="text-green hocus:text-green-hover duration-200 inline-block py-1" href={href}>
+      {text}
+    </Link>
+  );
+}
+
 function NavigationExternalLink({ href, text }: { href: string; text: string }) {
   return (
     <a
       target="_blank"
+      rel="noopener noreferrer"
       className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
+        "text-secondary-text hocus:text-primary-text duration-200 inline-flex items-center gap-2 py-1.5",
         href === "#" && "opacity-50 pointer-events-none",
       )}
       href={href}
     >
-      {text}
+      <span className="flex-grow">{text}</span>
+      <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
     </a>
   );
 }
@@ -123,13 +143,16 @@ function NavigationExternalLinksContainer({
   links,
 }: {
   title: string;
-  links: { href: string; text: string }[];
+  links: { href: string; text: string; internal?: boolean }[];
 }) {
   return (
     <div className="text-primary-text">
-      <div className="text-tertiary-text">{title}</div>
+      <div className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">{title}</div>
       <div className="flex flex-col">
         {links.map((link) => {
+          if (link.internal) {
+            return <NavigationInternalLink key={link.text} href={link.href} text={link.text} />;
+          }
           return <NavigationExternalLink key={link.text} href={link.href} text={link.text} />;
         })}
       </div>
@@ -180,34 +203,39 @@ const mobileLinks: {
 ];
 
 type SocialLink = {
-  title: any;
+  titleKey:
+    | "social_telegram_announcements"
+    | "social_telegram_discussions"
+    | "social_x_account"
+    | "social_dex_x_account"
+    | "social_discord";
   href: string;
   icon: Extract<IconName, "telegram" | "x" | "discord">;
 };
 
 const socialLinks: SocialLink[] = [
   {
-    title: "Announcements",
+    titleKey: "social_telegram_announcements",
     href: "https://t.me/Dex_223",
     icon: "telegram",
   },
   {
-    title: "Discussions",
+    titleKey: "social_telegram_discussions",
     href: "https://t.me/Dex223_defi",
     icon: "telegram",
   },
   {
-    title: "DEX223",
+    titleKey: "social_x_account",
     href: "https://x.com/Dex_223",
     icon: "x",
   },
   {
-    title: "Dexaran",
+    titleKey: "social_dex_x_account",
     href: "https://x.com/Dexaran",
     icon: "x",
   },
   {
-    title: "Discord",
+    titleKey: "social_discord",
     href: "https://discord.gg/t5bdeGC5Jk",
     icon: "discord",
   },
@@ -220,6 +248,11 @@ export default function MobileMenu() {
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
+  const {
+    setIsOpen: setManageTokensOpen,
+    setActiveTab: setManageTokensActiveTab,
+    setContent: setManageTokensContent,
+  } = useManageTokensDialogStore();
 
   const handlers = useSwipeable({
     onSwipedLeft: (eventData) => {
@@ -292,54 +325,71 @@ export default function MobileMenu() {
               </button>
               <Collapse open={moreOpened}>
                 <div className="py-2 border-b border-secondary-border">
+                  <div className="px-4 pb-1 text-12 uppercase tracking-[0.06em] text-tertiary-text">
+                    {t("more_product")}
+                  </div>
+                  <MobileLink
+                    isActive={pathname === "/converter"}
+                    href="/converter"
+                    iconName="convert"
+                    title={t("useful_converter")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
                   <MobileLink
                     href="/create-token"
                     iconName="list-tokens"
-                    title="Create a new token"
+                    title={t("create_token")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
                   />
                   <MobileLink
                     href="#"
                     iconName="list"
-                    title="Token lists"
+                    title={t("token_lists")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                    disabled
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      setManageTokensContent("default");
+                      setManageTokensActiveTab(0);
+                      setManageTokensOpen(true);
+                    }}
                   />
                   <MobileLink
-                    isExternal
-                    href="https://blog.dex223.io/"
-                    iconName="blog"
-                    title="Blog"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
+                    isActive={pathname === "/statistics"}
                     href="/statistics"
                     iconName="statistics"
-                    title="Statistics"
+                    title={t("token_statistics")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
                   />
                   <MobileLink
-                    disabled
-                    href="#"
+                    isActive={pathname === "/guidelines"}
+                    href="/guidelines"
                     iconName="guidelines"
-                    title="Guidelines"
+                    title={t("guidelines")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
+                  />
+                  <MobileLink
+                    href="https://blog.dex223.io/"
+                    iconName="blog"
+                    title={t("blog")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    isExternal
+                    openInNewTab={false}
+                  />
+                  <MobileLink
+                    href="#"
+                    iconName="star"
+                    title={t("feedback")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      setOpenFeedbackDialog(true);
+                    }}
                   />
                 </div>
-                <div className="flex flex-col py-4 px-4 bg-primary-bg rounded-2 gap-3">
+                <div className="flex flex-col py-4 px-4 bg-primary-bg gap-4">
                   <NavigationExternalLinksContainer
-                    title={t("useful_links")}
+                    title={t("more_resources")}
                     links={[
-                      {
-                        href: "https://dexaran.github.io/token-converter/",
-                        text: t("useful_converter"),
-                      },
                       {
                         href: "https://dexaran.github.io/erc20-losses/",
                         text: t("useful_losses_calculator"),
@@ -365,18 +415,23 @@ export default function MobileMenu() {
                     ]}
                   />
                 </div>
-                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border">
-                  <h4 className="text-tertiary-text">Social media</h4>
+                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border pb-2">
+                  <h4 className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">
+                    {t("social_media")}
+                  </h4>
 
                   {socialLinks.map((link) => {
                     return (
                       <a
-                        key={link.title}
+                        key={link.href}
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={link.href}
-                        className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200"
+                        className="flex gap-2 items-center text-secondary-text py-2 hocus:text-primary-text duration-200"
                       >
-                        <Svg iconName={link.icon} className="text-tertiary-text" /> {link.title}
+                        <Svg iconName={link.icon} className="text-tertiary-text" />
+                        <span className="flex-grow">{t(link.titleKey)}</span>
+                        <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
                       </a>
                     );
                   })}
@@ -393,6 +448,7 @@ export default function MobileMenu() {
                     {tFooter("gas")}{" "}
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                     >
@@ -405,6 +461,7 @@ export default function MobileMenu() {
                   {blockNumber ? (
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(
                         ExplorerLinkType.BLOCK,
