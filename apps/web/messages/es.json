@@ -542,7 +542,140 @@
     "learn_more_title": "Más información",
     "learn_more_subtitle": "Documentación, noticias y estadísticas del protocolo",
     "all_guides_title": "Guías",
-    "all_guides_subtitle": "Cómo hacer las tareas más comunes"
+    "all_guides_subtitle": "Cómo hacer las tareas más comunes",
+    "back": "Guías",
+    "steps_label": "Pasos",
+    "guides": {
+      "swap": {
+        "title": "Cómo hacer un intercambio",
+        "description": "Intercambia tokens en Dex223 en pocos pasos.",
+        "cta": "Abrir Intercambio",
+        "sections": {
+          "before": {
+            "heading": "Antes de empezar",
+            "body": "Conecta un monedero que tenga el token que quieres vender y suficiente gas para la red seleccionada."
+          },
+          "steps": {
+            "heading": "Pasos",
+            "items": {
+              "s1": "Abre <b>Intercambio</b> desde el menú Operar.",
+              "s2": "Elige el token con el que pagas y el token que recibes.",
+              "s3": "Introduce una cantidad. Revisa el precio cotizado y el impacto en el precio.",
+              "s4": "Confirma el intercambio en tu monedero cuando se te pida."
+            }
+          },
+          "tips": {
+            "heading": "Consejos",
+            "items": {
+              "s1": "Prefiere pools con buena liquidez para obtener cotizaciones más ajustadas.",
+              "s2": "Si falta un token, impórtalo desde <b>Listas de tokens</b> o pega la dirección de su contrato.",
+              "s3": "Pueden aparecer las versiones ERC-20 y ERC-223 del mismo activo. Elige el estándar que esperan tu monedero y el destino."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Convertir entre ERC-20 y ERC-223",
+        "description": "Pasa cualquier token compatible de un estándar a otro con una tasa 1:1.",
+        "cta": "Abrir Conversor de tokens",
+        "sections": {
+          "what": {
+            "heading": "Qué hace",
+            "body": "El conversor envuelve o desenvuelve un token entre ERC-20 y ERC-223 con una tasa <b>1:1</b> y sin comisión del protocolo."
+          },
+          "steps": {
+            "heading": "Pasos",
+            "items": {
+              "s1": "Abre <b>Conversor de tokens</b> desde el menú Más.",
+              "s2": "Selecciona el token y la dirección (a ERC-20 o a ERC-223).",
+              "s3": "Introduce la cantidad y confirma en tu monedero."
+            }
+          },
+          "when": {
+            "heading": "Cuándo usarlo",
+            "items": {
+              "s1": "Recibiste ERC-223 pero una dapp solo acepta ERC-20 (o al revés).",
+              "s2": "Estás preparando liquidez o un intercambio que requiere un estándar concreto."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Gestionar listas de tokens",
+        "description": "Activa, importa y organiza las listas que alimentan el selector de tokens.",
+        "cta": "Abrir Listas de tokens",
+        "sections": {
+          "why": {
+            "heading": "Por qué importan las listas",
+            "body": "Dex223 solo muestra tokens de las listas que activas. Si falta un token en Intercambio o en el conversor, revisa primero tus listas."
+          },
+          "steps": {
+            "heading": "Pasos",
+            "items": {
+              "s1": "Abre <b>Listas de tokens</b> desde Más, Producto (o desde el selector de tokens).",
+              "s2": "En la pestaña <b>Listas</b>, activa las listas en las que confías.",
+              "s3": "Importa una lista personalizada por URL, JSON o contrato cuando lo necesites.",
+              "s4": "En la pestaña <b>Tokens</b>, fija tus favoritos o importa un token individual por su dirección."
+            }
+          },
+          "safety": {
+            "heading": "Seguridad",
+            "body": "Activa solo listas de fuentes en las que confíes. Las listas maliciosas pueden mostrar tokens fraudulentos con nombres conocidos."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "Listar un token",
+        "description": "Envía un token a un contrato de autolistado para que pueda negociarse en Dex223.",
+        "cta": "Abrir Listado de tokens",
+        "sections": {
+          "overview": {
+            "heading": "Resumen",
+            "body": "El listado de tokens registra tu token en un contrato de autolistado de Dex223 para que los pools y la interfaz puedan encontrarlo."
+          },
+          "steps": {
+            "heading": "Pasos",
+            "items": {
+              "s1": "Abre <b>Listado de tokens</b> desde la navegación principal.",
+              "s2": "Elige el contrato de listado y la dirección del token (y su gemelo ERC-223 si es necesario).",
+              "s3": "Revisa las comisiones y los requisitos de esa lista.",
+              "s4": "Confirma la transacción de listado en tu monedero."
+            }
+          },
+          "after": {
+            "heading": "Después del listado",
+            "body": "Crea un pool y añade liquidez para que los traders puedan obtener una cotización. Usa <b>Estadísticas</b> para confirmar que el pool aparece cuando la indexación del subgraph se ponga al día."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Comprar cripto con fiat",
+        "description": "Fondea tu monedero a través de Onramp sin salir de Dex223.",
+        "cta": "Abrir Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Resumen",
+            "body": "La página Fiat usa Onramp para que puedas comprar (o vender) activos compatibles con métodos de pago locales."
+          },
+          "steps": {
+            "heading": "Pasos",
+            "items": {
+              "s1": "Abre <b>Fiat</b> desde el menú Operar.",
+              "s2": "Conecta el monedero que debe recibir los fondos.",
+              "s3": "Elige comprar o vender y sigue el widget de Onramp.",
+              "s4": "Cuando la transferencia se complete, vuelve a <b>Intercambio</b> o <b>Cartera</b> para usar tu saldo."
+            }
+          },
+          "notes": {
+            "heading": "Notas",
+            "items": {
+              "s1": "La disponibilidad depende de tu región y de los métodos de pago que admite Onramp.",
+              "s2": "Los intercambios de Dex223 se hacen en Dex223. Usa la página Intercambio para operar de cripto a cripto."
+            }
+          }
+        }
+      }
+    }
   },
   "A11y": {
     "close": "Cerrar",
