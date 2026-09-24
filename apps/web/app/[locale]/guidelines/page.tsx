@@ -46,8 +46,6 @@ export default function GuidelinesPage() {
     setContent: setManageTokensContent,
   } = useManageTokensDialogStore();
 
-  const guideBySlug = Object.fromEntries(GUIDES.map((g) => [g.slug, g]));
-
   return (
     <Container>
       <div className="md:py-5 py-4">
@@ -59,21 +57,18 @@ export default function GuidelinesPage() {
             title={t("getting_started_title")}
             subtitle={t("getting_started_subtitle")}
           >
-            <InternalTextLink href="/guidelines/swap" text={guideBySlug.swap.title} />
-            <InternalTextLink href="/guidelines/converter" text={guideBySlug.converter.title} />
-            <InternalTextLink href="/guidelines/fiat" text={guideBySlug.fiat.title} />
+            <InternalTextLink href="/guidelines/swap" text={t("guides.swap.title")} />
+            <InternalTextLink href="/guidelines/converter" text={t("guides.converter.title")} />
+            <InternalTextLink href="/guidelines/fiat" text={t("guides.fiat.title")} />
             <InternalTextLink href="/portfolio" text={tNav("portfolio")} />
           </GuidelineCard>
 
           <GuidelineCard title={t("tokens_title")} subtitle={t("tokens_subtitle")}>
             <InternalTextLink
               href="/guidelines/token-listing"
-              text={guideBySlug["token-listing"].title}
+              text={t("guides.token-listing.title")}
             />
-            <InternalTextLink
-              href="/guidelines/token-lists"
-              text={guideBySlug["token-lists"].title}
-            />
+            <InternalTextLink href="/guidelines/token-lists" text={t("guides.token-lists.title")} />
             <button
               type="button"
               onClick={() => {
@@ -113,7 +108,7 @@ export default function GuidelinesPage() {
               <InternalTextLink
                 key={guide.slug}
                 href={`/guidelines/${guide.slug}`}
-                text={guide.title}
+                text={t(`guides.${guide.slug}.title`)}
               />
             ))}
           </GuidelineCard>
