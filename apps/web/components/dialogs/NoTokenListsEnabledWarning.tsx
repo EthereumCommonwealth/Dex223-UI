@@ -37,7 +37,7 @@ export default function NoTokenListsEnabledWarning() {
     <>
       {isOpened && (
         <div className="z-[1000] fixed w-full bg-orange-bg border-orange border-t shadow-notification shadow-orange-hover/30 bottom-0">
-          <Container>
+          <Container gutter={false}>
             <div className="min-h-[80px] py-4 flex justify-between items-center px-5">
               <div className="flex gap-3 items-center">
                 <Svg className="text-orange flex-shrink-0" iconName="warning" />

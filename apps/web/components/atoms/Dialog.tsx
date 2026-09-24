@@ -11,6 +11,8 @@ import {
 } from "@floating-ui/react";
 import { PropsWithChildren, useId } from "react";
 
+import { DialogLabelContext } from "@/components/atoms/DialogLabelContext";
+
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -25,6 +27,21 @@ export default function Dialog({ isOpen, setIsOpen, children }: PropsWithChildre
     duration: {
       open: 200,
       close: 200,
+    },
+  });
+
+  // The panel rises slightly while the overlay fades, so the dialog feels placed rather than switched on.
+  const { styles: panelTransitionStyles } = useTransitionStyles(context, {
+    duration: {
+      open: 240,
+      close: 160,
+    },
+    initial: {
+      opacity: 0,
+      transform: "translateY(8px) scale(0.98)",
+    },
+    common: {
+      transitionTimingFunction: "cubic-bezier(0.2, 0.8, 0.2, 1)",
     },
   });
 
@@ -53,13 +70,16 @@ export default function Dialog({ isOpen, setIsOpen, children }: PropsWithChildre
           <FloatingOverlay className="Dialog-overlay" style={{ ...transitionStyles }} lockScroll>
             <FloatingFocusManager context={context}>
               <div
-                className="bg-primary-bg rounded-5"
+                className="surface surface-modal rounded-5"
+                style={panelTransitionStyles}
                 ref={refs.setFloating}
                 aria-labelledby={headingId}
                 aria-describedby={descriptionId}
                 {...getFloatingProps()}
               >
-                {children}
+                <DialogLabelContext.Provider value={{ headingId, descriptionId }}>
+                  {children}
+                </DialogLabelContext.Provider>
               </div>
             </FloatingFocusManager>
           </FloatingOverlay>

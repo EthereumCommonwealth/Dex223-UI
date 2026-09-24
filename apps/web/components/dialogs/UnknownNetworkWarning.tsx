@@ -17,7 +17,7 @@ export default function UnknownNetworkWarning() {
     <>
       {isOpened && (
         <div className="z-[1000] fixed w-full bg-orange-bg border-orange border-t shadow-notification shadow-orange-hover/30 bottom-12 md:bottom-0">
-          <Container>
+          <Container gutter={false}>
             <div className="min-h-[80px] py-4 flex flex-col md:flex-row justify-between md:items-center items-start px-5">
               <div className="flex gap-3 items-center text-14 text-secondary-text md:text-16">
                 <Svg className="text-orange flex-shrink-0" iconName="reset" />
