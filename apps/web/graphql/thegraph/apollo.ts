@@ -24,10 +24,8 @@ const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
   //   "https://api.thegraph.com/subgraphs/name/lynnshaoyu/uniswap-v3-avax?source=uniswap",
   // [ChainId.BASE]:
   //   "https://api.studio.thegraph.com/query/48211/uniswap-v3-base/version/latest?source=uniswap",
-  // Studio query URL until the gateway API key is authorized for the published
-  // subgraph (A3mMtVLVvdbpgXduav8znCv7qdvXhSeWxST27pxdx4Mm). Studio URLs are rate-limited.
   [DexChainId.MAINNET]:
-    "https://api.studio.thegraph.com/query/1760635/dex-223-v-1-mainnet/version/latest",
+    "https://gateway.thegraph.com/api/subgraphs/id/A3mMtVLVvdbpgXduav8znCv7qdvXhSeWxST27pxdx4Mm",
   [DexChainId.SEPOLIA]:
     "https://gateway.thegraph.com/api/subgraphs/id/9oohHEx5ivUXguYBGVJojrKuBQHLtLzg7df1pUC6mg8w",
   // "https://api.studio.thegraph.com/query/56540/dex223-v1-sepolia/version/latest",
