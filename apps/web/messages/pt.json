@@ -161,7 +161,27 @@
     "max_fee_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. A taxa base é determinada pela carga da rede e a taxa de prioridade pelo emissor. O gás necessário depende do tipo de ação da transação. A taxa máxima define o limite superior do pagamento total permitido. A transação só será confirmada quando a taxa base for suficientemente baixa para não exceder esse máximo.",
     "priority_fee_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. Uma taxa de prioridade mais elevada pode reduzir o tempo até a transação ser incluída, se a carga da rede for suficientemente baixa para cumprir o critério da taxa máxima.",
     "gas_limit_tooltip": "A taxa que vai pagar é calculada como (baseFee + priorityFee) * gasUsed. O limite de gás define o valor máximo da variável gasUsed. Se a transação consumir menos gás do que o limite, paga apenas o gás necessário e o restante é devolvido. Um limite demasiado baixo pode fazer a transação falhar se as ações exigirem mais gás do que o indicado.",
-    "gas_price_tooltip": "A taxa paga numa transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco."
+    "gas_price_tooltip": "A taxa paga numa transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
+    "title": "Definições de gás",
+    "advanced_mode": "Modo avançado",
+    "configure_automatically": "Configurar automaticamente",
+    "custom_gas_settings": "Definições de gás personalizadas",
+    "current": "Atual",
+    "estimated": "Estimado",
+    "unknown_price": "Preço desconhecido",
+    "legacy": "Legacy",
+    "eip1559_formula": "Taxa de rede = gasLimit × (Base Fee + PriorityFee)",
+    "legacy_formula": "Taxa de rede = gasLimit × gasPrice",
+    "max_fee": "Taxa máxima",
+    "priority_fee": "Taxa de prioridade",
+    "priority_fee_hint": "Alterar só a taxa de prioridade torna a transação mais barata ou acelera-a à custa de uma taxa mais alta.",
+    "max_fee_too_low": "A taxa máxima está demasiado baixa para o estado atual da rede",
+    "max_fee_too_high": "A taxa máxima está desnecessariamente alta para o estado atual da rede",
+    "priority_fee_too_low": "A taxa de prioridade está demasiado baixa para o estado atual da rede",
+    "priority_fee_too_high": "A taxa de prioridade está desnecessariamente alta para o estado atual da rede",
+    "gas_price_too_low": "O preço do gás está demasiado baixo para o estado atual da rede",
+    "gas_price_too_high": "O preço do gás está desnecessariamente alto para o estado atual da rede",
+    "gas_limit_too_low": "O limite de gás está abaixo do recomendado"
   },
   "Toast": {
     "successfully_copied": "Copiado com sucesso!"
@@ -886,10 +906,10 @@
     "unexpected_error": "Ocorreu um erro inesperado. Tente novamente.",
     "claiming_rewards": "A reclamar recompensas",
     "token_not_found": "Token não encontrado",
-  "duration_day": "{count, plural, =0 {# dias} one {# dia} other {# dias}}",
-  "duration_hour": "{count, plural, =0 {# horas} one {# hora} other {# horas}}",
-  "duration_minute": "{count, plural, =0 {# minutos} one {# minuto} other {# minutos}}",
-  "duration_second": "{count, plural, =0 {# segundos} one {# segundo} other {# segundos}}"
+    "duration_day": "{count, plural, =0 {# dias} one {# dia} other {# dias}}",
+    "duration_hour": "{count, plural, =0 {# horas} one {# hora} other {# horas}}",
+    "duration_minute": "{count, plural, =0 {# minutos} one {# minuto} other {# minutos}}",
+    "duration_second": "{count, plural, =0 {# segundos} one {# segundo} other {# segundos}}"
   },
   "Governance": {
     "title": "Governação",

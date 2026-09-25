@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { ChangeEvent, useEffect, useMemo } from "react";
 import { formatGwei, parseGwei } from "viem";
 
@@ -25,6 +26,7 @@ export default function LegacyField({
   legacyGasPriceError: string | undefined;
   legacyGasPriceWarning: string | undefined;
 }) {
+  const t = useTranslations("GasSettings");
   const colorScheme = useColorScheme();
   const legacyGasPriceErrors = useMemo(() => {
     const _errors: string[] = [];
@@ -55,14 +57,11 @@ export default function LegacyField({
       <TextField
         colorScheme={colorScheme}
         isNumeric
-        placeholder="Gas price"
-        label="Gas price"
+        placeholder={t("gas_price")}
+        label={t("gas_price")}
         name="gasPrice"
         id="gasPrice"
-        tooltipText=" The amount of fee that you are going to pay with legacy transaction is calculated as gasPrice * gasUsed.
-
-Your transaction will not confirm until your gasPrice is higher or equal to the gas price of the network in the last block.
-"
+        tooltipText={t("gas_price_tooltip")}
         value={value}
         onChange={onChange}
         onBlur={onBlur}
@@ -82,7 +81,7 @@ Your transaction will not confirm until your gasPrice is higher or equal to the 
                 }[colorScheme]
               }
             >
-              Current
+              {t("current")}
             </button>{" "}
             {gasPrice ? formatFloat(formatGwei(gasPrice)) : "0"} Gwei
           </div>

@@ -4,6 +4,7 @@ import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useFormik } from "formik";
 import debounce from "lodash.debounce";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { formatEther, formatGwei, parseGwei } from "viem";
 
@@ -50,10 +51,10 @@ interface Props {
   setEstimatedGas: (estimatedGas: bigint) => void;
 }
 
-const gasOptionTitle: Record<GasOption, string> = {
-  [GasOption.CHEAP]: "Cheaper",
-  [GasOption.FAST]: "Faster",
-  [GasOption.CUSTOM]: "Custom",
+const gasOptionTitleKey: Record<GasOption, "cheap" | "fast" | "custom"> = {
+  [GasOption.CHEAP]: "cheap",
+  [GasOption.FAST]: "fast",
+  [GasOption.CUSTOM]: "custom",
 };
 
 const gasOptionIcon: Record<GasOption, "cheap-gas" | "fast-gas" | "custom-gas"> = {
@@ -87,13 +88,12 @@ type HandleApplyArgs =
   | { option: GasOption.FAST }
   | { option: GasOption.CUSTOM; gasSettings: GasSettings; gasLimit: bigint };
 
-const tooltipTextMap: Record<GasOption, string> = {
-  [GasOption.CHEAP]:
-    "GAS values will be set to minimize the fee you are going to pay. It might result in the transaction being pending for longer before confirming.",
-  [GasOption.CUSTOM]: "With custom transaction configuration you can set the gas values manually.",
-  [GasOption.FAST]:
-    "GAS values will be set to minimize the amount of time your transaction will take to confirm. It might result in higher gas fee payment.",
-};
+const gasOptionTooltipKey: Record<GasOption, "cheap_tooltip" | "fast_tooltip" | "custom_tooltip"> =
+  {
+    [GasOption.CHEAP]: "cheap_tooltip",
+    [GasOption.CUSTOM]: "custom_tooltip",
+    [GasOption.FAST]: "fast_tooltip",
+  };
 
 function NetworkFeeDialogContent({
   isAdvanced,
@@ -106,6 +106,9 @@ function NetworkFeeDialogContent({
   customGasLimit,
   setCustomGasLimit,
 }: Omit<Props, "isOpen" | "setIsAdvanced">) {
+  const t = useTranslations("GasSettings");
+  const tSwap = useTranslations("Swap");
+  const tManage = useTranslations("ManageTokens");
   const chainId = useCurrentChainId();
   const colorScheme = useColorScheme();
 
@@ -249,7 +252,7 @@ function NetworkFeeDialogContent({
       }
 
       setIsOpen(false);
-      addToast("Settings applied");
+      addToast(tSwap("settings_applied"));
     },
   });
 
@@ -310,15 +313,17 @@ function NetworkFeeDialogContent({
         {gasOptions.map((_gasOption) => {
           const gasPriceETH = formatFloat(formatEther(getGasPriceGwei(_gasOption) * estimatedGas));
 
-          const gasPriceUSD = price ? `~ $${formatFloat(price * +gasPriceETH)}` : "Uknkown price";
+          const gasPriceUSD = price
+            ? `~ $${formatFloat(price * +gasPriceETH)}`
+            : t("unknown_price");
           return (
             <GasOptionRadioButton
               key={_gasOption}
               gasPriceGWEI={`${formatFloat(formatGwei(getGasPriceGwei(_gasOption)))} GWEI`}
               gasPriceCurrency={`${gasPriceETH} ${nativeCurrency.symbol}`}
               gasPriceUSD={gasPriceUSD}
-              tooltipText={tooltipTextMap[_gasOption]}
-              title={gasOptionTitle[_gasOption]}
+              tooltipText={t(gasOptionTooltipKey[_gasOption])}
+              title={t(gasOptionTitleKey[_gasOption])}
               iconName={gasOptionIcon[_gasOption]}
               customContent={
                 _gasOption === GasOption.CUSTOM ? (
@@ -439,7 +444,7 @@ function NetworkFeeDialogContent({
                                 )}
                               >
                                 EIP-1559
-                                <Tooltip text="There are two types of transactions: EIP-1559 and legacy. The type of transaction affects the formula for gas payments calculation. EIP-1559 transactions are recommended for networks and wallets that have it supported." />
+                                <Tooltip text={t("eip1559_tooltip")} />
                               </span>
                               <span
                                 className={clsx(
@@ -449,7 +454,7 @@ function NetworkFeeDialogContent({
                                     : "text-tertiary-text group-hover/button:text-secondary-text",
                                 )}
                               >
-                                Network Fee = gasLimit × (Base Fee + PriorityFee)
+                                {t("eip1559_formula")}
                               </span>
                             </button>
                             <button
@@ -476,8 +481,7 @@ function NetworkFeeDialogContent({
                                     "text-secondary-text",
                                 )}
                               >
-                                Legacy{" "}
-                                <Tooltip text="There are two types of transactions: EIP-1559 and legacy. The type of transaction affects the formula for gas payments calculation. Legacy transactions allow you to determine the exact gasPrice you are going to pay. EIP-1559 transactions are recommended for networks that support it." />
+                                {t("legacy")} <Tooltip text={t("legacy_tooltip")} />
                               </span>
                               <span
                                 className={clsx(
@@ -487,7 +491,7 @@ function NetworkFeeDialogContent({
                                     : "text-tertiary-text group-hover/button:text-secondary-text",
                                 )}
                               >
-                                Network Fee = gasLimit × gasPrice
+                                {t("legacy_formula")}
                               </span>
                             </button>
                           </div>
@@ -512,10 +516,7 @@ function NetworkFeeDialogContent({
                                 maxPriorityFeePerGasWarning={maxPriorityFeePerGasWarning}
                               />
                               <div className="mt-5">
-                                <Alert
-                                  text="Сhanging Priority Fee only in order to make transaction cheaper or speed it up at a cost of paying higher fee."
-                                  type="info-border"
-                                />
+                                <Alert text={t("priority_fee_hint")} type="info-border" />
                               </div>
                             </>
                           )}
@@ -566,7 +567,7 @@ function NetworkFeeDialogContent({
             colorScheme === ThemeColors.GREEN ? ButtonColor.LIGHT_GREEN : ButtonColor.LIGHT_PURPLE
           }
         >
-          Cancel
+          {tManage("cancel")}
         </Button>
         <Button
           colorScheme={colorScheme === ThemeColors.GREEN ? ButtonColor.GREEN : ButtonColor.PURPLE}
@@ -584,7 +585,7 @@ function NetworkFeeDialogContent({
           type="submit"
           fullWidth
         >
-          Apply
+          {tManage("apply")}
         </Button>
       </div>
     </form>
@@ -597,6 +598,7 @@ export default function NetworkFeeConfigDialog({
   setIsAdvanced,
   ...props
 }: Props) {
+  const t = useTranslations("GasSettings");
   const [containerHeight, setContainerHeight] = useState("auto"); // Default to auto height
   const ref = useRef<HTMLDivElement>(null);
   // Function to check and adjust the container height based on the content
@@ -643,10 +645,10 @@ export default function NetworkFeeConfigDialog({
       >
         <DialogHeader
           onClose={() => setIsOpen(false)}
-          title="Gas settings"
+          title={t("title")}
           settings={
             <div className="flex items-center gap-2">
-              <span className="text-12">Advanced mode</span>
+              <span className="text-12">{t("advanced_mode")}</span>
               <Switch
                 colorScheme={colorScheme}
                 checked={isAdvanced}
