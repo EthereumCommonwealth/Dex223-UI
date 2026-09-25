@@ -21,6 +21,7 @@ import TokenStandardSelector from "@/components/common/TokenStandardSelector";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import { ThemeColors } from "@/config/theme/colors";
 import { clsxMerge } from "@/functions/clsxMerge";
+import { formatDuration } from "@/functions/formatDuration";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -341,7 +342,9 @@ const StakeDialog = () => {
     contractStakeErc223Balance,
   } = useRevenueContract();
 
-  const lockDays = typeof claimDelay === "bigint" ? Number(claimDelay) / 86400 : 10;
+  // claim_delay is configurable per deployment (10 days by default, about 10 minutes on
+  // Sepolia), so format whatever the chain returns and show nothing until it has loaded.
+  const lockDuration = typeof claimDelay === "bigint" ? formatDuration(Number(claimDelay)) : null;
 
   const {
     isPendingApprove,
@@ -828,14 +831,14 @@ const StakeDialog = () => {
   const renderInitialState = () => {
     return (
       <div className="space-y-4">
-        {isStaking && (
+        {isStaking && lockDuration && (
           <Alert
             type="warning"
             text={
               <div className="flex items-start gap-2">
                 <span className="text-14">
                   You can unstake and claim rewards{" "}
-                  <span className="font-medium">{lockDays} days</span> after your last stake.
+                  <span className="font-medium">{lockDuration}</span> after your last stake.
                   {hasStaked &&
                     " Staking more now restarts that lock for your whole staked balance."}
                 </span>
