@@ -515,7 +515,7 @@ export function Revenue() {
               </p>
               <div className="absolute top-0 right-0 flex items-end justify-end p-2 md:p-4 pointer-events-none">
                 <Image
-                  src="/images/state.svg"
+                  src="/images/empty-large/wallet.svg"
                   alt="Account"
                   width={300}
                   height={200}
@@ -530,7 +530,7 @@ export function Revenue() {
               </p>
               <div className="absolute top-0 right-0 flex items-center justify-center pointer-events-none">
                 <Image
-                  src="/images/empty-state.svg"
+                  src="/images/empty-large/not-found-token.svg"
                   alt="Search"
                   width={340}
                   height={340}
