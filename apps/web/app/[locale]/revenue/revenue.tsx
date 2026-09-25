@@ -6,6 +6,7 @@ import Preloader from "@repo/ui/preloader";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { Address, formatUnits, isAddress } from "viem";
@@ -38,7 +39,8 @@ const WalletSearchInput = ({
   searchValue: string;
   setSearchValue: (value: string) => void;
 }) => {
-  const error = Boolean(searchValue) && !isAddress(searchValue) ? "Enter a valid address" : "";
+  const t = useTranslations("Revenue");
+  const error = Boolean(searchValue) && !isAddress(searchValue) ? t("invalid_address") : "";
 
   const { hasRevenue, hasSearchRevenue } = useRevenueStore();
 
@@ -53,7 +55,7 @@ const WalletSearchInput = ({
       <SearchInput
         value={searchValue}
         onChange={(e) => setSearchValue(e.target.value)}
-        placeholder="Search by address"
+        placeholder={t("search_by_address")}
         isError={!!error}
         style={
           searchValue && !hasSearchRevenue ? { paddingRight: "100px" } : { paddingRight: "60px" }
@@ -69,6 +71,7 @@ const WalletSearchInput = ({
 };
 
 export function Revenue() {
+  const t = useTranslations("Revenue");
   const [searchValue, setSearchValue] = useState("");
   const [claimRewardsSearchValue, setClaimRewardsSearchValue] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -245,7 +248,7 @@ export function Revenue() {
       await recoverDeposit(stakingTokenERC223);
       refetchUserData();
     } catch (e: any) {
-      setError(e?.shortMessage || e?.message || "Could not recover the deposit");
+      setError(e?.shortMessage || e?.message || t("recover_failed"));
     }
   };
 
@@ -255,7 +258,7 @@ export function Revenue() {
       refetchPendingPools();
       refetchUserData();
     } catch (e: any) {
-      setError(e?.shortMessage || e?.message || "Could not collect the pool fees");
+      setError(e?.shortMessage || e?.message || t("collect_failed"));
     }
   };
 
@@ -279,7 +282,7 @@ export function Revenue() {
     <Container className="overflow-x-hidden">
       <div className="p-4 md:p-6 xl:p-10 flex flex-col overflow-x-hidden w-full">
         <div className="flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 xl:mb-0 overflow-x-hidden">
-          <h1 className="text-24 md:text-32 xl:text-40 font-medium">Revenue</h1>
+          <h1 className="text-24 md:text-32 xl:text-40 font-medium">{t("title")}</h1>
           <div className="flex flex-col w-full xl:flex-row xl:w-auto gap-y-2 xl:gap-x-3 overflow-x-hidden">
             <WalletSearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
           </div>
@@ -350,21 +353,15 @@ export function Revenue() {
               <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-7 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center justify-between z-10">
                   <div className="flex items-center gap-1">
-                    <span className="text-14 md:text-16 text-secondary-text">D223 staked</span>
-                    <Tooltip
-                      iconSize={16}
-                      text="Your staked D223 out of all D223 staked in the Revenue contract. Rewards are split by this share."
-                    />
+                    <span className="text-14 md:text-16 text-secondary-text">{t("staked_label")}</span>
+                    <Tooltip iconSize={16} text={t("staked_tooltip")} />
                   </div>
                   {unstakeCountdown && (
                     <div className="flex items-center gap-1 ml-4">
                       <span className="text-14 md:text-16 text-secondary-text">
-                        Time to unstake
+                        {t("time_to_unstake")}
                       </span>
-                      <Tooltip
-                        iconSize={16}
-                        text="Time remaining until you can unstake your D223 tokens"
-                      />
+                      <Tooltip iconSize={16} text={t("time_to_unstake_tooltip")} />
                     </div>
                   )}
                 </div>
@@ -375,7 +372,7 @@ export function Revenue() {
                       {formatStakedAmount(userStaked)} / {formatTotalStaked(totalStaked)}
                     </span>
                     <span className="text-12 md:text-13 xl:text-14 text-secondary-text">
-                      {stakingPercentage.toFixed(2)}% of all staked D223
+                      {t("share_of_staked", { percent: stakingPercentage.toFixed(2) })}
                     </span>
                   </div>
 
@@ -393,7 +390,7 @@ export function Revenue() {
                           "opacity-50 cursor-not-allowed hover:bg-tertiary-bg",
                       )}
                     >
-                      Stake
+                      {t("stake_action")}
                     </button>
 
                     {unstakeCountdown ? (
@@ -417,7 +414,7 @@ export function Revenue() {
                             : "cursor-pointer",
                         )}
                       >
-                        Unstake
+                        {t("unstake_action")}
                       </button>
                     )}
                   </div>
@@ -434,14 +431,19 @@ export function Revenue() {
 
               <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-5 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center z-10 gap-1">
-                  <span className="text-14 md:text-16 text-secondary-text">Claimable reward</span>
+                  <span className="text-14 md:text-16 text-secondary-text">
+                    {t("claimable_reward")}
+                  </span>
                   <Tooltip
                     iconSize={16}
-                    text={`What you could claim right now, in USD, for reward tokens with a known price. Rewards accrue in ${
-                      avgStakingDuration > 0n
-                        ? `${formatDuration(Number(avgStakingDuration))} periods`
-                        : "full periods"
-                    } after your last stake or claim.`}
+                    text={t("claimable_tooltip", {
+                      period:
+                        avgStakingDuration > 0n
+                          ? t("period_named", {
+                              duration: formatDuration(Number(avgStakingDuration)),
+                            })
+                          : t("period_full"),
+                    })}
                   />
                 </div>
 
@@ -450,7 +452,9 @@ export function Revenue() {
                     ${totalClaimableUSD.toFixed(2)}
                   </span>
                   <span className="text-12 md:text-14 xl:text-16 text-secondary-text mt-1">
-                    {lastStakedDate ? `Last staked: ${lastStakedDate}` : "Not staked yet"}
+                    {lastStakedDate
+                      ? t("last_staked", { date: lastStakedDate })
+                      : t("not_staked_yet_short")}
                   </span>
                 </div>
 
@@ -468,8 +472,10 @@ export function Revenue() {
         {!searchAddress && typeof erc223Deposit === "bigint" && erc223Deposit > BigInt(0) && (
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <span className="text-secondary-text text-12 md:text-14">
-              {formatUnits(erc223Deposit, 18)} {stakingTokenSymbol} reached the Revenue contract as
-              an ERC-223 transfer but was never staked. You can recover it at any time.
+              {t("deposit_reached", {
+                amount: formatUnits(erc223Deposit, 18),
+                symbol: stakingTokenSymbol,
+              })}
             </span>
             <Button
               size={ButtonSize.EXTRA_SMALL}
@@ -477,16 +483,16 @@ export function Revenue() {
               onClick={handleRecoverDeposit}
               disabled={isTransactionPending}
             >
-              Recover deposit
+              {t("recover_deposit")}
             </Button>
           </div>
         )}
         {feeCollectorAddress && pendingPools.length > 0 && (
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <span className="text-secondary-text text-12 md:text-14">
-              {pendingPools.length === 1 ? "1 pool holds" : `${pendingPools.length} pools hold`}{" "}
-              protocol fees that have not reached the Revenue contract yet. Anyone can move them
-              here and only pays the network fee.
+              {pendingPools.length === 1
+                ? t("pools_hold_one")
+                : t("pools_hold_many", { count: pendingPools.length })}
             </span>
             <Button
               size={ButtonSize.EXTRA_SMALL}
@@ -494,7 +500,7 @@ export function Revenue() {
               onClick={handleCollectProtocolFees}
               disabled={!address || isTransactionPending}
             >
-              Collect pool fees
+              {t("collect_pool_fees")}
             </Button>
           </div>
         )}
@@ -504,27 +510,27 @@ export function Revenue() {
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg/90 border border-quaternary-bg px-4 md:px-5 py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Preloader size={16} />
-              <span className="text-secondary-text text-12 md:text-14">Staking in progress</span>
+              <span className="text-secondary-text text-12 md:text-14">{t("staking_in_progress")}</span>
             </div>
             <Button
               size={ButtonSize.EXTRA_SMALL}
               colorScheme={ButtonColor.LIGHT_GREEN}
               onClick={() => {}}
             >
-              Details
+              {t("details")}
             </Button>
           </div>
         )}
 
         <div className="mt-6 md:mt-8 xl:mt-10 flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 overflow-x-hidden">
-          <h1 className="text-20 md:text-24 xl:text-32 font-medium">Claim rewards</h1>
+          <h1 className="text-20 md:text-24 xl:text-32 font-medium">{t("claim_title")}</h1>
           <div className="flex flex-col md:flex-row xl:flex-row gap-3 w-full xl:w-auto overflow-x-hidden">
             <div className="w-full xl:w-auto min-w-0">
               <TokenListDropdown
                 selectedOptions={selectedTokenLists}
                 onSelectionChange={setSelectedTokenLists}
-                placeholder="Select token lists"
-                searchPlaceholder="Search list name"
+                placeholder={t("select_token_lists")}
+                searchPlaceholder={t("search_list_name")}
                 className="w-full xl:w-auto"
               />
             </div>
@@ -532,7 +538,7 @@ export function Revenue() {
               <SearchInput
                 value={claimRewardsSearchValue}
                 onChange={(e) => setClaimRewardsSearchValue(e.target.value)}
-                placeholder="Search name or paste address"
+                placeholder={t("search_name_or_address")}
                 className="h-[40px] md:h-[48px] bg-primary-bg w-full xl:w-[540px]"
               />
             </div>
@@ -542,7 +548,7 @@ export function Revenue() {
           {!address ? (
             <div className="flex flex-col items-center justify-center min-h-[280px] md:min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-6 md:p-8 relative overflow-hidden">
               <p className="text-12 md:text-14 xl:text-16 text-gray-400 text-center z-10 mb-4">
-                Connect wallet to see your rewards
+                {t("connect_wallet_rewards")}
               </p>
               <div className="absolute top-0 right-0 flex items-end justify-end p-2 md:p-4 pointer-events-none">
                 <Image
@@ -557,7 +563,7 @@ export function Revenue() {
           ) : !hasFilteredResults ? (
             <div className="flex flex-col items-center justify-center min-h-[280px] md:min-h-[340px] w-full bg-[#1A1A1A] rounded-3 p-6 md:p-8 relative overflow-hidden">
               <p className="text-12 md:text-14 xl:text-16 text-secondary-text text-center z-10 mb-4">
-                Reward not found
+                {t("reward_not_found")}
               </p>
               <div className="absolute top-0 right-0 flex items-center justify-center pointer-events-none">
                 <Image
