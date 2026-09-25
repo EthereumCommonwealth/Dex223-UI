@@ -14,6 +14,7 @@ import {
 import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
@@ -63,6 +64,10 @@ export default function TokenListDropdown({
   const ref = useRef<HTMLButtonElement>(null);
   const { isOpen, setIsOpen, content, setContent } = useAddNewListDialogStore();
   const { setActiveTab } = useAddNewListDialogStore();
+  const t = useTranslations("ManageTokens");
+  const tNav = useTranslations("Navigation");
+  const tPortfolio = useTranslations("Portfolio");
+  const tA11y = useTranslations("A11y");
 
   const isMobile = useMediaQuery({ query: "(max-width: 768px)" });
   const tokenLists = useTokenLists();
@@ -192,7 +197,7 @@ export default function TokenListDropdown({
         onClick={handleSelectAll}
         className="cursor-pointer h-12 bg-primary-bg flex justify-between items-center px-5 border-b border-secondary-border hover:bg-tertiary-bg transition-colors duration-200"
       >
-        <span className="text-primary-text text-16">Select all</span>
+        <span className="text-primary-text text-16">{tPortfolio("select_all")}</span>
         <Checkbox
           checked={allFilteredSelected}
           handleChange={handleSelectAll}
@@ -204,11 +209,11 @@ export default function TokenListDropdown({
       <div className="max-h-60 overflow-y-auto">
         {filteredOptions.length === 0 ? (
           <div className="flex items-center justify-center py-12 px-5 relative overflow-hidden min-h-[284px]">
-            <p className="text-16 text-secondary-text text-center z-10">List not found</p>
+            <p className="text-16 text-secondary-text text-center z-10">{t("list_not_found")}</p>
             <div className="absolute inset-0 flex items-center justify-end pr-8 pointer-events-none opacity-[0.8]">
               <Image
                 src="/images/empty/empty-search-list.svg"
-                alt="No results"
+                alt={t("list_not_found")}
                 width={200}
                 height={200}
                 className="object-contain"
@@ -235,7 +240,7 @@ export default function TokenListDropdown({
                       setDeleteDialogOpen(true);
                     }}
                     className="opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 p-1 hover:bg-red-light/20 rounded-2 flex items-center justify-center"
-                    title="Delete"
+                    title={tA11y("delete")}
                   >
                     <Svg
                       iconName="delete"
@@ -265,7 +270,7 @@ export default function TokenListDropdown({
             fullWidth
             onClick={() => setIsDropdownOpen(false)}
           >
-            Cancel
+            {t("cancel")}
           </Button>
           <Button
             colorScheme={ButtonColor.GREEN}
@@ -273,7 +278,7 @@ export default function TokenListDropdown({
             fullWidth
             onClick={() => setIsDropdownOpen(false)}
           >
-            Apply
+            {t("apply")}
           </Button>
         </div>
       </div>
@@ -285,7 +290,7 @@ export default function TokenListDropdown({
         }}
         className="w-full bg-tertiary-bg p-2 flex items-center justify-center gap-2 text-primary-text text-16 hover:text-green transition-colors duration-200"
       >
-        <span className="text-16">Add new list</span>
+        <span className="text-16">{t("add_new_list")}</span>
         <Svg iconName="import-list" size={24} />
       </button>
     </>
@@ -351,7 +356,7 @@ export default function TokenListDropdown({
       {/* Mobile modal */}
       <DrawerDialog isOpen={isMobile && isDropdownOpen} setIsOpen={setIsDropdownOpen}>
         <div className="w-full md:w-[600px] max-md:rounded-t-5 max-md:rounded-b-none">
-          <DialogHeader onClose={() => setIsDropdownOpen(false)} title="Token lists" />
+          <DialogHeader onClose={() => setIsDropdownOpen(false)} title={tNav("token_lists")} />
           <div className="pb-4">{renderDropdownContent()}</div>
         </div>
       </DrawerDialog>
@@ -367,7 +372,7 @@ export default function TokenListDropdown({
               setDeleteDialogOpen(false);
               setListToDelete(null);
             }}
-            title="Removing list"
+            title={t("removing_list")}
           />
           <div className="px-4 pb-4 md:px-10 md:pb-10">
             {listToDelete?.icon && (
@@ -380,8 +385,10 @@ export default function TokenListDropdown({
               />
             )}
             <p className="mb-5 text-center text-primary-text text-16">
-              Please confirm that you would like to remove the{" "}
-              <b className="whitespace-nowrap">«{listToDelete?.name}»</b> list
+              {t.rich("confirm_removing_list_text", {
+                list: () => listToDelete?.name,
+                bold: (chunks) => <b className="whitespace-nowrap">{chunks}</b>,
+              })}
             </p>
             <div className="grid grid-cols-2 gap-2">
               <Button
@@ -391,20 +398,20 @@ export default function TokenListDropdown({
                   setListToDelete(null);
                 }}
               >
-                Cancel
+                {t("cancel")}
               </Button>
               <Button
                 colorScheme={ButtonColor.RED}
                 onClick={async () => {
                   if (listToDelete) {
                     await db.tokenLists.delete(listToDelete.id);
-                    addToast("Token list successfully deleted");
+                    addToast(t("list_deleted"));
                     setDeleteDialogOpen(false);
                     setListToDelete(null);
                   }
                 }}
               >
-                Confirm removing
+                {t("confirm_removing")}
               </Button>
             </div>
           </div>

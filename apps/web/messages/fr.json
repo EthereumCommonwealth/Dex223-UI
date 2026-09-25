@@ -401,7 +401,11 @@
     "confirm_removing_token_text": "Confirmez que vous souhaitez supprimer le jeton personnalisé <bold>«<token></token>»</bold>.",
     "adding_list_warning": " La plupart des listes de jetons sont gérées par des tiers ; l’équipe Dex223 ne peut donc pas garantir l’exactitude des données qu’elles contiennent. Partez du principe que n’importe qui peut ajouter n’importe quel jeton à une liste. Vérifiez vous-même les adresses des contrats et contrôlez les données de chaque jeton avant d’effectuer une transaction financière.",
     "import_token_warning": " Importez des jetons avec prudence : il est possible d’y inclure de fausses versions de jetons existants. Assurez-vous que le jeton importé est compatible avec Dex223. Vous pouvez toujours vérifier les données du jeton via des explorateurs de blockchain publics afin d’éviter les erreurs et les arnaques.",
-    "predicted_alert": "Le jeton au standard ERC-223 n’existe pas encore. Les contrats du convertisseur prédisent l’adresse que vous voyez."
+    "predicted_alert": "Le jeton au standard ERC-223 n’existe pas encore. Les contrats du convertisseur prédisent l’adresse que vous voyez.",
+    "add_new_list": "Ajouter une nouvelle liste",
+    "list_not_found": "Liste introuvable",
+    "apply": "Appliquer",
+    "list_deleted": "Liste de jetons supprimée"
   },
   "Liquidity": {
     "set_default": "Réinitialiser",

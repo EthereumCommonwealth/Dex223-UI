@@ -19,7 +19,7 @@ export default function AddNewList({ setContent, handleClose }: Props) {
 
   return (
     <>
-      <DialogHeader onClose={handleClose} title="Add new list" />
+      <DialogHeader onClose={handleClose} title={t("add_new_list")} />
 
       <div className="px-4 pb-4 md:px-10 md:pb-10 w-full md:w-[600px] h-[580px] flex flex-col">
         <h3 className="text-16 font-bold mb-1 text-secondary-text">{t("importing_type")}</h3>

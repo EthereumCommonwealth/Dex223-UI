@@ -401,7 +401,11 @@
     "confirm_removing_token_text": "请确认您要移除 <bold>«<token></token>»</bold> 自定义代币。",
     "adding_list_warning": " 大多数代币列表由第三方维护，因此 Dex223 团队无法保证这些列表中数据的正确性。请假定任何人都可以将任意代币添加到代币列表中。在进行任何资金交易之前，请自行核实代币合约地址并再次确认代币数据。",
     "import_token_warning": " 导入代币时请谨慎，列表中可能包含现有代币的仿冒版本。请确认导入的代币与 Dex223 兼容。您可以随时通过公开的区块链浏览器核实代币数据，以避免可能的错误和诈骗。",
-    "predicted_alert": "ERC-223 标准的该代币尚不存在。您看到的地址是由转换器合约预测得出的。"
+    "predicted_alert": "ERC-223 标准的该代币尚不存在。您看到的地址是由转换器合约预测得出的。",
+    "add_new_list": "添加新列表",
+    "list_not_found": "未找到列表",
+    "apply": "应用",
+    "list_deleted": "代币列表已删除"
   },
   "Liquidity": {
     "set_default": "恢复默认",
