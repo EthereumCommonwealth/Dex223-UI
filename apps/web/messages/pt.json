@@ -8,25 +8,38 @@
     "borrow_lend": "Emprestar/Tomar emprestado",
     "portfolio": "Portfólio",
     "more": "Mais",
+    "more_product": "Produto",
+    "more_resources": "Recursos",
     "token": "Token",
     "token_listing": "Listagem de tokens",
     "token_statistics": "Estatísticas",
     "token_lists": "Listas de tokens",
+    "create_token": "Criar um token novo",
+    "blog": "Blog",
+    "feedback": "Feedback",
     "social_media": "Redes sociais",
-    "social_telegram_discussions": "Discussões no Telegram",
-    "social_telegram_announcements": "Canal de anúncios do Telegram",
+    "social_telegram_discussions": "Discussões",
+    "social_telegram_announcements": "Anúncios",
     "social_x_account": "DEX223",
     "social_discord": "Discord",
-    "social_dex_x_account": "Conta X do Dexaran",
+    "social_dex_x_account": "Dexaran",
     "useful_links": "Links úteis",
-    "useful_converter": "Conversor de tokens ERC20 e ERC223",
-    "useful_losses_calculator": "Calculadora de perdas ERC-20 em tempo real",
-    "useful_front_page": "Página inicial ERC223",
+    "useful_converter": "Conversor de tokens",
+    "useful_losses_calculator": "Calculadora de perdas ERC-20",
+    "useful_front_page": "Página inicial ERC-223",
     "useful_page_source_codes": "Códigos-fonte da página",
     "partners": "Parceiros",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "Guias",
+    "coming_soon": "Em breve",
+    "margin_unavailable_title": "O trading com margem ainda não está disponível nesta rede",
+    "margin_unavailable_switch": "Mude para {networks} no seletor de rede para usar trading com margem e empréstimos.",
+    "margin_unavailable_description": "O contrato de trading com margem ainda não foi implantado nesta rede. Você pode continuar negociando no Swap.",
+    "margin_unavailable_go_to_swap": "Ir para Swap"
   },
   "Swap": {
+    "high_price_impact_warning": "Impacto no preço alto ({impact}%). Você receberá bem menos do que o preço atual de mercado.",
+    "very_high_price_impact_warning": "Impacto no preço muito alto ({impact}%). Você perderia grande parte do valor desta operação. Tente um valor menor.",
     "swap": "Trocar",
     "review_swap": "Rever a troca",
     "you_pay": "Você paga",
@@ -42,6 +55,8 @@
     "enter_amount": "Introduza o valor",
     "swap_details": "Detalhes da troca",
     "token_price": "Preço de {symbol}",
+    "price_chart_no_data": "Ainda não há histórico de preços.",
+    "price_chart_data_not_available": "Dados de preços indisponíveis.",
     "minimum_received": "Mín. recebido",
     "price_impact": "Impacto no preço",
     "trading_fee": "Taxa de negociação",
@@ -72,6 +87,7 @@
     "approving_in_progress": "Aprovação em curso",
     "looking_for_the_best_trade": "A procurar a melhor rota...",
     "swap_is_unavailable_for_this_pair": "A troca não está disponível para este par",
+    "cannot_receive_erc223": "Esta carteira não pode receber ERC-223",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Definições aplicadas",
     "tokens_in_two_standards_title": "Tokens nos padrões ERC-20 e ERC-223",
@@ -81,7 +97,7 @@
     "network_fee_tooltip": "A taxa de rede é cobrada ao enviar qualquer transação na rede {networkName}. É paga na moeda nativa da rede (por exemplo, ETH na Ethereum).",
     "minimum_received_tooltip": "Quantidade mínima de tokens que irá receber quando a troca for executada. O preço real pode diferir do previsto no momento da criação da transação, porque a sua transação só pode ser confirmada no bloco seguinte enquanto os preços vêm do bloco atual. Em nenhuma circunstância receberá menos do que este montante mínimo, mesmo com alterações de preço enquanto a transação está pendente.",
     "price_impact_tooltip": "Impacto estimado da sua transação no mercado. Quando compra ou vende ativos, o preço destes altera-se em consequência, e esta métrica mostra que parte dessa alteração é causada pelas suas ações.",
-    "trading_fee_tooltip": "A taxa de negociação é cobrada em cada operação e distribuída pelos detentores do token D223.",
+    "trading_fee_tooltip": "Cada troca paga uma taxa de negociação do pool aos provedores de liquidez. Uma parcela separada de taxa do protocolo pode ser coletada no contrato Revenue para os usuários que fazem staking do token de staking lá.",
     "route_tooltip": "Se a sua transação tiver um impacto elevado no mercado, poderá obter melhores preços através de arbitragem em vez de comprar ou vender a totalidade do montante num único pool. A rota mostra os outros pares de tokens que serão afetados durante a sua negociação, caso existam.",
     "maximum_slippage_tooltip": "O preço real da troca pode ser diferente do indicado no momento do envio da transação. O slippage determina quanta variação de preço é tolerada. Se o preço real diferir do esperado mais do que o slippage máximo, a transação será automaticamente revertida e os seus tokens não serão trocados.",
     "gas_limit_tooltip": "O limite de gás determina a quantidade de operações que a sua transação pode invocar. Quanto mais complexas forem as ações desencadeadas no contrato inteligente, maior poderá ser o limite de gás necessário. Um limite mais elevado resulta numa taxa de rede mais alta.",
@@ -265,6 +281,18 @@
     "something_went_wrong": "Algo correu mal, tente novamente mais tarde",
     "thank_you_for_the_feedback": "Obrigado pelos seus comentários! Entraremos em contacto em breve. Pode também contactar-nos via <telegram>Telegram</telegram> ou <discord>Discord</discord>."
   },
+  "Converter": {
+    "title": "Token converter",
+    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
+    "convert_button": "Convert",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "flip_direction": "Flip conversion direction",
+    "pick_token": "Select token",
+    "connect_wallet": "Connect wallet",
+    "insufficient_balance": "Insufficient balance",
+    "no_fees": "1:1 conversion. No protocol fees."
+  },
   "BuyCrypto": {
     "title": "Abasteça sua carteira com fiat",
     "description": "Compre ou venda cripto com fiat via Onramp. Troque tokens no Dex223 depois de abastecer a carteira.",
@@ -312,6 +340,7 @@
     "wallet_connection_notice": "A sua carteira será ligada automaticamente ao prosseguir"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "Este arquivo não contém tokens válidos para a rede selecionada.",
     "manage_lists": "Gerir listas",
     "manage_tokens": "Gerir tokens",
     "tokens": "Tokens",
@@ -378,6 +407,7 @@
     "must_be_at_least": "Deve ser pelo menos {val}",
     "token_starting_price": "Preço inicial de {symbol}",
     "pools_not_found": "Não foram encontrados pools",
+    "pools_load_error": "Não foi possível carregar os pools. Verifique sua conexão e tente novamente.",
     "amount_title": "Quantidade",
     "enter_correct_values": "Introduza valores corretos",
     "collecting_fee_message": "Recolher as taxas irá levantar as taxas atualmente disponíveis",
@@ -483,5 +513,207 @@
     "gas_price_tooltip": "A taxa que vai pagar com uma transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
     "approved_tooltip": "Para depositar tokens ERC-20 em contratos, precisa de «autorizar» o contrato a levantar o token do seu saldo. A aprovação determina quantos tokens do seu saldo um contrato pode movimentar em seu nome. Os tokens ERC-223 não exigem aprovações, pelo que não precisa de autorizar nenhum contrato a aceder ao seu saldo.",
     "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento."
+  },
+  "Statistics": {
+    "title": "Estatísticas",
+    "description": "Visão geral do protocolo na rede selecionada.",
+    "tvl": "TVL",
+    "volume": "Volume total",
+    "pools": "Pools",
+    "transactions": "Transações",
+    "top_pools": "Principais pools por TVL",
+    "view_all_pools": "Ver todas as pools",
+    "loading": "A carregar pools…",
+    "no_pools": "Nenhuma pool encontrada nesta rede.",
+    "unavailable": "As estatísticas estão indisponíveis nesta rede neste momento.",
+    "loading_tokens": "A carregar tokens…",
+    "no_tokens": "Nenhum token encontrado nesta rede.",
+    "token_not_found": "Token não encontrado.",
+    "tab_overview": "Visão geral",
+    "tab_tokens": "Tokens",
+    "tab_pools": "Pools",
+    "col_token": "Token",
+    "col_volume": "Volume",
+    "col_price": "Preço",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Preço",
+    "chart_empty": "Ainda sem dados de gráfico",
+    "token_pools": "Pools"
+  },
+  "Guidelines": {
+    "title": "Guias",
+    "description": "Links rápidos para começar no Dex223.",
+    "getting_started_title": "Primeiros passos",
+    "getting_started_subtitle": "Os seus primeiros passos na plataforma",
+    "tokens_title": "Tokens",
+    "tokens_subtitle": "Listar, criar e gerir tokens",
+    "learn_more_title": "Saber mais",
+    "learn_more_subtitle": "Docs, notícias e estatísticas do protocolo",
+    "all_guides_title": "Guias",
+    "all_guides_subtitle": "Como fazer as tarefas mais comuns",
+    "back": "Guias",
+    "steps_label": "Passos",
+    "guides": {
+      "swap": {
+        "title": "Como fazer uma troca",
+        "description": "Troque tokens no Dex223 em poucos passos.",
+        "cta": "Abrir Troca",
+        "sections": {
+          "before": {
+            "heading": "Antes de começar",
+            "body": "Ligue uma carteira que tenha o token que pretende vender e gás suficiente para a rede selecionada."
+          },
+          "steps": {
+            "heading": "Passos",
+            "items": {
+              "s1": "Abra <b>Troca</b> no menu Negociar.",
+              "s2": "Escolha o token com que paga e o token que recebe.",
+              "s3": "Introduza um montante. Reveja o preço cotado e o impacto no preço.",
+              "s4": "Confirme a troca na sua carteira quando lhe for pedido."
+            }
+          },
+          "tips": {
+            "heading": "Dicas",
+            "items": {
+              "s1": "Prefira pools com boa liquidez para obter cotações mais justas.",
+              "s2": "Se faltar um token, abra <b>Gerir tokens</b> no seletor de tokens ou cole o endereço do contrato.",
+              "s3": "As versões ERC-20 e ERC-223 do mesmo ativo podem aparecer ambas. Escolha o padrão que a sua carteira e o destino esperam."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Converter entre ERC-20 e ERC-223",
+        "description": "Passe qualquer token suportado de um padrão para o outro a uma taxa de 1:1.",
+        "cta": "Abrir Conversor de tokens",
+        "sections": {
+          "what": {
+            "heading": "O que faz",
+            "body": "O conversor encapsula ou desencapsula um token entre ERC-20 e ERC-223 a uma taxa de <b>1:1</b>, sem taxa de protocolo."
+          },
+          "steps": {
+            "heading": "Passos",
+            "items": {
+              "s1": "Abra <b>Conversor de tokens</b> no menu Mais.",
+              "s2": "Selecione o token e o sentido (para ERC-20 ou para ERC-223).",
+              "s3": "Introduza o montante e confirme na sua carteira."
+            }
+          },
+          "when": {
+            "heading": "Quando usar",
+            "items": {
+              "s1": "Recebeu ERC-223, mas uma dapp só aceita ERC-20 (ou o inverso).",
+              "s2": "Está a preparar liquidez ou uma troca que exige um padrão específico."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Gerir listas de tokens",
+        "description": "Ative, importe e organize as listas que alimentam o seletor de tokens.",
+        "cta": "Abrir Listas de tokens",
+        "sections": {
+          "why": {
+            "heading": "Porque é que as listas importam",
+            "body": "O Dex223 só mostra tokens das listas que ativar. Se faltar um token na Troca ou no conversor, verifique primeiro as suas listas."
+          },
+          "steps": {
+            "heading": "Passos",
+            "items": {
+              "s1": "Abra <b>Listas de tokens</b> a partir do menu Mais, ou <b>Gerir tokens</b> no seletor de tokens.",
+              "s2": "No separador <b>Listas</b>, ative as listas em que confia.",
+              "s3": "Importe uma lista personalizada por URL, JSON ou contrato quando precisar.",
+              "s4": "No separador <b>Tokens</b>, fixe os seus favoritos ou importe um token individual pelo endereço."
+            }
+          },
+          "safety": {
+            "heading": "Segurança",
+            "body": "Ative apenas listas de fontes em que confia. Listas maliciosas podem mostrar tokens fraudulentos com nomes conhecidos."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "Listar um token",
+        "description": "Submeta um token a um contrato de autolistagem para que possa ser negociado no Dex223.",
+        "cta": "Abrir Listagem de tokens",
+        "sections": {
+          "overview": {
+            "heading": "Visão geral",
+            "body": "A listagem de tokens regista o seu token num contrato de autolistagem do Dex223 para que os pools e a interface o possam encontrar."
+          },
+          "before": {
+            "heading": "Antes de começar",
+            "body": "O contrato de autolistagem precisa de uma pool existente. Crie uma pool para o seu token e o token emparelhado em <b>Pools</b> e adicione liquidez para que os traders obtenham uma cotação."
+          },
+          "steps": {
+            "heading": "Passos",
+            "items": {
+              "s1": "Abra <b>Listagem de tokens</b> na navegação principal.",
+              "s2": "Escolha o contrato de listagem, o seu token e o <b>Paired token</b> (token emparelhado).",
+              "s3": "Reveja as taxas e os requisitos dessa lista.",
+              "s4": "Confirme a transação de listagem na sua carteira."
+            }
+          },
+          "after": {
+            "heading": "Depois da listagem",
+            "body": "Use <b>Estatísticas</b> para confirmar que a pool aparece quando a indexação do subgraph terminar."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Comprar cripto com fiat",
+        "description": "Abasteça a sua carteira através do Onramp sem sair do Dex223.",
+        "cta": "Abrir Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Visão geral",
+            "body": "A página Fiat usa o Onramp para que possa comprar (ou vender) ativos suportados com métodos de pagamento locais."
+          },
+          "steps": {
+            "heading": "Passos",
+            "items": {
+              "s1": "Abra <b>Fiat</b> no menu Negociar.",
+              "s2": "Ligue a carteira que deve receber os fundos.",
+              "s3": "Escolha comprar ou vender e siga o widget do Onramp.",
+              "s4": "Quando a transferência estiver concluída, volte a <b>Troca</b> ou <b>Portfólio</b> para usar o seu saldo."
+            }
+          },
+          "notes": {
+            "heading": "Notas",
+            "items": {
+              "s1": "A disponibilidade depende da sua região e dos métodos de pagamento suportados pelo Onramp.",
+              "s2": "As trocas do Dex223 fazem-se no Dex223. Use a página Troca para negociar de cripto para cripto."
+            }
+          }
+        }
+      }
+    }
+  },
+  "A11y": {
+    "close": "Fechar",
+    "copy": "Copiar",
+    "delete": "Eliminar",
+    "sort": "Ordenar",
+    "back": "Voltar",
+    "add": "Adicionar",
+    "recent_transactions": "Transações recentes",
+    "network_fee_settings": "Definições da taxa de rede",
+    "swap_settings": "Definições de troca",
+    "switch_tokens": "Trocar tokens de posição",
+    "settings": "Definições",
+    "zoom_in": "Aumentar zoom",
+    "zoom_out": "Diminuir zoom",
+    "reset": "Repor",
+    "decrease": "Diminuir",
+    "open_link": "Abrir link",
+    "increase_price": "Aumentar preço",
+    "decrease_price": "Diminuir preço"
+  },
+  "NotFound": {
+    "title": "Página não encontrada",
+    "description": "Esta página não existe ou foi movida. Verifique o endereço ou volte a negociar.",
+    "go_to_swap": "Ir para a troca",
+    "view_pools": "Ver pools"
   }
 }

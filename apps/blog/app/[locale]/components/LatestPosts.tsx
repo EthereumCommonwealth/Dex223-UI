@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 
 import { CategoryTag, YoutubeTag } from "@/app/[locale]/components/PostTag";
@@ -9,6 +9,7 @@ import { formatPostDate } from "@/functions/formatPostDate";
 import { Link } from "@/i18n/routing";
 
 export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post] }) {
+  const t = useTranslations("Blog");
   const latestPost = useMemo(() => {
     return posts[0];
   }, [posts]);
@@ -24,11 +25,14 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
 
   return (
     <div>
-      <h2 className="text-20 md:text-32 mb-4 md:mb-5">Latest news</h2>
+      <h2 className="text-20 md:text-32 mb-4 md:mb-5">{t("latest_news")}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] xl:grid-cols-[7fr_4fr] gap-4 md:gap-5">
         <Link
           href={`/${latestPost.id}?slug=${latestPost.slug}`}
-          className={clsx("flex flex-col cursor-pointer", !isTouchDevice && "group")}
+          className={clsx(
+            "flex flex-col cursor-pointer rounded-3 md:rounded-5",
+            !isTouchDevice && "group",
+          )}
         >
           <div className="w-full flex-grow relative aspect-[16/9] md:aspect-[unset]">
             {!!latestPost.links[0] && <YoutubeTag />}
@@ -36,10 +40,9 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
             <Image
               className="rounded-t-3 md:rounded-t-5 object-cover"
               src={latestPost.thumbnail.link}
-              layout="fill"
-              priority={true}
-              // objectFit="cover"
-              alt={latestPost.thumbnail.alt}
+              fill
+              priority
+              alt={latestPost.thumbnail.alt ?? ""}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 70vw"
             />
           </div>
@@ -62,15 +65,18 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
               <Link
                 href={`/${post.id}?slug=${post.slug}`}
                 key={post.id}
-                className={clsx("flex max-md:flex-col cursor-pointer", !isTouchDevice && "group")}
+                className={clsx(
+                  "flex max-md:flex-col cursor-pointer rounded-3 md:rounded-5",
+                  !isTouchDevice && "group",
+                )}
               >
                 <div className="relative flex-shrink-0 aspect-[16/9] md:aspect-auto md:w-[132px] lg:w-[235px] md:min-h-[132px]">
                   {!!post.links[0] && <YoutubeTag />}
                   <Image
                     className="rounded-t-3 md:rounded-tr-0 md:rounded-l-5 object-cover"
                     src={post.thumbnail.link}
-                    layout="fill"
-                    alt={post.thumbnail.alt}
+                    fill
+                    alt={post.thumbnail.alt ?? ""}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />{" "}
                 </div>

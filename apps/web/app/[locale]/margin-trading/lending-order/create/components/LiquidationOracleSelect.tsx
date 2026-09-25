@@ -47,6 +47,7 @@ export default function LiquidationOracleSelect() {
                 className="text-tertiary-text hover:text-green-hover duration-200"
                 href={linksMap[_oracle]}
                 target="_blank"
+                rel="noopener noreferrer"
                 onClick={(e) => {
                   e.stopPropagation();
                 }}

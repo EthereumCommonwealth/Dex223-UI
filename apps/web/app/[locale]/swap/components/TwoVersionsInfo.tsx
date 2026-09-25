@@ -5,6 +5,7 @@ import React from "react";
 import { useTwoVersionsInfoStore } from "@/app/[locale]/swap/stores/useTwoVersionsInfoStore";
 import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
+import { Link } from "@/i18n/routing";
 
 export default function TwoVersionsInfo() {
   const t = useTranslations("Swap");
@@ -14,11 +15,14 @@ export default function TwoVersionsInfo() {
     <div className="overflow-hidden text-14 rounded-2 bg-gradient-to-r from-primary-bg to-secondary-bg">
       <button
         onClick={() => setIsOpened(!isOpened)}
-        className="h-10 px-4 sm:px-6 lg:px-5 py-2 flex items-center justify-between font-medium w-full text-14 text-secondary-text bg-gradient-to-r via-50% via-primary-bg from-green-bg to-green-bg/0 border-l-4 border-green rounded-2"
+        aria-expanded={isOpened}
+        // min-h, not h: longer translations wrap to two lines on phones and must stay inside.
+        className="min-h-10 px-4 sm:px-6 lg:px-5 py-2 flex items-center justify-between gap-3 text-left font-medium w-full text-14 text-secondary-text bg-gradient-to-r via-50% via-primary-bg from-green-bg to-green-bg/0 border-l-4 border-green rounded-2"
       >
-        {t("tokens_in_two_standards_title")}
+        {/* A non-breaking hyphen keeps "ERC-223" from splitting across lines. */}
+        <span>{t("tokens_in_two_standards_title").replace(/ERC-(\d+)/g, "ERC\u2011$1")}</span>
         <Svg
-          className={clsx(isOpened ? "-rotate-180" : "", "duration-200")}
+          className={clsx(isOpened ? "-rotate-180" : "", "duration-200 shrink-0")}
           iconName="small-expand-arrow"
         />
       </button>
@@ -26,13 +30,12 @@ export default function TwoVersionsInfo() {
         <div className="px-4 sm:px-6 lg:px-5 py-3 text-tertiary-text">
           {t.rich("tokens_in_two_standards_paragraph", {
             convert: (chunks) => (
-              <a
-                target="_blank"
-                href="https://dexaran.github.io/token-converter/"
+              <Link
+                href="/converter"
                 className="text-green underline hocus:text-green-hover duration-200"
               >
                 {chunks}
-              </a>
+              </Link>
             ),
           })}
         </div>

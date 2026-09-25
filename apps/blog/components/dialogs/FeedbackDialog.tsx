@@ -16,6 +16,7 @@ import {
   FeedbackTag,
   useFeedbackDialogStore,
 } from "@/components/dialogs/stores/useFeedbackDialogStore";
+import { linkTargetProps } from "@/functions/linkTarget";
 import addToast from "@/other/toast";
 
 type FeedbackTagTranslationTag =
@@ -71,13 +72,23 @@ function SuccessFeedback() {
       <h3 className="text-secondary-text text-center">
         {t.rich("thank_you_for_the_feedback", {
           telegram: (chunks) => (
-            <a href="https://t.me/Dex223_defi" className="text-green hocus:underline">
+            <a
+              {...linkTargetProps("https://t.me/Dex223_defi")}
+              href="https://t.me/Dex223_defi"
+              className="text-green hocus:underline inline-flex items-center"
+            >
               {chunks}
+              <Svg iconName="forward" size={16} aria-hidden="true" />
             </a>
           ),
           discord: (chunks) => (
-            <a href="https://discord.gg/t5bdeGC5Jk" className="text-green hocus:underline">
+            <a
+              {...linkTargetProps("https://discord.gg/t5bdeGC5Jk")}
+              href="https://discord.gg/t5bdeGC5Jk"
+              className="text-green hocus:underline inline-flex items-center"
+            >
               {chunks}
+              <Svg iconName="forward" size={16} aria-hidden="true" />
             </a>
           ),
         })}
@@ -142,11 +153,12 @@ export default function FeedbackDialog() {
               {t.rich("feel_free_to_share", {
                 github: (chunks) => (
                   <a
-                    target="_blank"
+                    {...linkTargetProps("https://github.com/EthereumCommonwealth/Dex223-UI/issues")}
                     href="https://github.com/EthereumCommonwealth/Dex223-UI/issues"
-                    className="text-green underline hocus:text-green-hover duration-200"
+                    className="text-green underline hocus:text-green-hover duration-200 inline-flex items-center"
                   >
                     {chunks}
+                    <Svg iconName="forward" size={16} aria-hidden="true" />
                   </a>
                 ),
               })}

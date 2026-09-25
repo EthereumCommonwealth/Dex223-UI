@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { formatGwei } from "viem";
@@ -12,15 +12,16 @@ import Badge from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
-import { isMarginModuleEnabled } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 export function MobileLink({
   href,
   iconName,
@@ -33,6 +34,7 @@ export function MobileLink({
   handleClick,
   isMenu = false,
   isExternal = false,
+  openInNewTab,
   comingSoon = false,
 }: {
   href: string;
@@ -46,12 +48,18 @@ export function MobileLink({
   handleClick?: (e: any) => void;
   isMenu?: boolean;
   isExternal?: boolean;
+  /** Defaults to true when isExternal. Set false for first-party sites like blog.dex223.io. */
+  openInNewTab?: boolean;
   comingSoon?: boolean;
 }) {
+  const t = useTranslations("Navigation");
+  const shouldOpenInNewTab = openInNewTab ?? isExternal;
+
   if (isExternal) {
     return (
       <a
-        target="_blank"
+        target={shouldOpenInNewTab ? "_blank" : undefined}
+        rel={shouldOpenInNewTab ? "noopener noreferrer" : undefined}
         onClick={(e) => {
           if (handleClick) {
             handleClick(e);
@@ -70,8 +78,29 @@ export function MobileLink({
         )}
       >
         <Svg iconName={iconName} />
-        {title}
+        <span className="flex-grow">{title}</span>
+        {shouldOpenInNewTab ? (
+          <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
+        ) : null}
       </a>
+    );
+  }
+
+  if (disabled) {
+    return (
+      <div className={clsx("flex items-center gap-2", className)}>
+        <span
+          aria-disabled="true"
+          className={clsxMerge(
+            "flex items-center gap-2 py-3 px-4 flex-grow text-secondary-text opacity-50 cursor-default",
+            linkClassName,
+          )}
+        >
+          <Svg iconName={iconName} />
+          {title}
+        </span>
+        {comingSoon && <Badge color="green_outline" text={t("coming_soon")} />}
+      </div>
     );
   }
 
@@ -91,15 +120,22 @@ export function MobileLink({
           !isActive && "hocus:bg-quaternary-bg text-secondary-text",
           isActive && !isMenu && "text-green pointer-events-none",
           isActive && isMenu && "bg-navigation-active-mobile text-green pointer-events-none",
-          disabled && "pointer-events-none opacity-50",
           linkClassName,
         )}
       >
         <Svg iconName={iconName} />
         {title}
       </Link>
-      {comingSoon && !isMarginModuleEnabled && <Badge color="green_outline" text="Coming soon" />}
+      {comingSoon && <Badge color="green_outline" text={t("coming_soon")} />}
     </div>
+  );
+}
+
+function NavigationInternalLink({ href, text }: { href: string; text: string }) {
+  return (
+    <Link className="text-green hocus:text-green-hover duration-200 inline-block py-1" href={href}>
+      {text}
+    </Link>
   );
 }
 
@@ -107,13 +143,15 @@ function NavigationExternalLink({ href, text }: { href: string; text: string }) 
   return (
     <a
       target="_blank"
+      rel="noopener noreferrer"
       className={clsx(
-        "text-green hocus:text-green-hover duration-200 inline-block py-1",
+        "text-secondary-text hocus:text-primary-text duration-200 inline-flex items-center gap-2 py-1.5",
         href === "#" && "opacity-50 pointer-events-none",
       )}
       href={href}
     >
-      {text}
+      <span className="flex-grow">{text}</span>
+      <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
     </a>
   );
 }
@@ -123,13 +161,16 @@ function NavigationExternalLinksContainer({
   links,
 }: {
   title: string;
-  links: { href: string; text: string }[];
+  links: { href: string; text: string; internal?: boolean }[];
 }) {
   return (
     <div className="text-primary-text">
-      <div className="text-tertiary-text">{title}</div>
+      <div className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">{title}</div>
       <div className="flex flex-col">
         {links.map((link) => {
+          if (link.internal) {
+            return <NavigationInternalLink key={link.text} href={link.href} text={link.text} />;
+          }
           return <NavigationExternalLink key={link.text} href={link.href} text={link.text} />;
         })}
       </div>
@@ -141,6 +182,7 @@ const mobileLinks: {
   href: string;
   iconName: IconName;
   title: any;
+  marginOnly?: boolean;
 }[] = [
   {
     href: "/swap",
@@ -148,9 +190,10 @@ const mobileLinks: {
     title: "swap",
   },
   {
-    href: "/margin-trading",
+    href: "/margin-swap",
     iconName: "margin-trading",
     title: "margin_trading",
+    marginOnly: true,
   },
   {
     href: "/buy-crypto",
@@ -163,9 +206,10 @@ const mobileLinks: {
     title: "pools",
   },
   {
-    href: "/borrow",
+    href: "/margin-trading",
     iconName: "borrow",
     title: "borrow_lend",
+    marginOnly: true,
   },
   {
     href: "/portfolio",
@@ -180,46 +224,58 @@ const mobileLinks: {
 ];
 
 type SocialLink = {
-  title: any;
+  titleKey:
+    | "social_telegram_announcements"
+    | "social_telegram_discussions"
+    | "social_x_account"
+    | "social_dex_x_account"
+    | "social_discord";
   href: string;
   icon: Extract<IconName, "telegram" | "x" | "discord">;
 };
 
 const socialLinks: SocialLink[] = [
   {
-    title: "Announcements",
+    titleKey: "social_telegram_announcements",
     href: "https://t.me/Dex_223",
     icon: "telegram",
   },
   {
-    title: "Discussions",
+    titleKey: "social_telegram_discussions",
     href: "https://t.me/Dex223_defi",
     icon: "telegram",
   },
   {
-    title: "DEX223",
+    titleKey: "social_x_account",
     href: "https://x.com/Dex_223",
     icon: "x",
   },
   {
-    title: "Dexaran",
+    titleKey: "social_dex_x_account",
     href: "https://x.com/Dexaran",
     icon: "x",
   },
   {
-    title: "Discord",
+    titleKey: "social_discord",
     href: "https://discord.gg/t5bdeGC5Jk",
     icon: "discord",
   },
 ];
 export default function MobileMenu() {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
   const tFeedback = useTranslations("Feedback");
 
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
+  const isMarginAvailable = useIsMarginAvailable();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
+  const {
+    setIsOpen: setManageTokensOpen,
+    setActiveTab: setManageTokensActiveTab,
+    setContent: setManageTokensContent,
+  } = useManageTokensDialogStore();
 
   const handlers = useSwipeable({
     onSwipedLeft: (eventData) => {
@@ -245,7 +301,7 @@ export default function MobileMenu() {
         <div className="flex flex-col justify-between h-full min-w-[300px]">
           <div className="py-6 grid gap-1">
             {[
-              mobileLinks.map(({ href, iconName, title }) => {
+              mobileLinks.map(({ href, iconName, title, marginOnly }) => {
                 return (
                   <MobileLink
                     isMenu
@@ -255,20 +311,9 @@ export default function MobileMenu() {
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}
                     isActive={pathname.includes(href)}
-                    disabled={
-                      !["/swap", "/pools", "/portfolio", "/token-listing"].includes(href) &&
-                      !isMarginModuleEnabled
-                    }
-                    comingSoon={
-                      (title === "borrow_lend" || title === "margin_trading") &&
-                      !isMarginModuleEnabled
-                    }
-                    className={
-                      (title === "borrow_lend" || title === "margin_trading") &&
-                      !isMarginModuleEnabled
-                        ? "justify-between pr-4"
-                        : ""
-                    }
+                    disabled={marginOnly && !isMarginAvailable}
+                    comingSoon={marginOnly && !isMarginAvailable}
+                    className={marginOnly && !isMarginAvailable ? "justify-between pr-4" : ""}
                   />
                 );
               }),
@@ -292,54 +337,86 @@ export default function MobileMenu() {
               </button>
               <Collapse open={moreOpened}>
                 <div className="py-2 border-b border-secondary-border">
+                  <div className="px-4 pb-1 text-12 uppercase tracking-[0.06em] text-tertiary-text">
+                    {t("more_product")}
+                  </div>
+                  <MobileLink
+                    isActive={pathname === "/converter"}
+                    href="/converter"
+                    iconName="convert"
+                    title={t("useful_converter")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
+                    isActive={pathname === "/revenue"}
+                    href="/revenue"
+                    iconName="staked"
+                    title={t("revenue")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
+                    isActive={pathname === "/governance"}
+                    href="/governance"
+                    iconName="listing"
+                    title={t("governance")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    comingSoon
+                  />
                   <MobileLink
                     href="/create-token"
                     iconName="list-tokens"
-                    title="Create a new token"
+                    title={t("create_token")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
                   />
                   <MobileLink
                     href="#"
                     iconName="list"
-                    title="Token lists"
+                    title={t("token_lists")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                    disabled
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      setManageTokensContent("default");
+                      setManageTokensActiveTab(0);
+                      setManageTokensOpen(true);
+                    }}
                   />
                   <MobileLink
-                    isExternal
-                    href="https://blog.dex223.io/"
-                    iconName="blog"
-                    title="Blog"
-                    handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
-                  />
-                  <MobileLink
-                    disabled
+                    isActive={pathname === "/statistics"}
                     href="/statistics"
                     iconName="statistics"
-                    title="Statistics"
+                    title={t("token_statistics")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
                   />
                   <MobileLink
-                    disabled
-                    href="#"
+                    isActive={pathname === "/guidelines"}
+                    href="/guidelines"
                     iconName="guidelines"
-                    title="Guidelines"
+                    title={t("guidelines")}
                     handleClose={() => setMobileMenuOpened(false)}
-                    className="pr-5"
+                  />
+                  <MobileLink
+                    href={`https://blog.dex223.io/${locale}`}
+                    iconName="blog"
+                    title={t("blog")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    isExternal
+                    openInNewTab={false}
+                  />
+                  <MobileLink
+                    href="#"
+                    iconName="star"
+                    title={t("feedback")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                    handleClick={(e) => {
+                      e.preventDefault();
+                      setOpenFeedbackDialog(true);
+                    }}
                   />
                 </div>
-                <div className="flex flex-col py-4 px-4 bg-primary-bg rounded-2 gap-3">
+                <div className="flex flex-col py-4 px-4 bg-primary-bg gap-4">
                   <NavigationExternalLinksContainer
-                    title={t("useful_links")}
+                    title={t("more_resources")}
                     links={[
-                      {
-                        href: "https://dexaran.github.io/token-converter/",
-                        text: t("useful_converter"),
-                      },
                       {
                         href: "https://dexaran.github.io/erc20-losses/",
                         text: t("useful_losses_calculator"),
@@ -365,18 +442,23 @@ export default function MobileMenu() {
                     ]}
                   />
                 </div>
-                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border">
-                  <h4 className="text-tertiary-text">Social media</h4>
+                <div className="flex flex-col mt-2 pt-3 px-4 border-t border-secondary-border pb-2">
+                  <h4 className="text-12 uppercase tracking-[0.06em] text-tertiary-text mb-1">
+                    {t("social_media")}
+                  </h4>
 
                   {socialLinks.map((link) => {
                     return (
                       <a
-                        key={link.title}
+                        key={link.href}
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={link.href}
-                        className="flex gap-2 items-center text-secondary-text py-1 hocus:text-primary-text duration-200"
+                        className="flex gap-2 items-center text-secondary-text py-2 hocus:text-primary-text duration-200"
                       >
-                        <Svg iconName={link.icon} className="text-tertiary-text" /> {link.title}
+                        <Svg iconName={link.icon} className="text-tertiary-text" />
+                        <span className="flex-grow">{t(link.titleKey)}</span>
+                        <Svg iconName="forward" size={16} className="text-tertiary-text shrink-0" />
                       </a>
                     );
                   })}
@@ -393,6 +475,7 @@ export default function MobileMenu() {
                     {tFooter("gas")}{" "}
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                     >
@@ -405,6 +488,7 @@ export default function MobileMenu() {
                   {blockNumber ? (
                     <a
                       target="_blank"
+                      rel="noopener noreferrer"
                       className="text-green"
                       href={getExplorerLink(
                         ExplorerLinkType.BLOCK,
