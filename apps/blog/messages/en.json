@@ -376,6 +376,11 @@
     "x": "DEX223",
     "discord": "Discord"
   },
+  "BlogFilters": {
+    "no_results": "No articles or videos match your search",
+    "no_posts": "No articles yet",
+    "clear_filters": "Clear filters"
+  },
   "Feedback": {
     "feedback": "Feedback",
     "feel_free_to_share": "Feel free to share your thoughts either by leaving a comment here or by opening an <github>issue on Github</github>",

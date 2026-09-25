@@ -15,6 +15,7 @@ export default function PostsContent({
   isLoadingMore,
   getMorePosts,
   isAllLoaded,
+  onResetFilters,
 }: {
   posts: Post[] | undefined;
   contentType: ContentType;
@@ -24,8 +25,11 @@ export default function PostsContent({
   isLoadingMore: boolean;
   getMorePosts: any;
   isAllLoaded: boolean;
+  onResetFilters?: () => void;
 }) {
   const t = useTranslations("Blog");
+  const tFilters = useTranslations("BlogFilters");
+
   const showLatestNews = useMemo(() => {
     return !searchValue && contentType === "vide_and_content" && tag === "all";
   }, [searchValue, contentType, tag]);
@@ -41,7 +45,18 @@ export default function PostsContent({
   if (!posts?.length) {
     return (
       <div className="rounded-5 bg-primary-bg flex flex-col items-center justify-center min-h-[400px] gap-2 bg-empty-article-not-found bg-right-top bg-no-repeat max-md:bg-size-180">
-        <span className="text-secondary-text">Article not found</span>
+        <span className="text-secondary-text">
+          {onResetFilters ? tFilters("no_results") : tFilters("no_posts")}
+        </span>
+        {onResetFilters && (
+          <button
+            type="button"
+            onClick={onResetFilters}
+            className="mt-2 inline-flex items-center min-h-11 px-6 rounded-3 border border-green text-primary-text font-medium hocus:bg-green-bg duration-200"
+          >
+            {tFilters("clear_filters")}
+          </button>
+        )}
       </div>
     );
   }

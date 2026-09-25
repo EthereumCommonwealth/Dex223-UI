@@ -83,5 +83,10 @@
     "title": "Publicación no encontrada",
     "description": "Es posible que esta publicación se haya movido o eliminado. Explora los artículos y videos más recientes del blog.",
     "back_to_blog": "Volver al blog"
+  },
+  "BlogFilters": {
+    "no_results": "Ningún artículo o video coincide con tu búsqueda",
+    "no_posts": "Aún no hay artículos",
+    "clear_filters": "Borrar filtros"
   }
 }
