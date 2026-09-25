@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { formatGwei } from "viem";
@@ -263,6 +263,7 @@ const socialLinks: SocialLink[] = [
 ];
 export default function MobileMenu() {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
   const tFeedback = useTranslations("Feedback");
 
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
@@ -394,7 +395,7 @@ export default function MobileMenu() {
                     handleClose={() => setMobileMenuOpened(false)}
                   />
                   <MobileLink
-                    href="https://blog.dex223.io/"
+                    href={`https://blog.dex223.io/${locale}`}
                     iconName="blog"
                     title={t("blog")}
                     handleClose={() => setMobileMenuOpened(false)}
