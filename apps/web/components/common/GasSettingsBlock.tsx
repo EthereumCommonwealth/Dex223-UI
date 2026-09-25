@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import React from "react";
 import { formatEther, formatGwei } from "viem";
 
@@ -15,20 +18,22 @@ export default function GasSettingsBlock({
   customGasLimit?: bigint;
   estimatedGas?: bigint;
 }) {
+  const t = useTranslations("GasSettings");
+
   return (
     <div className="bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
       <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
         <p className="flex flex-col text-tertiary-text">
-          <span>Gas price:</span>
+          <span>{t("gas_price")}:</span>
           <span> {formatFloat(formatGwei(formattedGasPrice || BigInt(0)))} GWEI</span>
         </p>
 
         <p className="flex flex-col text-tertiary-text">
-          <span>Gas limit:</span>
+          <span>{t("gas_limit")}:</span>
           <span>{customGasLimit ? customGasLimit.toString() : estimatedGas?.toString()}</span>
         </p>
         <p className="flex flex-col">
-          <span className="text-tertiary-text">Network fee:</span>
+          <span className="text-tertiary-text">{t("network_fee")}:</span>
           <span>
             {formatFloat(
               formatEther(
@@ -42,7 +47,7 @@ export default function GasSettingsBlock({
       </div>
       <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
         <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-          Cheaper
+          {t("cheap")}
         </span>
         <Button
           type="button"
@@ -52,7 +57,7 @@ export default function GasSettingsBlock({
           fullWidth={false}
           className="rounded-5 border border-secondary-border"
         >
-          Edit
+          {t("edit")}
         </Button>
       </div>
     </div>
