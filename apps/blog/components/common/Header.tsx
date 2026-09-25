@@ -20,7 +20,8 @@ export default function Header() {
         <Container className="pl-4 pr-1 md:px-5 max-w-[1920px]">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-5">
-              <Link className="relative block" href="/" aria-label="Dex223 blog home">
+              {/* Padding grows the tap area to 44px without moving the logo. */}
+              <Link className="-m-2 p-2 flex" href="/" aria-label="Dex223 blog home">
                 <span className="relative block w-7 h-8 xl:w-[35px] xl:h-10">
                   <Image src="/images/logo-short.svg" alt="" fill />
                 </span>

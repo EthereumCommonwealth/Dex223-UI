@@ -3,6 +3,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
+import { IS_SAFE_SEND_LISTED } from "@/app/[locale]/send/config";
 import NavigationItem, { NavigationItemWithSubmenu } from "@/components/atoms/NavigationItem";
 import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
@@ -186,6 +187,8 @@ function NavigationMoreDropdown() {
 
   const active = useMemo(() => {
     return (
+      pathname.includes("/send") ||
+      pathname.includes("/pay") ||
       pathname.includes("/converter") ||
       pathname.includes("/create-token") ||
       pathname.includes("/blog") ||
@@ -236,6 +239,17 @@ function NavigationMoreDropdown() {
         <div className="grid grid-cols-[1.15fr_1fr_0.95fr]">
           <div className="flex flex-col py-3 border-r border-secondary-border">
             <MoreSectionLabel>{t("more_product")}</MoreSectionLabel>
+            {IS_SAFE_SEND_LISTED && (
+              <MobileLink
+                isActive={
+                  pathname === "/send" || pathname.startsWith("/send/") || pathname === "/pay"
+                }
+                href="/send"
+                iconName="wallet"
+                title={t("send")}
+                handleClose={() => setSubmenuOpened(false)}
+              />
+            )}
             <MobileLink
               isActive={pathname === "/converter"}
               href="/converter"

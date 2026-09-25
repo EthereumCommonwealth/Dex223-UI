@@ -404,6 +404,11 @@
   "Toast": {
     "successfully_copied": "Successfully copied!"
   },
+  "NotFound": {
+    "title": "Post not found",
+    "description": "This post may have been moved or removed. Browse the latest articles and videos on the blog.",
+    "back_to_blog": "Back to blog"
+  },
   "Portfolio": {
     "approved_deposited": "Approved and Deposited",
     "balances_tab": "Balances",

@@ -79,6 +79,11 @@
   "Toast": {
     "successfully_copied": "复制成功！"
   },
+  "NotFound": {
+    "title": "未找到文章",
+    "description": "该文章可能已被移动或删除。浏览博客中的最新文章和视频。",
+    "back_to_blog": "返回博客"
+  },
   "BlogFilters": {
     "no_results": "没有符合搜索条件的文章或视频",
     "no_posts": "暂无文章",
