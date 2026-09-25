@@ -6,7 +6,7 @@ import MarginAvailabilityGate from "@/components/common/MarginAvailabilityGate";
 import { isMarginModuleEnabled } from "@/config/modules";
 
 export const metadata: Metadata = {
-  title: "Swap",
+  title: "Borrow/Lend",
 };
 
 export default function Layout({ children }: PropsWithChildren) {
