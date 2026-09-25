@@ -44,7 +44,8 @@
     "feedback": "Обратная связь",
     "revenue": "Доход",
     "governance": "Управление",
-    "coming_soon": "Скоро"
+    "coming_soon": "Скоро",
+    "launch_app": "Открыть приложение"
   },
   "RecentTransactions": {
     "transactions": "Транзакции",
