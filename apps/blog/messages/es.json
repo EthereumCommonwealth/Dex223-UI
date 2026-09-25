@@ -44,7 +44,8 @@
     "feedback": "Comentarios",
     "revenue": "Ingresos",
     "governance": "Gobernanza",
-    "coming_soon": "Próximamente"
+    "coming_soon": "Próximamente",
+    "launch_app": "Abrir la app"
   },
   "Footer": {
     "gas": "Gas:",
