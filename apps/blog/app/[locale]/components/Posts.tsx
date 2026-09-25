@@ -22,7 +22,10 @@ export default function Posts({ posts }: { posts: Post[] }) {
           <Link
             href={`/${post.id}?slug=${post.slug}`}
             key={post.id}
-            className={clsx("flex flex-col cursor-pointer", !isTouchDevice && "group")}
+            className={clsx(
+              "flex flex-col cursor-pointer rounded-3 md:rounded-5",
+              !isTouchDevice && "group",
+            )}
           >
             <div className="w-full aspect-[16/9] relative">
               {!!post.links[0] && <YoutubeTag />}

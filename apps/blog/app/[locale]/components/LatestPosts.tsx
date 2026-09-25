@@ -27,7 +27,10 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] xl:grid-cols-[7fr_4fr] gap-4 md:gap-5">
         <Link
           href={`/${latestPost.id}?slug=${latestPost.slug}`}
-          className={clsx("flex flex-col cursor-pointer", !isTouchDevice && "group")}
+          className={clsx(
+            "flex flex-col cursor-pointer rounded-3 md:rounded-5",
+            !isTouchDevice && "group",
+          )}
         >
           <div className="w-full flex-grow relative aspect-[16/9] md:aspect-[unset]">
             {!!latestPost.links[0] && <YoutubeTag />}
@@ -58,7 +61,10 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
               <Link
                 href={`/${post.id}?slug=${post.slug}`}
                 key={post.id}
-                className={clsx("flex max-md:flex-col cursor-pointer", !isTouchDevice && "group")}
+                className={clsx(
+                  "flex max-md:flex-col cursor-pointer rounded-3 md:rounded-5",
+                  !isTouchDevice && "group",
+                )}
               >
                 <div className="md:h-[132px] aspect-[16/9] md:aspect-[1/1] lg:aspect-[16/9] relative flex-shrink-0">
                   {!!post.links[0] && <YoutubeTag />}
