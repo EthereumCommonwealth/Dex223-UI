@@ -584,9 +584,7 @@ export const Claims = ({
                       )}
                     </Button>
                     {selectedCount > 15 && (
-                      <span className="text-10 text-red-light text-center">
-                        {t("max_tokens")}
-                      </span>
+                      <span className="text-10 text-red-light text-center">{t("max_tokens")}</span>
                     )}
                   </div>
                 </div>

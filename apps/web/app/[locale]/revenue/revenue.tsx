@@ -353,7 +353,9 @@ export function Revenue() {
               <div className="relative flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-7 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center justify-between z-10">
                   <div className="flex items-center gap-1">
-                    <span className="text-14 md:text-16 text-secondary-text">{t("staked_label")}</span>
+                    <span className="text-14 md:text-16 text-secondary-text">
+                      {t("staked_label")}
+                    </span>
                     <Tooltip iconSize={16} text={t("staked_tooltip")} />
                   </div>
                   {unstakeCountdown && (
@@ -510,7 +512,9 @@ export function Revenue() {
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg/90 border border-quaternary-bg px-4 md:px-5 py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Preloader size={16} />
-              <span className="text-secondary-text text-12 md:text-14">{t("staking_in_progress")}</span>
+              <span className="text-secondary-text text-12 md:text-14">
+                {t("staking_in_progress")}
+              </span>
             </div>
             <Button
               size={ButtonSize.EXTRA_SMALL}
