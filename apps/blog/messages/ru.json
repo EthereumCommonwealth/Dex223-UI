@@ -363,6 +363,11 @@
     "x": "DEX223",
     "discord": "Discord"
   },
+  "BlogFilters": {
+    "no_results": "Нет статей или видео, соответствующих вашему запросу",
+    "no_posts": "Статей пока нет",
+    "clear_filters": "Сбросить фильтры"
+  },
   "Feedback": {
     "feedback": "Обратная связь",
     "feel_free_to_share": "Поделитесь мнением в комментарии здесь или создайте <github>issue на Github</github>",
@@ -383,8 +388,21 @@
     "something_went_wrong": "Что-то пошло не так, попробуйте позже",
     "thank_you_for_the_feedback": "Спасибо за отзыв! Мы скоро свяжемся с вами. Также можно написать нам в <telegram>Telegram</telegram> или <discord>Discord</discord>."
   },
+  "Post": {
+    "back_to_blog": "Назад в блог",
+    "published": "Опубликовано",
+    "author": "Автор",
+    "copy_link": "Копировать ссылку",
+    "link_copied": "Ссылка скопирована",
+    "link_copy_failed": "Не удалось скопировать ссылку"
+  },
   "Toast": {
     "successfully_copied": "Скопировано!"
+  },
+  "NotFound": {
+    "title": "Публикация не найдена",
+    "description": "Возможно, эта публикация была перемещена или удалена. Посмотрите последние статьи и видео в блоге.",
+    "back_to_blog": "Назад в блог"
   },
   "Portfolio": {
     "approved_deposited": "Разрешено и внесено",
