@@ -44,7 +44,8 @@
     "feedback": "反馈",
     "revenue": "收益",
     "governance": "治理",
-    "coming_soon": "即将推出"
+    "coming_soon": "即将推出",
+    "launch_app": "打开应用"
   },
   "Footer": {
     "gas": "Gas：",

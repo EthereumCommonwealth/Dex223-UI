@@ -36,6 +36,12 @@ import {
   useClaimGasPriceStore,
 } from "../../stores/useClaimGasSettingsStore";
 
+// "-" when the token has no known price.
+const usdOf = (item: { amountUSD: string }) => {
+  const usd = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
+  return Number.isFinite(usd) ? usd : 0;
+};
+
 export const Claims = ({
   tableData,
   selectedTokens,
@@ -122,12 +128,14 @@ export const Claims = ({
         erc223Address: token.erc223Address,
         fullErc20Address: token.fullErc20Address,
         fullErc223Address: token.fullErc223Address,
-        tokenId: token.tokenId,
+        claimAddresses: token.claimAddresses,
+        amountERC20: token.amountERC20,
+        amountERC223: token.amountERC223,
         chainId: token.chainId,
       },
     ];
 
-    const totalReward = parseFloat(token.amountUSD.replace(/[$,]/g, ""));
+    const totalReward = usdOf(token);
 
     openDialog({
       selectedTokens: selectedTokensData,
@@ -152,16 +160,14 @@ export const Claims = ({
         erc223Address: item.erc223Address,
         fullErc20Address: item.fullErc20Address,
         fullErc223Address: item.fullErc223Address,
-        tokenId: item.tokenId,
+        claimAddresses: item.claimAddresses,
+        amountERC20: item.amountERC20,
+        amountERC223: item.amountERC223,
         chainId: item.chainId,
       }));
 
     const totalReward = tableData.reduce((sum: number, item: any) => {
-      if (selectedTokens.has(item.id)) {
-        const usdValue = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
-        return sum + usdValue;
-      }
-      return sum;
+      return selectedTokens.has(item.id) ? sum + usdOf(item) : sum;
     }, 0);
 
     if (selectedTokens.size === 1) {
@@ -189,11 +195,7 @@ export const Claims = ({
 
   const selectedCount = selectedTokens.size;
   const totalReward = tableData.reduce((sum: number, item: any) => {
-    if (selectedTokens.has(item.id)) {
-      const usdValue = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
-      return sum + usdValue;
-    }
-    return sum;
+    return selectedTokens.has(item.id) ? sum + usdOf(item) : sum;
   }, 0);
   const showClaimingOverlay = hasClaimInProgress && !isLoading;
 
@@ -388,7 +390,12 @@ export const Claims = ({
                         colorScheme={ButtonColor.GREEN}
                         size={ButtonSize.MEDIUM}
                         onClick={() => handleClaimSingle(o)}
-                        disabled={claimLocked || selectedTokens.size > 0 || hasClaimInProgress}
+                        disabled={
+                          claimLocked ||
+                          selectedTokens.size > 0 ||
+                          hasClaimInProgress ||
+                          !o.claimAddresses?.length
+                        }
                       >
                         Claim
                       </Button>
@@ -679,7 +686,12 @@ export const Claims = ({
                       variant={ButtonVariantType.CONTAINED}
                       colorScheme={ButtonColor.GREEN}
                       size={ButtonSize.MEDIUM}
-                      disabled={claimLocked || selectedTokens.size > 0 || hasClaimInProgress}
+                      disabled={
+                        claimLocked ||
+                        selectedTokens.size > 0 ||
+                        hasClaimInProgress ||
+                        !o.claimAddresses?.length
+                      }
                       onClick={() => handleClaimSingle(o)}
                     >
                       Claim

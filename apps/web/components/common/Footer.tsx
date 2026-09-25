@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { formatGwei } from "viem";
 
 import Container from "@/components/atoms/Container";
@@ -75,6 +75,7 @@ function FooterLink({ href, title, icon }: SocialLink) {
 
 export default function Footer() {
   const t = useTranslations("Footer");
+  const locale = useLocale();
 
   const chainId = useCurrentChainId();
 
@@ -130,7 +131,15 @@ export default function Footer() {
             </span>
             <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-end sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {socialLinks.map((socialLink) => {
-                return <FooterLink key={socialLink.title} {...socialLink} />;
+                return (
+                  <FooterLink
+                    key={socialLink.title}
+                    {...socialLink}
+                    href={
+                      socialLink.icon === "blog" ? `${socialLink.href}${locale}` : socialLink.href
+                    }
+                  />
+                );
               })}
             </div>
           </div>

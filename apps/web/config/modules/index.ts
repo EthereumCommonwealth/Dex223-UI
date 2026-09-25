@@ -1,9 +1,22 @@
 import { Address } from "viem";
 
-import { REVENUE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
+import { MARGIN_TRADING_ADDRESS, REVENUE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 
 export const isMarginModuleEnabled = true;
+
+/**
+ * The margin module only works on chains where its contract is deployed. The address map uses
+ * the zero address for chains without a deployment, and nothing may be sent there.
+ */
+export function isMarginDeployed(chainId: DexChainId | undefined): boolean {
+  if (!isMarginModuleEnabled || !chainId) {
+    return false;
+  }
+
+  const address = MARGIN_TRADING_ADDRESS[chainId];
+  return Boolean(address) && address.toLowerCase() !== ZERO_ADDRESS.toLowerCase();
+}
 
 export function isRevenueDeployed(chainId: DexChainId): boolean {
   return REVENUE_ADDRESS[chainId]?.toLowerCase() !== ZERO_ADDRESS.toLowerCase();

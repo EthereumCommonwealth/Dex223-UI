@@ -31,6 +31,11 @@
     "partners": "Parceiros",
     "partners_eos_support": "BlockzHub",
     "guidelines": "Guias",
+    "coming_soon": "Em breve",
+    "margin_unavailable_title": "O trading com margem ainda não está disponível nesta rede",
+    "margin_unavailable_switch": "Mude para {networks} no seletor de rede para usar trading com margem e empréstimos.",
+    "margin_unavailable_description": "O contrato de trading com margem ainda não foi implantado nesta rede. Você pode continuar negociando no Swap.",
+    "margin_unavailable_go_to_swap": "Ir para Swap",
     "send": "Enviar"
   },
   "Swap": {

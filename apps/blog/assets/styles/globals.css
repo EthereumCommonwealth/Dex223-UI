@@ -37,6 +37,19 @@ body {
   color: theme("colors.primary-text");
 }
 
+/* Links in a post that leave Dex223 open in a new tab; mark them so readers know. */
+.post-content a[target="_blank"]::after {
+  content: "";
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-left: 0.15em;
+  vertical-align: -0.05em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.7 9.59 7.98 17.53a.99.99 0 0 1-1.4-1.4l7.72-7.94h-5.6a1 1 0 1 1 0-2h8a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V9.59Z'/%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M15.7 9.59 7.98 17.53a.99.99 0 0 1-1.4-1.4l7.72-7.94h-5.6a1 1 0 1 1 0-2h8a1 1 0 0 1 1 1v8a1 1 0 1 1-2 0V9.59Z'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+
 button:focus,
 a:focus,
 input:focus,
@@ -45,6 +58,26 @@ select:focus,
 div[role="button"]:focus,
 div[role="dialog"]:focus {
   outline: none;
+}
+
+/* Keyboard users still get a clear, on-brand focus ring. Mouse focus stays clean. */
+button:focus-visible,
+a:focus-visible,
+select:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible {
+  outline: 2px solid theme("colors.green-hover");
+  outline-offset: 2px;
+}
+
+/* Loading spinners keep animating; only UI transitions are shortened. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .Dialog-overlay {
@@ -343,4 +376,52 @@ input[type="range"].variant-purple:focus::-moz-range-thumb {
 
 [data-simplebar].simplebar-dragging .simplebar-scrollbar:before {
   opacity: 1!important;
+}
+
+/* Post body details the typography plugin leaves in light-theme colours. */
+.post-content :not(pre) > code {
+  background: theme("colors.tertiary-bg");
+  color: theme("colors.primary-text");
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.875em;
+  font-weight: 400;
+}
+
+.post-content :not(pre) > code::before,
+.post-content :not(pre) > code::after {
+  content: none;
+}
+
+.post-content pre {
+  background: theme("colors.primary-bg");
+  border: 1px solid theme("colors.secondary-border");
+  color: theme("colors.primary-text");
+  overflow-x: auto;
+}
+
+.post-content blockquote {
+  border-left-color: theme("colors.green");
+  color: theme("colors.secondary-text");
+}
+
+.post-content hr {
+  border-color: theme("colors.secondary-border");
+}
+
+.post-content img,
+.post-content iframe {
+  border-radius: 12px;
+}
+
+.post-content .table-scroll {
+  overflow-x: auto;
+  border-radius: 20px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.post-content .table-scroll > table {
+  margin-top: 0;
+  margin-bottom: 0;
 }

@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { ReactNode, useState } from "react";
 
+import ComingSoonBadge from "@/components/atoms/ComingSoonBadge";
 import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
 import { Link, usePathname } from "@/i18n/routing";
@@ -16,11 +17,16 @@ interface Props {
 export default function NavigationItem({ href, title, active, comingSoonLabel }: Props) {
   if (comingSoonLabel) {
     return (
-      <span className="relative px-3 py-5 inline-flex cursor-default" aria-disabled="true">
-        <span className="text-secondary-text opacity-50">{title}</span>
-        <span className="absolute left-1/2 -translate-x-1/2 bottom-1 text-10 leading-4 px-2 rounded-20 border border-green/40 text-green whitespace-nowrap">
-          {comingSoonLabel}
+      <span className="relative">
+        <span
+          aria-disabled="true"
+          className="px-3 py-5 inline-flex text-secondary-text opacity-50 cursor-default"
+        >
+          {title}
         </span>
+        <div className="absolute left-1/2 -translate-x-1/2 -bottom-[19px]">
+          <ComingSoonBadge text={comingSoonLabel} />
+        </div>
       </span>
     );
   }

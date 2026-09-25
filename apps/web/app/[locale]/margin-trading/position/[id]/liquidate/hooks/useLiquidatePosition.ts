@@ -7,6 +7,7 @@ import {
 } from "@/app/[locale]/margin-trading/position/[id]/liquidate/stores/usePositionLiquidateStatusStore";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 
@@ -19,6 +20,11 @@ export default function useLiquidatePosition(position: MarginPosition) {
     usePositionLiquidateStatusStore();
 
   const handleLiquidatePosition = useCallback(async () => {
+    // Never build a transaction against the zero address on chains without a margin deployment.
+    if (!isMarginDeployed(chainId)) {
+      return;
+    }
+
     if (!position || !walletClient || !publicClient) {
       return;
     }
