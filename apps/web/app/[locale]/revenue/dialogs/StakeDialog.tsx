@@ -21,6 +21,7 @@ import TokenStandardSelector from "@/components/common/TokenStandardSelector";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import { ThemeColors } from "@/config/theme/colors";
 import { clsxMerge } from "@/functions/clsxMerge";
+import { formatDuration } from "@/functions/formatDuration";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -335,7 +336,15 @@ const StakeDialog = () => {
     isRevenueDeployed,
     stakingTokenERC20,
     stakingTokenERC223,
+    claimDelay,
+    hasStaked,
+    contractStakeErc20Balance,
+    contractStakeErc223Balance,
   } = useRevenueContract();
+
+  // claim_delay is configurable per deployment (10 days on mainnet, 5 minutes on Sepolia),
+  // so format whatever the chain returns and show nothing until it has loaded.
+  const lockDuration = typeof claimDelay === "bigint" ? formatDuration(Number(claimDelay)) : null;
 
   const {
     isPendingApprove,
@@ -423,21 +432,26 @@ const StakeDialog = () => {
   const isStaking = dialogType === "stake";
   const title = isStaking ? "Stake" : "Unstake";
 
-  const balance0 = redErc20Balance ? formatUnits(redErc20Balance, 18) : "0";
-  const balance1 = redErc223Balance ? formatUnits(redErc223Balance, 18) : "0";
+  // Unstaking pays the chosen version from the contract's own balance of it, so the
+  // most a user can take in one version is min(staked, what the contract holds).
+  const unstakeLimit = (held: bigint | undefined) => {
+    const staked = typeof userStaked === "bigint" ? userStaked : 0n;
+    const h = held ?? 0n;
+    return staked < h ? staked : h;
+  };
+  const available0 = isStaking ? redErc20Balance : unstakeLimit(contractStakeErc20Balance);
+  const available1 = isStaking ? redErc223Balance : unstakeLimit(contractStakeErc223Balance);
+  const balance0 = available0 ? formatUnits(available0, 18) : "0";
+  const balance1 = available1 ? formatUnits(available1, 18) : "0";
 
-  const computedBalance = selectedStandard === Standard.ERC20 ? balance0 : balance1;
-
-  // Check if balance is insufficient for staking
   const isInsufficientBalance = useMemo(() => {
-    if (!isStaking || !amount || parseFloat(amount) <= 0) {
+    if (!amount || parseFloat(amount) <= 0) {
       return false;
     }
 
     try {
       const amountBigInt = parseUnits(amount, 18);
-      const currentBalance =
-        selectedStandard === Standard.ERC20 ? redErc20Balance : redErc223Balance;
+      const currentBalance = selectedStandard === Standard.ERC20 ? available0 : available1;
 
       if (!currentBalance) {
         return true;
@@ -447,7 +461,7 @@ const StakeDialog = () => {
     } catch {
       return false;
     }
-  }, [amount, isStaking, selectedStandard, redErc20Balance, redErc223Balance]);
+  }, [amount, selectedStandard, available0, available1]);
 
   const isProcessing = useMemo(() => {
     return (
@@ -570,6 +584,19 @@ const StakeDialog = () => {
           return;
         }
 
+        const held =
+          selectedStandard === Standard.ERC223
+            ? contractStakeErc223Balance
+            : contractStakeErc20Balance;
+        if (held === undefined || amountBigInt > held) {
+          setStatus(StakeStatus.ERROR);
+          setErrorType(StakeError.INSUFFICIENT_BALANCE);
+          setErrorMessage(
+            `The Revenue contract holds only ${formatUnits(held ?? 0n, 18)} D223 as ${selectedStandard}. Unstake the rest in the other standard.`,
+          );
+          return;
+        }
+
         setStatus(StakeStatus.PENDING);
         try {
           // RevenueV1 pays the token address passed to withdraw. ERC-223 stakes sit in the
@@ -608,6 +635,7 @@ const StakeDialog = () => {
       setErrorMessage(error.message || "Transaction failed. Please try again.");
     }
   }, [
+    amountToApprove,
     isCorrectNetwork,
     isRevenueDeployed,
     stakingTokenERC20,
@@ -619,6 +647,8 @@ const StakeDialog = () => {
     redErc223Balance,
     canUnstake,
     userStaked,
+    contractStakeErc20Balance,
+    contractStakeErc223Balance,
     approve,
     stake,
     stakeERC223,
@@ -801,14 +831,16 @@ const StakeDialog = () => {
   const renderInitialState = () => {
     return (
       <div className="space-y-4">
-        {isStaking && (
+        {isStaking && lockDuration && (
           <Alert
             type="warning"
             text={
               <div className="flex items-start gap-2">
                 <span className="text-14">
-                  You will be able to unstake your D223 tokens at any moment after{" "}
-                  <span className="font-medium">21 days</span> since your staking date.
+                  You can unstake and claim rewards{" "}
+                  <span className="font-medium">{lockDuration}</span> after your last stake.
+                  {hasStaked &&
+                    " Staking more now restarts that lock for your whole staked balance."}
                 </span>
               </div>
             }
@@ -882,80 +914,79 @@ const StakeDialog = () => {
         )}
 
         {/* Approve amount section - only show for ERC-20 staking */}
-        {isStaking &&
-          (selectedStandard === Standard.ERC20 || selectedStandard === Standard.ERC223) && (
-            <div
-              className={clsx(
-                "bg-tertiary-bg rounded-3 flex items-center px-4 md:px-5 py-2 min-h-12 gap-2 md:gap-3",
-                +amountToApprove < +amount && "md:pb-[26px]",
-              )}
-            >
-              <div className="md:items-center md:justify-between md:gap-5 flex-grow flex flex-col gap-1 md:flex-row">
-                <div className="flex items-center gap-1 md:gap-1.5 text-secondary-text whitespace-nowrap md:flex-row-reverse">
-                  <span className="text-12 md:text-14">Approve amount</span>
-                  <Tooltip
-                    iconSize={16}
-                    text="In order to stake ERC-20 tokens, you need to give the contract permission to withdraw your tokens. This amount never expires."
-                  />
-                </div>
+        {isStaking && selectedStandard === Standard.ERC20 && (
+          <div
+            className={clsx(
+              "bg-tertiary-bg rounded-3 flex items-center px-4 md:px-5 py-2 min-h-12 gap-2 md:gap-3",
+              +amountToApprove < +amount && "md:pb-[26px]",
+            )}
+          >
+            <div className="md:items-center md:justify-between md:gap-5 flex-grow flex flex-col gap-1 md:flex-row">
+              <div className="flex items-center gap-1 md:gap-1.5 text-secondary-text whitespace-nowrap md:flex-row-reverse">
+                <span className="text-12 md:text-14">Approve amount</span>
+                <Tooltip
+                  iconSize={16}
+                  text="In order to stake ERC-20 tokens, you need to give the contract permission to withdraw your tokens. This amount never expires."
+                />
+              </div>
 
-                {!isEditApproveActive ? (
-                  <span className="text-12 md:text-14">{amountToApprove || "0"} D223</span>
-                ) : (
-                  <div className="flex-grow">
-                    <div className="relative w-full flex-grow">
-                      <NumericFormat
-                        inputMode="decimal"
-                        allowedDecimalSeparators={[","]}
-                        className={clsx(
-                          "h-8 pl-3 pr-14 text-14",
-                          +amountToApprove < +amount && "border-red-light focus:border-red-light",
-                        )}
-                        value={amountToApprove}
-                        onValueChange={(values) => {
-                          setAmountToApprove(values.value);
-                        }}
-                        customInput={Input}
-                        allowNegative={false}
-                        type="text"
-                      />
-                      <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-tertiary-text text-14">
-                        D223
-                      </span>
-                    </div>
-                    {+amountToApprove < +amount && (
-                      <span className="text-red-light md:absolute text-12 md:translate-y-0.5">
-                        Must be higher or equal {amount}
-                      </span>
-                    )}
+              {!isEditApproveActive ? (
+                <span className="text-12 md:text-14">{amountToApprove || "0"} D223</span>
+              ) : (
+                <div className="flex-grow">
+                  <div className="relative w-full flex-grow">
+                    <NumericFormat
+                      inputMode="decimal"
+                      allowedDecimalSeparators={[","]}
+                      className={clsx(
+                        "h-8 pl-3 pr-14 text-14",
+                        +amountToApprove < +amount && "border-red-light focus:border-red-light",
+                      )}
+                      value={amountToApprove}
+                      onValueChange={(values) => {
+                        setAmountToApprove(values.value);
+                      }}
+                      customInput={Input}
+                      allowNegative={false}
+                      type="text"
+                    />
+                    <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-tertiary-text text-14">
+                      D223
+                    </span>
                   </div>
-                )}
-              </div>
-
-              <div className="flex items-center flex-shrink-0">
-                {!isEditApproveActive ? (
-                  <Button
-                    size={ButtonSize.EXTRA_SMALL}
-                    colorScheme={ButtonColor.LIGHT_GREEN}
-                    onClick={() => setIsEditApproveActive(true)}
-                    className="!rounded-20"
-                  >
-                    Edit
-                  </Button>
-                ) : (
-                  <Button
-                    disabled={+amountToApprove < +amount}
-                    size={ButtonSize.EXTRA_SMALL}
-                    colorScheme={ButtonColor.LIGHT_GREEN}
-                    onClick={() => setIsEditApproveActive(false)}
-                    className="!rounded-20 disabled:bg-quaternary-bg"
-                  >
-                    Save
-                  </Button>
-                )}
-              </div>
+                  {+amountToApprove < +amount && (
+                    <span className="text-red-light md:absolute text-12 md:translate-y-0.5">
+                      Must be higher or equal {amount}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
-          )}
+
+            <div className="flex items-center flex-shrink-0">
+              {!isEditApproveActive ? (
+                <Button
+                  size={ButtonSize.EXTRA_SMALL}
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  onClick={() => setIsEditApproveActive(true)}
+                  className="!rounded-20"
+                >
+                  Edit
+                </Button>
+              ) : (
+                <Button
+                  disabled={+amountToApprove < +amount}
+                  size={ButtonSize.EXTRA_SMALL}
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  onClick={() => setIsEditApproveActive(false)}
+                  className="!rounded-20 disabled:bg-quaternary-bg"
+                >
+                  Save
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Gas price and network fee section */}
         <GasSettingsBlock
