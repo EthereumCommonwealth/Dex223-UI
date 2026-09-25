@@ -22,7 +22,10 @@ export default function Posts({ posts }: { posts: Post[] }) {
           <Link
             href={`/${post.id}?slug=${post.slug}`}
             key={post.id}
-            className={clsx("flex flex-col cursor-pointer", !isTouchDevice && "group")}
+            className={clsx(
+              "flex flex-col cursor-pointer rounded-3 md:rounded-5",
+              !isTouchDevice && "group",
+            )}
           >
             <div className="w-full aspect-[16/9] relative">
               {!!post.links[0] && <YoutubeTag />}
@@ -30,8 +33,8 @@ export default function Posts({ posts }: { posts: Post[] }) {
               <Image
                 className="rounded-t-5  object-cover"
                 src={post.thumbnail.link}
-                layout="fill"
-                alt={post.thumbnail.alt}
+                fill
+                alt={post.thumbnail.alt ?? ""}
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>

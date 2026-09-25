@@ -73,3 +73,11 @@ export const ERC223_TOKEN_DEPLOYER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
 };
+
+// RevenueV1 only. Sepolia 0x4e38… is the older Revenue_old contract with a different ABI.
+export const REVENUE_ADDRESS: Record<DexChainId, Address> = {
+  [DexChainId.MAINNET]: "0xbA75fA26BB88BccEB74a967E4cA2FBfe99d6CE6e",
+  [DexChainId.SEPOLIA]: "0xB5581C5500B3b68c5F3855518e7646304e84f9D2",
+  [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
+  [DexChainId.EOS]: ZERO_ADDRESS,
+};

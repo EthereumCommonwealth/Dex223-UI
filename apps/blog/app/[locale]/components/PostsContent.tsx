@@ -27,7 +27,8 @@ export default function PostsContent({
   isAllLoaded: boolean;
   onResetFilters?: () => void;
 }) {
-  const t = useTranslations("BlogFilters");
+  const t = useTranslations("Blog");
+  const tFilters = useTranslations("BlogFilters");
 
   const showLatestNews = useMemo(() => {
     return !searchValue && contentType === "vide_and_content" && tag === "all";
@@ -45,7 +46,7 @@ export default function PostsContent({
     return (
       <div className="rounded-5 bg-primary-bg flex flex-col items-center justify-center min-h-[400px] gap-2 bg-empty-article-not-found bg-right-top bg-no-repeat max-md:bg-size-180">
         <span className="text-secondary-text">
-          {onResetFilters ? t("no_results") : t("no_posts")}
+          {onResetFilters ? tFilters("no_results") : tFilters("no_posts")}
         </span>
         {onResetFilters && (
           <button
@@ -53,7 +54,7 @@ export default function PostsContent({
             onClick={onResetFilters}
             className="mt-2 inline-flex items-center min-h-11 px-6 rounded-3 border border-green text-primary-text font-medium hocus:bg-green-bg duration-200"
           >
-            {t("clear_filters")}
+            {tFilters("clear_filters")}
           </button>
         )}
       </div>
@@ -66,7 +67,7 @@ export default function PostsContent({
         <>
           <LatestPosts posts={posts.slice(0, 4) as [Post, Post, Post, Post]} />
           <div className="h-px bg-secondary-border mt-6 mb-4 md:mt-10 md:mb-8" />
-          <h2 className="text-24 md:text-32 mb-5 ">All news</h2>
+          <h2 className="text-24 md:text-32 mb-5 ">{t("all_news")}</h2>
         </>
       )}
       <Posts posts={showLatestNews ? posts.slice(4) : posts} />

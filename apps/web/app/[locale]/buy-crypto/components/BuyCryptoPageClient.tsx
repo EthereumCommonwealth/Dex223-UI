@@ -15,7 +15,7 @@ import { ColorSchemeProvider } from "@/lib/color-scheme";
 import BuyOnramp from "./BuyOnramp";
 import { BUY_ASSETS, OnrampAsset, OnrampAssetId, OnrampFlow } from "./onrampAssets";
 
-const FLOWS: OnrampFlow[] = ["buy", "sell", "swap"];
+const FLOWS: OnrampFlow[] = ["buy", "sell"];
 
 export default function BuyCryptoPageClient() {
   const t = useTranslations("BuyCrypto");
@@ -43,9 +43,6 @@ export default function BuyCryptoPageClient() {
   const selectAsset = (asset: OnrampAsset) => {
     setAssetId(asset.id);
     setCompletedSymbol(null);
-    if (flow !== "buy" && asset.id === "any") {
-      // Keep sell/swap usable without a forced coin.
-    }
   };
 
   return (
@@ -57,7 +54,9 @@ export default function BuyCryptoPageClient() {
               <p className="text-12 uppercase tracking-[0.08em] text-purple mb-2">
                 {t("powered_by_onramp")}
               </p>
-              <h1 className="text-24 md:text-32 font-medium text-primary-text mb-2">{t("title")}</h1>
+              <h1 className="text-24 md:text-32 font-medium text-primary-text mb-2">
+                {t("title")}
+              </h1>
               <p className="text-14 md:text-16 text-secondary-text">{t("description")}</p>
             </header>
 
@@ -165,9 +164,9 @@ export default function BuyCryptoPageClient() {
                 </div>
               )}
 
-              {(flow === "sell" || flow === "swap") && (
+              {flow === "sell" && (
                 <div className="bg-secondary-bg rounded-3 px-4 py-3 text-14 text-secondary-text">
-                  {flow === "sell" ? t("sell_hint") : t("swap_hint")}
+                  {t("sell_hint")}
                 </div>
               )}
 
@@ -178,7 +177,12 @@ export default function BuyCryptoPageClient() {
                 </div>
               )}
 
-              <BuyOnramp appId={appId} flow={flow} asset={selectedAsset} onCompleted={handleCompleted} />
+              <BuyOnramp
+                appId={appId}
+                flow={flow}
+                asset={selectedAsset}
+                onCompleted={handleCompleted}
+              />
             </section>
 
             {completedSymbol && (

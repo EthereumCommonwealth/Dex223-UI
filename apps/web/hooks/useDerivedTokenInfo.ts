@@ -60,6 +60,9 @@ export default function useDerivedTokenInfo({
     chainId,
     query: {
       enabled: !!tokenAddressToImport && isAddress(tokenAddressToImport),
+      // Plain ERC-20 tokens have no standard() and revert. That is the expected answer, so do not
+      // retry it: the retries kept the import dialog on a spinner for about 7 seconds.
+      retry: false,
     },
   });
 

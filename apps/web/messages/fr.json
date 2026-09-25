@@ -8,25 +8,38 @@
     "borrow_lend": "Emprunter/Prêter",
     "portfolio": "Portefeuille",
     "more": "Plus",
+    "more_product": "Produit",
+    "more_resources": "Ressources",
     "token": "Jeton",
     "token_listing": "Listing de jetons",
     "token_statistics": "Statistiques",
     "token_lists": "Listes de jetons",
+    "create_token": "Créer un jeton",
+    "blog": "Blog",
+    "feedback": "Commentaires",
     "social_media": "Réseaux sociaux",
-    "social_telegram_discussions": "Discussions Telegram",
-    "social_telegram_announcements": "Canal d’annonces Telegram",
+    "social_telegram_discussions": "Discussions",
+    "social_telegram_announcements": "Annonces",
     "social_x_account": "DEX223",
     "social_discord": "Discord",
-    "social_dex_x_account": "Compte X de Dexaran",
+    "social_dex_x_account": "Dexaran",
     "useful_links": "Liens utiles",
-    "useful_converter": "Convertisseur de jetons ERC20 et ERC223",
-    "useful_losses_calculator": "Calculateur de pertes ERC-20 en direct",
-    "useful_front_page": "Page d’accueil ERC223",
+    "useful_converter": "Convertisseur de jetons",
+    "useful_losses_calculator": "Calculateur de pertes ERC-20",
+    "useful_front_page": "Page d’accueil ERC-223",
     "useful_page_source_codes": "Codes source de la page",
     "partners": "Partenaires",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "Guides",
+    "coming_soon": "Bientôt disponible",
+    "margin_unavailable_title": "Le trading sur marge n'est pas encore disponible sur ce réseau",
+    "margin_unavailable_switch": "Passez à {networks} dans le sélecteur de réseau pour utiliser le trading sur marge et les prêts.",
+    "margin_unavailable_description": "Le contrat de trading sur marge n'est pas encore déployé sur ce réseau. Vous pouvez continuer à échanger sur Swap.",
+    "margin_unavailable_go_to_swap": "Aller à Swap"
   },
   "Swap": {
+    "high_price_impact_warning": "Impact sur le prix élevé ({impact} %). Vous recevrez nettement moins que le prix actuel du marché.",
+    "very_high_price_impact_warning": "Impact sur le prix très élevé ({impact} %). Vous perdriez une grande partie de la valeur de cet échange. Essayez un montant plus faible.",
     "swap": "Échanger",
     "review_swap": "Vérifier l’échange",
     "you_pay": "Vous payez",
@@ -42,6 +55,8 @@
     "enter_amount": "Saisir le montant",
     "swap_details": "Détails de l’échange",
     "token_price": "Prix de {symbol}",
+    "price_chart_no_data": "Pas encore d’historique de prix.",
+    "price_chart_data_not_available": "Données de prix indisponibles.",
     "minimum_received": "Min. reçu",
     "price_impact": "Impact sur le prix",
     "trading_fee": "Frais de transaction",
@@ -72,6 +87,7 @@
     "approving_in_progress": "Approbation en cours",
     "looking_for_the_best_trade": "Recherche de la meilleure route...",
     "swap_is_unavailable_for_this_pair": "L’échange n’est pas disponible pour cette paire",
+    "cannot_receive_erc223": "Ce portefeuille ne peut pas recevoir d’ERC-223",
     "insufficient_balance": "Solde insuffisant",
     "settings_applied": "Paramètres appliqués",
     "tokens_in_two_standards_title": "Jetons aux standards ERC-20 et ERC-223",
@@ -81,7 +97,7 @@
     "network_fee_tooltip": "Les frais de réseau sont prélevés lors de l’envoi de toute transaction sur le réseau {networkName}. Ils sont payés dans la monnaie native du réseau (par exemple ETH sur Ethereum).",
     "minimum_received_tooltip": "Quantité minimale de jetons que vous recevrez lorsque l’échange sera exécuté. Le prix réel peut différer de celui prévu au moment de la création de la transaction, car votre transaction ne peut être confirmée qu’au bloc suivant alors que les prix proviennent du bloc actuel. En aucun cas vous ne recevrez moins que ce montant minimal, même si le prix évolue pendant que la transaction est en attente.",
     "price_impact_tooltip": "Impact estimé de votre transaction sur le marché. Lorsque vous achetez ou vendez des actifs, leur prix évolue en conséquence, et cette mesure indique quelle part de cette évolution est due à vos actions.",
-    "trading_fee_tooltip": "Les frais de transaction sont prélevés sur chaque opération et redistribués aux détenteurs du jeton D223.",
+    "trading_fee_tooltip": "Chaque échange paie des frais de transaction du pool aux fournisseurs de liquidité. Une part distincte de frais du protocole peut être collectée dans le contrat Revenue pour les utilisateurs qui y stakent le jeton de staking.",
     "route_tooltip": "Si votre transaction a un impact important sur le marché, vous pouvez obtenir de meilleurs prix par arbitrage plutôt qu’en achetant ou vendant la totalité du montant sur un seul pool. La route indique les autres paires de jetons affectées lors de votre échange, le cas échéant.",
     "maximum_slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation de prix tolérée. Si le prix réel s’écarte du prix attendu de plus que le slippage maximum, la transaction sera automatiquement annulée et vos jetons ne seront pas échangés.",
     "gas_limit_tooltip": "La limite de gas détermine le nombre d’opérations que votre transaction peut déclencher. Plus les actions déclenchées dans le contrat intelligent sont complexes, plus la limite de gas requise peut être élevée. Une limite plus élevée entraîne des frais de réseau plus élevés.",
@@ -265,13 +281,25 @@
     "something_went_wrong": "Une erreur est survenue, réessayez plus tard",
     "thank_you_for_the_feedback": "Merci pour votre retour ! Nous vous recontacterons bientôt. Vous pouvez aussi nous joindre via <telegram>Telegram</telegram> ou <discord>Discord</discord>."
   },
+  "Converter": {
+    "title": "Token converter",
+    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
+    "convert_button": "Convert",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "flip_direction": "Flip conversion direction",
+    "pick_token": "Select token",
+    "connect_wallet": "Connect wallet",
+    "insufficient_balance": "Insufficient balance",
+    "no_fees": "1:1 conversion. No protocol fees."
+  },
   "BuyCrypto": {
     "title": "Alimentez votre portefeuille en fiat",
-    "description": "Achetez D223 ou d'autres tokens avec des moyens de paiement locaux via Onramp, puis tradez ou apportez de la liquidité sur Dex223.",
+    "description": "Achetez ou vendez de la crypto en fiat via Onramp. Échangez des tokens sur Dex223 après avoir alimenté votre portefeuille.",
     "powered_by_onramp": "Onramp fiat",
     "step_buy": "Payez par virement, carte ou moyens locaux",
     "step_receive": "La crypto arrive dans votre portefeuille connecté",
-    "step_use": "Tradez ou créez des pools sur Dex223",
+    "step_use": "Échangez ou créez des pools sur Dex223",
     "flow_buy": "Acheter",
     "flow_sell": "Vendre",
     "flow_swap": "Échanger",
@@ -292,7 +320,7 @@
     "wallet_destination_hint": "Les tokens sont envoyés à votre adresse de portefeuille connectée.",
     "success_title": "Achat terminé",
     "success_body": "Votre {symbol} est en route. Utilisez-le pour trader ou ajouter de la liquidité sur Dex223.",
-    "cta_trade": "Trader sur Dex223",
+    "cta_trade": "Échanger sur Dex223",
     "cta_pools": "Voir les pools",
     "cta_add_liquidity": "Ajouter de la liquidité",
     "after_title": "Après l'achat",
@@ -312,6 +340,7 @@
     "wallet_connection_notice": "Votre portefeuille sera connecté automatiquement lorsque vous continuerez"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "Ce fichier ne contient aucun jeton valide pour le réseau sélectionné.",
     "manage_lists": "Gérer les listes",
     "manage_tokens": "Gérer les jetons",
     "tokens": "Jetons",
@@ -378,6 +407,7 @@
     "must_be_at_least": "Doit être au moins {val}",
     "token_starting_price": "Prix initial de {symbol}",
     "pools_not_found": "Aucun pool trouvé",
+    "pools_load_error": "Impossible de charger les pools. Vérifiez votre connexion et réessayez.",
     "amount_title": "Montant",
     "enter_correct_values": "Saisissez des valeurs correctes",
     "collecting_fee_message": "Percevoir les frais retirera les frais actuellement disponibles",
@@ -483,5 +513,207 @@
     "gas_price_tooltip": "Les frais que vous payez avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
     "approved_tooltip": "Pour déposer des jetons ERC-20 dans des contrats, vous devez « autoriser » le contrat à prélever le jeton sur votre solde. L’approbation détermine la quantité de jetons de votre solde qu’un contrat peut déplacer en votre nom. Les jetons ERC-223 ne nécessitent pas d’approbation, vous n’avez donc pas à autoriser un contrat à accéder à votre solde.",
     "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment."
+  },
+  "Statistics": {
+    "title": "Statistiques",
+    "description": "Aperçu du protocole sur le réseau sélectionné.",
+    "tvl": "TVL",
+    "volume": "Volume total",
+    "pools": "Pools",
+    "transactions": "Transactions",
+    "top_pools": "Meilleures pools par TVL",
+    "view_all_pools": "Voir toutes les pools",
+    "loading": "Chargement des pools…",
+    "no_pools": "Aucune pool trouvée sur ce réseau.",
+    "unavailable": "Les statistiques sont indisponibles sur ce réseau pour le moment.",
+    "loading_tokens": "Chargement des jetons…",
+    "no_tokens": "Aucun jeton trouvé sur ce réseau.",
+    "token_not_found": "Jeton introuvable.",
+    "tab_overview": "Aperçu",
+    "tab_tokens": "Jetons",
+    "tab_pools": "Pools",
+    "col_token": "Jeton",
+    "col_volume": "Volume",
+    "col_price": "Prix",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Prix",
+    "chart_empty": "Pas encore de données de graphique",
+    "token_pools": "Pools"
+  },
+  "Guidelines": {
+    "title": "Guides",
+    "description": "Liens rapides pour démarrer sur Dex223.",
+    "getting_started_title": "Pour commencer",
+    "getting_started_subtitle": "Vos premiers pas sur la plateforme",
+    "tokens_title": "Jetons",
+    "tokens_subtitle": "Lister, créer et gérer des jetons",
+    "learn_more_title": "En savoir plus",
+    "learn_more_subtitle": "Docs, actualités et statistiques du protocole",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Tutoriels courts pour les flux courants",
+    "back": "Guides",
+    "steps_label": "Étapes",
+    "guides": {
+      "swap": {
+        "title": "Comment faire un swap",
+        "description": "Échangez des jetons sur Dex223 en quelques étapes.",
+        "cta": "Ouvrir Swap",
+        "sections": {
+          "before": {
+            "heading": "Avant de commencer",
+            "body": "Connectez un portefeuille qui contient le jeton que vous voulez vendre, ainsi que suffisamment de gas pour le réseau sélectionné."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Swap</b> depuis le menu Échanger.",
+              "s2": "Choisissez le jeton avec lequel vous payez et le jeton que vous recevez.",
+              "s3": "Saisissez un montant. Vérifiez le prix proposé et l’impact sur le prix.",
+              "s4": "Confirmez le swap dans votre portefeuille lorsque cela vous est demandé."
+            }
+          },
+          "tips": {
+            "heading": "Conseils",
+            "items": {
+              "s1": "Privilégiez les pools liquides pour obtenir des cotations plus serrées.",
+              "s2": "S'il manque un jeton, ouvrez <b>Gérer les jetons</b> dans le sélecteur de jetons ou collez l'adresse de son contrat.",
+              "s3": "Les versions ERC-20 et ERC-223 d’un même actif peuvent apparaître toutes les deux. Choisissez le standard attendu par votre portefeuille et par la destination."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Convertir entre ERC-20 et ERC-223",
+        "description": "Faites passer n’importe quel jeton pris en charge d’un standard à l’autre au taux de 1:1.",
+        "cta": "Ouvrir Convertisseur de jetons",
+        "sections": {
+          "what": {
+            "heading": "À quoi il sert",
+            "body": "Le convertisseur encapsule ou désencapsule un jeton entre ERC-20 et ERC-223 au taux de <b>1:1</b>, sans frais de protocole."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Convertisseur de jetons</b> depuis le menu Plus.",
+              "s2": "Sélectionnez le jeton et le sens de conversion (vers ERC-20 ou vers ERC-223).",
+              "s3": "Saisissez le montant et confirmez dans votre portefeuille."
+            }
+          },
+          "when": {
+            "heading": "Quand l’utiliser",
+            "items": {
+              "s1": "Vous avez reçu de l’ERC-223 mais une dapp n’accepte que l’ERC-20 (ou l’inverse).",
+              "s2": "Vous préparez de la liquidité ou un swap qui exige un standard précis."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Gérer les listes de jetons",
+        "description": "Activez, importez et organisez les listes qui alimentent le sélecteur de jetons.",
+        "cta": "Ouvrir Listes de jetons",
+        "sections": {
+          "why": {
+            "heading": "Pourquoi les listes comptent",
+            "body": "Dex223 n’affiche que les jetons des listes que vous activez. Si un jeton manque dans Swap ou dans le convertisseur, vérifiez d’abord vos listes."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Listes de jetons</b> depuis le menu Plus, ou <b>Gérer les jetons</b> dans le sélecteur de jetons.",
+              "s2": "Dans l’onglet <b>Listes</b>, activez les listes auxquelles vous faites confiance.",
+              "s3": "Importez une liste personnalisée par URL, JSON ou contrat si nécessaire.",
+              "s4": "Dans l’onglet <b>Jetons</b>, épinglez vos favoris ou importez un jeton précis à partir de son adresse."
+            }
+          },
+          "safety": {
+            "heading": "Sécurité",
+            "body": "N’activez que des listes provenant de sources de confiance. Des listes malveillantes peuvent faire apparaître des jetons frauduleux aux noms familiers."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "Lister un jeton",
+        "description": "Soumettez un jeton à un contrat d’autolisting pour qu’il puisse s’échanger sur Dex223.",
+        "cta": "Ouvrir Listing de jetons",
+        "sections": {
+          "overview": {
+            "heading": "Présentation",
+            "body": "Le listing de jetons enregistre votre jeton auprès d’un contrat d’autolisting Dex223 afin que les pools et l’interface puissent le trouver."
+          },
+          "before": {
+            "heading": "Avant de commencer",
+            "body": "Le contrat d'autolisting nécessite un pool existant. Créez un pool pour votre jeton et son jeton apparié dans <b>Pools</b>, puis ajoutez de la liquidité pour que les traders obtiennent une cotation."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Listing de jetons</b> depuis la navigation principale.",
+              "s2": "Choisissez le contrat de listing, votre jeton et le <b>Paired token</b> (jeton apparié).",
+              "s3": "Vérifiez les frais et les conditions de cette liste.",
+              "s4": "Confirmez la transaction de listing dans votre portefeuille."
+            }
+          },
+          "after": {
+            "heading": "Après le listing",
+            "body": "Utilisez <b>Statistiques</b> pour vérifier que le pool apparaît une fois l'indexation du subgraph terminée."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Acheter de la crypto en fiat",
+        "description": "Alimentez votre portefeuille via Onramp sans quitter Dex223.",
+        "cta": "Ouvrir Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Présentation",
+            "body": "La page Fiat utilise Onramp pour vous permettre d’acheter (ou de vendre) les actifs pris en charge avec des moyens de paiement locaux."
+          },
+          "steps": {
+            "heading": "Étapes",
+            "items": {
+              "s1": "Ouvrez <b>Fiat</b> depuis le menu Échanger.",
+              "s2": "Connectez le portefeuille qui doit recevoir les fonds.",
+              "s3": "Choisissez d’acheter ou de vendre, puis suivez le widget Onramp.",
+              "s4": "Une fois le transfert effectué, revenez à <b>Swap</b> ou à <b>Portefeuille</b> pour utiliser votre solde."
+            }
+          },
+          "notes": {
+            "heading": "Remarques",
+            "items": {
+              "s1": "La disponibilité dépend de votre région et des moyens de paiement pris en charge par Onramp.",
+              "s2": "Les swaps Dex223 se font sur Dex223. Utilisez la page Swap pour les échanges de crypto à crypto."
+            }
+          }
+        }
+      }
+    }
+  },
+  "A11y": {
+    "close": "Fermer",
+    "copy": "Copier",
+    "delete": "Supprimer",
+    "sort": "Trier",
+    "back": "Retour",
+    "add": "Ajouter",
+    "recent_transactions": "Transactions récentes",
+    "network_fee_settings": "Paramètres des frais de réseau",
+    "swap_settings": "Paramètres d'échange",
+    "switch_tokens": "Inverser les jetons",
+    "settings": "Paramètres",
+    "zoom_in": "Zoom avant",
+    "zoom_out": "Zoom arrière",
+    "reset": "Réinitialiser",
+    "decrease": "Diminuer",
+    "open_link": "Ouvrir le lien",
+    "increase_price": "Augmenter le prix",
+    "decrease_price": "Baisser le prix"
+  },
+  "NotFound": {
+    "title": "Page introuvable",
+    "description": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez au trading.",
+    "go_to_swap": "Aller à l'échange",
+    "view_pools": "Voir les pools"
   }
 }

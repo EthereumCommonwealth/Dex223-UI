@@ -105,8 +105,13 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
           }}
           activeTab={activeTab}
           rightContent={
-            <Link href={"/margin-trading/lending-order/create"}>
-              <Button endIcon="add">New lending order</Button>
+            <Link
+              href={"/margin-trading/lending-order/create"}
+              className="self-stretch sm:self-auto sm:shrink-0"
+            >
+              <Button endIcon="add" className="w-full sm:w-auto whitespace-nowrap">
+                New lending order
+              </Button>
             </Link>
           }
         >
@@ -114,7 +119,10 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
             <div className="pt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_min-content] gap-2.5 mb-4 [&>*]:min-w-0">
                 <div className="flex flex-col gap-1">
-                  <InputLabel label="Collateral tokens" tooltipText="TooltipText" />
+                  <InputLabel
+                    label="Collateral tokens"
+                    tooltipText="Show only lending orders that accept these tokens as collateral."
+                  />
                   <FilterTokensSelector
                     placeholder="All tokens"
                     extendWidth
@@ -125,7 +133,10 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <InputLabel label="Borrow" tooltipText="TooltipText" />
+                  <InputLabel
+                    label="Borrow"
+                    tooltipText="Show only lending orders that lend these tokens."
+                  />
                   <FilterTokensSelector
                     placeholder="All tokens"
                     extendWidth
@@ -136,7 +147,10 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <InputLabel label="Tradable tokens" tooltipText="TooltipText" />
+                  <InputLabel
+                    label="Tradable tokens"
+                    tooltipText="Show only lending orders that let you trade borrowed funds into these tokens."
+                  />
                   <FilterTokensSelector
                     placeholder="All tokens"
                     extendWidth

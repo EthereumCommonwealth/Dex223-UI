@@ -4,6 +4,7 @@ import Image from "next/image";
 import React, { ReactNode } from "react";
 
 import Container from "@/components/atoms/Container";
+import Svg from "@/components/atoms/Svg";
 import Button, { ButtonColor, ButtonVariant } from "@/components/buttons/Button";
 import { Link } from "@/i18n/routing";
 
@@ -31,7 +32,7 @@ function ListingVariantCard({
       </div>
 
       {isExternal ? (
-        <a target="_blank" href={href}>
+        <a target="_blank" rel="noopener noreferrer" href={href}>
           <Button fullWidth colorScheme={ButtonColor.LIGHT_GREEN} endIcon="forward">
             {buttonText}
           </Button>
@@ -109,10 +110,17 @@ export default function TokenListingPage() {
                   Tokenlists is a project by Uniswap Labs, visit{" "}
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="text-green underline hocus:text-green-hover duration-200"
                     href="https://tokenlists.org/"
                   >
                     https://tokenlists.org/
+                    <Svg
+                      iconName="forward"
+                      size={16}
+                      aria-hidden
+                      className="inline-block align-[-3px] ml-0.5"
+                    />
                   </a>{" "}
                   for more info.
                 </span>

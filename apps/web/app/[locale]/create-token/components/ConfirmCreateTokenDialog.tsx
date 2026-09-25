@@ -272,8 +272,8 @@ export default function ConfirmCreateTokenDialog({
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 ">Token successfully created</h2>
                 <p className="text-center">
-                  You can create a pool with your new token on DEX223 and then list it in the
-                  auto-listing contract
+                  Create a pool and add liquidity so your token can trade, then list it in an
+                  auto-listing contract.
                 </p>
                 {tokenAddress && (
                   <div className="flex justify-center pt-3">
@@ -310,22 +310,26 @@ export default function ConfirmCreateTokenDialog({
         {(status === CreateTokenStatus.SUCCESS ||
           status === CreateTokenStatus.ERROR_CREATE_WRAPPER) && (
           <div className="grid grid-cols-2 gap-3 mt-4">
-            <Link href="/token-listing/add">
-              <Button
-                className="border-green disabled:bg-green-bg disabled:opacity-50"
-                colorScheme={ButtonColor.LIGHT_GREEN}
-                fullWidth
-              >
-                List token
-              </Button>
-            </Link>
-            <Link href={`/add?tier=3000&tokenA=${tokenAddress}`}>
+            <Link href={tokenAddress ? `/add?tier=3000&tokenA=${tokenAddress}` : "/add?tier=3000"}>
               <Button
                 className="border-green disabled:bg-green-bg disabled:opacity-50"
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 fullWidth
               >
                 Create pool
+              </Button>
+            </Link>
+            <Link
+              href={
+                tokenAddress ? `/token-listing/add?tokenA=${tokenAddress}` : "/token-listing/add"
+              }
+            >
+              <Button
+                className="border-green disabled:bg-green-bg disabled:opacity-50"
+                colorScheme={ButtonColor.LIGHT_GREEN}
+                fullWidth
+              >
+                List token
               </Button>
             </Link>
           </div>

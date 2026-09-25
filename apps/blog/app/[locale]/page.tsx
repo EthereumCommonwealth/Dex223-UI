@@ -2,6 +2,7 @@
 
 import debounce from "lodash.debounce";
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import PostsContent from "@/app/[locale]/components/PostsContent";
@@ -185,10 +186,11 @@ function useAllPosts({
   };
 }
 
-const filterMap: Record<ContentType, string> = {
-  video: "Video",
-  content: "Articles",
-  vide_and_content: "Articles and video",
+// Values are keys in the Blog messages namespace.
+const filterMap: Record<ContentType, "content_video" | "content_articles" | "content_all"> = {
+  video: "content_video",
+  content: "content_articles",
+  vide_and_content: "content_all",
 };
 
 const DEFAULT_TAG = "all";
@@ -247,18 +249,19 @@ export default function BlogPage() {
     setIsLoading,
   });
 
+  const t = useTranslations("Blog");
   const tags = useAllTags();
 
   return (
     <Container className="px-4">
       <div className="flex items-center justify-between pb-6 pt-4 md:py-10 flex-wrap max-lg:flex-col max-lg:items-start gap-2">
-        <h1 className="text-24 md:text-40">Blog</h1>
+        <h1 className="text-24 md:text-40">{t("title")}</h1>
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 max-lg:flex-col-reverse max-lg:w-full">
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 max-md:grid-cols-1 max-lg:grid-cols-2 max-lg:grid max-lg:w-full">
             <Select
               optionsHeight={380}
               options={Object.keys(filterMap).map((key) => ({
-                label: filterMap[key as ContentType],
+                label: t(filterMap[key as ContentType]),
                 value: key,
               }))}
               value={contentType}
@@ -268,7 +271,9 @@ export default function BlogPage() {
 
             <Select
               optionsHeight={380}
-              options={tags}
+              options={tags.map((option) =>
+                option.value === "all" ? { ...option, label: t("all_categories") } : option,
+              )}
               value={tag}
               onChange={(tag) => setTag(tag)}
               extendWidth
@@ -278,7 +283,7 @@ export default function BlogPage() {
           <div className="max-lg:w-full lg:w-[386px]">
             <SearchInput
               className="bg-primary-bg rounded-2 md:rounded-3 h-10 md:h-12"
-              placeholder="Search article or video"
+              placeholder={t("search_placeholder")}
               value={searchValue}
               onChange={(e) => {
                 setSearchValue(e.target.value);

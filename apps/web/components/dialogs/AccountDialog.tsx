@@ -308,6 +308,7 @@ function AccountDialogContent({ setIsOpenedAccount, activeTab, setActiveTab }: a
 }
 
 export default function AccountDialog() {
+  const tWallet = useTranslations("Wallet");
   const { isConnected, address, connector } = useAccount();
 
   const { setIsOpened: setOpenedWallet } = useConnectWalletDialogStateStore();
@@ -387,10 +388,11 @@ export default function AccountDialog() {
             size={ButtonSize.MEDIUM}
             tabletSize={ButtonSize.SMALL}
             mobileSize={ButtonSize.SMALL}
-            className="rounded-2 md:rounded-2 md:font-normal w-full md:w-auto"
+            className="rounded-2 md:rounded-2 md:font-normal w-full md:w-auto max-md:min-h-10 max-md:px-3 whitespace-nowrap"
             onClick={() => setOpenedWallet(true)}
           >
-            Connect wallet
+            {/* Long translations (fr) end in an ellipsis on narrow phones instead of overflowing. */}
+            <span className="truncate min-w-0">{tWallet("connect_wallet")}</span>
           </Button>
         </div>
       )}
