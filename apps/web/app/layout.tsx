@@ -4,14 +4,13 @@ import "@repo/ui/styles.css";
 import clsx from "clsx";
 import { Golos_Text } from "next/font/google";
 import { headers } from "next/headers";
+import { getLocale } from "next-intl/server";
 import { PropsWithChildren } from "react";
 import { cookieToInitialState } from "wagmi";
 
 import Providers from "@/app/providers";
 import GoogleAnalytics from "@/components/analytics/GoogleAnalytics";
 import { config } from "@/config/wagmi/config";
-import { Locale } from "@/i18n/routing";
-
 const golos_text = Golos_Text({
   weight: ["400", "500", "600", "700", "800", "900"],
   subsets: ["latin", "cyrillic"],
@@ -19,16 +18,11 @@ const golos_text = Golos_Text({
   adjustFontFallback: false,
 });
 
-interface Props {
-  params: Promise<{
-    locale: Locale;
-  }>;
-}
-
-export default async function RootLayout({ children, params }: PropsWithChildren<Props>) {
+export default async function RootLayout({ children }: PropsWithChildren) {
   const initialState = cookieToInitialState(config, (await headers()).get("cookie"));
 
-  const locale = (await params).locale;
+  // This layout sits outside app/[locale], so it has no locale param; read it from next-intl.
+  const locale = await getLocale();
 
   return (
     <html suppressHydrationWarning lang={locale}>

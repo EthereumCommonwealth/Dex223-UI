@@ -88,5 +88,13 @@
     "no_results": "没有符合搜索条件的文章或视频",
     "no_posts": "暂无文章",
     "clear_filters": "清除筛选"
+  },
+  "Post": {
+    "back_to_blog": "返回博客",
+    "published": "发布于",
+    "author": "作者",
+    "copy_link": "复制链接",
+    "link_copied": "链接已复制",
+    "link_copy_failed": "无法复制链接"
   }
 }

@@ -88,5 +88,13 @@
     "no_results": "Ningún artículo o video coincide con tu búsqueda",
     "no_posts": "Aún no hay artículos",
     "clear_filters": "Borrar filtros"
+  },
+  "Post": {
+    "back_to_blog": "Volver al blog",
+    "published": "Publicado",
+    "author": "Autor",
+    "copy_link": "Copiar enlace",
+    "link_copied": "Enlace copiado",
+    "link_copy_failed": "No se pudo copiar el enlace"
   }
 }

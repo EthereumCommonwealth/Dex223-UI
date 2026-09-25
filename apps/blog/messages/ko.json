@@ -363,6 +363,11 @@
     "x": "DEX223",
     "discord": "Discord"
   },
+  "BlogFilters": {
+    "no_results": "검색과 일치하는 기사나 동영상이 없습니다",
+    "no_posts": "아직 기사가 없습니다",
+    "clear_filters": "필터 지우기"
+  },
   "Feedback": {
     "feedback": "피드백",
     "feel_free_to_share": "여기에 의견을 남기거나 <github>Github에 이슈를 등록</github>해 주세요",
@@ -383,8 +388,21 @@
     "something_went_wrong": "문제가 발생했습니다. 나중에 다시 시도해 주세요",
     "thank_you_for_the_feedback": "피드백 감사합니다! 곧 연락드리겠습니다. <telegram>Telegram</telegram> 또는 <discord>Discord</discord>로도 문의하실 수 있습니다."
   },
+  "Post": {
+    "back_to_blog": "블로그로 돌아가기",
+    "published": "게시일",
+    "author": "작성자",
+    "copy_link": "링크 복사",
+    "link_copied": "링크가 복사되었습니다",
+    "link_copy_failed": "링크를 복사할 수 없습니다"
+  },
   "Toast": {
     "successfully_copied": "복사되었습니다!"
+  },
+  "NotFound": {
+    "title": "게시물을 찾을 수 없습니다",
+    "description": "이 게시물은 이동되었거나 삭제되었을 수 있습니다. 블로그에서 최신 기사와 동영상을 둘러보세요.",
+    "back_to_blog": "블로그로 돌아가기"
   },
   "Portfolio": {
     "approved_deposited": "승인 및 입금됨",
