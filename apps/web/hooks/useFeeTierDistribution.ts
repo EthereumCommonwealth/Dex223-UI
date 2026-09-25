@@ -104,17 +104,19 @@ function usePoolTVL(tokenA?: Currency, tokenB?: Currency) {
 
   const { asToken0, asToken1, _meta } = data ?? {};
   const allPools = useMemo(
-    () => ([...(asToken0 ?? []), ...(asToken1 ?? [])] as FeeTierPool[]),
+    () => [...(asToken0 ?? []), ...(asToken1 ?? [])] as FeeTierPool[],
     [asToken0, asToken1],
   );
   const poolAddresses = useMemo(
     () =>
-      allPools
-        .map((pool) => pool.id)
-        .filter((id): id is Address => Boolean(id && isAddress(id))),
+      allPools.map((pool) => pool.id).filter((id): id is Address => Boolean(id && isAddress(id))),
     [allPools],
   );
-  const { balances, isLoading: balancesLoading, isError: balancesError } = usePoolsOnChainBalances({
+  const {
+    balances,
+    isLoading: balancesLoading,
+    isError: balancesError,
+  } = usePoolsOnChainBalances({
     poolAddresses,
     chainId,
   });
