@@ -243,17 +243,20 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         <h1 className="mb-2 md:mb-5 text-24 md:text-32">{post.title}</h1>
         <p className="text-16 md:text-20 mb-8 md:mb-[60px]">{post.description}</p>
       </PostContainer>
-      <Container>
-        <div className="w-full relative min-h-[203px] md:min-h-[400px] mb-8 md:mb-[60px]">
-          <Image
-            className="xl:rounded-3"
-            objectFit="cover"
-            layout="fill"
-            src={post.thumbnail?.link || ""}
-            alt={post.thumbnail?.alt || ""}
-          />
-        </div>
-      </Container>
+      {post.thumbnail?.link && (
+        <Container>
+          <div className="w-full relative min-h-[203px] md:min-h-[400px] mb-8 md:mb-[60px]">
+            <Image
+              className="xl:rounded-3 object-cover"
+              fill
+              priority
+              sizes="(max-width: 1406px) 100vw, 1406px"
+              src={post.thumbnail.link}
+              alt={post.thumbnail.alt ?? ""}
+            />
+          </div>
+        </Container>
+      )}
       <PostContainer>
         <div className="post-content prose last:prose-th:pr-4 last:prose-td:pr-4 prose-th:align-top prose-th:py-2 prose-headings:text-primary-text first:prose-th:pl-5 first:prose-td:pl-5 prose-table:rounded-5 prose-table:overflow-hidden prose-td:bg-primary-bg prose-tr:border-secondary-border prose-th:bg-quaternary-bg [&>p]:prose-li:my-2 text-primary-text prose-li:my-2 prose-li:text-secondary-text prose-li:marker:text-secondary-text hover:prose-a:text-green-hover prose-a:duration-200 prose-a:cursor-pointer prose-lg max-lg:prose-base prose-p:text-secondary-text prose-strong:text-inherit max-w-none prose-a:text-green prose-headings::text-primary-text  prose-a:font-normal">
           <div dangerouslySetInnerHTML={sanitizedData()} />
