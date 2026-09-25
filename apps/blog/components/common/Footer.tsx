@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import { IconName } from "@/config/types/IconName";
+import { linkTargetProps } from "@/functions/linkTarget";
 
 type SocialLink = {
   title: any;
@@ -41,7 +42,7 @@ function FooterLink({ href, title, icon }: SocialLink) {
   return (
     <>
       <a
-        target="_blank"
+        {...linkTargetProps(href)}
         href={href}
         className="lg:w-auto flex gap-2 bg-primary-bg rounded-5 py-2 pr-4 pl-5 hocus:bg-green-bg hocus:text-primary-text text-secondary-text duration-200 w-full whitespace-nowrap justify-center"
       >
