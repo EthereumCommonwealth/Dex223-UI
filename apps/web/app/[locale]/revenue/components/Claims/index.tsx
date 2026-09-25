@@ -6,6 +6,7 @@ import Checkbox from "@repo/ui/checkbox";
 import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
@@ -53,6 +54,7 @@ export const Claims = ({
   setSelectedTokens: (tokenId: number) => void;
   isLoading?: boolean;
 }) => {
+  const t = useTranslations("Revenue");
   const {
     openDialog,
     state: claimState,
@@ -205,28 +207,30 @@ export const Claims = ({
       <MultipleClaimDialog />
       {claimLocked && unstakeCountdown ? (
         <p className="text-14 text-secondary-text px-1 pb-3">
-          Claims stay locked for {unstakeCountdown} after the last stake.
+          {t("claims_locked_for", { time: unstakeCountdown })}
         </p>
       ) : null}
 
       {/* Desktop version */}
       <div className="hidden xl:flex xl:flex-col rounded-3 h-[640px] bg-table-gradient">
         <div className="grid grid-cols-[minmax(200px,2.5fr),_minmax(200px,2fr),_minmax(150px,1.2fr),_minmax(150px,1.2fr),_minmax(120px,1fr)] relative pr-5 pl-5 min-w-[1000px] flex-shrink-0">
-          <div className="text-tertiary-text text-13 pl-5 h-[60px] flex items-center">Token</div>
+          <div className="text-tertiary-text text-13 pl-5 h-[60px] flex items-center">
+            {t("column_token")}
+          </div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center">
             <div className="flex flex-col gap-1">
-              <span>Address ERC-20</span>
-              <span>Address ERC-223</span>
+              <span>{t("column_address_erc20")}</span>
+              <span>{t("column_address_erc223")}</span>
             </div>
           </div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center justify-end pr-4">
-            Amount in tokens
+            {t("column_amount_tokens")}
           </div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center justify-end pr-4">
-            Amount in USD
+            {t("column_amount_usd")}
           </div>
           <div className="text-tertiary-text text-13 h-[60px] flex items-center justify-center">
-            Action
+            {t("column_action")}
           </div>
         </div>
 
@@ -382,7 +386,7 @@ export const Claims = ({
                     {isTokenBeingClaimed(o.id) ? (
                       <div className="flex items-center gap-2">
                         <Preloader size={20} />
-                        <span className="text-secondary-text text-14">Claiming...</span>
+                        <span className="text-secondary-text text-14">{t("claiming")}</span>
                       </div>
                     ) : (
                       <Button
@@ -397,7 +401,7 @@ export const Claims = ({
                           !o.claimAddresses?.length
                         }
                       >
-                        Claim
+                        {t("claim_action")}
                       </Button>
                     )}
                   </div>
@@ -409,7 +413,7 @@ export const Claims = ({
             <div className="absolute inset-0 bg-[#0F0F0F]/60 backdrop-blur-[2px] flex items-center justify-center z-10">
               <div className="flex items-center gap-2 rounded-2 bg-primary-bg/90 border border-quaternary-bg px-4 py-2">
                 <Preloader size={20} />
-                <span className="text-secondary-text text-14">Claim in progress...</span>
+                <span className="text-secondary-text text-14">{t("claim_in_progress")}</span>
               </div>
             </div>
           )}
@@ -419,20 +423,20 @@ export const Claims = ({
           <div className="relative z-20 p-4 bg-tertiary-bg rounded-b-3 flex items-center justify-between gap-4 border border-quaternary-bg">
             <div className="flex items-center gap-4">
               <span className="text-tertiary-text text-14">
-                Total claim: {selectedCount} token{selectedCount !== 1 ? "s" : ""}
+                {t("total_claim", { count: selectedCount })}
               </span>
               <button
                 onClick={handleUnselectAll}
                 className="text-secondary-text hover:text-primary-text transition-colors text-14 font-medium"
               >
-                Unselect all
+                {t("unselect_all")}
               </button>
             </div>
             <div className="flex items-center gap-6">
               <div className="flex items-center gap-2">
                 <Svg iconName="gas-edit" size={20} className="text-tertiary-text" />
                 <span className="text-tertiary-text text-14">
-                  Gas price:{" "}
+                  {t("gas_price")}{" "}
                   {formattedGasPrice
                     ? `${formatFloat((Number(formattedGasPrice) / 1e9).toString())} GWEI`
                     : "—"}
@@ -443,7 +447,7 @@ export const Claims = ({
                   size={ButtonSize.EXTRA_SMALL}
                   onClick={() => setIsOpenedFee(true)}
                 >
-                  Edit
+                  {t("edit")}
                 </Button>
               </div>
               <div className="h-[20px] w-[2px] bg-secondary-border"></div>
@@ -451,7 +455,7 @@ export const Claims = ({
                 <div className="flex items-center gap-2">
                   <Svg iconName="collect" size={20} className="text-tertiary-text" />
                   <span className="text-tertiary-text text-14 font-light">
-                    Total reward: ${totalReward.toFixed(2)}
+                    {t("total_reward", { amount: totalReward.toFixed(2) })}
                   </span>
                 </div>
                 <div className="flex flex-col items-end gap-1">
@@ -466,14 +470,14 @@ export const Claims = ({
                     {hasClaimInProgress ? (
                       <div className="flex items-center gap-2">
                         <Preloader size={16} />
-                        Claiming...
+                        {t("claiming")}
                       </div>
                     ) : (
-                      "Claim selected tokens"
+                      t("claim_selected")
                     )}
                   </Button>
                   {selectedCount > 15 && (
-                    <span className="text-10 text-red-light">Max 15 tokens at once</span>
+                    <span className="text-10 text-red-light">{t("max_tokens")}</span>
                   )}
                 </div>
               </div>
@@ -525,7 +529,7 @@ export const Claims = ({
                   <div className="flex items-center gap-1.5">
                     <Svg iconName="gas-edit" size={16} className="text-tertiary-text" />
                     <span className="text-secondary-text text-14">
-                      Gas price:{" "}
+                      {t("gas_price")}{" "}
                       {formattedGasPrice
                         ? `${formatFloat((Number(formattedGasPrice) / 1e9).toString())} GWEI`
                         : "—"}
@@ -538,7 +542,7 @@ export const Claims = ({
                     onClick={() => setIsOpenedFee(true)}
                     className="!h-6 !px-2 !text-12"
                   >
-                    Edit
+                    {t("edit")}
                   </Button>
                 </div>
 
@@ -546,7 +550,7 @@ export const Claims = ({
                   <div className="flex items-center gap-1.5">
                     <Svg iconName="collect" size={16} className="text-tertiary-text" />
                     <span className="text-secondary-text text-14">
-                      Total reward: ${totalReward.toFixed(2)}
+                      {t("total_reward", { amount: totalReward.toFixed(2) })}
                     </span>
                   </div>
                 </div>
@@ -559,7 +563,7 @@ export const Claims = ({
                     onClick={handleUnselectAll}
                     className="flex-1 h-10 !px-0"
                   >
-                    Unselect all
+                    {t("unselect_all")}
                   </Button>
                   <div className="flex flex-col flex-1 gap-1">
                     <Button
@@ -573,16 +577,14 @@ export const Claims = ({
                       {hasClaimInProgress ? (
                         <div className="flex items-center gap-2">
                           <Preloader size={16} />
-                          Claiming...
+                          {t("claiming")}
                         </div>
                       ) : (
-                        `Claim ${selectedCount} token${selectedCount !== 1 ? "s" : ""}`
+                        t("claim_count", { count: selectedCount })
                       )}
                     </Button>
                     {selectedCount > 15 && (
-                      <span className="text-10 text-red-light text-center">
-                        Max 15 tokens at once
-                      </span>
+                      <span className="text-10 text-red-light text-center">{t("max_tokens")}</span>
                     )}
                   </div>
                 </div>
@@ -678,7 +680,7 @@ export const Claims = ({
                   {isTokenBeingClaimed(o.id) ? (
                     <div className="flex items-center justify-center gap-2 h-10 bg-quaternary-bg rounded-2">
                       <Preloader size={16} />
-                      <span className="text-secondary-text text-14">Claiming...</span>
+                      <span className="text-secondary-text text-14">{t("claiming")}</span>
                     </div>
                   ) : (
                     <Button
@@ -694,7 +696,7 @@ export const Claims = ({
                       }
                       onClick={() => handleClaimSingle(o)}
                     >
-                      Claim
+                      {t("claim_action")}
                     </Button>
                   )}
                 </div>
@@ -706,7 +708,7 @@ export const Claims = ({
           <div className="absolute inset-0 bg-[#0F0F0F]/60 backdrop-blur-[2px] flex items-center justify-center z-10">
             <div className="flex items-center gap-2 rounded-2 bg-primary-bg/90 border border-quaternary-bg px-4 py-2">
               <Preloader size={18} />
-              <span className="text-secondary-text text-14">Claim in progress...</span>
+              <span className="text-secondary-text text-14">{t("claim_in_progress")}</span>
             </div>
           </div>
         )}
