@@ -2,12 +2,15 @@ import DOMPurify from "isomorphic-dompurify";
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
+import CopyLinkButton from "@/app/[locale]/components/CopyLinkButton";
 import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { formatPostDate } from "@/functions/formatPostDate";
 import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
 import { Link } from "@/i18n/routing";
 
@@ -69,7 +72,8 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { id } = await params;
+  const { id, locale } = await params;
+  const t = await getTranslations("Post");
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
 
   // The API answers 404 for unknown ids and 422 for anything that is not a UUID
@@ -253,7 +257,7 @@ export default async function PostPage({ params }: PostPageProps) {
             className="flex items-center gap-2 text-secondary-text py-2 hocus:text-green-hover duration-200 font-medium"
           >
             <Svg iconName="back" />
-            Back to blog
+            {t("back_to_blog")}
           </Link>
 
           <div className="flex gap-3 flex-wrap">
@@ -274,16 +278,10 @@ export default async function PostPage({ params }: PostPageProps) {
                 iconName="date"
                 size={20}
               />
-              <span className="text-tertiary-text">Publication date:</span>
-              <span className="text-secondary-text">
-                {new Date(post.createdAt)
-                  .toLocaleString("en", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })
-                  .replace(/\//g, ".")}
-              </span>
+              <span className="text-tertiary-text">{t("published")}</span>
+              <time dateTime={post.createdAt} className="text-secondary-text">
+                {formatPostDate(post.createdAt, locale)}
+              </time>
             </div>
 
             {post.author && (
@@ -293,10 +291,12 @@ export default async function PostPage({ params }: PostPageProps) {
                   iconName="author"
                   size={20}
                 />
-                <span className="text-tertiary-text">Author:</span>
+                <span className="text-tertiary-text">{t("author")}</span>
                 <span className="text-secondary-text">{post.author.username}</span>
               </div>
             )}
+
+            <CopyLinkButton />
           </div>
         </div>
 
