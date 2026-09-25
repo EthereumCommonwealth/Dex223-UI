@@ -9,20 +9,29 @@ import { Link, usePathname } from "@/i18n/routing";
 interface Props {
   href: string;
   title: string;
-  flag: string;
   active?: boolean;
+  /** When set, the item is shown disabled with this badge instead of as a link. */
+  comingSoonLabel?: string;
 }
-export default function NavigationItem({ href, title, active, flag }: Props) {
+export default function NavigationItem({ href, title, active, comingSoonLabel }: Props) {
+  if (comingSoonLabel) {
+    return (
+      <span className="relative px-3 py-5 inline-flex cursor-default" aria-disabled="true">
+        <span className="text-secondary-text opacity-50">{title}</span>
+        <span className="absolute left-1/2 -translate-x-1/2 bottom-1 text-10 leading-4 px-2 rounded-20 border border-green/40 text-green whitespace-nowrap">
+          {comingSoonLabel}
+        </span>
+      </span>
+    );
+  }
+
   return (
     <a
-      target="_blank"
       className={clsx(
         "px-3 py-5 duration-200 inline-flex",
         active
           ? "bg-navigation-active text-green shadow-green/60 text-shadow"
           : "hocus:bg-navigation-hover hocus:text-green hocus:shadow-green/60 hocus:text-shadow text-secondary-text",
-        !["/swap", "/pools", "/token-listing", "/portfolio"].includes(flag) &&
-          "opacity-50 pointer-events-none",
       )}
       href={href}
     >
