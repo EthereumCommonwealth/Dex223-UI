@@ -17,6 +17,9 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
   const post: PostDetails = await res.json();
 
+  // DOMPurify is a module singleton on the server: drop the hook from the previous
+  // request before adding it again, or every render stacks one more copy.
+  DOMPurify.removeHooks("afterSanitizeAttributes");
   DOMPurify.addHook("afterSanitizeAttributes", (node: Element) => {
     // Restrict iframe sources
     if (node.tagName === "IFRAME") {
@@ -25,7 +28,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         node.remove();
       } else {
         node.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups");
-        node.setAttribute("referrerpolicy", "no-referrer");
+        // YouTube refuses to play without a referrer (error 153), so send the origin only.
+        node.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
       }
     }
 
@@ -164,10 +168,13 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         "autoplay",
         "style",
       ],
-    }).replace(
-      /<iframe([\s\S]*?)<\/iframe>/gi,
-      '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
-    ),
+    })
+      .replace(
+        /<iframe([\s\S]*?)<\/iframe>/gi,
+        '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
+      )
+      // Let wide tables scroll sideways on phones instead of crushing their columns.
+      .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
   if (!post) {

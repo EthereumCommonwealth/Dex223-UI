@@ -357,3 +357,51 @@ input[type="range"].variant-purple:focus::-moz-range-thumb {
 [data-simplebar].simplebar-dragging .simplebar-scrollbar:before {
   opacity: 1!important;
 }
+
+/* Post body details the typography plugin leaves in light-theme colours. */
+.post-content :not(pre) > code {
+  background: theme("colors.tertiary-bg");
+  color: theme("colors.primary-text");
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+  font-size: 0.875em;
+  font-weight: 400;
+}
+
+.post-content :not(pre) > code::before,
+.post-content :not(pre) > code::after {
+  content: none;
+}
+
+.post-content pre {
+  background: theme("colors.primary-bg");
+  border: 1px solid theme("colors.secondary-border");
+  color: theme("colors.primary-text");
+  overflow-x: auto;
+}
+
+.post-content blockquote {
+  border-left-color: theme("colors.green");
+  color: theme("colors.secondary-text");
+}
+
+.post-content hr {
+  border-color: theme("colors.secondary-border");
+}
+
+.post-content img,
+.post-content iframe {
+  border-radius: 12px;
+}
+
+.post-content .table-scroll {
+  overflow-x: auto;
+  border-radius: 20px;
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
+
+.post-content .table-scroll > table {
+  margin-top: 0;
+  margin-bottom: 0;
+}
