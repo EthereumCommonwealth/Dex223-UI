@@ -342,8 +342,8 @@ const StakeDialog = () => {
     contractStakeErc223Balance,
   } = useRevenueContract();
 
-  // claim_delay is configurable per deployment (10 days by default, about 10 minutes on
-  // Sepolia), so format whatever the chain returns and show nothing until it has loaded.
+  // claim_delay is configurable per deployment (10 days on mainnet, 5 minutes on Sepolia),
+  // so format whatever the chain returns and show nothing until it has loaded.
   const lockDuration = typeof claimDelay === "bigint" ? formatDuration(Number(claimDelay)) : null;
 
   const {

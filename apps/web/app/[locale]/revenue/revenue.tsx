@@ -16,6 +16,7 @@ import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { TokenListId } from "@/db/db";
+import { formatDuration } from "@/functions/formatDuration";
 import { formatFloat } from "@/functions/formatFloat";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -115,6 +116,7 @@ export function Revenue() {
     recoverDeposit,
     refetchUserData,
     isTransactionPending,
+    avgStakingDuration,
   } = useRevenueContract({ searchAddress });
 
   useEffect(() => {
@@ -421,7 +423,11 @@ export function Revenue() {
                   <span className="text-14 md:text-16 text-secondary-text">Claimable reward</span>
                   <Tooltip
                     iconSize={16}
-                    text="What you could claim right now, in USD, for reward tokens with a known price. Rewards accrue in 10-day periods after your last stake or claim."
+                    text={`What you could claim right now, in USD, for reward tokens with a known price. Rewards accrue in ${
+                      avgStakingDuration > 0n
+                        ? `${formatDuration(Number(avgStakingDuration))} periods`
+                        : "full periods"
+                    } after your last stake or claim.`}
                   />
                 </div>
 
