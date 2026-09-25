@@ -2,6 +2,7 @@
 
 import Preloader from "@repo/ui/preloader";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Address, isAddress } from "viem";
 
@@ -36,6 +37,8 @@ import {
 } from "../stores/useClaimGasSettingsStore";
 
 const MultipleClaimDialog = () => {
+  const t = useTranslations("Revenue");
+  const tLiq = useTranslations("Liquidity");
   const { isOpen, state, data, closeDialog, setState, setError, setData, setClaimTransactionHash } =
     useClaimDialogStore();
   const chainId = useCurrentChainId();
@@ -80,7 +83,7 @@ const MultipleClaimDialog = () => {
 
   useEffect(() => {
     if (state === "confirming-claim" && isOpen) {
-      openConfirmInWalletAlert("Please confirm action in your wallet");
+      openConfirmInWalletAlert(t("confirm_wallet"));
     } else {
       closeConfirmInWalletAlert();
     }
@@ -150,7 +153,7 @@ const MultipleClaimDialog = () => {
         setError(
           unstakeCountdown
             ? `Rewards stay locked for ${unstakeCountdown} after the last stake.`
-            : "Rewards stay locked until the freeze period ends.",
+            : t("rewards_locked"),
         );
         return;
       }
@@ -160,7 +163,7 @@ const MultipleClaimDialog = () => {
       ) as Address[];
 
       if (tokenAddresses.length === 0) {
-        setError("Nothing is claimable for the selected tokens yet.");
+        setError(t("nothing_claimable_selected"));
         return;
       }
 
@@ -184,7 +187,7 @@ const MultipleClaimDialog = () => {
       await refetchUserData();
     } catch (error: any) {
       console.error("Claim error:", error);
-      const errorMessage = error?.message || "An unexpected error occurred. Please try again.";
+      const errorMessage = error?.message || t("unexpected_error");
       setError(errorMessage);
     }
   };
@@ -203,7 +206,7 @@ const MultipleClaimDialog = () => {
     <div className="space-y-4">
       <div className="bg-tertiary-bg rounded-3 px-4 h-12 flex items-center">
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-tertiary-text text-14">Rewards to receive:</span>
+          <span className="text-tertiary-text text-14">{t("rewards_to_receive")}</span>
           <span className="text-primary-text text-14 font-bold">{tokenCount} tokens</span>
           <span className="text-secondary-text text-14">(${data.totalReward.toFixed(2)})</span>
         </div>
@@ -213,7 +216,7 @@ const MultipleClaimDialog = () => {
         <SearchInput
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search name or paste address"
+          placeholder={t("search_name_or_address")}
           className="h-12 text-14 border-secondary-border rounded-3"
         />
       </div>
@@ -307,7 +310,7 @@ const MultipleClaimDialog = () => {
         </div>
       ) : (
         <div className="flex items-center justify-center py-12 px-5 relative overflow-hidden min-h-[284px] bg-tertiary-bg rounded-3 bg-empty-not-found-token bg-right-top bg-no-repeat max-md:bg-size-180">
-          <p className="text-16 text-secondary-text text-center z-10">Token not found</p>
+          <p className="text-16 text-secondary-text text-center z-10">{t("token_not_found")}</p>
         </div>
       )}
       <GasSettingsBlock
@@ -324,7 +327,7 @@ const MultipleClaimDialog = () => {
         onClick={handleClaim}
         disabled={!canUnstake}
       >
-        {canUnstake ? "Claim" : "Claim locked"}
+        {canUnstake ? t("claim_action") : t("claim_locked")}
       </Button>
     </div>
   );
@@ -332,7 +335,7 @@ const MultipleClaimDialog = () => {
   const renderConfirmingState = () => (
     <div className="space-y-5">
       <div className="bg-tertiary-bg rounded-3 p-4 md:p-5 min-h-[88px] flex flex-col justify-center">
-        <div className="text-secondary-text text-14 mb-1">Claim amount</div>
+        <div className="text-secondary-text text-14 mb-1">{t("claim_amount")}</div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-20 font-normal text-primary-text">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
@@ -376,7 +379,7 @@ const MultipleClaimDialog = () => {
     <div className="space-y-5">
       {/* Claim amount display */}
       <div className="bg-tertiary-bg rounded-3 p-4 md:p-5 min-h-[88px] flex flex-col justify-center">
-        <div className="text-secondary-text text-14 mb-1">Claim amount</div>
+        <div className="text-secondary-text text-14 mb-1">{t("claim_amount")}</div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="text-20 font-normal text-primary-text">{tokenCount} tokens</div>
           <div className="flex items-center gap-1">
@@ -438,7 +441,7 @@ const MultipleClaimDialog = () => {
           />
         </div>
         <h3 className="text-16 md:text-20 font-bold text-primary-text mb-2">
-          Successfully claimed
+          {t("success_claimed")}
         </h3>
         <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {tokenCount} tokens (${data.totalReward.toFixed(2)})
@@ -453,7 +456,7 @@ const MultipleClaimDialog = () => {
             <Svg iconName="collect" size={20} className="text-green" />
           </div>
           <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">
-            Successfully claimed
+            {t("success_claimed")}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -482,7 +485,7 @@ const MultipleClaimDialog = () => {
         <div className="flex items-center justify-center mx-auto mb-4 md:mb-5">
           <Svg className="text-red-light" iconName="warning" size={52} />
         </div>
-        <h3 className="text-16 md:text-20 font-bold text-red-light mb-2">Claim failed</h3>
+        <h3 className="text-16 md:text-20 font-bold text-red-light mb-2">{t("claim_failed")}</h3>
         <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {tokenCount} tokens (${data.totalReward.toFixed(2)})
         </p>
@@ -497,7 +500,7 @@ const MultipleClaimDialog = () => {
             <Svg iconName="collect" size={20} className="text-red-light" />
           </div>
           <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">
-            Claim failed
+            {t("claim_failed")}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -509,11 +512,10 @@ const MultipleClaimDialog = () => {
       {/* Error message */}
       <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4">
         <p className="text-12 md:text-14 text-secondary-text break-words">
-          {data?.errorMessage ||
-            "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+          {data?.errorMessage || t("gas_too_low")}
           {!data?.errorMessage && (
             <a href="#" className="text-secondary-text underline break-words">
-              common errors
+              {tLiq("common_errors")}
             </a>
           )}
         </p>
@@ -526,7 +528,7 @@ const MultipleClaimDialog = () => {
         colorScheme={ButtonColor.GREEN}
         onClick={handleTryAgain}
       >
-        Try again
+        {tLiq("try_again")}
       </Button>
     </div>
   );
@@ -557,7 +559,7 @@ const MultipleClaimDialog = () => {
             state === "initial" ? "md:max-w-[800px]" : "md:w-[600px]",
           )}
         >
-          <DialogHeader onClose={closeDialog} title="Claim" />
+          <DialogHeader onClose={closeDialog} title={t("claim_action")} />
           <div className="card-spacing max-md:px-4 max-md:pb-6">{renderContent()}</div>
         </div>
       </DrawerDialog>

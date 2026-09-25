@@ -2,6 +2,7 @@
 
 import Preloader from "@repo/ui/preloader";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Address, isAddress } from "viem";
 
@@ -34,6 +35,8 @@ import {
 } from "../stores/useClaimGasSettingsStore";
 
 const SingleClaimDialog = () => {
+  const t = useTranslations("Revenue");
+  const tLiq = useTranslations("Liquidity");
   const { isOpen, state, data, closeDialog, setState, setError, setData, setClaimTransactionHash } =
     useClaimDialogStore();
   const chainId = useCurrentChainId();
@@ -87,7 +90,7 @@ const SingleClaimDialog = () => {
   // Show/hide bottom alert for confirming states
   useEffect(() => {
     if (state === "confirming-claim" && isOpen) {
-      openConfirmInWalletAlert("Please confirm action in your wallet");
+      openConfirmInWalletAlert(t("confirm_wallet"));
     } else {
       closeConfirmInWalletAlert();
     }
@@ -140,7 +143,7 @@ const SingleClaimDialog = () => {
 
   const handleClaim = async () => {
     if (!token) {
-      setError("Token information is missing. Please try again.");
+      setError(t("token_missing"));
       return;
     }
 
@@ -149,13 +152,13 @@ const SingleClaimDialog = () => {
         setError(
           unstakeCountdown
             ? `Rewards stay locked for ${unstakeCountdown} after the last stake.`
-            : "Rewards stay locked until the freeze period ends.",
+            : t("rewards_locked"),
         );
         return;
       }
 
       if (claimAddresses.length === 0) {
-        setError("Nothing is claimable for this token yet.");
+        setError(t("nothing_claimable"));
         return;
       }
 
@@ -185,7 +188,7 @@ const SingleClaimDialog = () => {
       await refetchUserData();
     } catch (error: any) {
       console.error("Claim error:", error);
-      const errorMessage = error?.message || "An unexpected error occurred. Please try again.";
+      const errorMessage = error?.message || t("unexpected_error");
       setError(errorMessage);
     }
   };
@@ -200,7 +203,7 @@ const SingleClaimDialog = () => {
         <div className="bg-tertiary-bg rounded-3 px-4 py-3 md:h-12 md:py-0 flex items-center min-h-[48px]">
           <div className="flex items-center gap-2 md:gap-3 flex-wrap">
             <span className="text-tertiary-text text-14 whitespace-nowrap">
-              Rewards to receive:
+              {t("rewards_to_receive")}
             </span>
             <div className="flex items-center gap-2 flex-wrap">
               <Image
@@ -261,7 +264,7 @@ const SingleClaimDialog = () => {
           onClick={handleClaim}
           disabled={!canUnstake}
         >
-          {canUnstake ? "Claim" : "Claim locked"}
+          {canUnstake ? t("claim_action") : t("claim_locked")}
         </Button>
       </div>
     );
@@ -270,7 +273,7 @@ const SingleClaimDialog = () => {
   const renderClaimConfirmingState = () => (
     <div className="space-y-5">
       <div className="rounded-3 bg-tertiary-bg py-4 px-4 md:px-5 flex flex-col gap-1 min-h-[88px] justify-center">
-        <p className="text-secondary-text text-14 mb-2">Claiming rewards</p>
+        <p className="text-secondary-text text-14 mb-2">{t("claiming_rewards")}</p>
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-0">
           <div className="flex flex-col">
             <span className="text-20 font-normal text-primary-text">{token.amount}</span>
@@ -321,7 +324,7 @@ const SingleClaimDialog = () => {
   const renderClaimExecutingState = () => (
     <div className="space-y-5">
       <div className="rounded-3 bg-tertiary-bg py-4 px-4 md:px-5 flex flex-col gap-1 min-h-[88px] justify-center">
-        <p className="text-secondary-text text-14 mb-2">Claiming rewards</p>
+        <p className="text-secondary-text text-14 mb-2">{t("claiming_rewards")}</p>
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 md:gap-0">
           <div className="flex flex-col">
             <span className="text-20 font-normal text-primary-text">{token.amount}</span>
@@ -392,7 +395,7 @@ const SingleClaimDialog = () => {
           />
         </div>
         <h3 className="text-16 md:text-20 font-bold text-primary-text mb-2">
-          Successfully claimed
+          {t("success_claimed")}
         </h3>
         <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {token.amount} {token.symbol}
@@ -406,7 +409,7 @@ const SingleClaimDialog = () => {
             <Svg iconName="collect" size={20} className="text-green" />
           </div>
           <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">
-            Successfully claimed
+            {t("success_claimed")}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -434,7 +437,7 @@ const SingleClaimDialog = () => {
         <div className="flex items-center justify-center mx-auto mb-4 md:mb-5">
           <Svg className="text-red-light" iconName="warning" size={52} />
         </div>
-        <h3 className="text-16 md:text-20 font-bold text-red-light mb-2">Claim failed</h3>
+        <h3 className="text-16 md:text-20 font-bold text-red-light mb-2">{t("claim_failed")}</h3>
         <p className="text-14 md:text-16 text-primary-text mb-4 md:mb-6">
           {token.amount} {token.symbol}
         </p>
@@ -448,7 +451,7 @@ const SingleClaimDialog = () => {
             <Svg iconName="collect" size={20} className="text-red-light" />
           </div>
           <span className="text-primary-text text-14 md:text-16 whitespace-nowrap">
-            Claim failed
+            {t("claim_failed")}
           </span>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
@@ -459,11 +462,10 @@ const SingleClaimDialog = () => {
 
       <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4 mb-4">
         <p className="text-12 md:text-14 text-secondary-text break-words">
-          {data?.errorMessage ||
-            "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+          {data?.errorMessage || t("gas_too_low")}
           {!data?.errorMessage && (
             <a href="#" className="text-secondary-text underline break-words">
-              common errors
+              {tLiq("common_errors")}
             </a>
           )}
         </p>
@@ -475,7 +477,7 @@ const SingleClaimDialog = () => {
         colorScheme={ButtonColor.GREEN}
         onClick={handleTryAgain}
       >
-        Try again
+        {tLiq("try_again")}
       </Button>
     </div>
   );
@@ -501,7 +503,7 @@ const SingleClaimDialog = () => {
     <>
       <DrawerDialog isOpen={isOpen} setIsOpen={closeDialog}>
         <div className="bg-primary-bg rounded-5 w-full md:w-[600px] max-md:rounded-t-5 max-md:rounded-b-none">
-          <DialogHeader onClose={closeDialog} title="Claim" />
+          <DialogHeader onClose={closeDialog} title={t("claim_action")} />
           <div className="card-spacing max-md:px-4 max-md:pb-6">{renderContent()}</div>
         </div>
       </DrawerDialog>
