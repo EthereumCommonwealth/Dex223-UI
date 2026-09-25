@@ -665,7 +665,10 @@ export function Portfolio() {
             </div>
           )}
         </div>
-        <div className="mt-5 w-full flex lg:grid lg:grid-cols-5 bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto">
+        <div
+          role="tablist"
+          className="mt-5 w-full flex lg:grid lg:grid-cols-5 bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto"
+        >
           <TabButton
             inactiveBackground="bg-secondary-bg"
             size={48}

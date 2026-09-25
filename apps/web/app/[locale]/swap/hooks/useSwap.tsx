@@ -31,6 +31,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
@@ -100,9 +101,7 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
     }
 
     return BigInt(
-      trade
-        .minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
-        .quotient.toString(),
+      trade.minimumAmountOut(slippageToPercent(slippage), dependentAmount).quotient.toString(),
     );
   }, [dependentAmount, slippage, trade]);
 

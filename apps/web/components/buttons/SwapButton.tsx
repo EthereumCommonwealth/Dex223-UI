@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { ButtonHTMLAttributes, useState } from "react";
 
 import { Field } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
@@ -10,10 +11,12 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   colorScheme?: ThemeColors;
 }
 export default function SwapButton({ onClick, colorScheme = ThemeColors.GREEN, ...props }: Props) {
+  const t = useTranslations("A11y");
   const [effect, setEffect] = useState(false);
 
   return (
     <button
+      aria-label={t("switch_tokens")}
       onClick={() => {
         setEffect(true);
         onClick();

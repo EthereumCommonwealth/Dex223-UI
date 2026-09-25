@@ -3,21 +3,27 @@ import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import { ChangeEvent, DragEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Address, getAddress, isAddress } from "viem";
 
 import Svg from "@/components/atoms/Svg";
 import { HelperText } from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/buttons/Button";
+import { predictWrapperAddress } from "@/components/manage-tokens/scripts/convertTokenList";
 import { ManageTokensDialogContent } from "@/components/manage-tokens/types";
 import { db, TokenList } from "@/db/db";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useTokenLists } from "@/hooks/useTokenLists";
 import addToast from "@/other/toast";
+import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
+import { Token } from "@/sdk_bi/entities/token";
 
 interface Props {
   setContent: (content: ManageTokensDialogContent) => void;
 }
 export default function ImportListWithJSON({ setContent }: Props) {
   const t = useTranslations("ManageTokens");
+  const chainId = useCurrentChainId();
 
   const [tokenListFile, setTokenListFile] = useState<File | undefined>();
   const tokenLists = useTokenLists();
@@ -56,16 +62,49 @@ export default function ImportListWithJSON({ setContent }: Props) {
               setError("");
             }
 
-            const listChainId = parsedJson.tokens[0].chainId;
+            // Accept both the Dex223 format (address0 and address1) and the standard token list
+            // format (address), which is converted the same way as a list imported by URL.
+            // Tokens without either are dropped, since the app reads address0 on every token.
+            const tokens = parsedJson.tokens
+              .filter((token: any) => token?.chainId === chainId)
+              .flatMap((token: any) => {
+                if (
+                  isAddress(token.address0 ?? "", { strict: false }) &&
+                  isAddress(token.address1 ?? "", { strict: false })
+                ) {
+                  return [token];
+                }
 
-            console.log();
-            if (listChainId) {
-              setTokenListFileContent({
-                enabled: true,
-                list: parsedJson,
-                chainId: listChainId,
+                if (isAddress(token.address ?? "", { strict: false })) {
+                  const address0 = getAddress(token.address.toLowerCase());
+
+                  return [
+                    new Token(
+                      chainId,
+                      address0,
+                      predictWrapperAddress(address0, true, CONVERTER_ADDRESS[chainId]) as Address,
+                      token.decimals,
+                      token.symbol,
+                      token.name,
+                      token.logoURI,
+                    ),
+                  ];
+                }
+
+                return [];
               });
+
+            if (!tokens.length) {
+              setTokenListFileContent(undefined);
+              setError(t("json_list_no_tokens"));
+              return;
             }
+
+            setTokenListFileContent({
+              enabled: true,
+              list: { ...parsedJson, tokens },
+              chainId,
+            });
           }
         } catch (e) {
           console.log(e);
@@ -73,7 +112,7 @@ export default function ImportListWithJSON({ setContent }: Props) {
       };
       reader.readAsText(tokenListFile);
     }
-  }, [tokenListFile]);
+  }, [chainId, t, tokenListFile]);
 
   const handleJSONImport = useCallback(() => {
     if (tokenListFileContent) {

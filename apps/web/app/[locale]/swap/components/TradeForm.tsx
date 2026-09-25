@@ -9,6 +9,7 @@ import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import ConfirmSwapDialog from "@/app/[locale]/swap/components/ConfirmSwapDialog";
+import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
 import { useSwapEstimatedGas, useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
@@ -37,11 +38,13 @@ import { networks } from "@/config/networks";
 import { formatFloat } from "@/functions/formatFloat";
 import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
+import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { usePoolBalances } from "@/hooks/usePoolBalances";
 import useTokenBalances from "@/hooks/useTokenBalances";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
+import { Link } from "@/i18n/routing";
 import { ROUTER_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { CurrencyAmount } from "@/sdk_bi/entities/fractions/currencyAmount";
@@ -58,10 +61,12 @@ function OpenConfirmDialogButton({
   isSufficientBalance,
   isTradeReady,
   isTradeLoading,
+  cannotReceiveOutput,
 }: {
   isSufficientBalance: boolean;
   isTradeReady: boolean;
   isTradeLoading: boolean;
+  cannotReceiveOutput: boolean;
 }) {
   const tWallet = useTranslations("Wallet");
   const t = useTranslations("Swap");
@@ -183,6 +188,16 @@ function OpenConfirmDialogButton({
     );
   }
 
+  // The warning above the button explains why: an EIP-7702 account rejects ERC-223 transfers,
+  // so the swap would revert on chain.
+  if (cannotReceiveOutput) {
+    return (
+      <Button fullWidth disabled size={ActionButtonSize} mobileSize={MobileActionButtonSize}>
+        {t("cannot_receive_erc223")}
+      </Button>
+    );
+  }
+
   return (
     <Button
       onClick={() => setConfirmSwapDialogOpen(true)}
@@ -208,6 +223,9 @@ export default function TradeForm({
   isChartVisible?: boolean;
 }) {
   const t = useTranslations("Swap");
+  const tA11y = useTranslations("A11y");
+  const { address } = useAccount();
+  const canReceiveERC223 = useCanReceiveERC223(address);
   useTradeComputation();
 
   const chainId = useCurrentChainId();
@@ -491,11 +509,13 @@ export default function TradeForm({
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}
             iconName="recent-transactions"
+            aria-label={tA11y("recent_transactions")}
             onClick={() => setShowRecentTransactions(!showRecentTransactions)}
           />
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             iconName="gas-edit"
+            aria-label={tA11y("network_fee_settings")}
             onClick={() => setIsOpenedFee(true)}
           />
 
@@ -504,6 +524,7 @@ export default function TradeForm({
               buttonSize={IconButtonSize.LARGE}
               iconSize={24}
               iconName="settings"
+              aria-label={tA11y("swap_settings")}
               onClick={() => setIsOpen(true)}
             />
             {computed.isModified && (
@@ -664,6 +685,15 @@ export default function TradeForm({
         }}
       />
 
+      {tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223 && (
+        <div className="mt-5">
+          <Alert
+            text="Your wallet is an EIP-7702 smart account that cannot receive ERC-223 tokens, so this swap would fail. Receive ERC-20 instead."
+            type="warning"
+          />
+        </div>
+      )}
+
       {error === TradeError.NO_LIQUIDITY && (
         <div className="mt-5">
           <Alert
@@ -679,19 +709,20 @@ export default function TradeForm({
             text={
               <span>
                 The requested pool does not exist. You can{" "}
-                <a
+                <Link
                   className="text-green hover:text-green-hover duration-200"
-                  target="_blank"
                   href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
                 >
                   create a new pool
-                </a>
+                </Link>
               </span>
             }
             type="warning"
           />
         </div>
       )}
+
+      <PriceImpactWarning trade={trade} className="mt-5" />
 
       {tokenA && tokenB && typedValue ? (
         <div
@@ -798,6 +829,9 @@ export default function TradeForm({
       )}
 
       <OpenConfirmDialogButton
+        cannotReceiveOutput={Boolean(
+          tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223,
+        )}
         isSufficientBalance={
           (tokenAStandard === Standard.ERC20 &&
             (tokenA0Balance && tokenA

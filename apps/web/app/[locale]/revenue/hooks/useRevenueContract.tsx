@@ -1,5 +1,7 @@
+"use client";
+
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Address, formatUnits, Hash } from "viem";
+import { Address, formatUnits, Hash, zeroAddress } from "viem";
 import {
   useAccount,
   usePublicClient,
@@ -8,25 +10,19 @@ import {
   useWalletClient,
 } from "wagmi";
 
+import { estimateClaimDividends, isStakingToken } from "@/app/[locale]/revenue/lib/claimEstimate";
 import { ERC20_ABI } from "@/config/abis/erc20";
-import { revenueABI } from "@/config/abis/revenue";
+import { REVENUE_ABI } from "@/config/abis/revenue";
+import { getRevenueAddress } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Token } from "@/sdk_bi/entities/token";
-import { useRecentTransactionsStore } from "@/stores/useRecentTransactionsStore";
+import { Standard } from "@/sdk_bi/standard";
 import {
   RecentTransactionTitleTemplate,
   stringifyObject,
+  useRecentTransactionsStore,
 } from "@/stores/useRecentTransactionsStore";
-
-import { useRevenueTokens } from "./useRevenueTokens";
-
-// Contract addresses on Sepolia testnet
-// 0x4e38fB6f9243d2aC91C490230375FeDE1E0aD7F2
-// export const REVENUE_CONTRACT_ADDRESS = "0x4e38fB6f9243d2aC91C490230375FeDE1E0aD7F2" as Address;
-const REVENUE_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_REVENUE_CONTRACT_ADDRESS as Address;
-export const RED_ERC20_ADDRESS = "0x1DEf777468F76ed1E74fC87bD32334d3Ccb520d0" as Address;
-export const RED_ERC223_ADDRESS = "0x0a67Cc4D3Ac29a133a597b5Bef3fe9A6028ACad2" as Address;
 
 export enum TokenType {
   ERC20 = "ERC-20",
@@ -38,6 +34,12 @@ export interface ClaimableReward {
   amount: bigint;
   amountFormatted: string;
   amountUSD?: string;
+  // claim() pays each token version only from the contract's balance of that version.
+  amountERC20: bigint;
+  amountERC223: bigint;
+  heldERC20: bigint;
+  heldERC223: bigint;
+  claimAddresses: Address[];
 }
 
 type CustomGasSettings =
@@ -58,8 +60,10 @@ export interface RevenueContractConfig {
   searchAddress?: Address;
 }
 
+const STAKING_TOKEN_LOGO = "/images/logo-short.svg";
+
 export default function useRevenueContract({
-  contractAddress = REVENUE_CONTRACT_ADDRESS,
+  contractAddress,
   searchAddress,
 }: RevenueContractConfig = {}) {
   const { address: connectedAddress, chainId: walletChainId } = useAccount();
@@ -69,183 +73,188 @@ export default function useRevenueContract({
   const { data: walletClient } = useWalletClient();
   const { addRecentTransaction } = useRecentTransactionsStore();
 
+  const revenueAddress = contractAddress ?? getRevenueAddress(chainId);
+
   const [isTransactionPending, setIsTransactionPending] = useState(false);
-  const { data: revenueTokensData } = useRevenueTokens();
 
   // Check if user is on the correct network
   const isCorrectNetwork = walletChainId === chainId;
 
+  // Candidate reward tokens for this chain, supplied by the page from its token lists.
   const [rewardTokens, setRewardTokens] = useState<Token[]>([]);
 
-  useEffect(() => {
-    if (revenueTokensData?.items) {
-      const tokens = revenueTokensData.items.map(
-        (item) =>
-          new Token(
-            chainId,
-            item.token.addressERC20,
-            item.token.addressERC223,
-            parseInt(item.token.decimals),
-            item.token.symbol,
-            item.token.name,
-            "/images/tokens/placeholder.svg",
-          ),
-      );
-      setRewardTokens(tokens);
-    }
-  }, [revenueTokensData, chainId]);
+  // RevenueV1 global configuration. The staking token pair is read from the
+  // contract instead of being hardcoded, so every chain uses its own deployment.
+  const {
+    data: revenueConfig,
+    refetch: refetchRevenueConfig,
+    isLoading: isLoadingRevenueConfig,
+  } = useReadContracts({
+    contracts: revenueAddress
+      ? [
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "staking_token_erc20" },
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "staking_token_erc223" },
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "claim_delay" },
+          {
+            abi: REVENUE_ABI,
+            address: revenueAddress,
+            functionName: "assigned_avg_staking_duration",
+          },
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "total_staked" },
+        ].map((contract) => ({ ...contract, chainId }))
+      : [],
+    query: {
+      enabled: Boolean(revenueAddress),
+    },
+  });
+
+  const stakingTokenERC20 = (revenueConfig?.[0]?.result as Address | undefined) ?? zeroAddress;
+  const stakingTokenERC223 = (revenueConfig?.[1]?.result as Address | undefined) ?? zeroAddress;
+  const claimDelay = revenueConfig?.[2]?.result as bigint | undefined;
+  const avgStakingDuration = (revenueConfig?.[3]?.result as bigint | undefined) ?? 0n;
+  const totalStaked = (revenueConfig?.[4]?.result as bigint | undefined) ?? 0n;
+
+  const hasStakingToken = stakingTokenERC20 !== zeroAddress;
 
   const {
     data: userStaked,
     refetch: refetchUserStaked,
     isLoading: isLoadingUserStaked,
   } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
+    abi: REVENUE_ABI,
+    address: revenueAddress,
     functionName: "staked",
     args: targetAddress ? [targetAddress] : undefined,
     chainId: chainId,
     query: {
-      enabled: Boolean(targetAddress && contractAddress),
+      enabled: Boolean(targetAddress && revenueAddress),
     },
   });
 
   const {
-    data: userContribution,
-    refetch: refetchUserContribution,
-    isLoading: isLoadingUserContribution,
+    data: userStakingTimestamp,
+    refetch: refetchUserStakingTimestamp,
+    isLoading: isLoadingUserStakingTimestamp,
   } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "contribution",
-    args: targetAddress ? [targetAddress] : undefined,
-    chainId: chainId,
-    query: {
-      enabled: Boolean(targetAddress && contractAddress),
-    },
-  });
-
-  const { data: userContributionValue, refetch: refetchUserContributionValue } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "getContributionValue",
-    args: targetAddress ? [targetAddress] : undefined,
-    chainId: chainId,
-    query: {
-      enabled: Boolean(targetAddress && contractAddress),
-    },
-  });
-
-  const { data: userLastUpdate, refetch: refetchUserLastUpdate } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "lastUpdate",
-    args: targetAddress ? [targetAddress] : undefined,
-    chainId: chainId,
-    query: {
-      enabled: Boolean(targetAddress && contractAddress),
-    },
-  });
-
-  const { data: userStakingTimestamp, refetch: refetchUserStakingTimestamp } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
+    abi: REVENUE_ABI,
+    address: revenueAddress,
     functionName: "staking_timestamp",
     args: targetAddress ? [targetAddress] : undefined,
     chainId: chainId,
     query: {
-      enabled: Boolean(targetAddress && contractAddress),
+      enabled: Boolean(targetAddress && revenueAddress),
     },
   });
 
-  const { data: claimDelay, refetch: refetchClaimDelay } = useReadContract({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "claim_delay",
+  // ERC-223 tokens sent directly to the contract land in `erc223deposit` until they
+  // are staked. Surfaced so an unstaked deposit can be recovered.
+  const { data: erc223Deposit, refetch: refetchErc223Deposit } = useReadContract({
+    abi: REVENUE_ABI,
+    address: revenueAddress,
+    functionName: "erc223deposit",
+    args:
+      targetAddress && stakingTokenERC223 !== zeroAddress
+        ? [targetAddress, stakingTokenERC223]
+        : undefined,
     chainId: chainId,
     query: {
-      enabled: Boolean(contractAddress),
+      enabled: Boolean(targetAddress && revenueAddress && stakingTokenERC223 !== zeroAddress),
     },
   });
 
-  const { data: redErc20Balance } = useReadContract({
-    abi: ERC20_ABI,
-    address: RED_ERC20_ADDRESS,
-    functionName: "balanceOf",
-    args: targetAddress ? [targetAddress] : undefined,
-    chainId: chainId,
+  const { data: stakingTokenData, refetch: refetchStakingTokenData } = useReadContracts({
+    contracts: hasStakingToken
+      ? [
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC20,
+            functionName: "totalSupply",
+            chainId,
+          },
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC223,
+            functionName: "symbol",
+            chainId,
+          },
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC20,
+            functionName: "balanceOf",
+            args: [targetAddress ?? zeroAddress],
+            chainId,
+          },
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC223,
+            functionName: "balanceOf",
+            args: [targetAddress ?? zeroAddress],
+            chainId,
+          },
+          // withdraw() pays the requested version from the contract's own balance of it.
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC20,
+            functionName: "balanceOf",
+            args: [revenueAddress ?? zeroAddress],
+            chainId,
+          },
+          {
+            abi: ERC20_ABI,
+            address: stakingTokenERC223,
+            functionName: "balanceOf",
+            args: [revenueAddress ?? zeroAddress],
+            chainId,
+          },
+        ]
+      : [],
     query: {
-      enabled: Boolean(targetAddress),
+      enabled: hasStakingToken,
     },
   });
 
-  const { data: redErc223Balance } = useReadContract({
-    abi: ERC20_ABI,
-    address: RED_ERC223_ADDRESS,
-    functionName: "balanceOf",
-    args: targetAddress ? [targetAddress] : undefined,
-    chainId: chainId,
-    query: {
-      enabled: Boolean(targetAddress),
-    },
-  });
+  const redTotalSupply = stakingTokenData?.[0]?.result as bigint | undefined;
+  const stakingTokenSymbol = (stakingTokenData?.[1]?.result as string | undefined) ?? "D223";
+  const redErc20Balance = stakingTokenData?.[2]?.result as bigint | undefined;
+  const redErc223Balance = stakingTokenData?.[3]?.result as bigint | undefined;
+  const contractStakeErc20Balance = stakingTokenData?.[4]?.result as bigint | undefined;
+  const contractStakeErc223Balance = stakingTokenData?.[5]?.result as bigint | undefined;
 
-  const { data: redTotalSupply } = useReadContract({
-    abi: ERC20_ABI,
-    address: RED_ERC20_ADDRESS,
-    functionName: "totalSupply",
-    chainId: chainId,
-    query: {
-      enabled: Boolean(RED_ERC20_ADDRESS),
-    },
-  });
-
-  // Read token balances in revenue contract
-  const tokenBalanceContracts = rewardTokens.map((token) => ({
-    abi: ERC20_ABI,
-    address: token.address0,
-    functionName: "balanceOf" as const,
-    args: [contractAddress],
-    chainId: chainId,
-  }));
-
+  // Reward balances held by the Revenue contract, ERC-20 and ERC-223 version of each token.
   const { data: tokenBalances, refetch: refetchTokenBalances } = useReadContracts({
-    contracts: tokenBalanceContracts,
+    contracts: revenueAddress
+      ? rewardTokens.flatMap((token) =>
+          [token.address0, token.address1].map((address) => ({
+            abi: ERC20_ABI,
+            address,
+            functionName: "balanceOf" as const,
+            args: [revenueAddress],
+            chainId: chainId,
+          })),
+        )
+      : [],
     query: {
-      enabled: rewardTokens.length > 0,
+      enabled: Boolean(revenueAddress) && rewardTokens.length > 0,
     },
   });
 
-  const spentContributionContracts = rewardTokens.map((token) => ({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "spentContribution" as const,
-    args: targetAddress ? [targetAddress, token.address0] : undefined,
-    chainId: chainId,
-  }));
-
-  const { data: spentContributions, refetch: refetchSpentContributions } = useReadContracts({
-    contracts: spentContributionContracts as any,
+  const { data: lastClaims, refetch: refetchLastClaims } = useReadContracts({
+    contracts:
+      revenueAddress && targetAddress
+        ? rewardTokens.flatMap((token) =>
+            [token.address0, token.address1].map((address) => ({
+              abi: REVENUE_ABI,
+              address: revenueAddress,
+              functionName: "last_claim" as const,
+              args: [targetAddress, address],
+              chainId: chainId,
+            })),
+          )
+        : [],
     query: {
-      enabled: Boolean(targetAddress && rewardTokens.length > 0),
+      enabled: Boolean(revenueAddress && targetAddress) && rewardTokens.length > 0,
     },
   });
-
-  const spentTotalContributionContracts = rewardTokens.map((token) => ({
-    abi: revenueABI,
-    address: contractAddress,
-    functionName: "spentTotalContribution" as const,
-    args: [token.address0],
-    chainId: chainId,
-  }));
-
-  const { data: spentTotalContributions, refetch: refetchSpentTotalContributions } =
-    useReadContracts({
-      contracts: spentTotalContributionContracts as any,
-      query: {
-        enabled: rewardTokens.length > 0,
-      },
-    });
 
   const [currentTime, setCurrentTime] = useState(Math.floor(Date.now() / 1000));
 
@@ -257,8 +266,10 @@ export default function useRevenueContract({
   }, []);
 
   const canUnstake = useMemo(() => {
-    if (!userStakingTimestamp || !claimDelay)
+    // Timestamp or delay still loading. A delay of 0 is a real value (no freeze).
+    if (typeof userStakingTimestamp !== "bigint" || typeof claimDelay !== "bigint") {
       return { canUnstake: false, timeRemaining: 0, unlockTime: 0 };
+    }
 
     const unlockTime = Number(userStakingTimestamp) + Number(claimDelay);
     const canUnstakeNow = currentTime >= unlockTime;
@@ -270,12 +281,6 @@ export default function useRevenueContract({
   const hasStaked = useMemo(() => {
     return Boolean(userStaked && typeof userStaked === "bigint" && userStaked > 0n);
   }, [userStaked]);
-
-  const hasContribution = useMemo(() => {
-    return Boolean(
-      userContribution && typeof userContribution === "bigint" && userContribution > 0n,
-    );
-  }, [userContribution]);
 
   const formatCountdown = useCallback((seconds: number) => {
     const days = Math.floor(seconds / 86400);
@@ -302,87 +307,103 @@ export default function useRevenueContract({
     return formatCountdown(remaining);
   }, [hasStaked, userStakingTimestamp, claimDelay, currentTime, formatCountdown]);
 
+  // Mirrors RevenueV1.claim(): dividends accrue per averaging period since the last
+  // claim of that token, and the staking token itself always pays zero.
   const claimableRewards = useMemo<ClaimableReward[]>(() => {
-    if (
-      !userContributionValue ||
-      !tokenBalances ||
-      !spentContributions ||
-      !spentTotalContributions
-    ) {
+    if (!tokenBalances || typeof userStaked !== "bigint") {
       return [];
     }
 
+    const nowTs = BigInt(currentTime);
+    const stakingTimestamp =
+      typeof userStakingTimestamp === "bigint" ? userStakingTimestamp : BigInt(0);
+
+    const estimate = (slot: number) => {
+      const selfBalance = (tokenBalances[slot]?.result as bigint | undefined) ?? 0n;
+      const lastClaimTs = (lastClaims?.[slot]?.result as bigint | undefined) ?? 0n;
+      const { dividends } = estimateClaimDividends({
+        selfBalance,
+        userStaked,
+        totalStaked,
+        lastClaimTs: lastClaimTs === 0n ? stakingTimestamp : lastClaimTs,
+        nowTs,
+        avgDuration: avgStakingDuration,
+      });
+      return { held: selfBalance, dividends };
+    };
+
     return rewardTokens.map((token, index) => {
-      const balance = tokenBalances[index]?.result as bigint | undefined;
-      const spentContribution = spentContributions[index]?.result as bigint | undefined;
-      const spentTotal = spentTotalContributions[index]?.result as bigint | undefined;
-
-      if (!balance || !spentContribution || !spentTotal || balance === 0n) {
+      if (
+        isStakingToken(token.address0, stakingTokenERC20, stakingTokenERC223) ||
+        isStakingToken(token.address1, stakingTokenERC20, stakingTokenERC223)
+      ) {
         return {
           token,
           amount: 0n,
           amountFormatted: "0",
+          amountERC20: 0n,
+          amountERC223: 0n,
+          heldERC20: 0n,
+          heldERC223: 0n,
+          claimAddresses: [],
         };
       }
 
-      const unpaidUserContribution = (userContributionValue as bigint) - spentContribution;
-      const tokenUnpaidContribution = (userContributionValue as bigint) - spentTotal;
-
-      if (tokenUnpaidContribution === 0n || unpaidUserContribution === 0n) {
-        return {
-          token,
-          amount: 0n,
-          amountFormatted: "0",
-        };
-      }
-
-      const claimable = (balance * unpaidUserContribution) / tokenUnpaidContribution;
-      const formatted = (Number(claimable) / Math.pow(10, token.decimals)).toFixed(6);
+      const erc20 = estimate(index * 2);
+      const erc223 = estimate(index * 2 + 1);
+      const amount = erc20.dividends + erc223.dividends;
+      const claimAddresses: Address[] = [];
+      if (erc20.dividends > 0n) claimAddresses.push(token.address0);
+      if (erc223.dividends > 0n) claimAddresses.push(token.address1);
 
       return {
         token,
-        amount: claimable,
-        amountFormatted: formatted,
+        amount,
+        amountFormatted: formatUnits(amount, token.decimals),
+        amountERC20: erc20.dividends,
+        amountERC223: erc223.dividends,
+        heldERC20: erc20.held,
+        heldERC223: erc223.held,
+        claimAddresses,
       };
     });
   }, [
-    userContributionValue,
     tokenBalances,
-    spentContributions,
-    spentTotalContributions,
+    lastClaims,
     rewardTokens,
+    userStaked,
+    userStakingTimestamp,
+    totalStaked,
+    avgStakingDuration,
+    stakingTokenERC20,
+    stakingTokenERC223,
+    currentTime,
   ]);
 
-  // Calculate staking percentage
+  // Share of all staked D223, which is what claim() splits rewards by.
   const stakingPercentage = useMemo(() => {
-    if (!userStaked || !redTotalSupply || redTotalSupply === 0n) {
+    if (typeof userStaked !== "bigint" || totalStaked === 0n) {
       return 0;
     }
-    const percentage = (Number(userStaked) / Number(redTotalSupply)) * 100;
-    console.log(percentage, "percentage");
-    return percentage;
-  }, [userStaked, redTotalSupply]);
+    return Number((userStaked * 10000n) / totalStaked) / 100;
+  }, [userStaked, totalStaked]);
 
   const refetchUserData = useCallback(() => {
+    refetchRevenueConfig();
     refetchUserStaked();
-    refetchUserContribution();
-    refetchUserContributionValue();
-    refetchUserLastUpdate();
     refetchUserStakingTimestamp();
-    refetchClaimDelay();
+    refetchErc223Deposit();
+    refetchStakingTokenData();
     refetchTokenBalances();
-    refetchSpentContributions();
-    refetchSpentTotalContributions();
+    refetchLastClaims();
   }, [
+    refetchRevenueConfig,
     refetchUserStaked,
-    refetchUserContribution,
-    refetchUserContributionValue,
-    refetchUserLastUpdate,
     refetchUserStakingTimestamp,
-    refetchClaimDelay,
+    refetchErc223Deposit,
+    refetchStakingTokenData,
     refetchTokenBalances,
-    refetchSpentContributions,
-    refetchSpentTotalContributions,
+    refetchLastClaims,
   ]);
 
   const executeTransaction = useCallback(
@@ -411,17 +432,20 @@ export default function useRevenueContract({
         throw new Error("Wallet not connected");
       }
 
+      const contract = targetContract || revenueAddress;
+
+      if (!contract) {
+        throw new Error("Revenue is not deployed on this network");
+      }
+
       setIsTransactionPending(true);
 
       const params = {
-        abi: abi || revenueABI,
-        address: targetContract || contractAddress,
+        abi: abi || REVENUE_ABI,
+        address: contract,
         functionName,
         args: args || [],
       };
-
-      console.log("executeTransaction params:", params);
-      console.log("Function:", functionName, "Args:", args);
 
       try {
         const estimatedGas = await publicClient.estimateContractGas({
@@ -494,65 +518,112 @@ export default function useRevenueContract({
         throw error;
       }
     },
-    [publicClient, walletClient, connectedAddress, chainId, addRecentTransaction, contractAddress],
+    [publicClient, walletClient, connectedAddress, chainId, addRecentTransaction, revenueAddress],
   );
 
   const approve = useCallback(
     async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+      if (!revenueAddress || !hasStakingToken) {
+        throw new Error("Revenue is not deployed on this network");
+      }
+
       return executeTransaction({
         functionName: "approve",
-        args: [contractAddress, amount],
+        args: [revenueAddress, amount],
         abi: ERC20_ABI,
-        address: RED_ERC20_ADDRESS,
+        address: stakingTokenERC20,
         gasSettings,
         customGasLimit,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.APPROVE,
-          symbol: "D223",
+          symbol: stakingTokenSymbol,
           amount: formatUnits(amount, 18),
-          logoURI: "/images/tokens/red.svg",
+          logoURI: STAKING_TOKEN_LOGO,
         },
       });
     },
-    [executeTransaction, contractAddress],
+    [executeTransaction, revenueAddress, hasStakingToken, stakingTokenERC20, stakingTokenSymbol],
   );
 
   const stake = useCallback(
     async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+      if (!hasStakingToken) {
+        throw new Error("Revenue is not deployed on this network");
+      }
+
       return executeTransaction({
         functionName: "stake",
-        args: [RED_ERC20_ADDRESS, amount],
+        args: [stakingTokenERC20, amount],
         gasSettings,
         customGasLimit,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.DEPOSIT,
-          symbol: "D223",
+          symbol: stakingTokenSymbol,
           amount: formatUnits(amount, 18),
-          logoURI: "/images/tokens/red.svg",
+          logoURI: STAKING_TOKEN_LOGO,
         },
       });
     },
-    [executeTransaction],
+    [executeTransaction, hasStakingToken, stakingTokenERC20, stakingTokenSymbol],
   );
 
+  // ERC-223 staking is two steps: the transfer credits `erc223deposit` through
+  // tokenReceived, then stake() consumes that deposit instead of pulling an allowance.
   const stakeERC223 = useCallback(
     async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+      if (!revenueAddress || stakingTokenERC223 === zeroAddress) {
+        throw new Error("Revenue is not deployed on this network");
+      }
+      if (!publicClient || !connectedAddress) {
+        throw new Error("Wallet not connected");
+      }
+
+      // An earlier transfer that was never staked still counts toward this stake.
+      const deposited = await publicClient.readContract({
+        abi: REVENUE_ABI,
+        address: revenueAddress,
+        functionName: "erc223deposit",
+        args: [connectedAddress, stakingTokenERC223],
+      });
+      const toTransfer = amount > deposited ? amount - deposited : 0n;
+
+      if (toTransfer > 0n) {
+        await executeTransaction({
+          functionName: "transfer",
+          args: [revenueAddress, toTransfer],
+          abi: ERC20_ABI,
+          address: stakingTokenERC223,
+          gasSettings,
+          customGasLimit,
+          transactionTitle: {
+            template: RecentTransactionTitleTemplate.DEPOSIT,
+            symbol: stakingTokenSymbol,
+            amount: formatUnits(toTransfer, 18),
+            logoURI: STAKING_TOKEN_LOGO,
+          },
+        });
+      }
+
       return executeTransaction({
-        functionName: "transfer",
-        args: [contractAddress, amount],
-        abi: ERC20_ABI,
-        address: RED_ERC223_ADDRESS,
+        functionName: "stake",
+        args: [stakingTokenERC223, amount],
         gasSettings,
-        customGasLimit,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.DEPOSIT,
-          symbol: "D223",
+          symbol: stakingTokenSymbol,
           amount: formatUnits(amount, 18),
-          logoURI: "/images/tokens/red.svg",
+          logoURI: STAKING_TOKEN_LOGO,
         },
       });
     },
-    [executeTransaction, contractAddress],
+    [
+      executeTransaction,
+      revenueAddress,
+      stakingTokenERC223,
+      stakingTokenSymbol,
+      publicClient,
+      connectedAddress,
+    ],
   );
 
   const unstake = useCallback(
@@ -561,6 +632,7 @@ export default function useRevenueContract({
       amount: bigint,
       gasSettings?: CustomGasSettings,
       customGasLimit?: bigint,
+      standard: Standard = Standard.ERC20,
     ) => {
       return executeTransaction({
         functionName: "withdraw",
@@ -569,36 +641,31 @@ export default function useRevenueContract({
         customGasLimit,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.WITHDRAW,
-          symbol: "D223",
+          standard,
+          symbol: stakingTokenSymbol,
           amount: formatUnits(amount, 18),
-          logoURI: "/images/tokens/red.svg",
+          logoURI: STAKING_TOKEN_LOGO,
         },
       });
     },
-    [executeTransaction],
-  );
-
-  const delivery = useCallback(
-    async (poolAddresses: Address[], gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
-      return executeTransaction({
-        functionName: "delivery",
-        args: [poolAddresses],
-        gasSettings,
-        customGasLimit,
-      });
-    },
-    [executeTransaction],
+    [executeTransaction, stakingTokenSymbol],
   );
 
   const claim = useCallback(
-    async (tokenAddresses: Address[], gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+    async (
+      tokenAddresses: Address[],
+      gasSettings?: CustomGasSettings,
+      customGasLimit?: bigint,
+      standard: Standard = Standard.ERC20,
+    ) => {
       return executeTransaction({
         functionName: "claim",
         args: [tokenAddresses],
         gasSettings,
         customGasLimit,
         transactionTitle: {
-          template: RecentTransactionTitleTemplate.COLLECT,
+          template: RecentTransactionTitleTemplate.WITHDRAW,
+          standard,
           symbol: "REWARDS",
           amount: tokenAddresses.length.toString(),
           logoURI: "/images/tokens/placeholder.svg",
@@ -608,25 +675,49 @@ export default function useRevenueContract({
     [executeTransaction],
   );
 
+  const recoverDeposit = useCallback(
+    async (tokenAddress: Address, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+      return executeTransaction({
+        functionName: "withdrawDeposit",
+        args: [tokenAddress],
+        gasSettings,
+        customGasLimit,
+        transactionTitle: {
+          template: RecentTransactionTitleTemplate.WITHDRAW,
+          standard: Standard.ERC223,
+          symbol: stakingTokenSymbol,
+          amount: formatUnits(erc223Deposit ?? 0n, 18),
+          logoURI: STAKING_TOKEN_LOGO,
+        },
+      });
+    },
+    [executeTransaction, stakingTokenSymbol, erc223Deposit],
+  );
+
   return {
-    contractAddress,
+    contractAddress: revenueAddress,
     chainId,
     requiredChainId: chainId,
-    isCorrectNetwork: walletChainId === chainId,
+    isCorrectNetwork,
+    isRevenueDeployed: Boolean(revenueAddress),
+    stakingTokenERC20,
+    stakingTokenERC223,
+    stakingTokenSymbol,
     userStaked,
-    userContribution,
-    userContributionValue,
-    userLastUpdate,
     userStakingTimestamp,
     claimDelay,
+    avgStakingDuration,
+    totalStaked,
+    erc223Deposit,
     redErc20Balance,
     redErc223Balance,
+    contractStakeErc20Balance,
+    contractStakeErc223Balance,
     redTotalSupply,
     canUnstake: canUnstake.canUnstake,
     timeRemaining: canUnstake.timeRemaining,
     unlockTime: canUnstake.unlockTime,
     hasStaked,
-    hasContribution,
     stakingPercentage,
     unstakeCountdown,
     claimableRewards,
@@ -636,10 +727,11 @@ export default function useRevenueContract({
     stake,
     stakeERC223,
     unstake,
-    delivery,
     claim,
+    recoverDeposit,
     refetchUserData,
-    isLoadingUserData: isLoadingUserStaked || isLoadingUserContribution,
+    isLoadingUserData:
+      isLoadingRevenueConfig || isLoadingUserStaked || isLoadingUserStakingTimestamp,
     isTransactionPending,
   };
 }

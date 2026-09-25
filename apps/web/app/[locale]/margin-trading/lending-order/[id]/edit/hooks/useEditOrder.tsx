@@ -24,6 +24,7 @@ import {
 } from "@/app/[locale]/margin-trading/lending-order/create/stores/useSwapGasSettingsStore";
 import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
@@ -144,6 +145,11 @@ export default function useEditOrder() {
 
   const handleEditOrder = useCallback(
     async (order: LendingOrder, recreateTokenList: boolean) => {
+      // Never build a transaction against the zero address on chains without a margin deployment.
+      if (!isMarginDeployed(chainId)) {
+        return;
+      }
+
       setStatus(EditOrderStatus.PENDING_MODIFY);
 
       if (
@@ -272,7 +278,7 @@ export default function useEditOrder() {
 
         // console.log("Receipt", receipt);
       } catch (e) {
-        console.log(e);
+        console.error(e);
         addToast("Unexpected error", "error");
         setStatus(EditOrderStatus.INITIAL);
       }

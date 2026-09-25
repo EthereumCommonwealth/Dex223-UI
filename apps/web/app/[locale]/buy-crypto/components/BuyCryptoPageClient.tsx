@@ -1,121 +1,247 @@
 "use client";
 
+import clsx from "clsx";
+import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useRef, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 import Container from "@/components/atoms/Container";
-import TabButton from "@/components/buttons/TabButton";
+import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/buttons/Button";
 import { ThemeColors } from "@/config/theme/colors";
+import { Link } from "@/i18n/routing";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
 
-import { ExchangeData, ExchangeToken } from "../types";
 import BuyOnramp from "./BuyOnramp";
-import ExchangePageClient from "./ExchangePageClient";
+import { BUY_ASSETS, OnrampAsset, OnrampAssetId, OnrampFlow } from "./onrampAssets";
 
-const platforms = ["OnRamp", "SimpleSwap"];
-const tabs = ["Swap Crypto", "Buy Crypto", "Sell Crypto"];
-const tabs1 = ["Swap Crypto", "Buy/Sell Crypto"];
+const FLOWS: OnrampFlow[] = ["buy", "sell"];
 
-interface Props {
-  tokens: ExchangeToken[];
-  initialExchange?: ExchangeData;
-}
-
-export default function BuyCryptoPageClient({ tokens, initialExchange }: Props) {
-  const [selectedPlatform, setSelectedPlatform] = useState("OnRamp");
-  const [selectedTab, setSelectedTab] = useState("Swap Crypto");
-  const containerRef = useRef(null);
-  const [tabList, setTabList] = useState(tabs);
-  const tNav = useTranslations("Navigation");
+export default function BuyCryptoPageClient() {
+  const t = useTranslations("BuyCrypto");
   const { address } = useAccount();
+  const [flow, setFlow] = useState<OnrampFlow>("buy");
+  const [assetId, setAssetId] = useState<OnrampAssetId>("d223");
+  const [completedSymbol, setCompletedSymbol] = useState<string | null>(null);
 
-  const handlePlatformSelect = (platform: string) => {
-    if (platform === "OnRamp") {
-      setTabList(tabs);
-    } else {
-      setTabList(tabs1);
-      setSelectedTab("Swap Crypto");
-    }
-    setSelectedPlatform(platform);
-  };
+  const appId = Number(process.env.NEXT_PUBLIC_ONRAMP_APP_ID);
+  const selectedAsset = useMemo(
+    () => BUY_ASSETS.find((asset) => asset.id === assetId) || BUY_ASSETS[0],
+    [assetId],
+  );
 
-  const handleTabSelect = (tab: string) => {
-    setSelectedTab(tab);
+  const handleCompleted = useCallback(
+    (payload: { coinCode?: string }) => {
+      const symbol =
+        payload.coinCode?.toUpperCase() ||
+        (selectedAsset.coinCode ? selectedAsset.symbol : t("any_token"));
+      setCompletedSymbol(symbol);
+    },
+    [selectedAsset.coinCode, selectedAsset.symbol, t],
+  );
+
+  const selectAsset = (asset: OnrampAsset) => {
+    setAssetId(asset.id);
+    setCompletedSymbol(null);
   };
 
   return (
     <ColorSchemeProvider value={ThemeColors.PURPLE}>
-      <Container className="px-4 md:px-4">
+      <Container>
         <div className="py-4 lg:py-[40px] flex justify-center">
-          <div className="w-full max-w-[600px]">
-            <div className="mt-5 w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6">
-              {platforms.map((platform, index) => (
-                <TabButton
-                  key={platform}
-                  inactiveBackground="bg-secondary-bg"
-                  size={48}
-                  active={selectedPlatform === platform}
-                  onClick={() => handlePlatformSelect(platform)}
-                  className="w-full"
+          <div className="w-full max-w-[640px] flex flex-col gap-4 md:gap-5">
+            <header className="bg-primary-bg rounded-5 px-4 py-5 md:px-6 md:py-6">
+              <p className="text-12 uppercase tracking-[0.08em] text-purple mb-2">
+                {t("powered_by_onramp")}
+              </p>
+              <h1 className="text-24 md:text-32 font-medium text-primary-text mb-2">
+                {t("title")}
+              </h1>
+              <p className="text-14 md:text-16 text-secondary-text">{t("description")}</p>
+            </header>
+
+            <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+              {[t("step_buy"), t("step_receive"), t("step_use")].map((label, index) => (
+                <li
+                  key={label}
+                  className="bg-primary-bg rounded-3 px-4 py-3 flex items-start gap-3 border border-transparent"
                 >
-                  <span className="text-nowrap text-14 md:text-16">{platform}</span>
-                </TabButton>
+                  <span className="text-12 font-medium text-purple mt-0.5">{index + 1}</span>
+                  <span className="text-14 text-primary-text">{label}</span>
+                </li>
               ))}
-            </div>
+            </ol>
 
-            {selectedPlatform === "OnRamp" && (
-              <Container gutter={false} className="bg-primary-bg rounded-5 p-4 md:p-6 mb-6">
-                <div className="w-full flex bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto mb-6">
-                  {tabList.map((tab, index) => (
-                    <TabButton
-                      key={tab}
-                      inactiveBackground="bg-secondary-bg"
-                      size={48}
-                      active={selectedTab === tab}
-                      onClick={() => handleTabSelect(tab)}
-                      className="w-full"
-                    >
-                      <span className="text-nowrap text-12 md:text-16">{tab}</span>
-                    </TabButton>
-                  ))}
-                </div>
-
-                <div className="bg-primary-bg rounded-5 p-4 md:p-6 mb-6">
-                  <div className="flex items-center justify-center py-4 md:py-8">
-                    <BuyOnramp
-                      userId={address}
-                      appId={Number(process.env.NEXT_PUBLIC_ONRAMP_APP_ID)}
-                      flowType={selectedTab}
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-center items-center gap-4 md:gap-8 py-4 md:py-6">
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="text-20 md:text-24">⚡</div>
-                    <span className="text-12 md:text-14 text-secondary-text">Fast</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="text-20 md:text-24">🔒</div>
-                    <span className="text-12 md:text-14 text-secondary-text">Secure</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-2">
-                    <div className="text-20 md:text-24">💎</div>
-                    <span className="text-12 md:text-14 text-secondary-text">Best Rates</span>
-                  </div>
-                </div>
-              </Container>
-            )}
-            {selectedPlatform === "SimpleSwap" && (
-              <div className="flex items-center justify-center">
-                <Container
-                  gutter={false}
-                  className="bg-primary-bg rounded-5 p-4 md:p-6 mb-6 w-full"
-                >
-                  <ExchangePageClient tokens={tokens} initialExchange={initialExchange} />
-                </Container>
+            <section className="bg-primary-bg rounded-5 p-4 md:p-6 flex flex-col gap-5">
+              <div className="w-full flex bg-secondary-bg p-1 gap-1 rounded-3">
+                {FLOWS.map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => {
+                      setFlow(item);
+                      setCompletedSymbol(null);
+                    }}
+                    className={clsx(
+                      "w-full h-10 lg:h-12 rounded-2 text-14 lg:text-16 border duration-200",
+                      flow === item
+                        ? "text-primary-text border-purple bg-purple-bg pointer-events-none"
+                        : "text-secondary-text border-transparent hocus:bg-purple-bg hocus:text-primary-text",
+                    )}
+                  >
+                    {t(`flow_${item}`)}
+                  </button>
+                ))}
               </div>
+
+              {flow === "buy" && (
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h2 className="text-16 md:text-18 font-medium">{t("choose_asset")}</h2>
+                    <span className="text-12 text-secondary-text">{t("choose_asset_hint")}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => selectAsset(BUY_ASSETS[0])}
+                    className={clsx(
+                      "w-full text-left rounded-4 border px-4 py-4 duration-200",
+                      assetId === "d223"
+                        ? "border-purple bg-purple-bg shadow shadow-purple/40"
+                        : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Image
+                        src="/images/tokens/DEX.svg"
+                        alt=""
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-18 font-medium">D223</span>
+                          <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-purple">
+                            {t("badge_erc223")}
+                          </span>
+                          <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-secondary-text">
+                            {t("badge_featured")}
+                          </span>
+                        </div>
+                        <p className="text-14 text-secondary-text mt-1">{t("d223_blurb")}</p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {BUY_ASSETS.slice(1).map((asset) => (
+                      <button
+                        key={asset.id}
+                        type="button"
+                        onClick={() => selectAsset(asset)}
+                        className={clsx(
+                          "rounded-3 border px-3 py-3 flex flex-col items-center gap-2 duration-200",
+                          assetId === asset.id
+                            ? "border-purple bg-purple-bg"
+                            : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
+                        )}
+                      >
+                        {asset.logoURI ? (
+                          <Image src={asset.logoURI} alt="" width={28} height={28} />
+                        ) : (
+                          <span className="w-7 h-7 rounded-full bg-primary-bg flex items-center justify-center text-12 text-secondary-text">
+                            +
+                          </span>
+                        )}
+                        <span className="text-14 font-medium">{asset.symbol}</span>
+                        <span className="text-12 text-secondary-text text-center leading-tight">
+                          {asset.id === "any" ? t("any_token_short") : asset.name}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {flow === "sell" && (
+                <div className="bg-secondary-bg rounded-3 px-4 py-3 text-14 text-secondary-text">
+                  {t("sell_hint")}
+                </div>
+              )}
+
+              {address && (
+                <div className="bg-secondary-bg rounded-3 px-4 py-3 text-12 text-secondary-text break-all">
+                  {t("receiving_wallet")}:{" "}
+                  <span className="text-primary-text font-medium">{address}</span>
+                </div>
+              )}
+
+              <BuyOnramp
+                appId={appId}
+                flow={flow}
+                asset={selectedAsset}
+                onCompleted={handleCompleted}
+              />
+            </section>
+
+            {completedSymbol && (
+              <section className="bg-primary-bg rounded-5 p-4 md:p-6 border border-purple">
+                <h2 className="text-18 font-medium mb-1">{t("success_title")}</h2>
+                <p className="text-14 text-secondary-text mb-4">
+                  {t("success_body", { symbol: completedSymbol })}
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <Link href="/swap" className="w-full">
+                    <Button fullWidth colorScheme={ButtonColor.PURPLE} size={ButtonSize.LARGE}>
+                      {t("cta_trade")}
+                    </Button>
+                  </Link>
+                  <Link href="/pools" className="w-full">
+                    <Button
+                      fullWidth
+                      colorScheme={ButtonColor.PURPLE}
+                      variant={ButtonVariant.OUTLINED}
+                      size={ButtonSize.LARGE}
+                    >
+                      {t("cta_pools")}
+                    </Button>
+                  </Link>
+                </div>
+              </section>
             )}
+
+            <section className="bg-primary-bg rounded-5 p-4 md:p-6">
+              <h2 className="text-16 md:text-18 font-medium mb-3">{t("after_title")}</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Link
+                  href="/swap"
+                  className="rounded-3 bg-secondary-bg px-4 py-4 hocus:bg-purple-bg duration-200"
+                >
+                  <div className="text-16 font-medium mb-1">{t("cta_trade")}</div>
+                  <p className="text-14 text-secondary-text">{t("after_trade_body")}</p>
+                </Link>
+                <Link
+                  href="/add"
+                  className="rounded-3 bg-secondary-bg px-4 py-4 hocus:bg-purple-bg duration-200"
+                >
+                  <div className="text-16 font-medium mb-1">{t("cta_add_liquidity")}</div>
+                  <p className="text-14 text-secondary-text">{t("after_pool_body")}</p>
+                </Link>
+              </div>
+            </section>
+
+            <p className="text-12 text-secondary-text text-center px-2">
+              {t("disclaimer")}{" "}
+              <a
+                href="https://onramp.money"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple hocus:text-purple-hover duration-200"
+              >
+                onramp.money
+              </a>
+            </p>
           </div>
         </div>
       </Container>

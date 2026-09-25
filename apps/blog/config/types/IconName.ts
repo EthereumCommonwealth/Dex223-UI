@@ -141,6 +141,8 @@ export const svgIconsNames = [
   "date",
   "youtube",
   "crypto-exchange",
+  "list-tokens",
+  "fiat",
 ] as const;
 
 export const socialIconNames = [""] as const;

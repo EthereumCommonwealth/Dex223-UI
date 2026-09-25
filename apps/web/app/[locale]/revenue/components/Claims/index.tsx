@@ -28,12 +28,19 @@ import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import ForwardIcon from "../../../../../../../packages/ui/src/icons/ForwardIcon";
 import MultipleClaimDialog from "../../dialogs/MultipleClaimDialog";
 import SingleClaimDialog from "../../dialogs/SingleClaimDialog";
+import useRevenueContract from "../../hooks/useRevenueContract";
 import { useClaimDialogStore } from "../../stores/useClaimDialogStore";
 import {
   useClaimGasLimitStore,
   useClaimGasModeStore,
   useClaimGasPriceStore,
 } from "../../stores/useClaimGasSettingsStore";
+
+// "-" when the token has no known price.
+const usdOf = (item: { amountUSD: string }) => {
+  const usd = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
+  return Number.isFinite(usd) ? usd : 0;
+};
 
 export const Claims = ({
   tableData,
@@ -55,6 +62,8 @@ export const Claims = ({
   } = useClaimDialogStore();
 
   const chainId = useCurrentChainId();
+  const { canUnstake, unstakeCountdown } = useRevenueContract();
+  const claimLocked = !canUnstake;
   const { estimatedGas, customGasLimit, setEstimatedGas, setCustomGasLimit } =
     useClaimGasLimitStore();
   const [isOpenedFee, setIsOpenedFee] = useState(false);
@@ -106,6 +115,7 @@ export const Claims = ({
   };
 
   const handleClaimSingle = (token: any) => {
+    if (claimLocked) return;
     const selectedTokensData = [
       {
         id: token.id,
@@ -118,12 +128,14 @@ export const Claims = ({
         erc223Address: token.erc223Address,
         fullErc20Address: token.fullErc20Address,
         fullErc223Address: token.fullErc223Address,
-        tokenId: token.tokenId,
+        claimAddresses: token.claimAddresses,
+        amountERC20: token.amountERC20,
+        amountERC223: token.amountERC223,
         chainId: token.chainId,
       },
     ];
 
-    const totalReward = parseFloat(token.amountUSD.replace(/[$,]/g, ""));
+    const totalReward = usdOf(token);
 
     openDialog({
       selectedTokens: selectedTokensData,
@@ -134,6 +146,7 @@ export const Claims = ({
   };
 
   const handleClaimSelected = () => {
+    if (claimLocked) return;
     const selectedTokensData = tableData
       .filter((item: any) => selectedTokens.has(item.id))
       .map((item: any) => ({
@@ -147,16 +160,14 @@ export const Claims = ({
         erc223Address: item.erc223Address,
         fullErc20Address: item.fullErc20Address,
         fullErc223Address: item.fullErc223Address,
-        tokenId: item.tokenId,
+        claimAddresses: item.claimAddresses,
+        amountERC20: item.amountERC20,
+        amountERC223: item.amountERC223,
         chainId: item.chainId,
       }));
 
     const totalReward = tableData.reduce((sum: number, item: any) => {
-      if (selectedTokens.has(item.id)) {
-        const usdValue = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
-        return sum + usdValue;
-      }
-      return sum;
+      return selectedTokens.has(item.id) ? sum + usdOf(item) : sum;
     }, 0);
 
     if (selectedTokens.size === 1) {
@@ -184,11 +195,7 @@ export const Claims = ({
 
   const selectedCount = selectedTokens.size;
   const totalReward = tableData.reduce((sum: number, item: any) => {
-    if (selectedTokens.has(item.id)) {
-      const usdValue = parseFloat(item.amountUSD.replace(/[$,]/g, ""));
-      return sum + usdValue;
-    }
-    return sum;
+    return selectedTokens.has(item.id) ? sum + usdOf(item) : sum;
   }, 0);
   const showClaimingOverlay = hasClaimInProgress && !isLoading;
 
@@ -196,6 +203,11 @@ export const Claims = ({
     <>
       <SingleClaimDialog />
       <MultipleClaimDialog />
+      {claimLocked && unstakeCountdown ? (
+        <p className="text-14 text-secondary-text px-1 pb-3">
+          Claims stay locked for {unstakeCountdown} after the last stake.
+        </p>
+      ) : null}
 
       {/* Desktop version */}
       <div className="hidden xl:flex xl:flex-col rounded-3 h-[640px] bg-table-gradient">
@@ -378,7 +390,12 @@ export const Claims = ({
                         colorScheme={ButtonColor.GREEN}
                         size={ButtonSize.MEDIUM}
                         onClick={() => handleClaimSingle(o)}
-                        disabled={selectedTokens.size > 0 || hasClaimInProgress}
+                        disabled={
+                          claimLocked ||
+                          selectedTokens.size > 0 ||
+                          hasClaimInProgress ||
+                          !o.claimAddresses?.length
+                        }
                       >
                         Claim
                       </Button>
@@ -432,7 +449,7 @@ export const Claims = ({
               <div className="h-[20px] w-[2px] bg-secondary-border"></div>
               <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
-                  <Svg iconName="subtract" size={20} className="text-tertiary-text" />
+                  <Svg iconName="collect" size={20} className="text-tertiary-text" />
                   <span className="text-tertiary-text text-14 font-light">
                     Total reward: ${totalReward.toFixed(2)}
                   </span>
@@ -444,7 +461,7 @@ export const Claims = ({
                     size={ButtonSize.SMALL}
                     onClick={handleClaimSelected}
                     className="!rounded-[8px]"
-                    disabled={hasClaimInProgress || selectedCount > 15}
+                    disabled={claimLocked || hasClaimInProgress || selectedCount > 15}
                   >
                     {hasClaimInProgress ? (
                       <div className="flex items-center gap-2">
@@ -527,7 +544,7 @@ export const Claims = ({
 
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-1.5">
-                    <Svg iconName="subtract" size={16} className="text-tertiary-text" />
+                    <Svg iconName="collect" size={16} className="text-tertiary-text" />
                     <span className="text-secondary-text text-14">
                       Total reward: ${totalReward.toFixed(2)}
                     </span>
@@ -550,7 +567,7 @@ export const Claims = ({
                       colorScheme={ButtonColor.GREEN}
                       size={ButtonSize.MEDIUM}
                       onClick={handleClaimSelected}
-                      disabled={hasClaimInProgress || selectedCount > 15}
+                      disabled={claimLocked || hasClaimInProgress || selectedCount > 15}
                       className="w-full h-10 !px-0"
                     >
                       {hasClaimInProgress ? (
@@ -669,7 +686,12 @@ export const Claims = ({
                       variant={ButtonVariantType.CONTAINED}
                       colorScheme={ButtonColor.GREEN}
                       size={ButtonSize.MEDIUM}
-                      disabled={selectedTokens.size > 0 || hasClaimInProgress}
+                      disabled={
+                        claimLocked ||
+                        selectedTokens.size > 0 ||
+                        hasClaimInProgress ||
+                        !o.claimAddresses?.length
+                      }
                       onClick={() => handleClaimSingle(o)}
                     >
                       Claim

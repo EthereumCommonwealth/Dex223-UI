@@ -157,22 +157,22 @@ export default function useCreateToken(createTokenSettings: {
 
       setCreateTokenHash(hash);
 
-      const transaction = await getTransactionWithRetries({
-        hash,
-        publicClient,
-      });
-
-      const nonce = transaction.nonce;
-
       const factoryNonce = await publicClient.getTransactionCount({
         address: ERC223_TOKEN_DEPLOYER_ADDRESS[chainId],
-        blockTag: "latest",
+        blockTag: "pending",
       });
 
       const futureAddress = getContractAddress({
         from: ERC223_TOKEN_DEPLOYER_ADDRESS[chainId],
         nonce: BigInt(factoryNonce),
       });
+
+      const transaction = await getTransactionWithRetries({
+        hash,
+        publicClient,
+      });
+
+      const nonce = transaction.nonce;
 
       addRecentTransaction(
         {
@@ -220,7 +220,7 @@ export default function useCreateToken(createTokenSettings: {
         if (deployTokenLog) {
           setTokenAddress(deployTokenLog.args.token);
           try {
-            handleImport(deployTokenLog.args.token, chainId);
+            await handleImport(deployTokenLog.args.token, chainId);
           } catch (e) {
             console.log(e);
             console.log("Failed to import token to user custom tokenlist");
@@ -281,6 +281,9 @@ export default function useCreateToken(createTokenSettings: {
     createTokenSettings.name,
     createTokenSettings.symbol,
     createTokenSettings.totalSupply,
+    customGasLimit,
+    gasPriceSettings.model,
+    gasSettings,
     handleImport,
     publicClient,
     setCreateTokenHash,

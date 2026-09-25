@@ -6,7 +6,7 @@ import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
 import Badge from "@/components/badges/Badge";
 import IconButton from "@/components/buttons/IconButton";
-import { isMarginModuleEnabled } from "@/config/modules";
+import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 
 interface Props {
@@ -16,6 +16,26 @@ interface Props {
   id?: string;
 }
 export default function NavigationItem({ href, title, active, id }: Props) {
+  const t = useTranslations("Navigation");
+  const isMarginAvailable = useIsMarginAvailable();
+  const isComingSoon = id === "borrow_lend" && !isMarginAvailable;
+
+  if (isComingSoon) {
+    return (
+      <span className="relative">
+        <span
+          aria-disabled="true"
+          className="px-3 py-5 inline-flex text-secondary-text opacity-50 cursor-default"
+        >
+          {title}
+        </span>
+        <div className="absolute left-1/2 -translate-x-1/2 -bottom-[19px]">
+          <Badge color="green_outline" text={t("coming_soon")} />
+        </div>
+      </span>
+    );
+  }
+
   return (
     <span className="relative">
       <Link
@@ -24,19 +44,11 @@ export default function NavigationItem({ href, title, active, id }: Props) {
           active
             ? "bg-navigation-active text-green shadow-green/60 text-shadow"
             : "hocus:bg-navigation-hover hocus:text-green hocus:shadow-green/60 hocus:text-shadow text-secondary-text",
-          !["/swap", "/pools", "/token-listing", "/portfolio"].includes(href) &&
-            !isMarginModuleEnabled &&
-            "opacity-50 pointer-events-none",
         )}
         href={href}
       >
         {title}
       </Link>
-      {id === "borrow_lend" && !isMarginModuleEnabled && (
-        <div className="absolute left-1/2 -translate-x-1/2 -bottom-[19px]">
-          <Badge color="green_outline" text="Coming soon" />
-        </div>
-      )}
     </span>
   );
 }

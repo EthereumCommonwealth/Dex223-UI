@@ -16,6 +16,7 @@ import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
 import { ThemeColors } from "@/config/theme/colors";
 import { formatFloat } from "@/functions/formatFloat";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { useColorScheme } from "@/lib/color-scheme";
@@ -53,7 +54,8 @@ export default function SwapDetails({
 
   const feeMultiplier = useMemo(() => {
     const fee = trade?.swaps[0].route.pools[0].fee;
-    return fee ? fee / 100000 : 0.3;
+    // Pool fees are in hundredths of a basis point (3000 = 0.3%), so this is the fee in percent.
+    return fee ? fee / 10000 : 0.3;
   }, [trade?.swaps]);
 
   const slippageValue = useMemo(() => {
@@ -174,7 +176,7 @@ export default function SwapDetails({
             title={t("minimum_received")}
             value={
               trade
-                ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                 .toSignificant() || "Loading..."
             }
             tooltipText={t("minimum_received_tooltip")}

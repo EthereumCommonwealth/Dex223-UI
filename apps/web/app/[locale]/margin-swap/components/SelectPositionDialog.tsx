@@ -65,7 +65,6 @@ function PositionSelectItem({
     <div className="p-5 rounded-3 bg-tertiary-bg">
       <div className="flex items-center mb-3 gap-3">
         <Link
-          target={"_blank"}
           className="flex items-center gap-2 text-secondary-text"
           href={`/margin-trading/position/${position.id}`}
         >
@@ -145,7 +144,6 @@ export function SelectedPositionInfo() {
     <div className="bg-primary-bg p-5 rounded-3">
       <div className="flex justify-between mb-3">
         <Link
-          target={"_blank"}
           className="flex items-center gap-2 text-secondary-text"
           href={`/margin-trading/position/${marginSwapPositionId}`}
         >

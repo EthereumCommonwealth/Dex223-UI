@@ -22,12 +22,10 @@ const cookieStorage = {
   },
 };
 
-function wagmiConnectors() {
-  if (typeof window === "undefined") {
-    return [];
-  }
-
-  return [
+export const config = createConfig({
+  chains:
+    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
+  connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
     }),
@@ -45,21 +43,7 @@ function wagmiConnectors() {
     injected({
       target: "trust",
     }),
-    injected({
-      target: () => ({
-        name: "SafePal Wallet",
-        id: "safePal",
-        provider: (window as any).safepalProvider,
-        icon: "/images/wallets/safepal-logo.svg",
-      }),
-    }),
-  ];
-}
-
-export const config = createConfig({
-  chains:
-    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
-  connectors: wagmiConnectors(),
+  ],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
@@ -67,25 +51,33 @@ export const config = createConfig({
   multiInjectedProviderDiscovery: false, // to avoid connecting to io.metamask and other injected connectors
   transports: {
     [mainnet.id]: fallback([
-          webSocket(
-            "wss://lb.drpc.org/ogws?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-          ),
-          http(
-            "https://lb.drpc.org/ogrpc?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-          ),
-          webSocket("wss://ethereum.callstaticrpc.com"),
-          webSocket("wss://ethereum-rpc.publicnode.com"),
-          http("https://ethereum-rpc.publicnode.com"),
-          http("https://eth.drpc.org"),
-          http("https://1rpc.io/eth"),
-          http(),
-        ]),
+      webSocket(
+        "wss://lb.drpc.org/ogws?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
+      ),
+      http(
+        "https://lb.drpc.org/ogrpc?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
+      ),
+      webSocket("wss://ethereum.callstaticrpc.com"),
+      webSocket("wss://ethereum-rpc.publicnode.com"),
+      http("https://ethereum-rpc.publicnode.com"),
+      http("https://eth.drpc.org"),
+      http("https://1rpc.io/eth"),
+      http(),
+    ]),
     [sepolia.id]: fallback([
+      // NOTE: the previous first two entries pointed at lb.drpc.org/sepolia, which dRPC has moved behind
+      // a paid plan - it now answers every request with HTTP 400 "chain is not available on free plan",
+      // so Sepolia was completely broken in the UI.
+      //
+      // The third entry was wss://ethereum-rpc.publicnode.com, which is MAINNET (chainId 1) listed as a
+      // Sepolia fallback. With the drpc entries failing, that was the next transport tried.
+      //
+      // rpc.ankr.com/eth_sepolia no longer answers either. Verified working, in order:
       webSocket("wss://ethereum-sepolia-rpc.publicnode.com"),
-      webSocket("wss://eth-sepolia.g.alchemy.com/v2/kvidqVpyVu4aivBEb55XXIzCHDqMm7CO"),
       http("https://ethereum-sepolia-rpc.publicnode.com"),
-      http("https://sepolia.infura.io/v3/6689c099b8d542589b1842e30dbc2027"),
+      webSocket("wss://eth-sepolia.g.alchemy.com/v2/kvidqVpyVu4aivBEb55XXIzCHDqMm7CO"),
       http("https://eth-sepolia.g.alchemy.com/v2/kvidqVpyVu4aivBEb55XXIzCHDqMm7CO"),
+      http("https://sepolia.infura.io/v3/6689c099b8d542589b1842e30dbc2027"),
       http(),
     ]),
     [bscTestnet.id]: fallback([

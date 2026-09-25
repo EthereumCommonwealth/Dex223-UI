@@ -24,6 +24,10 @@ export interface ClaimToken {
   fullErc223Address?: string; // Full address for ERC223 token
   tokenId?: string; // Identifier for getting pools
   chainId: number;
+  // Token versions with a non-zero payout; claim() pays each one from its own balance.
+  claimAddresses?: string[];
+  amountERC20?: string;
+  amountERC223?: string;
   selectedStandard?: "ERC-20" | "ERC-223";
 }
 

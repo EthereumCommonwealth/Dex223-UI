@@ -158,7 +158,9 @@ const config = {
         },
       },
       animation: {
-        shimmer: 'shimmer 1.5s infinite',
+        // Skeleton sets --shimmer-duration; the shimmer runs on its ::before, so an inline
+        // animation-duration on the element itself never reached it.
+        shimmer: 'shimmer var(--shimmer-duration, 1.5s) infinite',
         orbit: "orbit ease-in-out 1.5s infinite",
         swap: "swap ease-in-out 0.5s",
         list: "list ease-in-out 2s",

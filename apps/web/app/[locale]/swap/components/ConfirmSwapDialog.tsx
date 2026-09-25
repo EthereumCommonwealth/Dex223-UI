@@ -8,6 +8,7 @@ import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Address, formatEther, formatGwei, parseUnits } from "viem";
 
+import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetailsRow from "@/app/[locale]/swap/components/SwapDetailsRow";
 import useSwap, { useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
 import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
@@ -35,6 +36,7 @@ import { networks } from "@/config/networks";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
@@ -104,7 +106,11 @@ function ApproveRow({
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
-          <a target="_blank" href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
+          >
             <IconButton iconName="forward" />
           </a>
         )}
@@ -176,7 +182,11 @@ function SwapRow({
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
-          <a target="_blank" href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
+          >
             <IconButton iconName="forward" />
           </a>
         )}
@@ -595,7 +605,8 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
 
   const feeMultiplier = useMemo(() => {
     const fee = trade?.swaps[0].route.pools[0].fee;
-    return fee ? fee / 100000 : 0.3;
+    // Pool fees are in hundredths of a basis point (3000 = 0.3%), so this is the fee in percent.
+    return fee ? fee / 10000 : 0.3;
   }, [trade?.swaps]);
 
   return (
@@ -701,7 +712,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 title={t("minimum_received")}
                 value={
                   trade
-                    ?.minimumAmountOut(new Percent(slippage * 100, 10000), dependentAmount)
+                    ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
                     .toSignificant() || "Loading..."
                 }
                 tooltipText={t("minimum_received_tooltip")}
@@ -739,6 +750,8 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 }
                 tooltipText={t("gas_limit_tooltip")}
               />
+
+              <PriceImpactWarning trade={trade} className="mt-2" />
 
               {tokenA?.isToken && tokenAStandard === Standard.ERC20 && !isAllowedA && (
                 <div
