@@ -885,7 +885,11 @@
     "success_claimed": "Reclamado correctamente",
     "unexpected_error": "Ocurrió un error inesperado. Inténtalo de nuevo.",
     "claiming_rewards": "Reclamando recompensas",
-    "token_not_found": "Token no encontrado"
+    "token_not_found": "Token no encontrado",
+    "duration_day": "{count, plural, one {# día} other {# días}}",
+    "duration_hour": "{count, plural, one {# hora} other {# horas}}",
+    "duration_minute": "{count, plural, one {# minuto} other {# minutos}}",
+    "duration_second": "{count, plural, one {# segundo} other {# segundos}}"
   },
   "Governance": {
     "title": "Gobernanza",
