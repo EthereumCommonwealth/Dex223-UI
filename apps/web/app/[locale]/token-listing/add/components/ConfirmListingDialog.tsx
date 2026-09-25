@@ -234,12 +234,6 @@ export default function ConfirmListingDialog() {
 
   const { autoListingContract } = useAutoListingContractStore();
 
-  useEffect(() => {
-    if (paymentToken) {
-      setAmountToApprove(formatUnits(paymentToken.price, paymentToken.token.decimals));
-    }
-  }, [paymentToken]);
-
   const isFree = useMemo(() => {
     return !autoListing?.tokensToPay.length;
   }, [autoListing]);
@@ -298,7 +292,7 @@ export default function ConfirmListingDialog() {
                       address={autoListing?.id!}
                       title={autoListing?.name || "Unknown"}
                       underlineText={
-                        isMobile ? "In the auto-listing" : "In the auto-listing сontract"
+                        isMobile ? "In the auto-listing" : "In the auto-listing contract"
                       }
                     />
                   </div>
@@ -331,7 +325,7 @@ export default function ConfirmListingDialog() {
                     <SingleCard
                       address={autoListing?.id!}
                       title={autoListing?.name || "Unknown"}
-                      underlineText="In the auto-listing сontract"
+                      underlineText="In the auto-listing contract"
                     />
                   </>
                 )}
@@ -355,7 +349,10 @@ export default function ConfirmListingDialog() {
                           paymentToken.token.decimals ?? 18,
                         ).slice(0, 7) === "0.00000"
                           ? truncateMiddle(
-                              formatUnits(paymentToken.price, paymentToken.token.decimals ?? 18),
+                              formatUnits(
+                                paymentToken.price * BigInt(tokensToList.length),
+                                paymentToken.token.decimals ?? 18,
+                              ),
                               {
                                 charsFromStart: 3,
                                 charsFromEnd: 2,
@@ -363,7 +360,7 @@ export default function ConfirmListingDialog() {
                             )
                           : formatFloat(
                               formatUnits(
-                                paymentToken.price,
+                                paymentToken.price * BigInt(tokensToList.length),
                                 paymentToken.token.decimals != null
                                   ? paymentToken.token.decimals
                                   : 18,

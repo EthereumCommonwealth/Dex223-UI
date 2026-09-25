@@ -59,6 +59,7 @@ type DexData = {
 
 addFormats(ajv);
 const validator = ajv.compile(schemaJson);
+const tokenValidator = ajv.compile({ $ref: `${schemaJson.$id}#/definitions/TokenInfo` });
 
 async function validate(data: any) {
   const valid = validator(data);
@@ -118,13 +119,21 @@ function formatItem(token: uniToken, address223: string): Token {
   );
 }
 
-async function getList(url: string): Promise<UniData | undefined> {
+async function getList(url: string, chainId: DexChainId): Promise<UniData | undefined> {
   try {
     const response = await fetch(url);
     const data = await response.json();
 
-    await validate(data);
-    return data;
+    // Public lists are multi-chain and often carry a few entries that fail the schema (for example
+    // non-EVM addresses in the Uniswap default list). Keep the valid tokens for this chain instead of
+    // rejecting the whole list.
+    const tokens: uniToken[] = Array.isArray(data?.tokens)
+      ? data.tokens.filter((token: uniToken) => token?.chainId === chainId && tokenValidator(token))
+      : [];
+    const list = { ...data, tokens };
+
+    await validate(list);
+    return list;
   } catch (e) {
     console.log(e);
     return undefined;
@@ -137,7 +146,7 @@ async function getList(url: string): Promise<UniData | undefined> {
  * @returns Promise with formatted Dex223 token list.
  */
 export async function convertList(url: string, chainId: DexChainId): Promise<DexData | undefined> {
-  const data = await getList(url);
+  const data = await getList(url, chainId);
 
   if (!data) {
     return undefined;

@@ -1,0 +1,12 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<defs><clipPath id="ckr"><circle cx="12" cy="12" r="12"/></clipPath></defs>
+<g clip-path="url(#ckr)">
+<rect width="24" height="24" fill="#F0F0F0"/>
+<g transform="rotate(-33.7 12 12)"><path d="M16.2 12A4.2 4.2 0 0 0 7.8 12Z" fill="#D80027"/><path d="M7.8 12A4.2 4.2 0 0 0 16.2 12Z" fill="#0052B4"/><circle cx="9.9" cy="12" r="2.1" fill="#D80027"/><circle cx="14.1" cy="12" r="2.1" fill="#0052B4"/></g>
+<rect x="4.74" y="6.11" width="3.8" height="0.8" fill="#000" transform="rotate(56.3 6.64 6.51)"/><rect x="3.70" y="6.80" width="3.8" height="0.8" fill="#000" transform="rotate(56.3 5.60 7.20)"/><rect x="2.66" y="7.49" width="3.8" height="0.8" fill="#000" transform="rotate(56.3 4.56 7.89)"/>
+<rect x="18.06" y="14.83" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 18.86 15.23)"/><rect x="19.22" y="16.58" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 20.02 16.98)"/><rect x="17.02" y="15.53" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 17.82 15.93)"/><rect x="18.18" y="17.27" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 18.98 17.67)"/><rect x="15.98" y="16.22" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 16.78 16.62)"/><rect x="17.14" y="17.97" width="1.6" height="0.8" fill="#000" transform="rotate(56.3 17.94 18.37)"/>
+<rect x="19.22" y="6.62" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 20.02 7.02)"/><rect x="18.06" y="8.37" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 18.86 8.77)"/><rect x="16.50" y="6.80" width="3.8" height="0.8" fill="#000" transform="rotate(123.7 18.40 7.20)"/><rect x="17.14" y="5.23" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 17.94 5.63)"/><rect x="15.98" y="6.98" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 16.78 7.38)"/>
+<rect x="4.74" y="17.09" width="3.8" height="0.8" fill="#000" transform="rotate(123.7 6.64 17.49)"/><rect x="5.38" y="15.53" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 6.18 15.93)"/><rect x="4.22" y="17.27" width="1.6" height="0.8" fill="#000" transform="rotate(123.7 5.02 17.67)"/><rect x="2.66" y="15.71" width="3.8" height="0.8" fill="#000" transform="rotate(123.7 4.56 16.11)"/>
+
+</g>
+</svg>

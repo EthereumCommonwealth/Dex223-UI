@@ -8,7 +8,7 @@ import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { Address, isAddress } from "viem";
+import { Address, formatUnits, isAddress } from "viem";
 import { useAccount, useSwitchChain } from "wagmi";
 
 import { useRevenueStore } from "@/app/[locale]/revenue/stores/useRevenueStore";
@@ -16,16 +16,18 @@ import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { TokenListId } from "@/db/db";
+import { formatDuration } from "@/functions/formatDuration";
+import { formatFloat } from "@/functions/formatFloat";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useTokens } from "@/hooks/useTokenLists";
 import { Token } from "@/sdk_bi/entities/token";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
 import { Claims } from "./components/Claims";
 import StakeDialog from "./dialogs/StakeDialog";
 import TokenListDropdown from "./dialogs/TokenListDropdown";
 import useRevenueContract from "./hooks/useRevenueContract";
-import { useRevenueTokens, useTotalReward } from "./hooks/useRevenueTokens";
 import { StakeStatus, useStakeDialogStore } from "./stores/useStakeDialogStore";
 
 const WalletSearchInput = ({
@@ -84,8 +86,7 @@ export function Revenue() {
   const { switchChain } = useSwitchChain();
 
   const allAvailableTokens = useTokens();
-  const { data: revenueTokensData } = useRevenueTokens();
-  const { data: totalRewardData } = useTotalReward();
+  const usdPrices = useUSDPriceStore((state) => state.prices);
 
   const tokensFromSelectedLists = useMemo(() => {
     return allAvailableTokens.filter((token) => {
@@ -100,16 +101,22 @@ export function Revenue() {
     searchValue && isAddress(searchValue) ? (searchValue as Address) : undefined;
   const {
     userStaked,
+    userStakingTimestamp,
     stakingPercentage,
     isLoadingUserData,
-    redTotalSupply,
-    isCorrectNetwork,
-    requiredChainId,
+    totalStaked,
     claimableRewards,
     setRewardTokens,
     canUnstake,
     unstakeCountdown,
     hasStaked,
+    erc223Deposit,
+    stakingTokenERC223,
+    stakingTokenSymbol,
+    recoverDeposit,
+    refetchUserData,
+    isTransactionPending,
+    avgStakingDuration,
   } = useRevenueContract({ searchAddress });
 
   useEffect(() => {
@@ -118,55 +125,50 @@ export function Revenue() {
     }
   }, [tokensFromSelectedLists, setRewardTokens]);
 
+  // Rows are the tokens the Revenue contract on this chain actually holds, with the
+  // amounts claim() would pay right now.
   const mappedClaimsData = useMemo(() => {
-    if (!revenueTokensData?.items) {
-      return claimableRewards.map((reward, index) => ({
-        id: index + 1,
-        name: reward.token.name || "Unknown",
-        symbol: reward.token.symbol || "???",
-        logoURI: reward.token.logoURI || "/images/tokens/placeholder.svg",
-        erc20Address: truncateMiddle(reward.token.address0, { charsFromStart: 3, charsFromEnd: 3 }),
-        erc223Address: truncateMiddle(reward.token.address1, {
-          charsFromStart: 3,
-          charsFromEnd: 3,
-        }),
-        amount: reward.amountFormatted || "-",
-        amountUSD: reward.amountUSD || "-",
-        fullErc20Address: reward.token.address0,
-        fullErc223Address: reward.token.address1,
-        chainId: reward.token.chainId,
-        token: reward.token,
-      }));
-    }
+    return claimableRewards
+      .filter((reward) => reward.heldERC20 > 0n || reward.heldERC223 > 0n)
+      .map((reward, index) => {
+        const price = usdPrices[reward.token.address0.toLowerCase()];
+        const amount = Number(reward.amountFormatted);
+        return {
+          id: index + 1,
+          name: reward.token.name || "Unknown",
+          symbol: reward.token.symbol || "???",
+          logoURI: reward.token.logoURI || "/images/tokens/placeholder.svg",
+          erc20Address: truncateMiddle(reward.token.address0, {
+            charsFromStart: 3,
+            charsFromEnd: 3,
+          }),
+          erc223Address: truncateMiddle(reward.token.address1, {
+            charsFromStart: 3,
+            charsFromEnd: 3,
+          }),
+          amount: formatFloat(amount),
+          amountERC20: formatFloat(Number(formatUnits(reward.amountERC20, reward.token.decimals))),
+          amountERC223: formatFloat(
+            Number(formatUnits(reward.amountERC223, reward.token.decimals)),
+          ),
+          amountUSD: price !== undefined ? `$${(amount * Number(price)).toFixed(2)}` : "-",
+          fullErc20Address: reward.token.address0,
+          fullErc223Address: reward.token.address1,
+          claimAddresses: reward.claimAddresses,
+          chainId: reward.token.chainId,
+          token: reward.token,
+        };
+      });
+  }, [claimableRewards, usdPrices]);
 
-    return revenueTokensData.items.map((item, index) => {
-      const reward = claimableRewards.find(
-        (r) => r.token.address0.toLowerCase() === item.token.addressERC20.toLowerCase(),
-      );
-
-      return {
-        id: index + 1,
-        name: item.token.name,
-        symbol: item.token.symbol,
-        logoURI: "/images/tokens/placeholder.svg",
-        erc20Address: truncateMiddle(item.token.addressERC20, {
-          charsFromStart: 3,
-          charsFromEnd: 3,
-        }),
-        erc223Address: truncateMiddle(item.token.addressERC223, {
-          charsFromStart: 3,
-          charsFromEnd: 3,
-        }),
-        amount: item.accruedInPoolsNow || "0",
-        amountUSD: item.accruedInPoolsNowUSD || "$0.00",
-        fullErc20Address: item.token.addressERC20,
-        fullErc223Address: item.token.addressERC223,
-        tokenId: item.token.id,
-        chainId: chainId,
-        token: reward?.token,
-      };
-    });
-  }, [revenueTokensData, claimableRewards, chainId]);
+  const totalClaimableUSD = useMemo(
+    () =>
+      mappedClaimsData.reduce((sum, row) => {
+        const usd = parseFloat(row.amountUSD.replace(/[$,]/g, ""));
+        return Number.isFinite(usd) ? sum + usd : sum;
+      }, 0),
+    [mappedClaimsData],
+  );
 
   const handleSelectedTokens = (tokenId: number) => {
     if (tokenId === 0) {
@@ -205,10 +207,8 @@ export function Revenue() {
   };
 
   useEffect(() => {
-    if (error) {
-      setError(null);
-    }
-  }, [searchValue, claimRewardsSearchValue, error]);
+    setError(null);
+  }, [searchValue, claimRewardsSearchValue]);
 
   const formatStakedAmount = (amount: unknown) => {
     if (!amount || typeof amount !== "bigint") return "0";
@@ -224,40 +224,25 @@ export function Revenue() {
     return `${quotient.toString()}.${decimalPart.toString().padStart(2, "0")}`;
   };
 
-  const formatTotalSupply = (amount: unknown) => {
-    if (!amount || typeof amount !== "bigint") return "0";
+  const formatTotalStaked = (amount: bigint) =>
+    new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 2 }).format(
+      Number(formatUnits(amount, 18)),
+    );
 
-    const divisor = BigInt(10 ** 18);
-    const quotient = amount / divisor;
-    const quotientStr = quotient.toString();
-    const quotientNum = Number(quotient);
+  const lastStakedDate =
+    hasStaked && typeof userStakingTimestamp === "bigint" && userStakingTimestamp > 0n
+      ? new Date(Number(userStakingTimestamp) * 1000)
+          .toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" })
+          .replace(/\//g, ".")
+      : null;
 
-    if (quotientNum >= 1000000000000000000000) {
-      // Sextillions
-      const sextillions = quotientNum / 1000000000000000000000;
-      return `${sextillions}Sx`;
-    } else if (quotientNum >= 1000000000000000000) {
-      // Quintillions
-      const quintillions = quotientNum / 1000000000000000000;
-      return `${quintillions}Qt`;
-    } else if (quotientNum >= 1000000000000000) {
-      // Quadrillions
-      const quadrillions = quotientNum / 1000000000000000;
-      return `${quadrillions}Q`;
-    } else if (quotientNum >= 1000000000000) {
-      // Trillions
-      const trillions = quotientNum / 1000000000000;
-      return `${trillions}T`;
-    } else if (quotientNum >= 1000000000) {
-      // Billions
-      const billions = quotientNum / 1000000000;
-      return `${billions}B`;
-    } else if (quotientNum >= 1000000) {
-      // Millions
-      const millions = quotientNum / 1000000;
-      return `${millions}M`;
+  const handleRecoverDeposit = async () => {
+    try {
+      await recoverDeposit(stakingTokenERC223);
+      refetchUserData();
+    } catch (e: any) {
+      setError(e?.shortMessage || e?.message || "Could not recover the deposit");
     }
-    return quotientStr;
   };
 
   // Use mapped claims data or fallback to hardcoded data for demo
@@ -354,7 +339,7 @@ export function Revenue() {
                     <span className="text-14 md:text-16 text-secondary-text">D223 staked</span>
                     <Tooltip
                       iconSize={16}
-                      text="This shows your staked D223 tokens and the percentage of total supply you represent"
+                      text="Your staked D223 out of all D223 staked in the Revenue contract. Rewards are split by this share."
                     />
                   </div>
                   {unstakeCountdown && (
@@ -373,10 +358,10 @@ export function Revenue() {
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 md:gap-4 z-10 mt-2">
                   <div className="flex flex-col">
                     <span className="text-24 md:text-28 xl:text-32 font-medium">
-                      {formatStakedAmount(userStaked)} / {formatTotalSupply(redTotalSupply)}
+                      {formatStakedAmount(userStaked)} / {formatTotalStaked(totalStaked)}
                     </span>
                     <span className="text-12 md:text-13 xl:text-14 text-secondary-text">
-                      {stakingPercentage}%
+                      {stakingPercentage.toFixed(2)}% of all staked D223
                     </span>
                   </div>
 
@@ -435,21 +420,23 @@ export function Revenue() {
 
               <div className="relative flex flex-col bg-primary-bg rounded-3 px-4 md:px-5 py-3 md:py-4 w-full md:col-span-2 xl:col-span-5 overflow-hidden min-h-[140px] md:h-[120px] min-w-0 max-w-full">
                 <div className="flex items-center z-10 gap-1">
-                  <span className="text-14 md:text-16 text-secondary-text">Total reward</span>
+                  <span className="text-14 md:text-16 text-secondary-text">Claimable reward</span>
                   <Tooltip
                     iconSize={16}
-                    text="Total rewards earned from staking your D223 tokens"
+                    text={`What you could claim right now, in USD, for reward tokens with a known price. Rewards accrue in ${
+                      avgStakingDuration > 0n
+                        ? `${formatDuration(Number(avgStakingDuration))} periods`
+                        : "full periods"
+                    } after your last stake or claim.`}
                   />
                 </div>
 
                 <div className="flex flex-col z-10 mt-2">
                   <span className="text-20 md:text-24 xl:text-32 font-medium">
-                    ${totalRewardData?.totalValueUSD || "0"}
+                    ${totalClaimableUSD.toFixed(2)}
                   </span>
                   <span className="text-12 md:text-14 xl:text-16 text-secondary-text mt-1">
-                    {totalRewardData?.created_at
-                      ? `Staked since: ${new Date(totalRewardData.created_at).toLocaleDateString("en-GB", { day: "2-digit", month: "2-digit", year: "numeric" }).replace(/\//g, ".")}`
-                      : "Not staked yet"}
+                    {lastStakedDate ? `Last staked: ${lastStakedDate}` : "Not staked yet"}
                   </span>
                 </div>
 
@@ -464,6 +451,24 @@ export function Revenue() {
             </>
           )}
         </div>
+        {!searchAddress && typeof erc223Deposit === "bigint" && erc223Deposit > BigInt(0) && (
+          <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <span className="text-secondary-text text-12 md:text-14">
+              {formatUnits(erc223Deposit, 18)} {stakingTokenSymbol} reached the Revenue contract as
+              an ERC-223 transfer but was never staked. You can recover it at any time.
+            </span>
+            <Button
+              size={ButtonSize.EXTRA_SMALL}
+              colorScheme={ButtonColor.LIGHT_GREEN}
+              onClick={handleRecoverDeposit}
+              disabled={isTransactionPending}
+            >
+              Recover deposit
+            </Button>
+          </div>
+        )}
+        {error && <p className="mt-2 text-12 md:text-14 text-red-light">{error}</p>}
+
         {isStakeActionLocked && (
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg/90 border border-quaternary-bg px-4 md:px-5 py-3 flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -510,7 +515,7 @@ export function Revenue() {
               </p>
               <div className="absolute top-0 right-0 flex items-end justify-end p-2 md:p-4 pointer-events-none">
                 <Image
-                  src="/images/state.svg"
+                  src="/images/empty-large/wallet.svg"
                   alt="Account"
                   width={300}
                   height={200}
@@ -525,7 +530,7 @@ export function Revenue() {
               </p>
               <div className="absolute top-0 right-0 flex items-center justify-center pointer-events-none">
                 <Image
-                  src="/images/empty-state.svg"
+                  src="/images/empty-large/not-found-token.svg"
                   alt="Search"
                   width={340}
                   height={340}

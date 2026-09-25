@@ -15,7 +15,6 @@ export default function ClosedPositionInfoBlock({
   position: MarginPosition;
   setIsWithdrawDialogOpened: (isOpen: boolean) => void;
 }) {
-  console.log(position.assetsWithBalances);
   const isTokensToWithdraw = useMemo(() => {
     return position.assetsWithBalances.some((assetWithBalance) => {
       return !!assetWithBalance.balance && assetWithBalance.balance > BigInt(0);

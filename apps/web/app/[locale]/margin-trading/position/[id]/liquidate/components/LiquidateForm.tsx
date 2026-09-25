@@ -203,6 +203,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
                       e.stopPropagation();
                     }}
                     target="_blank"
+                    rel="noopener noreferrer"
                     href="https://www.google.com"
                   >
                     terms and conditions of liquidation

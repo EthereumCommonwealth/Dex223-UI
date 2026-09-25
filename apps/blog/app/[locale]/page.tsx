@@ -1,6 +1,8 @@
 "use client";
 
 import debounce from "lodash.debounce";
+import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import PostsContent from "@/app/[locale]/components/PostsContent";
@@ -13,6 +15,11 @@ import { IIFE } from "@/functions/iife";
 
 const INITAL_LOAD = 10;
 const POSTS_LIMIT = 6;
+
+// The first request returns INITAL_LOAD posts and every later page POSTS_LIMIT more.
+function loadedPostsCount(page: number) {
+  return INITAL_LOAD + (page - 1) * POSTS_LIMIT;
+}
 
 function useAllTags() {
   const [tags, setTags] = useState<{ label: string; value: string }[]>([]);
@@ -106,11 +113,7 @@ function useAllPosts({
       setPosts((_posts) => [..._posts, ...posts.data]);
       pageRef.current += 1;
 
-      if (posts.total < INITAL_LOAD + pageRef.current * POSTS_LIMIT) {
-        setAllLoaded(true);
-      } else {
-        setAllLoaded(false);
-      }
+      setAllLoaded(posts.total <= loadedPostsCount(pageRef.current));
     }
 
     isLoadingMoreRef.current = false;
@@ -155,12 +158,10 @@ function useAllPosts({
 
         if (postsResponse.data) {
           setPosts(postsResponse.data);
+          // A new search or filter starts again from the first page.
+          pageRef.current = 1;
 
-          if (postsResponse.total < INITAL_LOAD + pageRef.current * POSTS_LIMIT) {
-            setAllLoaded(true);
-          } else {
-            setAllLoaded(false);
-          }
+          setAllLoaded(postsResponse.total <= loadedPostsCount(pageRef.current));
         }
       } catch (e) {
         console.error(e);
@@ -185,17 +186,61 @@ function useAllPosts({
   };
 }
 
-const filterMap: Record<ContentType, string> = {
-  video: "Video",
-  content: "Articles",
-  vide_and_content: "Articles and video",
+// Values are keys in the Blog messages namespace.
+const filterMap: Record<ContentType, "content_video" | "content_articles" | "content_all"> = {
+  video: "content_video",
+  content: "content_articles",
+  vide_and_content: "content_all",
 };
 
+const DEFAULT_TAG = "all";
+const DEFAULT_CONTENT_TYPE: ContentType = "vide_and_content";
+
+function isContentType(value: string | null): value is ContentType {
+  return !!value && value in filterMap;
+}
+
 export default function BlogPage() {
-  const [searchValue, setSearchValue] = useState("");
-  const [tag, setTag] = useState("all");
-  const [contentType, setContentType] = useState<ContentType>("vide_and_content");
+  // Filters live in the URL so they survive opening a post and coming back,
+  // and a filtered view can be shared.
+  const searchParams = useSearchParams();
+  const [searchValue, setSearchValue] = useState(() => searchParams.get("q") ?? "");
+  const [tag, setTag] = useState(() => searchParams.get("tag") || DEFAULT_TAG);
+  const [contentType, setContentType] = useState<ContentType>(() => {
+    const type = searchParams.get("type");
+    return isContentType(type) ? type : DEFAULT_CONTENT_TYPE;
+  });
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const setOrDelete = (key: string, value: string, defaultValue: string) => {
+      if (value && value !== defaultValue) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+    };
+
+    setOrDelete("q", searchValue.trim(), "");
+    setOrDelete("tag", tag, DEFAULT_TAG);
+    setOrDelete("type", contentType, DEFAULT_CONTENT_TYPE);
+
+    const query = params.toString();
+    const url = `${window.location.pathname}${query ? `?${query}` : ""}`;
+    if (url !== `${window.location.pathname}${window.location.search}`) {
+      window.history.replaceState(window.history.state, "", url);
+    }
+  }, [searchValue, tag, contentType]);
+
+  const hasActiveFilters =
+    !!searchValue.trim() || tag !== DEFAULT_TAG || contentType !== DEFAULT_CONTENT_TYPE;
+
+  const resetFilters = useCallback(() => {
+    setSearchValue("");
+    setTag(DEFAULT_TAG);
+    setContentType(DEFAULT_CONTENT_TYPE);
+  }, []);
 
   const { getMorePosts, posts, isLoadingMore, internalSearchValue, isAllLoaded } = useAllPosts({
     searchValue,
@@ -204,18 +249,19 @@ export default function BlogPage() {
     setIsLoading,
   });
 
+  const t = useTranslations("Blog");
   const tags = useAllTags();
 
   return (
     <Container className="px-4">
       <div className="flex items-center justify-between pb-6 pt-4 md:py-10 flex-wrap max-lg:flex-col max-lg:items-start gap-2">
-        <h1 className="text-24 md:text-40">Blog</h1>
+        <h1 className="text-24 md:text-40">{t("title")}</h1>
         <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 max-lg:flex-col-reverse max-lg:w-full">
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0 max-md:grid-cols-1 max-lg:grid-cols-2 max-lg:grid max-lg:w-full">
             <Select
               optionsHeight={380}
               options={Object.keys(filterMap).map((key) => ({
-                label: filterMap[key as ContentType],
+                label: t(filterMap[key as ContentType]),
                 value: key,
               }))}
               value={contentType}
@@ -225,7 +271,9 @@ export default function BlogPage() {
 
             <Select
               optionsHeight={380}
-              options={tags}
+              options={tags.map((option) =>
+                option.value === "all" ? { ...option, label: t("all_categories") } : option,
+              )}
               value={tag}
               onChange={(tag) => setTag(tag)}
               extendWidth
@@ -234,8 +282,8 @@ export default function BlogPage() {
 
           <div className="max-lg:w-full lg:w-[386px]">
             <SearchInput
-              className="bg-primary-bg rounded-2 md:rounded-3 h-10 md:h-12"
-              placeholder="Search article or video"
+              className="bg-primary-bg rounded-2 md:rounded-3 h-11 md:h-12"
+              placeholder={t("search_placeholder")}
               value={searchValue}
               onChange={(e) => {
                 setSearchValue(e.target.value);
@@ -254,6 +302,7 @@ export default function BlogPage() {
         getMorePosts={getMorePosts}
         isLoadingMore={isLoadingMore}
         isAllLoaded={isAllLoaded}
+        onResetFilters={hasActiveFilters ? resetFilters : undefined}
       />
       <ScrollToTopButton />
     </Container>

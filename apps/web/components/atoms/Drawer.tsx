@@ -87,7 +87,7 @@ export default function Drawer({
               className={clsx(
                 "drawer-container surface surface-modal rounded-t-5",
                 placement === "left" && "h-full",
-                placement === "bottom" && "w-full max-h-[100vh]",
+                placement === "bottom" && "w-full max-h-[100dvh]",
               )}
               ref={refs.setFloating}
               aria-labelledby={headingId}

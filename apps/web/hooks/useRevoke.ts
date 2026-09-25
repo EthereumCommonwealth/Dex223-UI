@@ -196,7 +196,16 @@ export default function useRevoke({
 
       if (hash) {
         setStatus(AllowanceStatus.LOADING);
-        await publicClient.waitForTransactionReceipt({ hash });
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+
+        // A reverted transaction still produces a receipt; without checking it a
+        // failed revoke was shown as successful, leaving the allowance in place while
+        // the user believed it had been removed.
+        if (receipt.status !== "success") {
+          setStatus(AllowanceStatus.INITIAL);
+          return;
+        }
+
         setStatus(AllowanceStatus.SUCCESS);
         setRefreshDepositsTrigger(true);
       }

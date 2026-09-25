@@ -1,21 +1,92 @@
 import DOMPurify from "isomorphic-dompurify";
+import type { Metadata } from "next";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { PropsWithChildren } from "react";
 
 import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
 import { Link } from "@/i18n/routing";
 
 function PostContainer({ children }: PropsWithChildren<{}>) {
   return <div className="w-full max-w-[728px] mx-auto px-4">{children}</div>;
 }
-export default async function PostPage({ params }: { params: Promise<{ id: string }> }) {
+type PostPageProps = {
+  params: Promise<{ id: string; locale: string }>;
+};
+
+// Next.js memoizes this GET, so the page and its metadata share one request.
+async function fetchPost(id: string): Promise<PostDetails | null> {
+  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const post: PostDetails = await res.json();
+  return post?.id ? post : null;
+}
+
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const { id, locale } = await params;
+  const post = await fetchPost(id);
+
+  if (!post) {
+    return {};
+  }
+
+  const url = `/${locale}/${post.id}?slug=${post.slug}`;
+  const images = post.thumbnail?.link
+    ? [{ url: post.thumbnail.link, alt: post.thumbnail.alt || post.title }]
+    : undefined;
+
+  return {
+    title: `${post.title} | Dex223 Blog`,
+    description: post.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      siteName: "Dex223 Blog",
+      title: post.title,
+      description: post.description,
+      url,
+      images,
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@Dex_223",
+      title: post.title,
+      description: post.description,
+      images: images?.map((image) => image.url),
+    },
+  };
+}
+
+export default async function PostPage({ params }: PostPageProps) {
   const { id } = await params;
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+
+  // The API answers 404 for unknown ids and 422 for anything that is not a UUID
+  // (for example /en/blog). Show the not-found page instead of an empty post.
+  if (!res.ok) {
+    notFound();
+  }
+
   const post: PostDetails = await res.json();
 
+  if (!post?.id) {
+    notFound();
+  }
+
+  // DOMPurify is a module singleton on the server: drop the hook from the previous
+  // request before adding it again, or every render stacks one more copy.
+  DOMPurify.removeHooks("afterSanitizeAttributes");
   DOMPurify.addHook("afterSanitizeAttributes", (node: Element) => {
     // Restrict iframe sources
     if (node.tagName === "IFRAME") {
@@ -24,7 +95,8 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         node.remove();
       } else {
         node.setAttribute("sandbox", "allow-same-origin allow-scripts allow-popups");
-        node.setAttribute("referrerpolicy", "no-referrer");
+        // YouTube refuses to play without a referrer (error 153), so send the origin only.
+        node.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
       }
     }
 
@@ -53,9 +125,14 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
       }
     }
 
-    // Secure external links
-    if (node.tagName === "A" && node.getAttribute("target") === "_blank") {
-      node.setAttribute("rel", "noopener noreferrer");
+    // Dex223 links stay in this tab; other sites open in a new tab with the opener detached
+    if (node.tagName === "A") {
+      if (isExternalHref(node.getAttribute("href"))) {
+        node.setAttribute("target", "_blank");
+        node.setAttribute("rel", EXTERNAL_LINK_REL);
+      } else {
+        node.removeAttribute("target");
+      }
     }
   });
 
@@ -158,19 +235,15 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
         "autoplay",
         "style",
       ],
-    }).replace(
-      /<iframe([\s\S]*?)<\/iframe>/gi,
-      '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
-    ),
+    })
+      .replace(
+        /<iframe([\s\S]*?)<\/iframe>/gi,
+        '<div class="aspect-w-16 aspect-h-9"><iframe$1</iframe></div>',
+      )
+      // Let wide tables scroll sideways on phones instead of crushing their columns.
+      .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
-  if (!post) {
-    return (
-      <div>
-        <h1>Post not found</h1>
-      </div>
-    );
-  }
   return (
     <>
       <PostContainer>
@@ -227,22 +300,29 @@ export default async function PostPage({ params }: { params: Promise<{ id: strin
           </div>
         </div>
 
-        <h1 className="mb-2 md:mb-5 text-24 md:text-32">{post.title}</h1>
-        <p className="text-16 md:text-20 mb-8 md:mb-[60px]">{post.description}</p>
+        <h1 className="mb-3 md:mb-5 text-[28px] leading-[36px] md:text-40 md:leading-[52px] font-semibold text-balance">
+          {post.title}
+        </h1>
+        <p className="text-18 md:text-20 text-secondary-text mb-8 md:mb-[60px]">
+          {post.description}
+        </p>
       </PostContainer>
-      <Container>
-        <div className="w-full relative min-h-[203px] md:min-h-[400px] mb-8 md:mb-[60px]">
-          <Image
-            className="xl:rounded-3"
-            objectFit="cover"
-            layout="fill"
-            src={post.thumbnail?.link || ""}
-            alt={post.thumbnail?.alt || ""}
-          />
-        </div>
-      </Container>
+      {post.thumbnail?.link && (
+        <Container>
+          <div className="w-full relative min-h-[203px] md:min-h-[400px] mb-8 md:mb-[60px]">
+            <Image
+              className="xl:rounded-3 object-cover"
+              fill
+              priority
+              sizes="(max-width: 1406px) 100vw, 1406px"
+              src={post.thumbnail.link}
+              alt={post.thumbnail.alt ?? ""}
+            />
+          </div>
+        </Container>
+      )}
       <PostContainer>
-        <div className="prose last:prose-th:pr-4 last:prose-td:pr-4 prose-th:align-top prose-th:py-2 prose-headings:text-primary-text first:prose-th:pl-5 first:prose-td:pl-5 prose-table:rounded-5 prose-table:overflow-hidden prose-td:bg-primary-bg prose-tr:border-secondary-border prose-th:bg-quaternary-bg [&>p]:prose-li:my-2 text-primary-text prose-li:my-2 prose-li:text-secondary-text prose-li:marker:text-secondary-text hover:prose-a:text-green-hover prose-a:duration-200 prose-a:cursor-pointer prose-lg max-lg:prose-base prose-p:text-secondary-text prose-strong:text-inherit max-w-none prose-a:text-green prose-headings::text-primary-text  prose-a:font-normal">
+        <div className="post-content prose last:prose-th:pr-4 last:prose-td:pr-4 prose-th:align-top prose-th:py-2 prose-headings:text-primary-text first:prose-th:pl-5 first:prose-td:pl-5 prose-table:rounded-5 prose-table:overflow-hidden prose-td:bg-primary-bg prose-tr:border-secondary-border prose-th:bg-quaternary-bg [&>p]:prose-li:my-2 text-primary-text prose-li:my-2 prose-li:text-secondary-text prose-li:marker:text-secondary-text hover:prose-a:text-green-hover prose-a:duration-200 prose-a:cursor-pointer prose-lg max-lg:prose-base prose-p:text-secondary-text prose-strong:text-inherit max-w-none prose-a:text-green prose-headings::text-primary-text  prose-a:font-normal">
           <div dangerouslySetInnerHTML={sanitizedData()} />
         </div>
       </PostContainer>

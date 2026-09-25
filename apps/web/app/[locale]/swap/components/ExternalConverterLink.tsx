@@ -1,17 +1,14 @@
 import React from "react";
-import { useMediaQuery } from "react-responsive";
 
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
+import { Link } from "@/i18n/routing";
 import { Standard } from "@/sdk_bi/standard";
 
 export default function ExternalConverterLink() {
-  const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
-
   return (
-    <a
-      target="_blank"
-      href="https://dexaran.github.io/token-converter"
+    <Link
+      href="/converter"
       className="flex items-center gap-1 pl-3 pr-3 md:pl-4 md:pr-5 justify-between rounded-2 bg-primary-bg border-l-4 border-l-green py-3 hocus:bg-green-bg duration-200 group text-secondary-text hocus:text-primary-text"
     >
       <div className="flex items-center gap-1 text-14 md:text-16">
@@ -29,6 +26,6 @@ export default function ExternalConverterLink() {
           iconName="forward"
         />
       </div>
-    </a>
+    </Link>
   );
 }

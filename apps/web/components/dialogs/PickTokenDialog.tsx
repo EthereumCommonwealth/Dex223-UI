@@ -40,6 +40,17 @@ import { Standard } from "@/sdk_bi/standard";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 import { usePinnedTokensStore } from "@/stores/usePinnedTokensStore";
 
+// With a mouse or trackpad, put the caret in the token search as soon as the picker opens so
+// users can type a symbol straight away. Touch devices skip this so the on-screen keyboard does
+// not cover the list. Waiting two frames lets the dialog's focus manager first record the
+// element to return focus to on close, and run its own initial focus, before we move it.
+function focusSearchOnOpen(node: HTMLDivElement | null) {
+  if (!node || !window.matchMedia("(pointer: fine)").matches) return;
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => node.querySelector<HTMLInputElement>("input")?.focus()),
+  );
+}
+
 interface Props {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
@@ -489,8 +500,9 @@ function PickTokenDialogContent({
 
           {Boolean(tokens.length) && (
             <>
-              <div className="w-full sm:w-[600px] max-h-[580px] h-[calc(100vh-60px)] flex flex-col">
+              <div className="w-full sm:w-[600px] max-h-[580px] h-[calc(100dvh-60px)] flex flex-col">
                 <div
+                  ref={focusSearchOnOpen}
                   className={clsx("card-spacing-x", (!pinnedTokens.length || simpleForm) && "pb-3")}
                 >
                   <SearchInput

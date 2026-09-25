@@ -10,6 +10,7 @@ import {
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { ERC223_ABI } from "@/config/abis/erc223";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -56,6 +57,11 @@ export default function usePositionDeposit({
 
   const handlePositionDeposit = useCallback(
     async (amountToApprove: string) => {
+      // Never build a transaction against the zero address on chains without a margin deployment.
+      if (!isMarginDeployed(chainId)) {
+        return;
+      }
+
       if (!walletClient || !publicClient || !address) {
         return;
       }

@@ -70,9 +70,9 @@ export default function ImportListWithURL({ setContent }: Props) {
             list: {
               ...data,
               tokens: filteredTokenList,
-              logoURI: data.logoURI!.startsWith("ipfs://")
-                ? (data.logoURI!.replace("ipfs://", "https://ipfs.io/ipfs/") as string)
-                : (data.logoURI as string),
+              logoURI: data.logoURI?.startsWith("ipfs://")
+                ? data.logoURI.replace("ipfs://", "https://ipfs.io/ipfs/")
+                : data.logoURI || "/images/token-list-placeholder.svg",
             },
           });
         } else {
@@ -191,6 +191,7 @@ export default function ImportListWithURL({ setContent }: Props) {
               </div>
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 className={clsx(
                   "flex items-center gap-2 py-2 duration-200",
                   "text-green hocus:text-green-hover",
