@@ -27,6 +27,7 @@ import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 import { Claims } from "./components/Claims";
 import StakeDialog from "./dialogs/StakeDialog";
 import TokenListDropdown from "./dialogs/TokenListDropdown";
+import usePendingProtocolFees, { COLLECT_BATCH_SIZE } from "./hooks/usePendingProtocolFees";
 import useRevenueContract from "./hooks/useRevenueContract";
 import { StakeStatus, useStakeDialogStore } from "./stores/useStakeDialogStore";
 
@@ -114,10 +115,13 @@ export function Revenue() {
     stakingTokenERC223,
     stakingTokenSymbol,
     recoverDeposit,
+    collectProtocolFees,
     refetchUserData,
     isTransactionPending,
     avgStakingDuration,
   } = useRevenueContract({ searchAddress });
+  const { feeCollectorAddress, pendingPools, refetchPendingPools } =
+    usePendingProtocolFees(chainId);
 
   useEffect(() => {
     if (tokensFromSelectedLists.length > 0) {
@@ -242,6 +246,16 @@ export function Revenue() {
       refetchUserData();
     } catch (e: any) {
       setError(e?.shortMessage || e?.message || "Could not recover the deposit");
+    }
+  };
+
+  const handleCollectProtocolFees = async () => {
+    try {
+      await collectProtocolFees(pendingPools.slice(0, COLLECT_BATCH_SIZE));
+      refetchPendingPools();
+      refetchUserData();
+    } catch (e: any) {
+      setError(e?.shortMessage || e?.message || "Could not collect the pool fees");
     }
   };
 
@@ -464,6 +478,23 @@ export function Revenue() {
               disabled={isTransactionPending}
             >
               Recover deposit
+            </Button>
+          </div>
+        )}
+        {feeCollectorAddress && pendingPools.length > 0 && (
+          <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+            <span className="text-secondary-text text-12 md:text-14">
+              {pendingPools.length === 1 ? "1 pool holds" : `${pendingPools.length} pools hold`}{" "}
+              protocol fees that have not reached the Revenue contract yet. Anyone can move them
+              here and only pays the network fee.
+            </span>
+            <Button
+              size={ButtonSize.EXTRA_SMALL}
+              colorScheme={ButtonColor.LIGHT_GREEN}
+              onClick={handleCollectProtocolFees}
+              disabled={!address || isTransactionPending}
+            >
+              Collect pool fees
             </Button>
           </div>
         )}
