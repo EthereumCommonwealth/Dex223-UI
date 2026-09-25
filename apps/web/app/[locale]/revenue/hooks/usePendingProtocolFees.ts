@@ -1,11 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
 import { useMemo } from "react";
 import { Address } from "viem";
-import { useReadContracts } from "wagmi";
+import { useReadContract, useReadContracts } from "wagmi";
 
+import { FEE_COLLECTOR_ABI } from "@/config/abis/feeCollector";
 import { POOL_STATE_ABI } from "@/config/abis/poolState";
 import { getFeeCollectorAddress } from "@/config/modules";
 import { chainToApolloClient } from "@/graphql/thegraph/apollo";
+import { FACTORY_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 
 // Same batch size as the keeper, so one transaction stays well under the block gas limit.
@@ -20,7 +22,20 @@ const PoolIdsDocument = gql`
 `;
 
 export default function usePendingProtocolFees(chainId: DexChainId) {
-  const feeCollectorAddress = getFeeCollectorAddress(chainId);
+  const configuredCollector = getFeeCollectorAddress(chainId);
+
+  // The subgraph lists the pools of FACTORY_ADDRESS. The collector skips pools of any other factory.
+  const { data: collectorFactory } = useReadContract({
+    abi: FEE_COLLECTOR_ABI,
+    address: configuredCollector,
+    functionName: "factory",
+    chainId,
+    query: { enabled: Boolean(configuredCollector) },
+  });
+  const feeCollectorAddress =
+    collectorFactory && collectorFactory.toLowerCase() === FACTORY_ADDRESS[chainId]?.toLowerCase()
+      ? configuredCollector
+      : undefined;
 
   const { data: poolsData } = useQuery<{ pools: { id: string }[] }>(PoolIdsDocument, {
     variables: { first: 1000 },

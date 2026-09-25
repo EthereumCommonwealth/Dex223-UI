@@ -6,4 +6,11 @@ export const FEE_COLLECTOR_ABI = [
     inputs: [{ name: "pools", type: "address[]" }],
     outputs: [],
   },
+  {
+    type: "function",
+    name: "factory",
+    stateMutability: "view",
+    inputs: [],
+    outputs: [{ name: "", type: "address" }],
+  },
 ] as const;
