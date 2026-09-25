@@ -35,8 +35,8 @@ export const SAFE_SEND_TOKENS = [
 ] as const;
 
 // Sepolia deployment of Dex223-contracts#79 (with the USDT-safe router and rescue).
-export const PAYMENT_RECEIVER = "0x3a6f5D3a126f8951e4C2Ade758359F8Ac89C2f86" as const;
-export const SAFE_SEND_ROUTER = "0x85523a36d3b9361ab5d0F2adC58da5583AFD8a95" as const;
+export const PAYMENT_RECEIVER = "0x32480C1Edc5e51eca39FfF766cDdd9087DfC34E9" as const;
+export const SAFE_SEND_ROUTER = "0x7b58D9B037C4AC84eE06208Bc0fF95Ba9b84AC7e" as const;
 
 export const erc20Abi = [
   {
