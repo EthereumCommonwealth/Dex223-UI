@@ -29,7 +29,7 @@ const localesMap: {
   },
   zh: {
     img: "/images/locales/zh.svg",
-    label: "中国人",
+    label: "中文",
     symbol: "Zh",
   },
 };
