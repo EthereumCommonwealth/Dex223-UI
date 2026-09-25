@@ -137,6 +137,7 @@ export function StandardButton({
   selectedStandard: Standard;
   colorScheme?: ThemeColors;
 }) {
+  const t = useTranslations("Swap");
   const activeColorMap: Record<ThemeColors, string> = {
     [ThemeColors.GREEN]: "bg-green text-black shadow shadow-green/60",
     [ThemeColors.PURPLE]: "bg-purple text-black shadow shadow-purple/60",
@@ -158,7 +159,7 @@ export function StandardButton({
       )}
       onClick={() => handleStandardSelect(standard)}
     >
-      <span className="md:hidden">Standard</span>
+      <span className="md:hidden">{t("standard")}</span>
       {standard}
     </button>
   );

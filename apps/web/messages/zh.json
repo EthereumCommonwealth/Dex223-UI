@@ -8,25 +8,38 @@
     "borrow_lend": "借入/借出",
     "portfolio": "投资组合",
     "more": "更多",
+    "more_product": "产品",
+    "more_resources": "资源",
     "token": "代币",
     "token_listing": "代币上市",
     "token_statistics": "统计数据",
     "token_lists": "代币列表",
+    "create_token": "创建新代币",
+    "blog": "博客",
+    "feedback": "反馈",
     "social_media": "社交媒体",
-    "social_telegram_discussions": "Telegram 讨论组",
-    "social_telegram_announcements": "Telegram 公告频道",
+    "social_telegram_discussions": "讨论",
+    "social_telegram_announcements": "公告",
     "social_x_account": "DEX223",
     "social_discord": "Discord",
-    "social_dex_x_account": "Dexaran 的 X 账号",
+    "social_dex_x_account": "Dexaran",
     "useful_links": "实用链接",
-    "useful_converter": "ERC20 与 ERC223 代币转换器",
-    "useful_losses_calculator": "ERC-20 实时损失计算器",
-    "useful_front_page": "ERC223 首页",
+    "useful_converter": "代币转换器",
+    "useful_losses_calculator": "ERC-20 损失计算器",
+    "useful_front_page": "ERC-223 首页",
     "useful_page_source_codes": "页面源代码",
     "partners": "合作伙伴",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "指南",
+    "coming_soon": "即将推出",
+    "margin_unavailable_title": "此网络暂不支持保证金交易",
+    "margin_unavailable_switch": "请在网络选择器中切换到 {networks} 以使用保证金交易和借贷。",
+    "margin_unavailable_description": "保证金交易合约尚未部署在此网络上。您可以继续在兑换页面交易。",
+    "margin_unavailable_go_to_swap": "前往兑换"
   },
   "Swap": {
+    "high_price_impact_warning": "价格影响较高（{impact}%）。你收到的数量将明显低于当前市场价格。",
+    "very_high_price_impact_warning": "价格影响非常高（{impact}%）。这笔交易将损失很大一部分价值。请尝试较小的数量。",
     "swap": "兑换",
     "review_swap": "确认兑换",
     "you_pay": "支付",
@@ -42,6 +55,8 @@
     "enter_amount": "输入数量",
     "swap_details": "兑换详情",
     "token_price": "{symbol} 价格",
+    "price_chart_no_data": "暂无价格历史。",
+    "price_chart_data_not_available": "价格数据不可用。",
     "minimum_received": "最少收到",
     "price_impact": "价格影响",
     "trading_fee": "交易费用",
@@ -72,6 +87,7 @@
     "approving_in_progress": "正在授权",
     "looking_for_the_best_trade": "正在寻找最优路径...",
     "swap_is_unavailable_for_this_pair": "该交易对暂不支持兑换",
+    "cannot_receive_erc223": "此钱包无法接收 ERC-223",
     "insufficient_balance": "余额不足",
     "settings_applied": "设置已应用",
     "tokens_in_two_standards_title": "ERC-20 与 ERC-223 标准的代币",
@@ -81,7 +97,7 @@
     "network_fee_tooltip": "在 {networkName} 网络上发送任何交易时都会收取网络费用。该费用以网络的原生代币支付（例如以太坊上的 ETH）。",
     "minimum_received_tooltip": "兑换执行后您将收到的最少代币数量。实际兑换价格可能与创建交易时的预期价格不同，因为您的交易只能在下一个区块中被确认，而价格取自当前区块。无论交易等待期间价格如何变动，您收到的数量都不会低于该最小值。",
     "price_impact_tooltip": "您的交易对市场的预计影响。买入或卖出资产会导致其价格发生变化，该指标显示其中有多少变化是由您的操作造成的。",
-    "trading_fee_tooltip": "每笔操作都会收取交易费用，并分配给 D223 代币持有者。",
+    "trading_fee_tooltip": "每笔兑换都会向流动性提供者支付资金池交易费。另有一部分协议费可以被收集到 Revenue 合约中，分配给在那里质押质押代币的用户。",
     "route_tooltip": "如果您的交易对市场影响较大，通过套利路径可能比在单一流动性池中一次性买卖全部数量获得更好的价格。路径显示本次交易中会受到影响的其他代币交易对（如果有）。",
     "maximum_slippage_tooltip": "实际兑换价格可能与发送交易时显示的价格不同。滑点决定了可以容忍多大的价格变动。如果实际价格与预期价格的偏差超过最大滑点，交易将自动回滚，您的代币不会被兑换。",
     "gas_limit_tooltip": "Gas 上限决定了您的交易可以执行的操作数量。交易在智能合约中触发的操作越复杂，所需的 Gas 上限可能越高。较高的 Gas 上限会带来更高的网络费用。",
@@ -265,6 +281,18 @@
     "something_went_wrong": "出现问题，请稍后重试",
     "thank_you_for_the_feedback": "感谢您的反馈！我们会尽快与您联系。也欢迎通过 <telegram>Telegram</telegram> 或 <discord>Discord</discord> 联系我们。"
   },
+  "Converter": {
+    "title": "Token converter",
+    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
+    "convert_button": "Convert",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "flip_direction": "Flip conversion direction",
+    "pick_token": "Select token",
+    "connect_wallet": "Connect wallet",
+    "insufficient_balance": "Insufficient balance",
+    "no_fees": "1:1 conversion. No protocol fees."
+  },
   "BuyCrypto": {
     "title": "用法币充值钱包",
     "description": "通过 Onramp 用法币买入或卖出加密资产。充值后请在 Dex223 上兑换代币。",
@@ -312,6 +340,7 @@
     "wallet_connection_notice": "继续操作时将自动连接您的钱包"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "此文件中没有适用于所选网络的有效代币。",
     "manage_lists": "管理列表",
     "manage_tokens": "管理代币",
     "tokens": "代币",
@@ -378,6 +407,7 @@
     "must_be_at_least": "不得小于 {val}",
     "token_starting_price": "{symbol} 初始价格",
     "pools_not_found": "未找到流动性池",
+    "pools_load_error": "无法加载流动性池。请检查网络连接后重试。",
     "amount_title": "数量",
     "enter_correct_values": "请输入正确的数值",
     "collecting_fee_message": "领取手续费将提取当前可用的手续费",
@@ -483,5 +513,207 @@
     "gas_price_tooltip": "使用传统（legacy）交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。",
     "approved_tooltip": "要将 ERC-20 代币存入合约，您需要“授权”合约从您的余额中提取代币。授权额度决定了合约可以代您转移多少余额中的代币。ERC-223 代币无需授权，因此您不必授权合约访问您的余额。",
     "deposited_tooltip": "ERC-223 代币必须先存入合约，才能对其进行操作。此数额显示您已存入合约的代币数量。您可以随时从合约中提取已存入的 ERC-223 代币。"
+  },
+  "Statistics": {
+    "title": "统计",
+    "description": "所选网络的协议概览。",
+    "tvl": "TVL",
+    "volume": "总交易量",
+    "pools": "流动性池",
+    "transactions": "交易笔数",
+    "top_pools": "按 TVL 排名的池",
+    "view_all_pools": "查看全部流动性池",
+    "loading": "正在加载流动性池…",
+    "no_pools": "该网络暂无流动性池。",
+    "unavailable": "该网络的统计数据暂时不可用。",
+    "loading_tokens": "正在加载代币…",
+    "no_tokens": "该网络暂无代币。",
+    "token_not_found": "未找到代币。",
+    "tab_overview": "概览",
+    "tab_tokens": "代币",
+    "tab_pools": "流动性池",
+    "col_token": "代币",
+    "col_volume": "交易量",
+    "col_price": "价格",
+    "chart_tvl": "TVL",
+    "chart_volume": "交易量",
+    "chart_price": "价格",
+    "chart_empty": "暂无图表数据",
+    "token_pools": "流动性池"
+  },
+  "Guidelines": {
+    "title": "指南",
+    "description": "快速开始使用 Dex223 的链接。",
+    "getting_started_title": "入门",
+    "getting_started_subtitle": "平台上的第一步",
+    "tokens_title": "代币",
+    "tokens_subtitle": "上架、创建和管理代币",
+    "learn_more_title": "了解更多",
+    "learn_more_subtitle": "文档、新闻和协议统计",
+    "all_guides_title": "指南",
+    "all_guides_subtitle": "常见操作的简短说明",
+    "back": "指南",
+    "steps_label": "步骤",
+    "guides": {
+      "swap": {
+        "title": "如何兑换",
+        "description": "只需几步即可在 Dex223 上兑换代币。",
+        "cta": "打开兑换",
+        "sections": {
+          "before": {
+            "heading": "开始之前",
+            "body": "请连接一个持有您要卖出的代币的钱包，并确保有足够支付所选网络 Gas 的余额。"
+          },
+          "steps": {
+            "heading": "步骤",
+            "items": {
+              "s1": "从“交易”菜单打开<b>兑换</b>。",
+              "s2": "选择您支付的代币和您收到的代币。",
+              "s3": "输入数量。查看报价和价格影响。",
+              "s4": "在钱包提示时确认兑换。"
+            }
+          },
+          "tips": {
+            "heading": "提示",
+            "items": {
+              "s1": "优先选择流动性充足的流动性池，以获得更优的报价。",
+              "s2": "如果缺少某个代币，请在代币选择器中打开<b>管理代币</b>，或粘贴其合约地址。",
+              "s3": "同一资产的 ERC-20 和 ERC-223 版本可能同时出现。请选择您的钱包和目标地址所需的标准。"
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "转换 ERC-20 和 ERC-223",
+        "description": "以 1:1 的比率在两种标准之间转换任何受支持的代币。",
+        "cta": "打开代币转换器",
+        "sections": {
+          "what": {
+            "heading": "功能说明",
+            "body": "转换器以 <b>1:1</b> 的比率在 ERC-20 和 ERC-223 之间包装或解包代币，不收取协议费用。"
+          },
+          "steps": {
+            "heading": "步骤",
+            "items": {
+              "s1": "从“更多”菜单打开<b>代币转换器</b>。",
+              "s2": "选择代币和转换方向（转为 ERC-20 或转为 ERC-223）。",
+              "s3": "输入数量并在钱包中确认。"
+            }
+          },
+          "when": {
+            "heading": "适用场景",
+            "items": {
+              "s1": "您收到了 ERC-223，但某个 dapp 只接受 ERC-20（或反之）。",
+              "s2": "您正在准备需要特定标准的流动性或兑换。"
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "管理代币列表",
+        "description": "启用、导入和整理为代币选择器提供数据的列表。",
+        "cta": "打开代币列表",
+        "sections": {
+          "why": {
+            "heading": "为什么列表很重要",
+            "body": "Dex223 只显示您已启用的列表中的代币。如果在兑换或转换器中找不到某个代币，请先检查您的列表。"
+          },
+          "steps": {
+            "heading": "步骤",
+            "items": {
+              "s1": "从“更多”菜单打开<b>代币列表</b>，或在代币选择器中打开<b>管理代币</b>。",
+              "s2": "在<b>列表</b>标签页中，启用您信任的列表。",
+              "s3": "需要时，可通过 URL、JSON 或合约导入自定义列表。",
+              "s4": "在<b>代币</b>标签页中，置顶常用代币，或通过地址导入单个代币。"
+            }
+          },
+          "safety": {
+            "heading": "安全",
+            "body": "只启用来自可信来源的列表。恶意列表可能会显示使用熟悉名称的诈骗代币。"
+          }
+        }
+      },
+      "token-listing": {
+        "title": "上市代币",
+        "description": "将代币提交到自动上市合约，使其可以在 Dex223 上交易。",
+        "cta": "打开代币上市",
+        "sections": {
+          "overview": {
+            "heading": "概览",
+            "body": "代币上市会在 Dex223 自动上市合约中登记您的代币，以便流动性池和界面能够发现它。"
+          },
+          "before": {
+            "heading": "开始之前",
+            "body": "上市合约需要一个已存在的流动性池。请先在<b>流动性池</b>中为您的代币及其配对代币创建流动性池，并添加流动性，以便交易者获得报价。"
+          },
+          "steps": {
+            "heading": "步骤",
+            "items": {
+              "s1": "从主导航打开<b>代币上市</b>。",
+              "s2": "选择上市合约、您的代币以及 <b>Paired token</b>（配对代币）。",
+              "s3": "查看该列表的费用和要求。",
+              "s4": "在钱包中确认上市交易。"
+            }
+          },
+          "after": {
+            "heading": "上市之后",
+            "body": "在子图完成索引后，使用<b>统计数据</b>确认该流动性池已显示。"
+          }
+        }
+      },
+      "fiat": {
+        "title": "用法币购买加密资产",
+        "description": "无需离开 Dex223，即可通过 Onramp 为钱包充值。",
+        "cta": "打开法币",
+        "sections": {
+          "overview": {
+            "heading": "概览",
+            "body": "法币页面使用 Onramp，让您可以通过本地支付方式买入（或卖出）受支持的资产。"
+          },
+          "steps": {
+            "heading": "步骤",
+            "items": {
+              "s1": "从“交易”菜单打开<b>法币</b>。",
+              "s2": "连接用于接收资金的钱包。",
+              "s3": "选择买入或卖出，然后按照 Onramp 小组件的提示操作。",
+              "s4": "转账完成后，返回<b>兑换</b>或<b>投资组合</b>使用您的余额。"
+            }
+          },
+          "notes": {
+            "heading": "注意事项",
+            "items": {
+              "s1": "可用性取决于您所在的地区以及 Onramp 支持的支付渠道。",
+              "s2": "Dex223 的兑换在 Dex223 上完成。加密资产之间的兑换请使用兑换页面。"
+            }
+          }
+        }
+      }
+    }
+  },
+  "A11y": {
+    "close": "关闭",
+    "copy": "复制",
+    "delete": "删除",
+    "sort": "排序",
+    "back": "返回",
+    "add": "添加",
+    "recent_transactions": "最近交易",
+    "network_fee_settings": "网络费用设置",
+    "swap_settings": "兑换设置",
+    "switch_tokens": "交换代币位置",
+    "settings": "设置",
+    "zoom_in": "放大",
+    "zoom_out": "缩小",
+    "reset": "重置",
+    "decrease": "减少",
+    "open_link": "打开链接",
+    "increase_price": "提高价格",
+    "decrease_price": "降低价格"
+  },
+  "NotFound": {
+    "title": "页面未找到",
+    "description": "此页面不存在或已被移动。请检查地址，或返回交易。",
+    "go_to_swap": "前往兑换",
+    "view_pools": "查看资金池"
   }
 }

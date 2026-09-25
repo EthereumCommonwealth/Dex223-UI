@@ -1,12 +1,15 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import Svg from "@/components/atoms/Svg";
 
 export function YoutubeTag() {
+  const t = useTranslations("Blog");
+
   return (
     <span className="absolute bottom-5 left-5 bg-black/70 rounded-2 text-secondary-text px-3 h-8 md:h-10 z-10 flex items-center gap-2 text-14 md:text-16">
       <Svg iconName="youtube" className="text-tertiary-text !w-5 !h-5 md:!w-6 md:!h-6" />
-      Video
+      {t("video_badge")}
     </span>
   );
 }

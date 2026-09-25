@@ -7,11 +7,11 @@ import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import React, { ChangeEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Address, formatEther, formatGwei, formatUnits, isAddress } from "viem";
-import { useAccount, usePublicClient } from "wagmi";
+import { useAccount } from "wagmi";
 
 import ChooseAutoListingDialog from "@/app/[locale]/token-listing/add/components/ChooseAutoListingDialog";
 import ChoosePaymentDialog from "@/app/[locale]/token-listing/add/components/ChoosePaymentDialog";
@@ -46,8 +46,7 @@ import RecentTransactions from "@/components/common/RecentTransactions";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
-import { ERC20_ABI } from "@/config/abis/erc20";
-import { TOKEN_CONVERTER_ABI } from "@/config/abis/tokenConverter";
+import { useImportToken } from "@/components/manage-tokens/ImportToken";
 import { baseFeeMultipliers, SCALING_FACTOR } from "@/config/constants/baseFeeMultipliers";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
@@ -56,11 +55,9 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { PoolState, useStorePools } from "@/hooks/usePools";
 import { useTokens } from "@/hooks/useTokenLists";
-import { useRouter } from "@/i18n/routing";
-import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
+import { Link, useRouter } from "@/i18n/routing";
 import { FeeAmount } from "@/sdk_bi/constants";
 import { Currency } from "@/sdk_bi/entities/currency";
-import { Token } from "@/sdk_bi/entities/token";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { GasFeeModel, GasOption } from "@/stores/factories/createGasPriceStore";
@@ -178,7 +175,6 @@ export default function ListTokenPage() {
 
   const params = useSearchParams();
   const router = useRouter();
-  const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useTokenListingRecentTransactionsStore();
@@ -216,6 +212,19 @@ export default function ListTokenPage() {
   const [tokenBAddress, setTokenBAddress] = useState("");
 
   const tokens = useTokens();
+  const { handleImport } = useImportToken();
+
+  useEffect(() => {
+    if (tokenA?.wrapped.address0 && !tokenAAddress) {
+      setTokenAAddress(tokenA.wrapped.address0);
+    }
+  }, [tokenA, tokenAAddress]);
+
+  useEffect(() => {
+    if (tokenB?.wrapped.address0 && !tokenBAddress) {
+      setTokenBAddress(tokenB.wrapped.address0);
+    }
+  }, [tokenB, tokenBAddress]);
 
   const [isPickTokenOpened, setPickTokenOpened] = useState(false);
   const [currentlyPicking, setCurrentlyPicking] = useState<"tokenA" | "tokenB">("tokenA");
@@ -247,52 +256,25 @@ export default function ListTokenPage() {
       const value = e.target.value;
       setTokenAddress(value);
 
-      if (isAddress(value) && publicClient && chainId) {
-        const tokenToFind = tokens.find((t) => t.wrapped.address0 === value);
+      if (isAddress(value) && chainId) {
+        const lower = value.toLowerCase();
+        const tokenToFind = tokens.find(
+          (t) =>
+            t.wrapped.address0.toLowerCase() === lower ||
+            t.wrapped.address1.toLowerCase() === lower,
+        );
         if (tokenToFind) {
           setToken(tokenToFind);
           return;
         }
 
-        const decimals = await publicClient.readContract({
-          abi: ERC20_ABI,
-          functionName: "decimals",
-          address: value,
-        });
-
-        const symbol = await publicClient.readContract({
-          abi: ERC20_ABI,
-          functionName: "symbol",
-          address: value,
-        });
-        const name = await publicClient.readContract({
-          abi: ERC20_ABI,
-          functionName: "name",
-          address: value,
-        });
-        const predictedERC223Address = await publicClient.readContract({
-          abi: TOKEN_CONVERTER_ABI,
-          functionName: "predictWrapperAddress",
-          address: CONVERTER_ADDRESS[chainId],
-          args: [value as Address, true],
-        });
-
-        const _token = new Token(
-          chainId,
-          value,
-          predictedERC223Address,
-          decimals,
-          symbol,
-          name,
-          "/images/tokens/placeholder.svg",
-        );
-
-        setToken(_token);
+        const imported = await handleImport(value as Address, chainId);
+        setToken(imported);
       } else {
         setToken(undefined);
       }
     },
-    [chainId, publicClient, tokens],
+    [chainId, handleImport, tokens],
   );
 
   const { setPaymentToken } = usePaymentTokenStore();
@@ -309,6 +291,11 @@ export default function ListTokenPage() {
   const { setIsOpen: setAutoListingSelectOpened } = useChooseAutoListingDialogStore();
 
   const tokensToList = useTokensToList();
+  // The auto-listing contract charges its price once for every token of the pair that is not
+  // listed yet, so show the total the user will actually pay.
+  const listingPayment = paymentToken
+    ? paymentToken.price * BigInt(Math.max(tokensToList.length, 1))
+    : undefined;
 
   const { baseFee, gasPrice } = useGlobalFees();
 
@@ -357,8 +344,6 @@ export default function ListTokenPage() {
       return "Second token should be different";
     }
   }, [sameTokensSelected, tokenBAddress]);
-
-  const locale = useLocale();
 
   const isMobile = useMediaQuery({ query: "(max-width: 519px)" });
   const nativeCurrency = useNativeCurrency();
@@ -508,13 +493,12 @@ export default function ListTokenPage() {
                       text={
                         <span>
                           There is no existing pool, so you cannot list the primary token. Please{" "}
-                          <a
-                            target="_blank"
-                            href={`/${locale}/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
+                          <Link
+                            href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
                             className="text-green underline hocus:text-green-hover duration-200"
                           >
                             create a pool
-                          </a>{" "}
+                          </Link>{" "}
                           first.
                         </span>
                       }
@@ -573,14 +557,11 @@ export default function ListTokenPage() {
                           <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center pl-5 pr-1">
                             {paymentToken
                               ? formatUnits(
-                                  paymentToken.price,
+                                  listingPayment!,
                                   paymentToken.token.decimals ?? 18,
                                 ).slice(0, 7) === "0.00000"
                                 ? truncateMiddle(
-                                    formatUnits(
-                                      paymentToken.price,
-                                      paymentToken.token.decimals ?? 18,
-                                    ),
+                                    formatUnits(listingPayment!, paymentToken.token.decimals ?? 18),
                                     {
                                       charsFromStart: 3,
                                       charsFromEnd: 2,
@@ -588,7 +569,7 @@ export default function ListTokenPage() {
                                   )
                                 : formatFloat(
                                     formatUnits(
-                                      paymentToken.price,
+                                      listingPayment!,
                                       paymentToken.token.decimals != null
                                         ? paymentToken.token.decimals
                                         : 18,
@@ -629,7 +610,7 @@ export default function ListTokenPage() {
                           />
                           {paymentToken && (
                             <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center px-5">
-                              {formatUnits(paymentToken.price, paymentToken.token.decimals ?? 18)}
+                              {formatUnits(listingPayment!, paymentToken.token.decimals ?? 18)}
                               <span className="flex items-center gap-2">
                                 <Image
                                   src="/images/tokens/placeholder.svg"

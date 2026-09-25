@@ -73,7 +73,7 @@ export default function ImportListWithContract({ setContent }: Props) {
       addressToImport &&
       isAddress(addressToImport) &&
       !loading &&
-      !Boolean(data.autoListings?.[0])
+      !Boolean(data?.autoListings?.[0])
     ) {
       return "Contract address does not contain a token list";
     }
@@ -120,7 +120,7 @@ export default function ImportListWithContract({ setContent }: Props) {
       {addressToImport &&
         isAddress(addressToImport) &&
         !loading &&
-        !Boolean(data.autoListings?.[0]) && (
+        !Boolean(data?.autoListings?.[0]) && (
           <div className="flex-grow flex justify-center items-center flex-col gap-2">
             <EmptyStateIcon iconName="warning" />
             <p className="text-red-light text-center">
@@ -150,6 +150,7 @@ export default function ImportListWithContract({ setContent }: Props) {
               </div>
               <a
                 target="_blank"
+                rel="noopener noreferrer"
                 className={clsx(
                   "flex items-center gap-2 py-2 duration-200",
                   "text-green hocus:text-green-hover",
