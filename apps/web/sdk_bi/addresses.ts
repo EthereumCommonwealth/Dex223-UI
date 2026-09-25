@@ -85,7 +85,7 @@ export const REVENUE_ADDRESS: Record<DexChainId, Address> = {
 // ProtocolFeeCollector owns the factory and can only send pool protocol fees to REVENUE_ADDRESS.
 export const FEE_COLLECTOR_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.MAINNET]: "0x984e217ddAE675d706509B02EedB2FAF2F6a342E",
-  [DexChainId.SEPOLIA]: "0x92Aca4ef663069d1e6CECA32F1326c904b470586",
+  [DexChainId.SEPOLIA]: "0x9B96be5B9668747Bb50Ff32029140bb7EAea69A5",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
 };
