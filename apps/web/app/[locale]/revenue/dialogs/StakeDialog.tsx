@@ -700,7 +700,7 @@ const StakeDialog = () => {
     if (!amount || parseFloat(amount) === 0) {
       return (
         <Button fullWidth disabled size={ButtonSize.LARGE} colorScheme={ButtonColor.GREEN}>
-          Enter amount
+          {tSwap("enter_amount")}
         </Button>
       );
     }
