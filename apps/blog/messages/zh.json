@@ -1,18 +1,87 @@
 {
+  "Blog": {
+    "title": "博客",
+    "latest_news": "最新动态",
+    "all_news": "全部动态",
+    "search_placeholder": "搜索文章和视频",
+    "all_categories": "全部分类",
+    "content_all": "文章和视频",
+    "content_articles": "文章",
+    "content_video": "视频",
+    "video_badge": "视频"
+  },
+  "Navigation": {
+    "trade": "交易",
+    "swap": "兑换",
+    "margin_trading": "保证金交易",
+    "pools": "流动性池",
+    "borrow_lend": "借入/借出",
+    "portfolio": "投资组合",
+    "more": "更多",
+    "token": "代币",
+    "token_listing": "代币上市",
+    "token_statistics": "统计数据",
+    "token_lists": "代币列表",
+    "social_media": "社交媒体",
+    "social_telegram_discussions": "讨论",
+    "social_telegram_announcements": "公告",
+    "social_x_account": "DEX223",
+    "social_discord": "Discord",
+    "social_dex_x_account": "Dexaran",
+    "useful_links": "实用链接",
+    "useful_converter": "代币转换器",
+    "useful_losses_calculator": "ERC-20 损失计算器",
+    "useful_front_page": "ERC-223 首页",
+    "useful_page_source_codes": "页面源代码",
+    "partners": "合作伙伴",
+    "partners_eos_support": "BlockzHub",
+    "buy_crypto": "法币",
+    "more_product": "产品",
+    "more_resources": "资源",
+    "create_token": "创建新代币",
+    "guidelines": "指南",
+    "blog": "博客",
+    "feedback": "反馈",
+    "revenue": "收益",
+    "governance": "治理",
+    "coming_soon": "即将推出",
+    "launch_app": "打开应用"
+  },
+  "Footer": {
+    "gas": "Gas：",
+    "most_recent_block": "该网络上最新的区块高度。",
+    "prices_update_on_every_block": "价格随每个区块更新。",
+    "discussions": "讨论区",
+    "announcements": "公告",
+    "x": "DEX223",
+    "discord": "Discord"
+  },
+  "Feedback": {
+    "feedback": "反馈",
+    "feel_free_to_share": "欢迎在此留言，或在 <github>Github 上提交问题</github>",
+    "describe_your_issue": "描述您的问题",
+    "email_wallet_address_or_nickname": "邮箱、钱包地址或昵称",
+    "feedback_category": "反馈类别",
+    "category_comment": "评论",
+    "category_bug": "缺陷",
+    "category_feature": "功能建议",
+    "category_feature_mobile": "功能",
+    "category_other": "其他",
+    "send_feedback": "发送反馈",
+    "submitting": "提交中",
+    "validation_required": "此字段为必填项",
+    "validation_min_characters": "至少需要 3 个字符",
+    "validation_max_characters": "最多 20000 个字符",
+    "sent_successfully": "反馈已成功发送",
+    "something_went_wrong": "出现问题，请稍后重试",
+    "thank_you_for_the_feedback": "感谢您的反馈！我们会尽快与您联系。也欢迎通过 <telegram>Telegram</telegram> 或 <discord>Discord</discord> 联系我们。"
+  },
+  "Toast": {
+    "successfully_copied": "复制成功！"
+  },
   "NotFound": {
     "title": "未找到文章",
     "description": "该文章可能已被移动或删除。浏览博客中的最新文章和视频。",
     "back_to_blog": "返回博客"
-  },
-  "Trade": {
-    "trade": "交易",
-    "swap": "交易cio",
-    "margin-trading": "Margin tradingio",
-    "portfolio": "Portfolioio",
-    "lending-and-borrowing": "Borrow/Lendio",
-    "pools": "Poolsio",
-    "token-listing": "Token listingio",
-    "lib": "Libio"
   }
 }
-

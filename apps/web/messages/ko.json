@@ -8,25 +8,38 @@
     "borrow_lend": "대출/차입",
     "portfolio": "포트폴리오",
     "more": "더보기",
+    "more_product": "제품",
+    "more_resources": "리소스",
     "token": "토큰",
     "token_listing": "토큰 상장",
     "token_statistics": "통계",
     "token_lists": "토큰 목록",
+    "create_token": "새 토큰 만들기",
+    "blog": "블로그",
+    "feedback": "피드백",
     "social_media": "소셜 미디어",
-    "social_telegram_discussions": "텔레그램 토론방",
-    "social_telegram_announcements": "텔레그램 공지 채널",
+    "social_telegram_discussions": "토론",
+    "social_telegram_announcements": "공지",
     "social_x_account": "DEX223",
     "social_discord": "Discord",
-    "social_dex_x_account": "Dexaran의 X 계정",
+    "social_dex_x_account": "Dexaran",
     "useful_links": "유용한 링크",
-    "useful_converter": "ERC20 및 ERC223 토큰 변환기",
-    "useful_losses_calculator": "ERC-20 실시간 손실 계산기",
-    "useful_front_page": "ERC223 메인 페이지",
+    "useful_converter": "토큰 변환기",
+    "useful_losses_calculator": "ERC-20 손실 계산기",
+    "useful_front_page": "ERC-223 메인 페이지",
     "useful_page_source_codes": "페이지 소스 코드",
     "partners": "파트너",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "guidelines": "가이드",
+    "coming_soon": "출시 예정",
+    "margin_unavailable_title": "이 네트워크에서는 아직 마진 거래를 사용할 수 없습니다",
+    "margin_unavailable_switch": "마진 거래와 대출을 이용하려면 네트워크 선택기에서 {networks}(으)로 전환하세요.",
+    "margin_unavailable_description": "이 네트워크에는 아직 마진 거래 컨트랙트가 배포되지 않았습니다. 스왑에서 계속 거래할 수 있습니다.",
+    "margin_unavailable_go_to_swap": "스왑으로 이동"
   },
   "Swap": {
+    "high_price_impact_warning": "가격 영향이 높습니다({impact}%). 현재 시장 가격보다 눈에 띄게 적은 금액을 받게 됩니다.",
+    "very_high_price_impact_warning": "가격 영향이 매우 높습니다({impact}%). 이 거래 가치의 상당 부분을 잃게 됩니다. 더 적은 금액으로 시도해 보세요.",
     "swap": "스왑",
     "review_swap": "스왑 검토",
     "you_pay": "지불",
@@ -42,6 +55,8 @@
     "enter_amount": "금액 입력",
     "swap_details": "스왑 상세",
     "token_price": "{symbol} 가격",
+    "price_chart_no_data": "아직 가격 기록이 없습니다.",
+    "price_chart_data_not_available": "가격 데이터를 사용할 수 없습니다.",
     "minimum_received": "최소 수령량",
     "price_impact": "가격 영향",
     "trading_fee": "거래 수수료",
@@ -72,6 +87,7 @@
     "approving_in_progress": "승인 진행 중",
     "looking_for_the_best_trade": "최적 경로를 찾는 중...",
     "swap_is_unavailable_for_this_pair": "이 페어는 스왑을 지원하지 않습니다",
+    "cannot_receive_erc223": "이 지갑은 ERC-223을 받을 수 없습니다",
     "insufficient_balance": "잔액 부족",
     "settings_applied": "설정이 적용되었습니다",
     "tokens_in_two_standards_title": "ERC-20 및 ERC-223 표준 토큰",
@@ -81,7 +97,7 @@
     "network_fee_tooltip": "{networkName} 네트워크에서 트랜잭션을 보낼 때 네트워크 수수료가 부과됩니다. 수수료는 해당 네트워크의 기본 통화(예: 이더리움의 ETH)로 지불됩니다.",
     "minimum_received_tooltip": "스왑이 실행될 때 받게 되는 최소 토큰 수량입니다. 트랜잭션은 다음 블록에서만 확정될 수 있지만 가격은 현재 블록에서 가져오기 때문에, 실제 스왑 가격은 트랜잭션 생성 시점의 예상 가격과 다를 수 있습니다. 트랜잭션 대기 중 가격이 변하더라도 이 최소 수량보다 적게 받는 경우는 없습니다.",
     "price_impact_tooltip": "거래가 시장에 미치는 예상 영향입니다. 자산을 사거나 팔면 그 결과로 가격이 변하며, 이 지표는 그 변화 중 얼마나 많은 부분이 사용자의 행동으로 인한 것인지 보여줍니다.",
-    "trading_fee_tooltip": "거래 수수료는 모든 거래에서 부과되며 D223 토큰 보유자에게 분배됩니다.",
+    "trading_fee_tooltip": "모든 스왑은 풀 거래 수수료를 유동성 공급자에게 지불합니다. 별도의 프로토콜 수수료 몫은 Revenue 컨트랙트로 수집되어 그곳에 스테이킹 토큰을 스테이킹한 사용자에게 돌아갈 수 있습니다.",
     "route_tooltip": "거래가 시장에 큰 영향을 미치는 경우, 전체 수량을 하나의 풀에서 매매하는 대신 차익거래 경로를 통해 더 나은 가격을 얻을 수 있습니다. 경로는 거래 중 영향을 받는 다른 토큰 페어를 보여줍니다.",
     "maximum_slippage_tooltip": "실제 스왑 가격은 트랜잭션 전송 시점에 표시된 가격과 다를 수 있습니다. 슬리피지는 허용할 가격 변동 폭을 결정합니다. 실제 가격이 예상 가격과 최대 슬리피지 이상 차이가 나면 트랜잭션은 자동으로 되돌려지고 토큰은 교환되지 않습니다.",
     "gas_limit_tooltip": "가스 한도는 트랜잭션이 실행할 수 있는 연산의 양을 결정합니다. 스마트 컨트랙트에서 더 복잡한 작업이 실행될수록 더 높은 가스 한도가 필요할 수 있습니다. 가스 한도가 높을수록 네트워크 수수료도 높아집니다.",
@@ -265,13 +281,25 @@
     "something_went_wrong": "문제가 발생했습니다. 나중에 다시 시도해 주세요",
     "thank_you_for_the_feedback": "피드백 감사합니다! 곧 연락드리겠습니다. <telegram>Telegram</telegram> 또는 <discord>Discord</discord>로도 문의하실 수 있습니다."
   },
+  "Converter": {
+    "title": "Token converter",
+    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
+    "convert_button": "Convert",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "flip_direction": "Flip conversion direction",
+    "pick_token": "Select token",
+    "connect_wallet": "Connect wallet",
+    "insufficient_balance": "Insufficient balance",
+    "no_fees": "1:1 conversion. No protocol fees."
+  },
   "BuyCrypto": {
     "title": "법정화폐로 지갑 충전",
-    "description": "Onramp로 현지 결제 수단을 사용해 D223 또는 다른 토큰을 구매한 뒤 Dex223에서 거래하거나 유동성을 공급하세요.",
+    "description": "Onramp로 법정화폐로 암호화폐를 사거나 파세요. 지갑 충전 후 Dex223에서 토큰을 스왑하세요.",
     "powered_by_onramp": "법정화폐 온램프",
     "step_buy": "계좌이체, 카드 또는 현지 결제로 결제",
     "step_receive": "연결된 지갑으로 암호화폐 수령",
-    "step_use": "Dex223에서 거래하거나 풀 생성",
+    "step_use": "Dex223에서 스왑하거나 풀 생성",
     "flow_buy": "구매",
     "flow_sell": "판매",
     "flow_swap": "스왑",
@@ -292,7 +320,7 @@
     "wallet_destination_hint": "토큰은 연결된 지갑 주소로 전송됩니다.",
     "success_title": "구매 완료",
     "success_body": "{symbol}이(가) 전송 중입니다. Dex223에서 거래하거나 유동성을 추가하세요.",
-    "cta_trade": "Dex223에서 거래",
+    "cta_trade": "Dex223에서 스왑",
     "cta_pools": "풀 보기",
     "cta_add_liquidity": "유동성 추가",
     "after_title": "구매 후",
@@ -312,6 +340,7 @@
     "wallet_connection_notice": "진행하면 지갑이 자동으로 연결됩니다"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "이 파일에는 선택한 네트워크에서 사용할 수 있는 유효한 토큰이 없습니다.",
     "manage_lists": "목록 관리",
     "manage_tokens": "토큰 관리",
     "tokens": "토큰",
@@ -378,6 +407,7 @@
     "must_be_at_least": "{val} 이상이어야 합니다",
     "token_starting_price": "{symbol} 시작 가격",
     "pools_not_found": "풀을 찾을 수 없습니다",
+    "pools_load_error": "풀을 불러오지 못했습니다. 연결을 확인하고 다시 시도하세요.",
     "amount_title": "수량",
     "enter_correct_values": "올바른 값을 입력하세요",
     "collecting_fee_message": "수수료를 수령하면 현재 사용 가능한 수수료가 출금됩니다",
@@ -483,5 +513,207 @@
     "gas_price_tooltip": "레거시 트랜잭션에서 지불하는 수수료는 gasPrice * gasUsed로 계산됩니다. gasPrice가 최신 블록의 네트워크 가스 가격 이상이 될 때까지 트랜잭션은 확정되지 않습니다.",
     "approved_tooltip": "ERC-20 토큰을 컨트랙트에 입금하려면 컨트랙트가 잔액에서 토큰을 출금하도록 '승인'해야 합니다. 승인은 컨트랙트가 사용자를 대신해 옮길 수 있는 토큰 수량을 결정합니다. ERC-223 토큰은 승인이 필요 없으므로 컨트랙트에 잔액 접근 권한을 부여하지 않아도 됩니다.",
     "deposited_tooltip": "ERC-223 토큰으로 작업하려면 먼저 컨트랙트에 입금해야 합니다. 이 수량은 이미 컨트랙트에 있는 토큰의 양을 나타냅니다. 입금한 ERC-223 토큰은 언제든지 컨트랙트에서 출금할 수 있습니다."
+  },
+  "Statistics": {
+    "title": "통계",
+    "description": "선택한 네트워크의 프로토콜 개요입니다.",
+    "tvl": "TVL",
+    "volume": "총 거래량",
+    "pools": "풀",
+    "transactions": "트랜잭션",
+    "top_pools": "TVL 상위 풀",
+    "view_all_pools": "모든 풀 보기",
+    "loading": "풀 불러오는 중…",
+    "no_pools": "이 네트워크에서 풀을 찾을 수 없습니다.",
+    "unavailable": "지금은 이 네트워크의 통계를 사용할 수 없습니다.",
+    "loading_tokens": "토큰 불러오는 중…",
+    "no_tokens": "이 네트워크에서 토큰을 찾을 수 없습니다.",
+    "token_not_found": "토큰을 찾을 수 없습니다.",
+    "tab_overview": "개요",
+    "tab_tokens": "토큰",
+    "tab_pools": "풀",
+    "col_token": "토큰",
+    "col_volume": "거래량",
+    "col_price": "가격",
+    "chart_tvl": "TVL",
+    "chart_volume": "거래량",
+    "chart_price": "가격",
+    "chart_empty": "차트 데이터가 아직 없습니다",
+    "token_pools": "풀"
+  },
+  "Guidelines": {
+    "title": "가이드",
+    "description": "Dex223를 시작하기 위한 빠른 링크입니다.",
+    "getting_started_title": "시작하기",
+    "getting_started_subtitle": "플랫폼에서의 첫 단계",
+    "tokens_title": "토큰",
+    "tokens_subtitle": "토큰 상장, 생성 및 관리",
+    "learn_more_title": "자세히 알아보기",
+    "learn_more_subtitle": "문서, 뉴스 및 프로토콜 통계",
+    "all_guides_title": "가이드",
+    "all_guides_subtitle": "자주 쓰는 기능에 대한 짧은 안내",
+    "back": "가이드",
+    "steps_label": "단계",
+    "guides": {
+      "swap": {
+        "title": "스왑하는 방법",
+        "description": "몇 단계만으로 Dex223에서 토큰을 거래합니다.",
+        "cta": "스왑 열기",
+        "sections": {
+          "before": {
+            "heading": "시작하기 전에",
+            "body": "판매할 토큰과 선택한 네트워크에 필요한 충분한 가스를 보유한 지갑을 연결합니다."
+          },
+          "steps": {
+            "heading": "단계",
+            "items": {
+              "s1": "거래 메뉴에서 <b>스왑</b>을 엽니다.",
+              "s2": "지불할 토큰과 받을 토큰을 선택합니다.",
+              "s3": "수량을 입력합니다. 견적 가격과 가격 영향을 확인합니다.",
+              "s4": "지갑에서 요청이 표시되면 스왑을 확인합니다."
+            }
+          },
+          "tips": {
+            "heading": "팁",
+            "items": {
+              "s1": "더 좋은 견적을 받으려면 유동성이 풍부한 풀을 선택하는 것이 좋습니다.",
+              "s2": "토큰이 보이지 않으면 토큰 선택기에서 <b>토큰 관리</b>를 열거나 컨트랙트 주소를 붙여 넣습니다.",
+              "s3": "같은 자산의 ERC-20 버전과 ERC-223 버전이 함께 표시될 수 있습니다. 지갑과 받는 곳에서 요구하는 표준을 선택합니다."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "ERC-20과 ERC-223 변환",
+        "description": "지원되는 모든 토큰을 1:1 비율로 표준 간에 옮깁니다.",
+        "cta": "토큰 변환기 열기",
+        "sections": {
+          "what": {
+            "heading": "기능",
+            "body": "변환기는 프로토콜 수수료 없이 <b>1:1</b> 비율로 ERC-20과 ERC-223 사이에서 토큰을 래핑하거나 언래핑합니다."
+          },
+          "steps": {
+            "heading": "단계",
+            "items": {
+              "s1": "더보기 메뉴에서 <b>토큰 변환기</b>를 엽니다.",
+              "s2": "토큰과 변환 방향(ERC-20으로 또는 ERC-223으로)을 선택합니다.",
+              "s3": "수량을 입력하고 지갑에서 확인합니다."
+            }
+          },
+          "when": {
+            "heading": "사용 시기",
+            "items": {
+              "s1": "ERC-223을 받았지만 dapp이 ERC-20만 지원하는 경우(또는 그 반대)입니다.",
+              "s2": "특정 표준이 필요한 유동성이나 스왑을 준비하는 경우입니다."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "토큰 목록 관리",
+        "description": "토큰 선택기에 사용되는 목록을 활성화하고, 가져오고, 정리합니다.",
+        "cta": "토큰 목록 열기",
+        "sections": {
+          "why": {
+            "heading": "목록이 중요한 이유",
+            "body": "Dex223는 활성화한 목록의 토큰만 표시합니다. 스왑이나 변환기에서 토큰이 보이지 않으면 먼저 목록을 확인합니다."
+          },
+          "steps": {
+            "heading": "단계",
+            "items": {
+              "s1": "더보기 메뉴에서 <b>토큰 목록</b>을 열거나, 토큰 선택기에서 <b>토큰 관리</b>를 엽니다.",
+              "s2": "<b>목록</b> 탭에서 신뢰하는 목록을 활성화합니다.",
+              "s3": "필요하면 URL, JSON 또는 컨트랙트로 사용자 지정 목록을 가져옵니다.",
+              "s4": "<b>토큰</b> 탭에서 즐겨찾는 토큰을 고정하거나 주소로 개별 토큰을 가져옵니다."
+            }
+          },
+          "safety": {
+            "heading": "안전",
+            "body": "신뢰할 수 있는 출처의 목록만 활성화합니다. 악성 목록은 익숙한 이름의 사기 토큰을 표시할 수 있습니다."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "토큰 상장하기",
+        "description": "토큰을 자동 상장 컨트랙트에 제출하여 Dex223에서 거래할 수 있게 합니다.",
+        "cta": "토큰 상장 열기",
+        "sections": {
+          "overview": {
+            "heading": "개요",
+            "body": "토큰 상장은 풀과 UI가 토큰을 찾을 수 있도록 Dex223 자동 상장 컨트랙트에 토큰을 등록합니다."
+          },
+          "before": {
+            "heading": "시작하기 전에",
+            "body": "상장 컨트랙트에는 이미 존재하는 풀이 필요합니다. <b>풀</b>에서 토큰과 페어 토큰의 풀을 만들고, 트레이더가 견적을 받을 수 있도록 유동성을 추가합니다."
+          },
+          "steps": {
+            "heading": "단계",
+            "items": {
+              "s1": "메인 내비게이션에서 <b>토큰 상장</b>을 엽니다.",
+              "s2": "상장 컨트랙트, 내 토큰, 그리고 <b>Paired token</b>(페어 토큰)을 선택합니다.",
+              "s3": "해당 목록의 수수료와 요구 사항을 확인합니다.",
+              "s4": "지갑에서 상장 트랜잭션을 확인합니다."
+            }
+          },
+          "after": {
+            "heading": "상장 후",
+            "body": "서브그래프 인덱싱이 끝나면 <b>통계</b>에서 풀이 표시되는지 확인합니다."
+          }
+        }
+      },
+      "fiat": {
+        "title": "법정화폐로 암호화폐 구매",
+        "description": "Dex223를 떠나지 않고 Onramp로 지갑을 충전합니다.",
+        "cta": "법정화폐 열기",
+        "sections": {
+          "overview": {
+            "heading": "개요",
+            "body": "법정화폐 페이지는 Onramp를 사용하므로 현지 결제 수단으로 지원되는 자산을 구매(또는 판매)할 수 있습니다."
+          },
+          "steps": {
+            "heading": "단계",
+            "items": {
+              "s1": "거래 메뉴에서 <b>법정화폐</b>를 엽니다.",
+              "s2": "자금을 받을 지갑을 연결합니다.",
+              "s3": "구매 또는 판매를 선택한 다음 Onramp 위젯의 안내를 따릅니다.",
+              "s4": "송금이 완료되면 <b>스왑</b> 또는 <b>포트폴리오</b>로 돌아가 잔액을 사용합니다."
+            }
+          },
+          "notes": {
+            "heading": "참고",
+            "items": {
+              "s1": "이용 가능 여부는 지역과 Onramp가 지원하는 결제 수단에 따라 다릅니다.",
+              "s2": "Dex223 스왑은 Dex223에서 이루어집니다. 암호화폐 간 거래에는 스왑 페이지를 사용합니다."
+            }
+          }
+        }
+      }
+    }
+  },
+  "A11y": {
+    "close": "닫기",
+    "copy": "복사",
+    "delete": "삭제",
+    "sort": "정렬",
+    "back": "뒤로",
+    "add": "추가",
+    "recent_transactions": "최근 거래",
+    "network_fee_settings": "네트워크 수수료 설정",
+    "swap_settings": "스왑 설정",
+    "switch_tokens": "토큰 위치 바꾸기",
+    "settings": "설정",
+    "zoom_in": "확대",
+    "zoom_out": "축소",
+    "reset": "초기화",
+    "decrease": "줄이기",
+    "open_link": "링크 열기",
+    "increase_price": "가격 올리기",
+    "decrease_price": "가격 내리기"
+  },
+  "NotFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "이 페이지는 존재하지 않거나 이동되었습니다. 주소를 확인하거나 거래로 돌아가세요.",
+    "go_to_swap": "스왑으로 이동",
+    "view_pools": "풀 보기"
   }
 }

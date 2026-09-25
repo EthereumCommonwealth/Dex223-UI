@@ -4,6 +4,7 @@ import "@repo/ui/styles.css";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import clsx from "clsx";
 import { Golos_Text } from "next/font/google";
+import { getLocale } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
 import Providers from "@/app/providers";
@@ -19,14 +20,9 @@ const golos_text = Golos_Text({
   adjustFontFallback: false,
 });
 
-interface Props {
-  params: Promise<{
-    locale: "es" | "en" | "zh";
-  }>;
-}
-
-export default async function RootLayout({ children, params }: PropsWithChildren<Props>) {
-  const locale = (await params).locale;
+export default async function RootLayout({ children }: PropsWithChildren) {
+  // This layout sits outside app/[locale], so it has no locale param; read it from next-intl.
+  const locale = await getLocale();
   return (
     <html suppressHydrationWarning lang={locale}>
       <head>

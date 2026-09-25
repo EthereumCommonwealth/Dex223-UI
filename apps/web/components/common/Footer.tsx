@@ -1,7 +1,7 @@
 "use client";
 
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { formatGwei } from "viem";
 
 import Container from "@/components/atoms/Container";
@@ -9,6 +9,7 @@ import Svg from "@/components/atoms/Svg";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { linkTargetProps } from "@/functions/linkTarget";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -58,15 +59,15 @@ function FooterLink({ href, title, icon }: SocialLink) {
   return (
     <>
       <a
-        target="_blank"
+        {...linkTargetProps(href)}
         href={href}
         className={clsx(
-          "lg:w-auto text-12 lg:text-16 flex gap-2 bg-primary-bg rounded-5 lg:py-2 lg:pr-4 lg:pl-5 p-2 hocus:bg-green-bg hocus:text-primary-text text-secondary-text duration-200 w-full whitespace-nowrap justify-center items-center",
+          "sm:w-auto text-12 xl:text-16 flex gap-2 bg-primary-bg rounded-5 xl:py-2 xl:pr-4 xl:pl-5 p-2 hocus:bg-green-bg hocus:text-primary-text text-secondary-text duration-200 w-full whitespace-nowrap justify-center items-center",
           // title === "blog" && "max-md:col-span-2",
         )}
       >
         {t(title)}
-        <Svg className="!w-4 !h-4 lg:!w-6 lg:!h-6" iconName={icon} />
+        <Svg className="!w-4 !h-4 xl:!w-6 xl:!h-6" iconName={icon} />
       </a>
     </>
   );
@@ -74,6 +75,7 @@ function FooterLink({ href, title, icon }: SocialLink) {
 
 export default function Footer() {
   const t = useTranslations("Footer");
+  const locale = useLocale();
 
   const chainId = useCurrentChainId();
 
@@ -91,6 +93,7 @@ export default function Footer() {
                 {t("gas")}{" "}
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.GAS_TRACKER, "", chainId)}
                 >
@@ -103,6 +106,7 @@ export default function Footer() {
               {blockNumber ? (
                 <a
                   target="_blank"
+                  rel="noopener noreferrer"
                   className="text-green duration-200 hocus:text-green-hover"
                   href={getExplorerLink(ExplorerLinkType.BLOCK, blockNumber.toString(), chainId)}
                 >
@@ -122,12 +126,20 @@ export default function Footer() {
       <footer className="before:h-[1px] before:bg-gradient-to-r before:from-secondary-border/20 before:via-50% before:via-secondary-border before:to-secondary-border/20 before:w-full before:absolute relative before:top-0 before:left-0 pb-[64px] md:pb-0">
         <Container gutter={false} className="max-w-[1920px]">
           <div className="flex justify-between pt-4 pb-3 px-5 items-center flex-col-reverse sm:flex-row gap-3">
-            <span className="text-12 text-secondary-text">
+            <span className="text-12 text-secondary-text whitespace-nowrap shrink-0">
               © {new Date(Date.now()).getFullYear()} DEX223
             </span>
-            <div className="grid grid-cols-2 sm:flex sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-end sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
               {socialLinks.map((socialLink) => {
-                return <FooterLink key={socialLink.title} {...socialLink} />;
+                return (
+                  <FooterLink
+                    key={socialLink.title}
+                    {...socialLink}
+                    href={
+                      socialLink.icon === "blog" ? `${socialLink.href}${locale}` : socialLink.href
+                    }
+                  />
+                );
               })}
             </div>
           </div>

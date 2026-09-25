@@ -29,8 +29,28 @@ const localesMap: {
   },
   zh: {
     img: "/images/locales/zh.svg",
-    label: "中国人",
+    label: "中文",
     symbol: "Zh",
+  },
+  ko: {
+    img: "/images/locales/ko.svg",
+    label: "한국어",
+    symbol: "Ko",
+  },
+  fr: {
+    img: "/images/locales/fr.svg",
+    label: "Français",
+    symbol: "Fr",
+  },
+  pt: {
+    img: "/images/locales/pt.svg",
+    label: "Português",
+    symbol: "Pt",
+  },
+  ru: {
+    img: "/images/locales/ru.svg",
+    label: "Русский",
+    symbol: "Ru",
   },
 };
 export default function LocaleSwitcher({ isMobile = false }: { isMobile?: boolean }) {

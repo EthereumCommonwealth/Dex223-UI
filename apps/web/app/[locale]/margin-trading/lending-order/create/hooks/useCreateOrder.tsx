@@ -25,6 +25,7 @@ import {
 } from "@/app/[locale]/margin-trading/lending-order/create/stores/useSwapGasSettingsStore";
 import { ERC223_ABI } from "@/config/abis/erc223";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
@@ -155,6 +156,11 @@ export default function useCreateOrder() {
 
   const handleCreateOrder = useCallback(
     async (amountToApprove: string) => {
+      // Never build a transaction against the zero address on chains without a margin deployment.
+      if (!isMarginDeployed(chainId)) {
+        return;
+      }
+
       setStatus(CreateOrderStatus.PENDING_CONFIRM_ORDER);
 
       if (
