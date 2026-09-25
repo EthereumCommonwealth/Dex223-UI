@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 import { formatGwei } from "viem";
 
+import { IS_SAFE_SEND_LISTED } from "@/app/[locale]/send/config";
 import Collapse from "@/components/atoms/Collapse";
 import Drawer from "@/components/atoms/Drawer";
 import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
@@ -340,6 +341,17 @@ export default function MobileMenu() {
                   <div className="px-4 pb-1 text-12 uppercase tracking-[0.06em] text-tertiary-text">
                     {t("more_product")}
                   </div>
+                  {IS_SAFE_SEND_LISTED && (
+                    <MobileLink
+                      isActive={
+                        pathname === "/send" || pathname.startsWith("/send/") || pathname === "/pay"
+                      }
+                      href="/send"
+                      iconName="wallet"
+                      title={t("send")}
+                      handleClose={() => setMobileMenuOpened(false)}
+                    />
+                  )}
                   <MobileLink
                     isActive={pathname === "/converter"}
                     href="/converter"

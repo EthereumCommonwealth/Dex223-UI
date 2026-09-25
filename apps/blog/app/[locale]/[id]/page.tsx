@@ -1,5 +1,7 @@
 import DOMPurify from "isomorphic-dompurify";
+import type { Metadata } from "next";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
@@ -15,15 +17,76 @@ import { Link } from "@/i18n/routing";
 function PostContainer({ children }: PropsWithChildren<{}>) {
   return <div className="w-full max-w-[728px] mx-auto px-4">{children}</div>;
 }
-export default async function PostPage({
-  params,
-}: {
+type PostPageProps = {
   params: Promise<{ id: string; locale: string }>;
-}) {
+};
+
+// Next.js memoizes this GET, so the page and its metadata share one request.
+async function fetchPost(id: string): Promise<PostDetails | null> {
+  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+
+  if (!res.ok) {
+    return null;
+  }
+
+  const post: PostDetails = await res.json();
+  return post?.id ? post : null;
+}
+
+export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
+  const { id, locale } = await params;
+  const post = await fetchPost(id);
+
+  if (!post) {
+    return {};
+  }
+
+  const url = `/${locale}/${post.id}?slug=${post.slug}`;
+  const images = post.thumbnail?.link
+    ? [{ url: post.thumbnail.link, alt: post.thumbnail.alt || post.title }]
+    : undefined;
+
+  return {
+    title: `${post.title} | Dex223 Blog`,
+    description: post.description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      siteName: "Dex223 Blog",
+      title: post.title,
+      description: post.description,
+      url,
+      images,
+      publishedTime: post.createdAt,
+      modifiedTime: post.updatedAt,
+      tags: post.tags,
+    },
+    twitter: {
+      card: "summary_large_image",
+      site: "@Dex_223",
+      title: post.title,
+      description: post.description,
+      images: images?.map((image) => image.url),
+    },
+  };
+}
+
+export default async function PostPage({ params }: PostPageProps) {
   const { id, locale } = await params;
   const t = await getTranslations("Post");
   const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+
+  // The API answers 404 for unknown ids and 422 for anything that is not a UUID
+  // (for example /en/blog). Show the not-found page instead of an empty post.
+  if (!res.ok) {
+    notFound();
+  }
+
   const post: PostDetails = await res.json();
+
+  if (!post?.id) {
+    notFound();
+  }
 
   // DOMPurify is a module singleton on the server: drop the hook from the previous
   // request before adding it again, or every render stacks one more copy.
@@ -185,13 +248,6 @@ export default async function PostPage({
       .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
-  if (!post) {
-    return (
-      <div>
-        <h1>Post not found</h1>
-      </div>
-    );
-  }
   return (
     <>
       <PostContainer>

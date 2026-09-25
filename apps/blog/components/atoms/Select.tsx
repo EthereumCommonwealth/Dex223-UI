@@ -71,7 +71,7 @@ export default function Select({
               setIsOpen(false);
             }}
             className={clsx(
-              "cursor-pointer duration-200 gap-3 whitespace-nowrap h-10 md:h-12 bg-tertiary-bg hocus:bg-quaternary-bg flex justify-between items-center pl-4 md:pl-5 pr-3.5",
+              "cursor-pointer duration-200 gap-3 whitespace-nowrap h-11 md:h-12 bg-tertiary-bg hocus:bg-quaternary-bg flex justify-between items-center pl-4 md:pl-5 pr-3.5",
             )}
           >
             {option.label}
@@ -94,7 +94,7 @@ export default function Select({
         ref={refs.setReference}
         onClick={() => setIsOpen((prev) => !prev)}
         className={clsx(
-          "duration-200 whitespace-nowrap border w-full rounded-2 md:rounded-3 h-10 md:h-12 pl-4 md:pl-5 flex  justify-between gap-3 items-center pr-3",
+          "duration-200 whitespace-nowrap border w-full rounded-2 md:rounded-3 h-11 md:h-12 pl-4 md:pl-5 flex  justify-between gap-3 items-center pr-3",
           isOpen
             ? "border-green bg-green-bg shadow shadow-green/60"
             : "border-primary-bg bg-primary-bg hocus:border-green-bg hocus:bg-green-bg",
