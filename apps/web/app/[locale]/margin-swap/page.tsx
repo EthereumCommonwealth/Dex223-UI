@@ -11,12 +11,15 @@ import TradeForm from "@/app/[locale]/margin-swap/components/TradeForm";
 import { useMarginSwapTokensStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapTokensStore";
 import { usePositionsByOwner } from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
+import { useMarginTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import Container from "@/components/atoms/Container";
+import SwapPriceChart from "@/components/charts/SwapPriceChart";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import { ThemeColors } from "@/config/theme/colors";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
+import { FeeAmount } from "@/sdk_bi/constants";
 
 export default function MarginSwapPage() {
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
@@ -24,6 +27,7 @@ export default function MarginSwapPage() {
   const { tokenA, tokenB, reset: resetTokens } = useMarginSwapTokensStore();
   const { address } = useAccount();
   const { loading, positions } = usePositionsByOwner({ owner: address });
+  const { trade } = useMarginTrade();
 
   const openedPositions = useMemo(() => {
     return positions?.filter((position) => !position.isLiquidated && !position.isClosed);
@@ -106,6 +110,11 @@ export default function MarginSwapPage() {
               <SelectedPositionInfo />
 
               <TradeForm />
+              <SwapPriceChart
+                tokenA={tokenA}
+                tokenB={tokenB}
+                feeTier={trade?.route.pools?.[0]?.fee as FeeAmount | undefined}
+              />
               <SelectedTokensInfo tokenA={tokenA} tokenB={tokenB} />
             </div>
           </div>
