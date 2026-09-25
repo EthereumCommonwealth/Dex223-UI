@@ -36,7 +36,9 @@
     "margin_unavailable_switch": "마진 거래와 대출을 이용하려면 네트워크 선택기에서 {networks}(으)로 전환하세요.",
     "margin_unavailable_description": "이 네트워크에는 아직 마진 거래 컨트랙트가 배포되지 않았습니다. 스왑에서 계속 거래할 수 있습니다.",
     "margin_unavailable_go_to_swap": "스왑으로 이동",
-    "send": "보내기"
+    "send": "보내기",
+    "revenue": "수익",
+    "governance": "거버넌스"
   },
   "Swap": {
     "high_price_impact_warning": "가격 영향이 높습니다({impact}%). 현재 시장 가격보다 눈에 띄게 적은 금액을 받게 됩니다.",
@@ -757,5 +759,52 @@
     "insufficient": "잔액이 부족합니다.",
     "cancelled": "거래가 취소되었습니다.",
     "failed": "거래에 실패했습니다. 다시 시도하세요."
+  },
+  "Revenue": {
+    "title": "수익",
+    "description": "프로토콜 스테이킹 토큰을 스테이킹하면 징수된 프로토콜 수수료의 일부를 받을 수 있습니다. 프로토콜 수수료는 팩토리 소유자가 지급하며, 스왑할 때마다 자동으로 지급되지는 않습니다.",
+    "not_deployed": "이 네트워크에는 아직 수익 기능이 배포되지 않았습니다.",
+    "not_deployed_hint": "수익 기능은 이더리움 메인넷과 Sepolia에서 사용할 수 있습니다. 지갑에서 네트워크를 전환해 주세요.",
+    "governance_link": "수수료 투표가 곧 거버넌스에 추가됩니다",
+    "status_title": "내 포지션",
+    "your_stake": "내 스테이크",
+    "total_staked": "총 스테이킹",
+    "freeze": "출금 및 수령",
+    "no_stake_yet": "아직 스테이크가 없습니다",
+    "frozen_until": "{time} 동안 잠김",
+    "unlocked": "잠금 해제됨",
+    "claim_delay": "스테이킹 후 잠금 기간",
+    "restake_warning": "다시 스테이킹하면 출금 및 수령 잠금 타이머가 초기화됩니다.",
+    "rewards_hint": "보상 잔액은 팩토리 소유자가 프로토콜 수수료를 이 컨트랙트로 징수한 후에만 표시됩니다.",
+    "stake_title": "스테이킹",
+    "stake_erc20_hint": "ERC-20 스테이킹 토큰을 승인하고 스테이킹하세요.",
+    "stake_erc223_hint": "ERC-223의 경우 토큰을 수익 컨트랙트로 전송한 다음, 해당 토큰 주소로 stake를 호출하세요:",
+    "amount": "수량",
+    "wallet_balance": "지갑",
+    "stake_erc20": "승인 및 스테이킹",
+    "withdraw_title": "스테이크 출금",
+    "withdraw": "출금",
+    "withdraw_locked": "출금 잠김",
+    "claim_title": "보상 수령",
+    "claim_hint": "보상 토큰 주소를 입력하세요. 스테이킹 토큰은 입력하지 마세요. 예상 지급액은 온체인 공식으로 계산되며, 트랜잭션이 확인되기 전에 바뀔 수 있습니다.",
+    "reward_token": "보상 토큰 주소",
+    "estimated": "예상 수령액",
+    "next_period": "다음 수익 기간까지 {time}",
+    "claim": "수령",
+    "claim_locked": "수령 잠김",
+    "deposit_title": "스테이킹되지 않은 ERC-223 예치금",
+    "deposit_hint": "스테이킹되지 않은 ERC-223 전송으로 {amount}이(가) 적립되어 있습니다.",
+    "recover_deposit": "예치금 회수"
+  },
+  "Governance": {
+    "title": "거버넌스",
+    "coming_soon_badge": "출시 예정",
+    "description": "온체인 수수료 투표는 아직 시작되지 않았습니다. 이 페이지에서는 2단계에서 다룰 내용을 설명합니다.",
+    "planned_title": "예정된 투표",
+    "planned_listing_fees": "자동 상장 결제 가격",
+    "planned_protocol_share": "풀의 프로토콜 수수료 비율",
+    "planned_execution": "스테이크 가중 신호, 팩토리 소유자가 실행",
+    "phase_note": "투표가 시작되기 전까지 상장 가격과 프로토콜 수수료는 팩토리 소유자가 관리합니다. 스테이커는 수익 기능으로 징수된 수수료를 받을 수 있습니다.",
+    "revenue_link": "수익 스테이킹으로 이동"
   }
 }

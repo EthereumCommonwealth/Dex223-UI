@@ -36,7 +36,9 @@
     "margin_unavailable_switch": "Passez à {networks} dans le sélecteur de réseau pour utiliser le trading sur marge et les prêts.",
     "margin_unavailable_description": "Le contrat de trading sur marge n'est pas encore déployé sur ce réseau. Vous pouvez continuer à échanger sur Swap.",
     "margin_unavailable_go_to_swap": "Aller à Swap",
-    "send": "Envoyer"
+    "send": "Envoyer",
+    "revenue": "Revenus",
+    "governance": "Gouvernance"
   },
   "Swap": {
     "high_price_impact_warning": "Impact sur le prix élevé ({impact} %). Vous recevrez nettement moins que le prix actuel du marché.",
@@ -757,5 +759,52 @@
     "insufficient": "Solde insuffisant.",
     "cancelled": "Transaction annulée.",
     "failed": "La transaction a échoué. Veuillez réessayer."
+  },
+  "Revenue": {
+    "title": "Revenus",
+    "description": "Stakez le jeton de staking du protocole pour recevoir une part des frais de protocole collectés. Les frais de protocole sont versés par le propriétaire de la factory. Ils ne sont pas automatiques à chaque échange.",
+    "not_deployed": "Revenus n’est pas encore déployé sur ce réseau.",
+    "not_deployed_hint": "Revenus est disponible sur le réseau principal Ethereum et sur Sepolia. Changez de réseau dans votre portefeuille pour l’utiliser.",
+    "governance_link": "Le vote sur les frais arrive bientôt dans Gouvernance",
+    "status_title": "Votre position",
+    "your_stake": "Votre stake",
+    "total_staked": "Total staké",
+    "freeze": "Retirer et réclamer",
+    "no_stake_yet": "Aucun stake pour l’instant",
+    "frozen_until": "Verrouillé pendant {time}",
+    "unlocked": "Déverrouillé",
+    "claim_delay": "Verrouillage après le staking",
+    "restake_warning": "Staker à nouveau réinitialise le délai de verrouillage pour le retrait et la réclamation.",
+    "rewards_hint": "Les soldes de récompenses n’apparaissent qu’après que le propriétaire de la factory a collecté les frais de protocole dans ce contrat.",
+    "stake_title": "Staker",
+    "stake_erc20_hint": "Approuvez et stakez le jeton de staking ERC-20.",
+    "stake_erc223_hint": "Pour l’ERC-223, transférez les jetons au contrat Revenus, puis appelez stake avec l’adresse de ce jeton :",
+    "amount": "Montant",
+    "wallet_balance": "Portefeuille",
+    "stake_erc20": "Approuver et staker",
+    "withdraw_title": "Retirer le stake",
+    "withdraw": "Retirer",
+    "withdraw_locked": "Retrait verrouillé",
+    "claim_title": "Réclamer les récompenses",
+    "claim_hint": "Saisissez l’adresse d’un jeton de récompense. Ne saisissez pas le jeton de staking. Le paiement estimé utilise la formule on-chain et peut changer avant la confirmation de votre transaction.",
+    "reward_token": "Adresse du jeton de récompense",
+    "estimated": "Réclamation estimée",
+    "next_period": "Prochaine période de gains dans {time}",
+    "claim": "Réclamer",
+    "claim_locked": "Réclamation verrouillée",
+    "deposit_title": "Dépôt ERC-223 non staké",
+    "deposit_hint": "Vous avez {amount} crédité par un transfert ERC-223 qui n’a jamais été staké.",
+    "recover_deposit": "Récupérer le dépôt"
+  },
+  "Governance": {
+    "title": "Gouvernance",
+    "coming_soon_badge": "Bientôt disponible",
+    "description": "Le vote on-chain sur les frais n’est pas encore disponible. Cette page décrit ce que couvrira la phase 2.",
+    "planned_title": "Votes prévus",
+    "planned_listing_fees": "Prix de paiement de l’autolisting",
+    "planned_protocol_share": "Part des frais de protocole sur les pools",
+    "planned_execution": "Signaux pondérés par le stake, exécutés par le propriétaire de la factory",
+    "phase_note": "En attendant le vote, les prix de listing et les frais de protocole restent sous le contrôle du propriétaire de la factory. Les stakers utilisent Revenus pour gagner les frais collectés.",
+    "revenue_link": "Aller au staking Revenus"
   }
 }
