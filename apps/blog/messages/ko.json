@@ -44,7 +44,8 @@
     "feedback": "피드백",
     "revenue": "수익",
     "governance": "거버넌스",
-    "coming_soon": "출시 예정"
+    "coming_soon": "출시 예정",
+    "launch_app": "앱 열기"
   },
   "RecentTransactions": {
     "transactions": "거래 내역",
