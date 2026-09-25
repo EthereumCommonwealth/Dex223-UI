@@ -44,7 +44,8 @@
     "feedback": "Feedback",
     "revenue": "Revenue",
     "governance": "Governance",
-    "coming_soon": "Coming soon"
+    "coming_soon": "Coming soon",
+    "launch_app": "Launch app"
   },
   "RecentTransactions": {
     "transactions": "Transactions",

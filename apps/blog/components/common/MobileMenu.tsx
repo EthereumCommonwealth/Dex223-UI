@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useSwipeable } from "react-swipeable";
 
 import Collapse from "@/components/atoms/Collapse";
+import ComingSoonBadge from "@/components/atoms/ComingSoonBadge";
 import Drawer from "@/components/atoms/Drawer";
 import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
 import Svg from "@/components/atoms/Svg";
@@ -65,11 +66,7 @@ export function MobileLink({
     >
       <Svg iconName={iconName} className={clsx(disabled && "opacity-50")} />
       <span className={clsx(disabled && "opacity-50")}>{title}</span>
-      {badge && (
-        <span className="ml-auto text-10 leading-4 px-2 py-0.5 rounded-20 border border-green/40 text-green whitespace-nowrap">
-          {badge}
-        </span>
-      )}
+      {badge && <ComingSoonBadge text={badge} className="ml-auto" />}
     </a>
   );
 }
