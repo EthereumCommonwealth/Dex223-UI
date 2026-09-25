@@ -26,9 +26,10 @@ export const usePoolsStore = create<PoolsStore>((set, get) => ({
   poolUpdates: new Map(),
 }));
 
-type PoolAddress = {
+export type PoolAddress = {
   isLoading: boolean;
   address?: Address;
+  failedAt?: number;
 };
 export type PoolAddresses = {
   [key: string]: PoolAddress;

@@ -1,8 +1,12 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
+import { useMemo } from "react";
 import { Address } from "viem";
 
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
+import { buildTokenPriceIndex, PoolDepthBalances, TokenPriceIndex } from "@/functions/poolTvl";
 import { chainToApolloClient } from "@/graphql/thegraph/apollo";
+import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { DexChainId } from "@/sdk_bi/chains";
 
 export const PoolsDataDocument = gql`
@@ -27,6 +31,8 @@ export const PoolsDataDocument = gql`
       totalValueLockedETH
       totalValueLockedToken0
       totalValueLockedToken1
+      token0Price
+      token1Price
       volumeUSD
       token1 {
         id
@@ -60,6 +66,8 @@ export const PoolDataDocument = gql`
       totalValueLockedETH
       totalValueLockedToken0
       totalValueLockedToken1
+      token0Price
+      token1Price
       volumeUSD
       feesUSD
       token1 {
@@ -68,6 +76,7 @@ export const PoolDataDocument = gql`
         symbol
         addressERC223
         totalValueLocked
+        decimals
       }
       token0 {
         id
@@ -75,6 +84,7 @@ export const PoolDataDocument = gql`
         symbol
         addressERC223
         totalValueLocked
+        decimals
       }
       poolDayData(first: 1) {
         date
@@ -175,4 +185,79 @@ export const usePoolData = ({
     skip: !apolloClient,
     client: apolloClient || chainToApolloClient[DexChainId.SEPOLIA],
   });
+};
+
+// Deliberately unfiltered: the price index has to see every pool on the chain, including the
+// ones a user's search or token filter would have hidden, or a pair would lose the route
+// that connects it to a stablecoin.
+export const PoolPricesDocument = gql`
+  query PoolPricesQuery($first: Int!) {
+    pools(orderBy: totalValueLockedUSD, orderDirection: desc, first: $first) {
+      id
+      token0Price
+      token1Price
+      totalValueLockedToken0
+      totalValueLockedToken1
+      token0 {
+        id
+      }
+      token1 {
+        id
+      }
+    }
+  }
+`;
+
+const MAX_PRICE_INDEX_BALANCE_POOLS = 200;
+
+/**
+ * USD prices for every token reachable from one of the chain's stablecoins, used to value
+ * pools against their own spot price instead of the subgraph's global per-token price.
+ */
+export const usePoolPriceIndex = (
+  chainId: DexChainId | undefined,
+): { priceIndex: TokenPriceIndex; loading: boolean } => {
+  const anchors = getUSDAnchorTokens(chainId);
+  const apolloClient = chainId ? chainToApolloClient[chainId] : undefined;
+
+  const { data, loading } = useQuery<any, any>(PoolPricesDocument, {
+    variables: { first: 1000 },
+    // Nothing to anchor on means nothing to compute - skip the round trip entirely.
+    skip: !apolloClient || !anchors.length,
+    pollInterval: 30000,
+    client: apolloClient || chainToApolloClient[DexChainId.SEPOLIA],
+  });
+
+  const poolAddresses = useMemo(
+    () =>
+      (data?.pools || [])
+        .slice(0, MAX_PRICE_INDEX_BALANCE_POOLS)
+        .map((pool: any) => pool.id as Address),
+    [data?.pools],
+  );
+
+  const { balances, isLoading: balancesLoading } = usePoolsOnChainBalances({
+    poolAddresses,
+    chainId,
+  });
+
+  const depthBalances = useMemo(
+    () =>
+      Object.entries(balances).reduce((acc, [pool, poolBalances]) => {
+        acc[pool] = {
+          token0: poolBalances.token0.formatted,
+          token1: poolBalances.token1.formatted,
+        };
+        return acc;
+      }, {} as PoolDepthBalances),
+    [balances],
+  );
+
+  const priceIndex = useMemo(
+    () => buildTokenPriceIndex(data?.pools || [], anchors, depthBalances),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [data?.pools, chainId, depthBalances],
+  );
+
+  return { priceIndex, loading: loading || balancesLoading };
 };

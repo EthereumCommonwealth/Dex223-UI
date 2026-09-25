@@ -5284,12 +5284,14 @@ export type FeeTierDistributionQuery = {
   _meta?: { __typename?: "_Meta_"; block: { __typename?: "_Block_"; number: number } };
   asToken0: Array<{
     __typename?: "Pool";
+    id: string;
     feeTier: any;
     totalValueLockedToken0: any;
     totalValueLockedToken1: any;
   }>;
   asToken1: Array<{
     __typename?: "Pool";
+    id: string;
     feeTier: any;
     totalValueLockedToken0: any;
     totalValueLockedToken1: any;
@@ -5354,6 +5356,7 @@ export const FeeTierDistributionDocument = gql`
       orderDirection: desc
       where: { token0: $token0, token1: $token1 }
     ) {
+      id
       feeTier
       totalValueLockedToken0
       totalValueLockedToken1
@@ -5363,6 +5366,7 @@ export const FeeTierDistributionDocument = gql`
       orderDirection: desc
       where: { token0: $token1, token1: $token0 }
     ) {
+      id
       feeTier
       totalValueLockedToken0
       totalValueLockedToken1

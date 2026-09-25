@@ -19,6 +19,7 @@ const query = gql`
       orderDirection: desc
       where: { token0: $token0, token1: $token1 }
     ) {
+      id
       feeTier
       totalValueLockedToken0
       totalValueLockedToken1
@@ -28,6 +29,7 @@ const query = gql`
       orderDirection: desc
       where: { token0: $token1, token1: $token0 }
     ) {
+      id
       feeTier
       totalValueLockedToken0
       totalValueLockedToken1
