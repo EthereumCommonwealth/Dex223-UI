@@ -36,7 +36,9 @@
     "margin_unavailable_switch": "Mude para {networks} no seletor de rede para usar trading com margem e empréstimos.",
     "margin_unavailable_description": "O contrato de trading com margem ainda não foi implantado nesta rede. Você pode continuar negociando no Swap.",
     "margin_unavailable_go_to_swap": "Ir para Swap",
-    "send": "Enviar"
+    "send": "Enviar",
+    "revenue": "Receitas",
+    "governance": "Governação"
   },
   "Swap": {
     "high_price_impact_warning": "Impacto no preço alto ({impact}%). Você receberá bem menos do que o preço atual de mercado.",
@@ -757,5 +759,52 @@
     "insufficient": "Saldo insuficiente.",
     "cancelled": "Transação cancelada.",
     "failed": "A transação falhou. Tente novamente."
+  },
+  "Revenue": {
+    "title": "Receitas",
+    "description": "Faça staking do token de staking do protocolo para ganhar uma parte das taxas do protocolo recolhidas. As taxas do protocolo são entregues pelo proprietário da factory. Não são automáticas em cada troca.",
+    "not_deployed": "As Receitas ainda não estão implementadas nesta rede.",
+    "not_deployed_hint": "As Receitas estão ativas na rede principal da Ethereum e na Sepolia. Mude de rede na sua carteira para as utilizar.",
+    "governance_link": "A votação de taxas chega em breve à Governação",
+    "status_title": "A sua posição",
+    "your_stake": "O seu stake",
+    "total_staked": "Total em staking",
+    "freeze": "Levantar e reclamar",
+    "no_stake_yet": "Ainda sem stake",
+    "frozen_until": "Bloqueado durante {time}",
+    "unlocked": "Desbloqueado",
+    "claim_delay": "Bloqueio após o staking",
+    "restake_warning": "Fazer staking novamente reinicia o temporizador de bloqueio para levantar e reclamar.",
+    "rewards_hint": "Os saldos de recompensas só aparecem depois de o proprietário da factory recolher as taxas do protocolo para este contrato.",
+    "stake_title": "Staking",
+    "stake_erc20_hint": "Aprove e faça staking do token de staking ERC-20.",
+    "stake_erc223_hint": "Para ERC-223, transfira os tokens para o contrato de Receitas e depois chame stake com o endereço desse token:",
+    "amount": "Montante",
+    "wallet_balance": "Carteira",
+    "stake_erc20": "Aprovar e fazer staking",
+    "withdraw_title": "Levantar stake",
+    "withdraw": "Levantar",
+    "withdraw_locked": "Levantamento bloqueado",
+    "claim_title": "Reclamar recompensas",
+    "claim_hint": "Introduza o endereço de um token de recompensa. Não introduza o token de staking. O pagamento estimado usa a fórmula on-chain e pode mudar antes de a sua transação ser confirmada.",
+    "reward_token": "Endereço do token de recompensa",
+    "estimated": "Reclamação estimada",
+    "next_period": "Próximo período de ganhos dentro de {time}",
+    "claim": "Reclamar",
+    "claim_locked": "Reclamação bloqueada",
+    "deposit_title": "Depósito ERC-223 sem staking",
+    "deposit_hint": "Tem {amount} creditado de uma transferência ERC-223 que nunca foi colocada em staking.",
+    "recover_deposit": "Recuperar depósito"
+  },
+  "Governance": {
+    "title": "Governação",
+    "coming_soon_badge": "Em breve",
+    "description": "A votação on-chain de taxas ainda não está ativa. Esta página descreve o que a Fase 2 irá abranger.",
+    "planned_title": "Votações previstas",
+    "planned_listing_fees": "Preços de pagamento da listagem automática",
+    "planned_protocol_share": "Parte da taxa do protocolo nas pools",
+    "planned_execution": "Sinais ponderados por stake executados pelo proprietário da factory",
+    "phase_note": "Até a votação chegar, os preços de listagem e as taxas do protocolo continuam sob o controlo do proprietário da factory. Quem faz staking usa as Receitas para ganhar as taxas recolhidas.",
+    "revenue_link": "Ir para o staking de Receitas"
   }
 }

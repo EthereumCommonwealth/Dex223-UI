@@ -36,7 +36,9 @@
     "margin_unavailable_switch": "Cambia a {networks} en el selector de red para usar el trading con margen y los préstamos.",
     "margin_unavailable_description": "El contrato de trading con margen aún no está desplegado en esta red. Puedes seguir operando en Swap.",
     "margin_unavailable_go_to_swap": "Ir a Swap",
-    "send": "Enviar"
+    "send": "Enviar",
+    "revenue": "Ingresos",
+    "governance": "Gobernanza"
   },
   "Swap": {
     "high_price_impact_warning": "Impacto en el precio alto ({impact}%). Recibirás bastante menos que el precio actual de mercado.",
@@ -757,5 +759,52 @@
     "insufficient": "Saldo insuficiente.",
     "cancelled": "Transacción cancelada.",
     "failed": "La transacción ha fallado. Inténtalo de nuevo."
+  },
+  "Revenue": {
+    "title": "Ingresos",
+    "description": "Haz staking del token de staking del protocolo para ganar una parte de las comisiones del protocolo recaudadas. Las comisiones del protocolo las entrega el propietario de la factory. No se generan automáticamente en cada intercambio.",
+    "not_deployed": "Ingresos aún no está desplegado en esta red.",
+    "not_deployed_hint": "Ingresos está activo en la red principal de Ethereum y en Sepolia. Cambia de red en tu billetera para usarlo.",
+    "governance_link": "La votación de comisiones llegará pronto a Gobernanza",
+    "status_title": "Tu posición",
+    "your_stake": "Tu stake",
+    "total_staked": "Total en staking",
+    "freeze": "Retirar y reclamar",
+    "no_stake_yet": "Aún no tienes stake",
+    "frozen_until": "Bloqueado durante {time}",
+    "unlocked": "Desbloqueado",
+    "claim_delay": "Bloqueo tras el staking",
+    "restake_warning": "Hacer staking de nuevo reinicia el temporizador de bloqueo para retirar y reclamar.",
+    "rewards_hint": "Los saldos de recompensas solo aparecen después de que el propietario de la factory recaude las comisiones del protocolo en este contrato.",
+    "stake_title": "Staking",
+    "stake_erc20_hint": "Aprueba y haz staking del token de staking ERC-20.",
+    "stake_erc223_hint": "Para ERC-223, transfiere los tokens al contrato de Ingresos y luego llama a stake con la dirección de ese token:",
+    "amount": "Cantidad",
+    "wallet_balance": "Billetera",
+    "stake_erc20": "Aprobar y hacer staking",
+    "withdraw_title": "Retirar stake",
+    "withdraw": "Retirar",
+    "withdraw_locked": "Retiro bloqueado",
+    "claim_title": "Reclamar recompensas",
+    "claim_hint": "Introduce la dirección de un token de recompensa. No introduzcas el token de staking. El pago estimado usa la fórmula on-chain y puede cambiar antes de que se confirme tu transacción.",
+    "reward_token": "Dirección del token de recompensa",
+    "estimated": "Reclamo estimado",
+    "next_period": "Próximo periodo de ganancias en {time}",
+    "claim": "Reclamar",
+    "claim_locked": "Reclamo bloqueado",
+    "deposit_title": "Depósito ERC-223 sin staking",
+    "deposit_hint": "Tienes {amount} acreditado de una transferencia ERC-223 que nunca se puso en staking.",
+    "recover_deposit": "Recuperar depósito"
+  },
+  "Governance": {
+    "title": "Gobernanza",
+    "coming_soon_badge": "Próximamente",
+    "description": "La votación de comisiones on-chain aún no está activa. Esta página describe lo que cubrirá la Fase 2.",
+    "planned_title": "Votaciones previstas",
+    "planned_listing_fees": "Precios de pago del autolistado",
+    "planned_protocol_share": "Participación de la comisión del protocolo en los pools",
+    "planned_execution": "Señales ponderadas por stake ejecutadas por el propietario de la factory",
+    "phase_note": "Hasta que llegue la votación, los precios de listado y las comisiones del protocolo siguen bajo el control del propietario de la factory. Quienes hacen staking usan Ingresos para ganar las comisiones recaudadas.",
+    "revenue_link": "Ir al staking de Ingresos"
   }
 }
