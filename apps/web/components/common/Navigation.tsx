@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 
@@ -175,6 +175,7 @@ const socialLinks: SocialLink[] = [
 function NavigationMoreDropdown() {
   const [isSubmenuOpened, setSubmenuOpened] = useState(false);
   const t = useTranslations("Navigation");
+  const locale = useLocale();
   const pathname = usePathname();
   const { setIsOpen } = useFeedbackDialogStore();
   const {
@@ -291,7 +292,7 @@ function NavigationMoreDropdown() {
               handleClose={() => setSubmenuOpened(false)}
             />
             <MobileLink
-              href="https://blog.dex223.io/"
+              href={`https://blog.dex223.io/${locale}`}
               iconName="blog"
               title={t("blog")}
               handleClose={() => setSubmenuOpened(false)}

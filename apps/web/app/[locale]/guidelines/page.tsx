@@ -1,7 +1,7 @@
 "use client";
 
 import ExternalTextLink from "@repo/ui/external-text-link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React from "react";
 
 import { GUIDES } from "@/app/[locale]/guidelines/guides";
@@ -39,6 +39,7 @@ function GuidelineCard({
 
 export default function GuidelinesPage() {
   const t = useTranslations("Guidelines");
+  const locale = useLocale();
   const tNav = useTranslations("Navigation");
   const {
     setIsOpen: setManageTokensOpen,
@@ -86,7 +87,7 @@ export default function GuidelinesPage() {
 
           <GuidelineCard title={t("learn_more_title")} subtitle={t("learn_more_subtitle")}>
             <a
-              href="https://blog.dex223.io/"
+              href={`https://blog.dex223.io/${locale}`}
               className="flex items-center text-green hocus:text-green-hover duration-200"
             >
               <span>{tNav("blog")}</span>
