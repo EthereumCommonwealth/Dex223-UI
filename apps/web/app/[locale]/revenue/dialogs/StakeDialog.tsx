@@ -5,6 +5,7 @@ import Preloader from "@repo/ui/preloader";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Address, formatUnits, parseUnits } from "viem";
@@ -68,6 +69,9 @@ function ApproveRow({
   isReverted?: boolean;
   hash?: Address | undefined;
 }) {
+  const t = useTranslations("Revenue");
+  const tSwap = useTranslations("Swap");
+  const tLiq = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   return (
@@ -120,20 +124,25 @@ function ApproveRow({
             isSuccess || isSuccessStake ? "text-secondary-text" : "text-primary-text",
           )}
         >
-          {(isSuccess || isSuccessStake) && "Approved"}
-          {isPending && "Approve"}
-          {isLoading && "Approve"}
-          {!isSuccess && !isPending && !isReverted && !isLoading && !isSuccessStake && "Approve"}
-          {isReverted && "Approve failed"}
+          {(isSuccess || isSuccessStake) && t("approved")}
+          {isPending && t("approve_action")}
+          {isLoading && t("approve_action")}
+          {!isSuccess &&
+            !isPending &&
+            !isReverted &&
+            !isLoading &&
+            !isSuccessStake &&
+            t("approve_action")}
+          {isReverted && t("approve_failed")}
         </span>
         {!isSuccess && !isSuccessStake && !isReverted && (
           <span className="text-green text-12 max-md:hidden">
-            Why do I have to approve a token?
+            {tSwap("why_do_i_have_to_approve")}
           </span>
         )}
         {isPending && (
           <span className="text-secondary-text text-12 md:hidden mt-0.5">
-            Proceed in your wallet
+            {tSwap("proceed_in_your_wallet")}
           </span>
         )}
       </div>
@@ -144,14 +153,14 @@ function ApproveRow({
               <Preloader type="linear" />
             </div>
             <span className="text-secondary-text text-12 md:text-14 whitespace-nowrap max-md:hidden">
-              Proceed in your wallet
+              {tSwap("proceed_in_your_wallet")}
             </span>
           </>
         )}
         {isLoading && (
           <>
             <button className="px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap">
-              Speed up
+              {tLiq("speed_up")}
             </button>
             <IconButton iconName="forward" buttonSize={IconButtonSize.EXTRA_SMALL} />
             <Preloader size={16} />
@@ -176,7 +185,7 @@ function ApproveRow({
             target="_blank"
             href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
             className="absolute z-10"
-            aria-label="View transaction"
+            aria-label={t("view_transaction")}
           />
         )}
       </div>
@@ -203,6 +212,9 @@ function StakeRow({
   isStaking?: boolean;
   hash?: Address | undefined;
 }) {
+  const t = useTranslations("Revenue");
+  const tSwap = useTranslations("Swap");
+  const tLiq = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   return (
@@ -233,15 +245,15 @@ function StakeRow({
 
       <div className="flex flex-col justify-center min-w-0 pr-2">
         <span className={clsx("text-14", isDisabled ? "text-tertiary-text" : "text-primary-text")}>
-          {isDisabled && (isStaking ? "Stake" : "Unstake")}
-          {isPending && `Confirm ${isStaking ? "stake" : "unstaking"}`}
-          {isLoading && `Executing ${isStaking ? "staking" : "unstaking"}`}
-          {isReverted && `Failed to ${isStaking ? "stake" : "unstake"}`}
-          {isSuccess && `Successfully ${isStaking ? "staked" : "unstaked"}`}
+          {isDisabled && (isStaking ? t("stake_action") : t("unstake_action"))}
+          {isPending && (isStaking ? t("confirm_stake") : t("confirm_unstaking"))}
+          {isLoading && (isStaking ? t("executing_staking") : t("executing_unstaking"))}
+          {isReverted && (isStaking ? t("failed_stake") : t("failed_unstake"))}
+          {isSuccess && (isStaking ? t("success_staked") : t("success_unstaked"))}
         </span>
         {isPending && (
           <span className="text-secondary-text text-12 md:hidden mt-0.5">
-            Proceed in your wallet
+            {tSwap("proceed_in_your_wallet")}
           </span>
         )}
       </div>
@@ -252,14 +264,14 @@ function StakeRow({
               <Preloader type="linear" />
             </div>
             <span className="text-secondary-text text-12 md:text-14 whitespace-nowrap max-md:hidden">
-              Proceed in your wallet
+              {tSwap("proceed_in_your_wallet")}
             </span>
           </>
         )}
         {isLoading && (
           <>
             <button className="px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap">
-              Speed up
+              {tLiq("speed_up")}
             </button>
             <IconButton iconName="forward" buttonSize={IconButtonSize.EXTRA_SMALL} />
             <Preloader size={16} />
@@ -284,7 +296,7 @@ function StakeRow({
             target="_blank"
             href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
             className="absolute inset-0 z-10"
-            aria-label="View transaction"
+            aria-label={t("view_transaction")}
           />
         )}
       </div>
@@ -297,6 +309,9 @@ function Rows({ children }: PropsWithChildren<{}>) {
 }
 
 const StakeDialog = () => {
+  const t = useTranslations("Revenue");
+  const tSwap = useTranslations("Swap");
+  const tLiq = useTranslations("Liquidity");
   const {
     isOpen,
     status,
@@ -430,7 +445,7 @@ const StakeDialog = () => {
   }, [isOpen]);
 
   const isStaking = dialogType === "stake";
-  const title = isStaking ? "Stake" : "Unstake";
+  const title = isStaking ? t("stake_action") : t("unstake_action");
 
   // Unstaking pays the chosen version from the contract's own balance of it, so the
   // most a user can take in one version is min(staked, what the contract holds).
@@ -486,21 +501,21 @@ const StakeDialog = () => {
       if (!isRevenueDeployed) {
         setStatus(StakeStatus.ERROR);
         setErrorType(StakeError.UNKNOWN);
-        setErrorMessage("Revenue is not deployed on this network yet");
+        setErrorMessage(t("not_deployed"));
         return;
       }
 
       if (!isCorrectNetwork) {
         setStatus(StakeStatus.ERROR);
         setErrorType(StakeError.UNKNOWN);
-        setErrorMessage("Switch your wallet to the selected network to stake or unstake");
+        setErrorMessage(t("switch_network"));
         return;
       }
 
       if (!amount || parseFloat(amount) <= 0) {
         setStatus(StakeStatus.ERROR);
         setErrorType(StakeError.UNKNOWN);
-        setErrorMessage("Please enter a valid amount");
+        setErrorMessage(t("invalid_amount"));
         return;
       }
 
@@ -513,7 +528,7 @@ const StakeDialog = () => {
         if (!currentBalance || amountBigInt > currentBalance) {
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.INSUFFICIENT_BALANCE);
-          setErrorMessage("Insufficient balance");
+          setErrorMessage(tSwap("insufficient_balance"));
           return;
         }
 
@@ -536,7 +551,7 @@ const StakeDialog = () => {
             console.error("Approval error:", error);
             setStatus(StakeStatus.APPROVE_ERROR);
             setErrorType(StakeError.UNKNOWN);
-            setErrorMessage(error.message || "Approval failed");
+            setErrorMessage(error.message || t("approval_failed"));
             return;
           }
         }
@@ -559,28 +574,28 @@ const StakeDialog = () => {
             if (stakeResult.receipt) {
               setStatus(StakeStatus.SUCCESS);
               await refetchUserData();
-              addToast(`Successfully staked ${amount} D223`, "success");
+              addToast(t("success_staked_toast", { amount }), "success");
             }
           }
         } catch (error: any) {
           console.error("Stake error:", error);
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.UNKNOWN);
-          setErrorMessage(error.message || "Stake failed");
+          setErrorMessage(error.message || t("stake_failed"));
         }
       } else {
         // Unstaking logic
         if (!canUnstake) {
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.LOCKED_TOKENS);
-          setErrorMessage("Tokens are still locked. Please wait for the lock period to end.");
+          setErrorMessage(t("tokens_locked"));
           return;
         }
 
         if (!userStaked || typeof userStaked !== "bigint" || amountBigInt > userStaked) {
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.INSUFFICIENT_BALANCE);
-          setErrorMessage("Insufficient staked amount");
+          setErrorMessage(t("insufficient_staked"));
           return;
         }
 
@@ -618,21 +633,21 @@ const StakeDialog = () => {
             if (unstakeResult.receipt) {
               setStatus(StakeStatus.SUCCESS);
               await refetchUserData();
-              addToast(`Successfully unstaked ${amount} D223`, "success");
+              addToast(t("success_unstaked_toast", { amount }), "success");
             }
           }
         } catch (error: any) {
           console.error("Unstake error:", error);
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.UNKNOWN);
-          setErrorMessage(error.message || "Unstake failed");
+          setErrorMessage(error.message || t("unstake_failed"));
         }
       }
     } catch (error: any) {
       console.error("Transaction error:", error);
       setStatus(StakeStatus.ERROR);
       setErrorType(StakeError.UNKNOWN);
-      setErrorMessage(error.message || "Transaction failed. Please try again.");
+      setErrorMessage(error.message || t("tx_failed_retry"));
     }
   }, [
     amountToApprove,
@@ -718,10 +733,9 @@ const StakeDialog = () => {
           <div className="flex flex-col gap-4 mt-4 md:mt-5">
             <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4">
               <p className="text-12 md:text-14 text-secondary-text">
-                Transaction failed because the gas limit is too low. Adjust your wallet settings. If
-                you still have issues, click{" "}
+                {t("gas_too_low")}{" "}
                 <a href="#" className="text-secondary-text underline">
-                  common errors
+                  {tLiq("common_errors")}
                 </a>
               </p>
             </div>
@@ -733,7 +747,7 @@ const StakeDialog = () => {
                 setStatus(StakeStatus.INITIAL);
               }}
             >
-              Try again
+              {tLiq("try_again")}
             </Button>
           </div>
         </>
@@ -785,11 +799,10 @@ const StakeDialog = () => {
           <div className="flex flex-col gap-4 mt-4 md:mt-5">
             <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4 overflow-hidden">
               <p className="text-12 md:text-14 text-secondary-text break-words overflow-wrap break-all">
-                {errorMessage ||
-                  "Transaction failed because the gas limit is too low. Adjust your wallet settings. If you still have issues, click "}
+                {errorMessage || t("gas_too_low")}
                 {!errorMessage && (
                   <a href="#" className="text-secondary-text underline">
-                    common errors
+                    {tLiq("common_errors")}
                   </a>
                 )}
               </p>
@@ -802,7 +815,7 @@ const StakeDialog = () => {
                 setStatus(StakeStatus.INITIAL);
               }}
             >
-              Try again
+              {tLiq("try_again")}
             </Button>
           </div>
         </>
@@ -837,10 +850,11 @@ const StakeDialog = () => {
             text={
               <div className="flex items-start gap-2">
                 <span className="text-14">
-                  You can unstake and claim rewards{" "}
-                  <span className="font-medium">{lockDuration}</span> after your last stake.
-                  {hasStaked &&
-                    " Staking more now restarts that lock for your whole staked balance."}
+                  {t.rich("lock_notice", {
+                    time: lockDuration,
+                    b: (chunks) => <span className="font-medium">{chunks}</span>,
+                  })}
+                  {hasStaked && ` ${t("restake_restarts")}`}
                 </span>
               </div>
             }
@@ -851,7 +865,7 @@ const StakeDialog = () => {
         <div className="p-5 bg-secondary-bg rounded-3 relative">
           <div className="flex justify-between items-center mb-5 h-[22px]">
             <span className="text-14 block text-secondary-text">
-              {isStaking ? "Stake" : "Unstake"} amount
+              {isStaking ? t("stake_amount") : t("unstake_amount")}
             </span>
           </div>
 
@@ -909,7 +923,7 @@ const StakeDialog = () => {
         </div>
         {isInsufficientBalance && (
           <div className="mt-3">
-            <HelperText error="Insufficient balance" />
+            <HelperText error={tSwap("insufficient_balance")} />
           </div>
         )}
 
@@ -923,11 +937,8 @@ const StakeDialog = () => {
           >
             <div className="md:items-center md:justify-between md:gap-5 flex-grow flex flex-col gap-1 md:flex-row">
               <div className="flex items-center gap-1 md:gap-1.5 text-secondary-text whitespace-nowrap md:flex-row-reverse">
-                <span className="text-12 md:text-14">Approve amount</span>
-                <Tooltip
-                  iconSize={16}
-                  text="In order to stake ERC-20 tokens, you need to give the contract permission to withdraw your tokens. This amount never expires."
-                />
+                <span className="text-12 md:text-14">{t("approve_amount")}</span>
+                <Tooltip iconSize={16} text={t("approve_tooltip")} />
               </div>
 
               {!isEditApproveActive ? (
@@ -971,7 +982,7 @@ const StakeDialog = () => {
                   onClick={() => setIsEditApproveActive(true)}
                   className="!rounded-20"
                 >
-                  Edit
+                  {t("edit")}
                 </Button>
               ) : (
                 <Button
@@ -1014,7 +1025,7 @@ const StakeDialog = () => {
                 <div className="flex flex-col gap-3">
                   <div className="rounded-3 bg-tertiary-bg py-4 px-4 md:px-5 flex flex-col gap-1">
                     <p className="text-secondary-text text-14">
-                      {isStaking ? "Stake" : "Unstake"} amount
+                      {isStaking ? t("stake_amount") : t("unstake_amount")}
                     </p>
                     <div className="flex justify-between items-start md:items-center gap-2">
                       <div className="flex flex-col min-w-0 flex-1">
@@ -1087,9 +1098,9 @@ const StakeDialog = () => {
                       (isRevertedStake || isRevertedApprove) && "text-red-light",
                     )}
                   >
-                    {isSuccessStake && `Successfully ${isStaking ? "staked" : "unstaked"}`}
-                    {isRevertedStake && `Failed to ${isStaking ? "stake" : "unstake"}`}
-                    {isRevertedApprove && "Approve failed"}
+                    {isSuccessStake && (isStaking ? t("success_staked") : t("success_unstaked"))}
+                    {isRevertedStake && (isStaking ? t("failed_stake") : t("failed_unstake"))}
+                    {isRevertedApprove && t("approve_failed")}
                   </h3>
 
                   {/* Amount */}
