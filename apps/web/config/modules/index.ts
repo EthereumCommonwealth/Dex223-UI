@@ -1,6 +1,11 @@
 import { Address } from "viem";
 
-import { MARGIN_TRADING_ADDRESS, REVENUE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
+import {
+  FEE_COLLECTOR_ADDRESS,
+  MARGIN_TRADING_ADDRESS,
+  REVENUE_ADDRESS,
+  ZERO_ADDRESS,
+} from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 
 export const isMarginModuleEnabled = true;
@@ -27,4 +32,9 @@ export const isGovernanceVotingEnabled = false;
 
 export function getRevenueAddress(chainId: DexChainId): Address | undefined {
   return isRevenueDeployed(chainId) ? REVENUE_ADDRESS[chainId] : undefined;
+}
+
+export function getFeeCollectorAddress(chainId: DexChainId): Address | undefined {
+  const address = FEE_COLLECTOR_ADDRESS[chainId];
+  return address && address.toLowerCase() !== ZERO_ADDRESS.toLowerCase() ? address : undefined;
 }

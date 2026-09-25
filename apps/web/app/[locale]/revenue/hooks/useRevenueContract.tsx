@@ -12,8 +12,9 @@ import {
 
 import { estimateClaimDividends, isStakingToken } from "@/app/[locale]/revenue/lib/claimEstimate";
 import { ERC20_ABI } from "@/config/abis/erc20";
+import { FEE_COLLECTOR_ABI } from "@/config/abis/feeCollector";
 import { REVENUE_ABI } from "@/config/abis/revenue";
-import { getRevenueAddress } from "@/config/modules";
+import { getFeeCollectorAddress, getRevenueAddress } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Token } from "@/sdk_bi/entities/token";
@@ -694,6 +695,24 @@ export default function useRevenueContract({
     [executeTransaction, stakingTokenSymbol, erc223Deposit],
   );
 
+  // Permissionless: the collector can only send pool protocol fees to this Revenue contract.
+  const collectProtocolFees = useCallback(
+    async (pools: Address[]) => {
+      const feeCollectorAddress = getFeeCollectorAddress(chainId);
+      if (!feeCollectorAddress) {
+        throw new Error("Protocol fee collection is not available on this network");
+      }
+
+      return executeTransaction({
+        functionName: "collect",
+        args: [pools],
+        abi: FEE_COLLECTOR_ABI,
+        address: feeCollectorAddress,
+      });
+    },
+    [executeTransaction, chainId],
+  );
+
   return {
     contractAddress: revenueAddress,
     chainId,
@@ -729,6 +748,7 @@ export default function useRevenueContract({
     unstake,
     claim,
     recoverDeposit,
+    collectProtocolFees,
     refetchUserData,
     isLoadingUserData:
       isLoadingRevenueConfig || isLoadingUserStaked || isLoadingUserStakingTimestamp,
