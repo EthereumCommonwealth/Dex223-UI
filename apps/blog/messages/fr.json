@@ -363,6 +363,11 @@
     "x": "DEX223",
     "discord": "Discord"
   },
+  "BlogFilters": {
+    "no_results": "Aucun article ni vidéo ne correspond à votre recherche",
+    "no_posts": "Aucun article pour le moment",
+    "clear_filters": "Effacer les filtres"
+  },
   "Feedback": {
     "feedback": "Retour",
     "feel_free_to_share": "N’hésitez pas à partager votre avis en laissant un commentaire ici ou en ouvrant un <github>ticket sur Github</github>",
@@ -383,8 +388,21 @@
     "something_went_wrong": "Une erreur est survenue, réessayez plus tard",
     "thank_you_for_the_feedback": "Merci pour votre retour ! Nous vous recontacterons bientôt. Vous pouvez aussi nous joindre via <telegram>Telegram</telegram> ou <discord>Discord</discord>."
   },
+  "Post": {
+    "back_to_blog": "Retour au blog",
+    "published": "Publié le",
+    "author": "Auteur",
+    "copy_link": "Copier le lien",
+    "link_copied": "Lien copié",
+    "link_copy_failed": "Impossible de copier le lien"
+  },
   "Toast": {
     "successfully_copied": "Copié !"
+  },
+  "NotFound": {
+    "title": "Article introuvable",
+    "description": "Cet article a peut-être été déplacé ou supprimé. Parcourez les derniers articles et vidéos du blog.",
+    "back_to_blog": "Retour au blog"
   },
   "Portfolio": {
     "approved_deposited": "Approuvés et déposés",
