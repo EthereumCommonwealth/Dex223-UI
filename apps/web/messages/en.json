@@ -840,7 +840,11 @@
     "success_claimed": "Successfully claimed",
     "unexpected_error": "An unexpected error occurred. Please try again.",
     "claiming_rewards": "Claiming rewards",
-    "token_not_found": "Token not found"
+    "token_not_found": "Token not found",
+    "duration_day": "{count, plural, one {# day} other {# days}}",
+    "duration_hour": "{count, plural, one {# hour} other {# hours}}",
+    "duration_minute": "{count, plural, one {# minute} other {# minutes}}",
+    "duration_second": "{count, plural, one {# second} other {# seconds}}"
   },
   "Governance": {
     "title": "Governance",

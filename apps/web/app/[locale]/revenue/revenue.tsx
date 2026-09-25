@@ -17,7 +17,7 @@ import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { TokenListId } from "@/db/db";
-import { formatDuration } from "@/functions/formatDuration";
+import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
 import { formatFloat } from "@/functions/formatFloat";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -442,7 +442,9 @@ export function Revenue() {
                       period:
                         avgStakingDuration > 0n
                           ? t("period_named", {
-                              duration: formatDuration(Number(avgStakingDuration)),
+                              duration: formatDuration(Number(avgStakingDuration), (unit, count) =>
+                                t(durationMessageKey[unit], { count }),
+                              ),
                             })
                           : t("period_full"),
                     })}
