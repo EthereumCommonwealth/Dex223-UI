@@ -25,10 +25,14 @@ export default function SwapPriceChart({
   tokenA,
   tokenB,
   height = CHART_HEIGHT,
+  feeTier: feeTierOverride,
 }: {
   tokenA?: Currency;
   tokenB?: Currency;
   height?: number;
+  // Pages with their own trade store (margin swap) pass the routed fee here, since
+  // the swap store below holds whatever pair was last quoted on /swap.
+  feeTier?: FeeAmount;
 }) {
   const t = useTranslations("Swap");
   const [days, setDays] = useState<ChartRange>(30);
@@ -39,7 +43,8 @@ export default function SwapPriceChart({
   // Follow the routed pool's fee once a quote exists; otherwise fall back to medium
   // so the chart still loads before the user types an amount.
   const { trade } = useTrade();
-  const feeTier = (trade?.route.pools?.[0]?.fee as FeeAmount | undefined) ?? FeeAmount.MEDIUM;
+  const feeTier =
+    feeTierOverride ?? (trade?.route.pools?.[0]?.fee as FeeAmount | undefined) ?? FeeAmount.MEDIUM;
 
   const { poolAddress, poolAddressLoading } = useComputePoolAddressDex({
     tokenA,
