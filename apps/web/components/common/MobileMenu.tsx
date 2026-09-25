@@ -12,12 +12,12 @@ import Badge from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
-import { isMarginModuleEnabled } from "@/config/modules";
 import { IconName } from "@/config/types/IconName";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -52,6 +52,7 @@ export function MobileLink({
   openInNewTab?: boolean;
   comingSoon?: boolean;
 }) {
+  const t = useTranslations("Navigation");
   const shouldOpenInNewTab = openInNewTab ?? isExternal;
 
   if (isExternal) {
@@ -85,6 +86,24 @@ export function MobileLink({
     );
   }
 
+  if (disabled) {
+    return (
+      <div className={clsx("flex items-center gap-2", className)}>
+        <span
+          aria-disabled="true"
+          className={clsxMerge(
+            "flex items-center gap-2 py-3 px-4 flex-grow text-secondary-text opacity-50 cursor-default",
+            linkClassName,
+          )}
+        >
+          <Svg iconName={iconName} />
+          {title}
+        </span>
+        {comingSoon && <Badge color="green_outline" text={t("coming_soon")} />}
+      </div>
+    );
+  }
+
   return (
     <div className={clsx("flex items-center gap-2", className)}>
       <Link
@@ -101,14 +120,13 @@ export function MobileLink({
           !isActive && "hocus:bg-quaternary-bg text-secondary-text",
           isActive && !isMenu && "text-green pointer-events-none",
           isActive && isMenu && "bg-navigation-active-mobile text-green pointer-events-none",
-          disabled && "pointer-events-none opacity-50",
           linkClassName,
         )}
       >
         <Svg iconName={iconName} />
         {title}
       </Link>
-      {comingSoon && !isMarginModuleEnabled && <Badge color="green_outline" text="Coming soon" />}
+      {comingSoon && <Badge color="green_outline" text={t("coming_soon")} />}
     </div>
   );
 }
@@ -164,6 +182,7 @@ const mobileLinks: {
   href: string;
   iconName: IconName;
   title: any;
+  marginOnly?: boolean;
 }[] = [
   {
     href: "/swap",
@@ -171,9 +190,10 @@ const mobileLinks: {
     title: "swap",
   },
   {
-    href: "/margin-trading",
+    href: "/margin-swap",
     iconName: "margin-trading",
     title: "margin_trading",
+    marginOnly: true,
   },
   {
     href: "/buy-crypto",
@@ -186,9 +206,10 @@ const mobileLinks: {
     title: "pools",
   },
   {
-    href: "/borrow",
+    href: "/margin-trading",
     iconName: "borrow",
     title: "borrow_lend",
+    marginOnly: true,
   },
   {
     href: "/portfolio",
@@ -247,6 +268,7 @@ export default function MobileMenu() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
+  const isMarginAvailable = useIsMarginAvailable();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
   const {
     setIsOpen: setManageTokensOpen,
@@ -278,7 +300,7 @@ export default function MobileMenu() {
         <div className="flex flex-col justify-between h-full min-w-[300px]">
           <div className="py-6 grid gap-1">
             {[
-              mobileLinks.map(({ href, iconName, title }) => {
+              mobileLinks.map(({ href, iconName, title, marginOnly }) => {
                 return (
                   <MobileLink
                     isMenu
@@ -288,20 +310,9 @@ export default function MobileMenu() {
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}
                     isActive={pathname.includes(href)}
-                    disabled={
-                      !["/swap", "/pools", "/portfolio", "/token-listing"].includes(href) &&
-                      !isMarginModuleEnabled
-                    }
-                    comingSoon={
-                      (title === "borrow_lend" || title === "margin_trading") &&
-                      !isMarginModuleEnabled
-                    }
-                    className={
-                      (title === "borrow_lend" || title === "margin_trading") &&
-                      !isMarginModuleEnabled
-                        ? "justify-between pr-4"
-                        : ""
-                    }
+                    disabled={marginOnly && !isMarginAvailable}
+                    comingSoon={marginOnly && !isMarginAvailable}
+                    className={marginOnly && !isMarginAvailable ? "justify-between pr-4" : ""}
                   />
                 );
               }),

@@ -9,6 +9,7 @@ import {
 import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { SwapError } from "@/app/[locale]/swap/stores/useSwapStatusStore";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
@@ -30,6 +31,11 @@ export default function useOrderOpen({ order }: { order: LendingOrder }) {
 
   const handleOrderOpen = useCallback(
     async (orderId: number) => {
+      // Never build a transaction against the zero address on chains without a margin deployment.
+      if (!isMarginDeployed(chainId)) {
+        return;
+      }
+
       if (!walletClient || !publicClient || !address) {
         return;
       }
@@ -38,7 +44,7 @@ export default function useOrderOpen({ order }: { order: LendingOrder }) {
       try {
         const params = {
           abi: MARGIN_MODULE_ABI,
-          address: MARGIN_TRADING_ADDRESS[DexChainId.SEPOLIA],
+          address: MARGIN_TRADING_ADDRESS[chainId],
           functionName: "setOrderStatus" as const,
           args: [BigInt(orderId), true] as const,
         };

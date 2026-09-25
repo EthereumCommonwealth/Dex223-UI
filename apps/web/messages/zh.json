@@ -30,7 +30,12 @@
     "useful_page_source_codes": "页面源代码",
     "partners": "合作伙伴",
     "partners_eos_support": "BlockzHub",
-    "guidelines": "指南"
+    "guidelines": "指南",
+    "coming_soon": "即将推出",
+    "margin_unavailable_title": "此网络暂不支持保证金交易",
+    "margin_unavailable_switch": "请在网络选择器中切换到 {networks} 以使用保证金交易和借贷。",
+    "margin_unavailable_description": "保证金交易合约尚未部署在此网络上。您可以继续在兑换页面交易。",
+    "margin_unavailable_go_to_swap": "前往兑换"
   },
   "Swap": {
     "high_price_impact_warning": "价格影响较高（{impact}%）。你收到的数量将明显低于当前市场价格。",
