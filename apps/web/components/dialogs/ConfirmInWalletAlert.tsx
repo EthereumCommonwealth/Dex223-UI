@@ -5,6 +5,7 @@ import React from "react";
 import { useAccount } from "wagmi";
 
 import Container from "@/components/atoms/Container";
+import Svg from "@/components/atoms/Svg";
 import IconButton, { IconButtonVariant } from "@/components/buttons/IconButton";
 import { useConfirmInWalletAlertStore } from "@/stores/useConfirmInWalletAlertStore";
 
@@ -33,10 +34,17 @@ export default function ConfirmInWalletAlert() {
                   If you’ve confirmed it in MetaMask but it doesn’t appear here,{" "}
                   <a
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="text-green underline hocus:text-green-hover duration-200"
                     href="https://support.metamask.io/manage-crypto/transactions/smart-transactions/"
                   >
-                    Metamask Smart Transactions
+                    MetaMask Smart Transactions
+                    <Svg
+                      iconName="forward"
+                      size={16}
+                      aria-hidden
+                      className="inline-block align-[-3px] ml-0.5"
+                    />
                   </a>{" "}
                   may be enabled.
                 </div>

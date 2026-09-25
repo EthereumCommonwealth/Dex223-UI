@@ -21,8 +21,7 @@ const golos_text = Golos_Text({
 });
 
 export default async function RootLayout({ children }: PropsWithChildren) {
-  // The root layout sits above the [locale] segment, so it has no locale param.
-  // next-intl resolves it from the request instead.
+  // This layout sits outside app/[locale], so it has no locale param; read it from next-intl.
   const locale = await getLocale();
   return (
     <html suppressHydrationWarning lang={locale}>

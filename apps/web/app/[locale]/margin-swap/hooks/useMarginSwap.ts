@@ -13,6 +13,7 @@ import { useMarginSwapTokensStore } from "@/app/[locale]/margin-swap/stores/useM
 import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
 import { useMarginTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
+import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { slippageToPercent } from "@/functions/slippageToPercent";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -68,6 +69,11 @@ export default function useMarginSwap() {
   const { addRecentTransaction } = useRecentTransactionsStore();
 
   const handleMarginSwap = useCallback(async () => {
+    // Never build a transaction against the zero address on chains without a margin deployment.
+    if (!isMarginDeployed(chainId)) {
+      return;
+    }
+
     if (
       !walletClient ||
       !marginSwapPosition ||

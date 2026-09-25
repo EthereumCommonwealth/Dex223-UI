@@ -23,6 +23,7 @@ export default function ExternalTextLink({
     <a
       {...props}
       target="_blank"
+      rel="noopener noreferrer"
       href={href}
       className={clsxMerge(
         "ui-flex ui-items-center ui-duration-200",

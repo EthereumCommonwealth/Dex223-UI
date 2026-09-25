@@ -8,23 +8,36 @@
     "borrow_lend": "Borrow/Lend",
     "portfolio": "Portfolio",
     "more": "More",
+    "more_product": "Product",
+    "more_resources": "Resources",
     "token": "Token",
     "token_listing": "Token listing",
     "token_statistics": "Statistics",
     "token_lists": "Token lists",
+    "create_token": "Create a new token",
+    "guidelines": "Guidelines",
+    "blog": "Blog",
+    "feedback": "Feedback",
     "social_media": "Social media",
-    "social_telegram_discussions": "Telegram discussions",
-    "social_telegram_announcements": "Telegram announcements channel",
+    "social_telegram_discussions": "Discussions",
+    "social_telegram_announcements": "Announcements",
     "social_x_account": "DEX223",
     "social_discord": "Discord",
-    "social_dex_x_account": "Dexaran’s X account",
+    "social_dex_x_account": "Dexaran",
     "useful_links": "Useful links",
-    "useful_converter": "ERC20 & ERC223 token converter",
-    "useful_losses_calculator": "ERC-20 live losses calculator",
-    "useful_front_page": "ERC223 front page",
+    "useful_converter": "Token converter",
+    "revenue": "Revenue",
+    "governance": "Governance",
+    "useful_losses_calculator": "ERC-20 losses calculator",
+    "useful_front_page": "ERC-223 front page",
     "useful_page_source_codes": "Page source codes",
     "partners": "Partners",
-    "partners_eos_support": "BlockzHub"
+    "partners_eos_support": "BlockzHub",
+    "coming_soon": "Coming soon",
+    "margin_unavailable_title": "Margin trading is not available on this network yet",
+    "margin_unavailable_switch": "Switch to {networks} in the network picker to use margin trading and lending.",
+    "margin_unavailable_description": "The margin trading contract is not deployed on this network yet. You can keep trading on Swap.",
+    "margin_unavailable_go_to_swap": "Go to Swap"
   },
   "RecentTransactions": {
     "transactions": "Transactions",
@@ -68,13 +81,25 @@
     "speed_up": "Speed up",
     "queue": "Queue"
   },
+  "Converter": {
+    "title": "Token converter",
+    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
+    "convert_button": "Convert",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "flip_direction": "Flip conversion direction",
+    "pick_token": "Select token",
+    "connect_wallet": "Connect wallet",
+    "insufficient_balance": "Insufficient balance",
+    "no_fees": "1:1 conversion. No protocol fees."
+  },
   "BuyCrypto": {
     "title": "Fund your wallet with fiat",
-    "description": "Buy D223 or other tokens with local payment methods via Onramp, then trade or provide liquidity on Dex223.",
+    "description": "Buy or sell crypto with fiat via Onramp. Swap tokens on Dex223 after funding your wallet.",
     "powered_by_onramp": "Fiat onramp",
     "step_buy": "Pay with bank transfer, card, or local rails",
     "step_receive": "Crypto arrives in your connected wallet",
-    "step_use": "Trade or create pools on Dex223",
+    "step_use": "Swap or create pools on Dex223",
     "flow_buy": "Buy",
     "flow_sell": "Sell",
     "flow_swap": "Swap",
@@ -95,11 +120,11 @@
     "wallet_destination_hint": "Tokens are sent to your connected wallet address.",
     "success_title": "Purchase complete",
     "success_body": "Your {symbol} is on the way. Use it to trade or add liquidity on Dex223.",
-    "cta_trade": "Trade on Dex223",
+    "cta_trade": "Swap on Dex223",
     "cta_pools": "Browse pools",
     "cta_add_liquidity": "Add liquidity",
     "after_title": "After you buy",
-    "after_trade_body": "Swap ERC-20 and ERC-223 tokens with concentrated liquidity.",
+    "after_trade_body": "Swap ERC-20 and ERC-223 tokens on Dex223 with concentrated liquidity.",
     "after_pool_body": "Create a position and earn fees from traders on Dex223.",
     "disclaimer": "Fiat payments, KYC, and settlement are handled by",
     "missing_app_id": "Onramp is not configured. Set NEXT_PUBLIC_ONRAMP_APP_ID.",
@@ -142,6 +167,7 @@
     "assets_will_be_displayed_here": "Your pinned tokens will appear here"
   },
   "ManageTokens": {
+    "json_list_no_tokens": "This file has no valid tokens for the selected network.",
     "manage_lists": "Manage lists",
     "manage_tokens": "Manage tokens",
     "tokens": "Tokens",
@@ -221,6 +247,8 @@
     "edit": "Edit"
   },
   "Swap": {
+    "high_price_impact_warning": "High price impact ({impact}%). You will receive noticeably less than the current market price.",
+    "very_high_price_impact_warning": "Very high price impact ({impact}%). You would lose a large part of the value of this trade. Try a smaller amount.",
     "swap": "Swap",
     "review_swap": "Review swap",
     "tokens_in_two_standards_title": "Tokens in ERC-20 and ERC-223 standards",
@@ -238,6 +266,8 @@
     "enter_amount": "Enter amount",
     "swap_details": "Swap details",
     "token_price": "{symbol} Price",
+    "price_chart_no_data": "No price history yet.",
+    "price_chart_data_not_available": "Price data not available.",
     "minimum_received": "Min. received",
     "price_impact": "Price impact",
     "trading_fee": "Trading fee",
@@ -268,6 +298,7 @@
     "approving_in_progress": "Approving in progress",
     "looking_for_the_best_trade": "Looking for best trade...",
     "swap_is_unavailable_for_this_pair": "Swap is unavailable for this pair",
+    "cannot_receive_erc223": "This wallet cannot receive ERC-223",
     "insufficient_balance": "Insufficient balance",
     "settings_applied": "Settings applied",
     "erc20_tooltip": "ERC-20 is a token standard on Ethereum network. It specifies the \"version\" of the token you are going to use.",
@@ -275,7 +306,7 @@
     "network_fee_tooltip": "Network fee is charged when you send any transaction on {networkName} network. It is paid in the networks native currency (i.e. ETH on Ethereum).",
     "minimum_received_tooltip": "Minimal amount of tokens you are going to receive when the swap will be executed. The actual swap price may differ from the price assumed at the moment of the swap transaction creation (because your transaction can be confirmed in the next block only but the prices are pulled from the current block). Under no circumstances you can receive less than this min amount of tokens even due to price changes during the transaction pending.",
     "price_impact_tooltip": "Estimated impact of your transaction on the market. When you buy or sell assets their price changes as the result and this metric demonstrates how much of the change will be caused by your actions.",
-    "trading_fee_tooltip": "Trading fee is charged from each operation and is distributed among D223 token holders.",
+    "trading_fee_tooltip": "Each swap pays a pool trading fee to liquidity providers. A separate protocol fee share can be collected into the Revenue contract for users who stake the staking token there.",
     "route_tooltip": "If your transaction will have high impact on the market you may get better prices through arbitrage instead of selling/buying the whole amount of the asset at one Pool. Route shows other token pairs that will be affected during your trade (if any).",
     "maximum_slippage_tooltip": "The actual swap price may be different than the one specified at the moment of sending the transaction. Slippage determines how much of the price change can be tolerated. If the actual price differs from the expected price by more than the maximum slippage, the transaction will be automatically reverted and your tokens will not be swapped.",
     "gas_limit_tooltip": "Gas Limit determines the amount of operations that your transaction can invoke. The more complex actions are triggered by your transaction in the smart-contract the higher Gas Limit may be required. Higher Gas Limit will result in higher network fee that needs to be paid.",
@@ -289,6 +320,7 @@
     "must_be_at_least": "Must be at least {val}",
     "token_starting_price": "Starting {symbol} price",
     "pools_not_found": "Pools not found",
+    "pools_load_error": "We couldn't load pools. Check your connection and try again.",
     "amount_title": "Amount",
     "enter_correct_values": "Enter correct values",
     "collecting_fee_message": "Collecting fees will withdraw currently available fees for you",
@@ -484,5 +516,254 @@
     "add_to_wallets": "Add to my wallets",
     "already_in_wallets": "Wallet is already in your wallets",
     "my_wallets": "My wallets"
+  },
+  "Statistics": {
+    "title": "Statistics",
+    "description": "Protocol overview for the selected network.",
+    "tvl": "TVL",
+    "volume": "Total volume",
+    "pools": "Pools",
+    "transactions": "Transactions",
+    "top_pools": "Top pools by TVL",
+    "view_all_pools": "View all pools",
+    "loading": "Loading pools…",
+    "loading_tokens": "Loading tokens…",
+    "no_pools": "No pools found for this network.",
+    "no_tokens": "No tokens found for this network.",
+    "token_not_found": "Token not found.",
+    "unavailable": "Statistics are unavailable for this network right now.",
+    "tab_overview": "Overview",
+    "tab_tokens": "Tokens",
+    "tab_pools": "Pools",
+    "col_token": "Token",
+    "col_volume": "Volume",
+    "col_price": "Price",
+    "chart_tvl": "TVL",
+    "chart_volume": "Volume",
+    "chart_price": "Price",
+    "chart_empty": "No chart data yet",
+    "token_pools": "Pools"
+  },
+  "Guidelines": {
+    "title": "Guidelines",
+    "description": "Quick links to get started on Dex223.",
+    "getting_started_title": "Getting started",
+    "getting_started_subtitle": "Your first steps on the platform",
+    "tokens_title": "Tokens",
+    "tokens_subtitle": "List, create, and manage tokens",
+    "learn_more_title": "Learn more",
+    "learn_more_subtitle": "Docs, news, and protocol stats",
+    "all_guides_title": "Guides",
+    "all_guides_subtitle": "Short how-tos for common flows",
+    "back": "Guidelines",
+    "steps_label": "Steps",
+    "guides": {
+      "swap": {
+        "title": "How to swap",
+        "description": "Trade tokens on Dex223 in a few steps.",
+        "cta": "Open Swap",
+        "sections": {
+          "before": {
+            "heading": "Before you start",
+            "body": "Connect a wallet that holds the token you want to sell, and enough gas for the network you selected."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Swap</b> from the Trade menu.",
+              "s2": "Choose the token you pay with and the token you receive.",
+              "s3": "Enter an amount. Review the quoted price and price impact.",
+              "s4": "Confirm the swap in your wallet when prompted."
+            }
+          },
+          "tips": {
+            "heading": "Tips",
+            "items": {
+              "s1": "Prefer liquid pools for tighter quotes.",
+              "s2": "If a token is missing, open <b>Manage tokens</b> in the token picker or paste its contract address.",
+              "s3": "ERC-20 and ERC-223 versions of the same asset may both appear. Pick the standard your wallet and destination expect."
+            }
+          }
+        }
+      },
+      "converter": {
+        "title": "Convert ERC-20 and ERC-223",
+        "description": "Move any supported token between standards at a 1:1 rate.",
+        "cta": "Open Converter",
+        "sections": {
+          "what": {
+            "heading": "What it does",
+            "body": "The converter wraps or unwraps a token between ERC-20 and ERC-223 at a <b>1:1</b> rate with no protocol fee."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token converter</b> from the More menu.",
+              "s2": "Select the token and the direction (to ERC-20 or to ERC-223).",
+              "s3": "Enter the amount and confirm in your wallet."
+            }
+          },
+          "when": {
+            "heading": "When to use it",
+            "items": {
+              "s1": "You received ERC-223 but a dapp only accepts ERC-20 (or the reverse).",
+              "s2": "You are preparing liquidity or a swap that expects a specific standard."
+            }
+          }
+        }
+      },
+      "token-lists": {
+        "title": "Manage token lists",
+        "description": "Enable, import, and organize the lists that power the token picker.",
+        "cta": "Open Token lists",
+        "sections": {
+          "why": {
+            "heading": "Why lists matter",
+            "body": "Dex223 only shows tokens from lists you enable. If a token is missing in Swap or Convert, check your lists first."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token lists</b> from the More menu, or <b>Manage tokens</b> in the token picker.",
+              "s2": "On the <b>Lists</b> tab, enable the lists you trust.",
+              "s3": "Import a custom list by URL, JSON, or contract when needed.",
+              "s4": "On the <b>Tokens</b> tab, pin favorites or import a single token by address."
+            }
+          },
+          "safety": {
+            "heading": "Safety",
+            "body": "Only enable lists from sources you trust. Malicious lists can surface scam tokens with familiar names."
+          }
+        }
+      },
+      "token-listing": {
+        "title": "List a token",
+        "description": "Submit a token to an autolisting contract so it can trade on Dex223.",
+        "cta": "Open Token listing",
+        "sections": {
+          "overview": {
+            "heading": "Overview",
+            "body": "Token listing registers your token with a Dex223 autolisting contract so pools and the UI can discover it."
+          },
+          "before": {
+            "heading": "Before you start",
+            "body": "The listing contract needs an existing pool. Create a pool for your token and its paired token on <b>Pools</b>, and add liquidity so traders can get a quote."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Token listing</b> from the main navigation.",
+              "s2": "Choose the listing contract, your token, and the <b>Paired token</b>.",
+              "s3": "Review fees and requirements for that list.",
+              "s4": "Confirm the listing transaction in your wallet."
+            }
+          },
+          "after": {
+            "heading": "After listing",
+            "body": "Use <b>Statistics</b> to confirm the pool appears once subgraph indexing catches up."
+          }
+        }
+      },
+      "fiat": {
+        "title": "Buy crypto with fiat",
+        "description": "Fund your wallet through Onramp without leaving Dex223.",
+        "cta": "Open Fiat",
+        "sections": {
+          "overview": {
+            "heading": "Overview",
+            "body": "The Fiat page uses Onramp so you can buy (or sell) supported assets with local payment methods."
+          },
+          "steps": {
+            "heading": "Steps",
+            "items": {
+              "s1": "Open <b>Fiat</b> from the Trade menu.",
+              "s2": "Connect the wallet that should receive funds.",
+              "s3": "Choose buy or sell, then follow the Onramp widget.",
+              "s4": "When the transfer settles, return to <b>Swap</b> or <b>Portfolio</b> to use your balance."
+            }
+          },
+          "notes": {
+            "heading": "Notes",
+            "items": {
+              "s1": "Availability depends on your region and Onramp's supported rails.",
+              "s2": "Dex223 swaps stay on Dex223. Use the Swap page for crypto-to-crypto trades."
+            }
+          }
+        }
+      }
+    }
+  },
+  "A11y": {
+    "close": "Close",
+    "copy": "Copy",
+    "delete": "Delete",
+    "sort": "Sort",
+    "back": "Back",
+    "add": "Add",
+    "recent_transactions": "Recent transactions",
+    "network_fee_settings": "Network fee settings",
+    "swap_settings": "Swap settings",
+    "switch_tokens": "Switch tokens",
+    "settings": "Settings",
+    "zoom_in": "Zoom in",
+    "zoom_out": "Zoom out",
+    "reset": "Reset",
+    "decrease": "Decrease",
+    "open_link": "Open link",
+    "increase_price": "Increase price",
+    "decrease_price": "Decrease price"
+  },
+  "Revenue": {
+    "title": "Revenue",
+    "description": "Stake the protocol staking token to earn a share of collected protocol fees. Protocol fees are delivered by the factory owner; they are not automatic on every swap.",
+    "not_deployed": "Revenue is not deployed on this network yet.",
+    "not_deployed_hint": "Revenue is live on Ethereum mainnet and Sepolia. Switch networks in your wallet to use it.",
+    "governance_link": "Fee voting is coming soon on Governance",
+    "status_title": "Your position",
+    "your_stake": "Your stake",
+    "total_staked": "Total staked",
+    "freeze": "Withdraw and claim",
+    "no_stake_yet": "No stake yet",
+    "frozen_until": "Locked for {time}",
+    "unlocked": "Unlocked",
+    "claim_delay": "Lock after stake",
+    "restake_warning": "Staking again resets the lock timer for withdraw and claim.",
+    "rewards_hint": "Reward balances appear only after the factory owner collects protocol fees into this contract.",
+    "stake_title": "Stake",
+    "stake_erc20_hint": "Approve and stake the ERC-20 staking token.",
+    "stake_erc223_hint": "For ERC-223, transfer tokens to the Revenue contract, then call stake with that token address:",
+    "amount": "Amount",
+    "wallet_balance": "Wallet",
+    "stake_erc20": "Approve and stake",
+    "withdraw_title": "Withdraw stake",
+    "withdraw": "Withdraw",
+    "withdraw_locked": "Withdraw locked",
+    "claim_title": "Claim rewards",
+    "claim_hint": "Enter a reward token address. Do not enter the staking token. Estimated payout uses the on-chain formula and may change before your transaction confirms.",
+    "reward_token": "Reward token address",
+    "estimated": "Estimated claim",
+    "next_period": "Next earning window in {time}",
+    "claim": "Claim",
+    "claim_locked": "Claim locked",
+    "deposit_title": "Unstaked ERC-223 deposit",
+    "deposit_hint": "You have {amount} credited from an ERC-223 transfer that was never staked.",
+    "recover_deposit": "Recover deposit"
+  },
+  "Governance": {
+    "title": "Governance",
+    "coming_soon_badge": "Coming soon",
+    "description": "On-chain fee voting is not live yet. This page describes what Phase 2 will cover.",
+    "planned_title": "Planned votes",
+    "planned_listing_fees": "Autolisting payment prices",
+    "planned_protocol_share": "Protocol fee share on pools",
+    "planned_execution": "Stake-weighted signals executed by the factory owner",
+    "phase_note": "Until voting ships, listing prices and protocol fees stay under factory owner control. Stakers use Revenue to earn collected fees.",
+    "revenue_link": "Go to Revenue staking"
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or has moved. Check the address, or head back to trading.",
+    "go_to_swap": "Go to swap",
+    "view_pools": "View pools"
   }
 }
