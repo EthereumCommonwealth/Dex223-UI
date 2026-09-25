@@ -885,7 +885,11 @@
     "success_claimed": "领取成功",
     "unexpected_error": "发生意外错误。请重试。",
     "claiming_rewards": "正在领取奖励",
-    "token_not_found": "未找到代币"
+    "token_not_found": "未找到代币",
+    "duration_day": "{count} 天",
+    "duration_hour": "{count} 小时",
+    "duration_minute": "{count} 分钟",
+    "duration_second": "{count} 秒"
   },
   "Governance": {
     "title": "治理",

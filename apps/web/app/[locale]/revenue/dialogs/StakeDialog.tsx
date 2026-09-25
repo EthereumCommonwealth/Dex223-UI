@@ -22,7 +22,7 @@ import TokenStandardSelector from "@/components/common/TokenStandardSelector";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import { ThemeColors } from "@/config/theme/colors";
 import { clsxMerge } from "@/functions/clsxMerge";
-import { formatDuration } from "@/functions/formatDuration";
+import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -359,7 +359,10 @@ const StakeDialog = () => {
 
   // claim_delay is configurable per deployment (10 days on mainnet, 5 minutes on Sepolia),
   // so format whatever the chain returns and show nothing until it has loaded.
-  const lockDuration = typeof claimDelay === "bigint" ? formatDuration(Number(claimDelay)) : null;
+  const lockDuration =
+    typeof claimDelay === "bigint"
+      ? formatDuration(Number(claimDelay), (unit, count) => t(durationMessageKey[unit], { count }))
+      : null;
 
   const {
     isPendingApprove,

@@ -885,7 +885,11 @@
     "success_claimed": "Получено",
     "unexpected_error": "Произошла непредвиденная ошибка. Попробуйте ещё раз.",
     "claiming_rewards": "Получение наград",
-    "token_not_found": "Токен не найден"
+    "token_not_found": "Токен не найден",
+    "duration_day": "{count, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+    "duration_hour": "{count, plural, one {# час} few {# часа} many {# часов} other {# часа}}",
+    "duration_minute": "{count, plural, one {# минута} few {# минуты} many {# минут} other {# минуты}}",
+    "duration_second": "{count, plural, one {# секунда} few {# секунды} many {# секунд} other {# секунды}}"
   },
   "Governance": {
     "title": "Управление",
