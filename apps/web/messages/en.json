@@ -227,7 +227,11 @@
     "already_imported": "Token is already imported",
     "import_symbol": "Import {symbol}",
     "import_list_tooltip": "You can import a token list as a JSON file or with URL here.",
-    "import_token_tooltip": "You can import a token by inputting its contract address. The token will be added to your “custom tokens list” in Dex223."
+    "import_token_tooltip": "You can import a token by inputting its contract address. The token will be added to your “custom tokens list” in Dex223.",
+    "add_new_list": "Add new list",
+    "list_not_found": "List not found",
+    "apply": "Apply",
+    "list_deleted": "Token list successfully deleted"
   },
   "TrustRating": {},
   "GasSettings": {

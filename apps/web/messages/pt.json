@@ -401,7 +401,11 @@
     "confirm_removing_token_text": "Confirme que pretende remover o token personalizado <bold>«<token></token>»</bold>.",
     "adding_list_warning": " A maioria das listas de tokens é gerida por terceiros, pelo que a equipa Dex223 não pode garantir a correção dos dados nelas apresentados. Parta do princípio de que qualquer pessoa pode adicionar qualquer token a uma lista. Verifique você mesmo os endereços dos contratos e confirme os dados de qualquer token antes de efetuar uma transação financeira.",
     "import_token_warning": " Importe tokens com cuidado, pois é possível incluir versões falsas de tokens existentes. Certifique-se de que o token importado é compatível com o Dex223. Pode sempre verificar os dados do token através de exploradores públicos de blockchain para evitar erros e/ou fraudes.",
-    "predicted_alert": "O token com o padrão ERC-223 ainda não existe. Os contratos do conversor preveem o endereço que está a ver."
+    "predicted_alert": "O token com o padrão ERC-223 ainda não existe. Os contratos do conversor preveem o endereço que está a ver.",
+    "add_new_list": "Adicionar nova lista",
+    "list_not_found": "Lista não encontrada",
+    "apply": "Aplicar",
+    "list_deleted": "Lista de tokens eliminada"
   },
   "Liquidity": {
     "set_default": "Repor",
