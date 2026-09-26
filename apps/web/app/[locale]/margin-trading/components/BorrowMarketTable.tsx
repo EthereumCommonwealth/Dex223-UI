@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { Address, formatUnits } from "viem";
@@ -73,16 +74,37 @@ export function HeaderItem({
 
 const PAGE_SIZE = 10;
 
-const headerColumns: Array<{ field: SortingField; title: string; sortable: boolean }> = [
-  { field: "balance", title: "Order balance", sortable: true },
-  { field: "leverage", title: "Leverage", sortable: true },
-  { field: "interestRate", title: "Interest", sortable: true },
-  { field: "duration", title: "Duration", sortable: true },
-  { field: "currencyLimit", title: "Limit", sortable: true },
-  { field: "collateralTokens", title: "Collateral tokens", sortable: false },
-  { field: "tradableTokens", title: "Tradable tokens", sortable: false },
-  { field: "minLoan", title: "Min borrowing", sortable: true },
+const headerColumns: Array<{ field: SortingField; sortable: boolean }> = [
+  { field: "balance", sortable: true },
+  { field: "leverage", sortable: true },
+  { field: "interestRate", sortable: true },
+  { field: "duration", sortable: true },
+  { field: "currencyLimit", sortable: true },
+  { field: "collateralTokens", sortable: false },
+  { field: "tradableTokens", sortable: false },
+  { field: "minLoan", sortable: true },
 ];
+
+function columnTitle(t: ReturnType<typeof useTranslations<"Margin">>, field: SortingField) {
+  switch (field) {
+    case "balance":
+      return t("order_balance");
+    case "leverage":
+      return t("leverage");
+    case "interestRate":
+      return t("interest");
+    case "duration":
+      return t("duration");
+    case "currencyLimit":
+      return t("limit");
+    case "collateralTokens":
+      return t("collateral_tokens");
+    case "tradableTokens":
+      return t("tradable_tokens");
+    case "minLoan":
+      return t("min_borrowing");
+  }
+}
 
 function formatOrderAmount(raw: string) {
   const amount = Number(raw);
@@ -95,17 +117,17 @@ function formatOrderAmount(raw: string) {
   return formatFloat(amount, { trimZero: true });
 }
 
-function formatOrderDuration(seconds: number) {
+function formatOrderDuration(seconds: number, t: ReturnType<typeof useTranslations<"Margin">>) {
   if (!Number.isFinite(seconds) || seconds <= 0) {
-    return "0 min";
+    return t("duration_zero");
   }
   if (seconds < 3600) {
-    return `${Math.max(1, Math.round(seconds / 60))} min`;
+    return t("duration_minutes", { count: Math.max(1, Math.round(seconds / 60)) });
   }
   if (seconds < 86400) {
-    return `${formatFloat(seconds / 3600, { trimZero: true })} hours`;
+    return t("duration_hours", { count: formatFloat(seconds / 3600, { trimZero: true }) });
   }
-  return `${formatFloat(seconds / 86400, { trimZero: true })} days`;
+  return t("duration_days", { count: formatFloat(seconds / 86400, { trimZero: true }) });
 }
 
 function OrderActions({
@@ -117,6 +139,7 @@ function OrderActions({
   address?: Address;
   currentTimestamp: number;
 }) {
+  const t = useTranslations("Margin");
   const borrowDisabled =
     order.balance < order.minLoan ||
     currentTimestamp > order.deadline ||
@@ -126,7 +149,7 @@ function OrderActions({
     return (
       <Link className="flex-grow" href={`/margin-trading/lending-order/${order.id}`}>
         <Button fullWidth size={ButtonSize.MEDIUM} colorScheme={ButtonColor.LIGHT_GREEN}>
-          View my order
+          {t("view_my_order")}
         </Button>
       </Link>
     );
@@ -136,7 +159,7 @@ function OrderActions({
     <>
       <Link className="flex-shrink-0 pointer-events-none" href={`/margin-swap`}>
         <Button disabled size={ButtonSize.MEDIUM} colorScheme={ButtonColor.LIGHT_PURPLE}>
-          Margin swap
+          {t("margin_swap")}
         </Button>
       </Link>
       <Link
@@ -148,7 +171,7 @@ function OrderActions({
           size={ButtonSize.MEDIUM}
           colorScheme={ButtonColor.LIGHT_GREEN}
         >
-          Borrow
+          {t("borrow")}
         </Button>
       </Link>
     </>
@@ -164,6 +187,7 @@ export default function BorrowMarketTable({
   collateralAssets: Currency[];
   tradableAssets: Currency[];
 }) {
+  const t = useTranslations("Margin");
   const [currentPage, setCurrentPage] = useState(1);
 
   const [sorting, setSorting] = useState<{ field: SortingField; direction: SortingType }>({
@@ -247,7 +271,7 @@ export default function BorrowMarketTable({
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
@@ -295,7 +319,7 @@ export default function BorrowMarketTable({
                   {headerColumns.map((columnData, index) => (
                     <HeaderItem
                       key={columnData.field}
-                      label={columnData.title}
+                      label={columnTitle(t, columnData.field)}
                       sorting={
                         sorting.field === columnData.field ? sorting.direction : SortingType.NONE
                       }
@@ -352,7 +376,7 @@ export default function BorrowMarketTable({
                             {Math.floor(o.interestRate / 100)}%
                           </div>
                           <div className="h-[56px] min-w-0 flex items-center whitespace-nowrap group-hocus:bg-tertiary-bg duration-200 pr-2">
-                            {formatOrderDuration(o.positionDuration)}
+                            {formatOrderDuration(o.positionDuration, t)}
                           </div>
                           <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
                             {o.currencyLimit}
@@ -452,7 +476,7 @@ export default function BorrowMarketTable({
                   "h-[60px] flex items-center bg-quaternary-bg pl-5 text-tertiary-text",
                 )}
               >
-                Actions
+                {t("actions")}
               </div>
               <div className="py-2.5 px-3 bg-primary-bg">
                 {currentTableData.map((o: LendingOrder) => {
