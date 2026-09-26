@@ -1,4 +1,5 @@
 import Preloader from "@repo/ui/preloader";
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
@@ -12,6 +13,7 @@ import { SearchInput } from "@/components/atoms/Input";
 import { HelperText } from "@/components/atoms/TextField";
 
 export default function MarginPositionsTab() {
+  const t = useTranslations("Margin");
   const { address, isConnected } = useAccount();
   const [searchValue, setSearchValue] = useState("");
 
@@ -26,18 +28,18 @@ export default function MarginPositionsTab() {
           <Preloader size={24} />
         ) : (
           <span className="text-20 text-tertiary-text">
-            {positions?.length || 0} margin positions
+            {t("margin_positions_count", { count: positions?.length || 0 })}
           </span>
         )}
         <div className="max-w-[460px] flex-grow">
           <SearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search address"
+            placeholder={t("search_address")}
             className="bg-primary-bg"
             isError={!!searchValue && !isAddress(searchValue)}
           />
-          <HelperText error={!!searchValue && !isAddress(searchValue) && "Invalid address"} />
+          <HelperText error={!!searchValue && !isAddress(searchValue) && t("invalid_address")} />
         </div>
       </div>
 
@@ -60,7 +62,7 @@ export default function MarginPositionsTab() {
       )}
       {!loading && !positions?.length && !!searchValue && isAddress(searchValue) && (
         <div className="bg-primary-bg rounded-5 h-[340px] bg-empty-no-positions bg-no-repeat bg-right-top max-md:bg-size-180 flex items-center gap-2 justify-center text-secondary-text">
-          Margin positions for this address not found
+          {t("positions_not_found")}
         </div>
       )}
       {isConnected &&
@@ -68,12 +70,12 @@ export default function MarginPositionsTab() {
         !positions?.length &&
         (!searchValue || !isAddress(searchValue)) && (
           <div className="bg-primary-bg rounded-5 h-[340px] bg-empty-no-positions bg-no-repeat bg-right-top max-md:bg-size-180 flex items-center gap-2 justify-center text-secondary-text">
-            Your margin positions will appear here
+            {t("positions_here")}
           </div>
         )}
       {!isConnected && !loading && (!searchValue || !isAddress(searchValue)) && (
         <div className="bg-primary-bg rounded-5 h-[340px] bg-empty-wallet bg-no-repeat bg-right-top max-md:bg-size-180 flex items-center gap-2 justify-center text-secondary-text">
-          Search by address or connect wallet to view margin positions
+          {t("positions_connect")}
         </div>
       )}
     </>
