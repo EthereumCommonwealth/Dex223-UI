@@ -215,7 +215,7 @@ export default function TokenListItem({
                             tokenList.enabled &&
                             (!totalTokensInOtherEnabledLists || totalTokensInOtherEnabledLists < 2)
                           ) {
-                            addToast("You can't delete this token list now", "warning");
+                            addToast(t("cant_delete_list"), "warning");
                             return;
                           }
                           setDeleteOpened(true);
@@ -255,7 +255,7 @@ export default function TokenListItem({
                     onClick={() => {
                       db.tokenLists.delete(tokenList.id);
                       setDeleteOpened(false);
-                      addToast("Tokenlist successfully deleted");
+                      addToast(t("list_deleted"));
                     }}
                   >
                     {t("confirm_removing")}

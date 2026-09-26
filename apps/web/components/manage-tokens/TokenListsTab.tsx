@@ -100,10 +100,7 @@ export default function TokenListsTab({
                           tokenList.enabled &&
                           (!totalTokensInOtherEnabledLists || totalTokensInOtherEnabledLists < 2)
                         ) {
-                          addToast(
-                            "You can't disable this token list. Please, enable any other one and try again",
-                            "warning",
-                          );
+                          addToast(t("cant_disable_list"), "warning");
                           return;
                         }
 
@@ -122,7 +119,7 @@ export default function TokenListsTab({
       )}
       {Boolean(filteredLists && !filteredLists.length && isListFilterActive) && (
         <div className="flex items-center justify-center gap-2 flex-col h-full bg-empty-not-found-list bg-right-top bg-no-repeat max-md:bg-size-180">
-          <span className="text-secondary-text">List not found</span>
+          <span className="text-secondary-text">{t("list_not_found")}</span>
         </div>
       )}
     </div>
