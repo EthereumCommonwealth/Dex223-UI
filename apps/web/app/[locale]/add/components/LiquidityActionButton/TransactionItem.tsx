@@ -87,7 +87,9 @@ export const TransactionItem = ({
         >
           <div className="flex gap-2 py-2 items-center flex-wrap">
             <span className="flex-wrap items-center gap-1 text-secondary-text">
-              {`${standard === Standard.ERC20 ? "Approve" : "Deposit"} for ${token.symbol}`}
+              {standard === Standard.ERC20
+                ? t("fee_details_aprove_for", { symbol: token.symbol })
+                : t("fee_details_deposit_for", { symbol: token.symbol })}
               <Badge
                 color="green"
                 text={standard}

@@ -457,7 +457,16 @@
     "button_approve_and_deposit": "Approve & Deposit",
     "approve_transaction_modal_title": "transactions",
     "approved_tooltip": "In order to deposit ERC-20 tokens to contracts you need to “authorize” the contract to withdraw the token from your balance. Approval determines how much tokens on your balance a contract can move on your behalf. ERC-223 tokens do not require approvals so you do not need to authorize a contract to have access to your balance.",
-    "deposited_tooltip": "ERC-223 tokens must be deposited to the contract first in order to allow you to make operations with them. This amount shows how much of your tokens are already in the contract. You can withdraw your deposited ERC-223 tokens from the contract at any time."
+    "deposited_tooltip": "ERC-223 tokens must be deposited to the contract first in order to allow you to make operations with them. This amount shows how much of your tokens are already in the contract. You can withdraw your deposited ERC-223 tokens from the contract at any time.",
+    "loading": "Loading...",
+    "failed_to_add": "Failed to add liquidity",
+    "liquidity_added_ok": "Liquidity added successfully",
+    "liquidity_added": "Liquidity added",
+    "view_positions": "View my liquidity positions",
+    "list_token": "List token",
+    "no_value_to_revoke": "No value to revoke",
+    "enter_withdraw_amount": "Enter amount to withdraw",
+    "max_withdraw": "Max withdrawal amount {amount} {symbol}"
   },
   "Footer": {
     "gas": "Gas:",

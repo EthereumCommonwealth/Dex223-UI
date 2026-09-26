@@ -339,10 +339,10 @@ const MintDialog = ({
   const gasPrice = useAddLiquidityGasPrice();
 
   const buttonText = increase
-    ? "Add liquidity"
+    ? t("fee_details_add_liquidity")
     : noLiquidity
-      ? "Create Pool & Mint liquidity"
-      : "Mint liquidity";
+      ? t("create_pool_mint")
+      : t("mint_liquidity");
   const { inRange } = usePositionRangeStatus({ position });
   const { minPriceString, maxPriceString, currentPriceString } = usePositionPrices({
     position,
@@ -373,7 +373,7 @@ const MintDialog = ({
 
   return (
     <>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Add liquidity" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("fee_details_add_liquidity")} />
       <div className="card-spacing-x md:pb-0 max-h-[60dvh] md:h-auto flex flex-col">
         <div className="flex-grow overflow-y-auto max-md:pb-4 -mr-2 pr-2">
           <div
@@ -494,7 +494,7 @@ const MintDialog = ({
           {/* Price range */}
           <div>
             <div className="flex justify-between items-center mb-3 mt-5">
-              <span className="font-bold text-secondary-text">Selected range</span>
+              <span className="font-bold text-secondary-text">{t("selected_range")}</span>
               <div className="flex gap-0.5 bg-secondary-bg rounded-2 p-0.5">
                 <button
                   onClick={() => setShowFirst(!showFirst)}
@@ -632,7 +632,7 @@ const SuccessfulDialog = ({
 
   return (
     <>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Add liquidity" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("fee_details_add_liquidity")} />
       <div className="card-spacing h-[80dvh] md:h-auto overflow-y-auto">
         <div className="mx-auto w-[80px] h-[80px] flex items-center justify-center relative mb-5">
           {isError ? (
@@ -656,7 +656,7 @@ const SuccessfulDialog = ({
               isError ? "text-red-light" : "text-primary-text",
             )}
           >
-            {isError ? "Failed to add liquidity" : "Liquidity added successfully"}
+            {isError ? t("failed_to_add") : t("liquidity_added_ok")}
           </span>
         </div>
 
@@ -688,7 +688,7 @@ const SuccessfulDialog = ({
                 className="flex gap-2 text-green justify-center"
                 onClick={() => setIsOpen(false)}
               >
-                View my liquidity positions
+                {t("view_positions")}
                 <Svg iconName="forward" />
               </div>
             </Link>
@@ -699,7 +699,7 @@ const SuccessfulDialog = ({
                 className="w-full"
               >
                 <Button fullWidth colorScheme={ButtonColor.LIGHT_GREEN}>
-                  List token
+                  {t("list_token")}
                 </Button>
               </Link>
             )}
@@ -722,7 +722,7 @@ const SuccessfulDialog = ({
 
           <div className="flex flex-col justify-center">
             <span className="text-14 font-medium text-primary-text">
-              {isError ? "Failed to add liquidity" : "Liquidity added "}
+              {isError ? t("failed_to_add") : t("liquidity_added")}
             </span>
           </div>
           <div className="flex items-center gap-2 justify-end">
