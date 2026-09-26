@@ -132,7 +132,7 @@ export default function LiquidityChartRangeInput({
       {isUninitialized ? (
         <Alert type="info" text={t("price_chart_data_will_appear_here")} />
       ) : isLoading ? (
-        <Alert type="info" text="Loading..." />
+        <Alert type="info" text={t("loading")} />
       ) : error ? (
         <Alert type="error" text={t("price_chart_data_not_available")} />
       ) : !price ? (
