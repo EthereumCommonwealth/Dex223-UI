@@ -83,21 +83,22 @@ const PoolsTableDesktop = ({
   handleSort: () => any;
   isLoading?: boolean;
 }) => {
+  const t = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   return (
     <div className="hidden lg:grid pr-3 pl-2 rounded-3 overflow-hidden bg-table-gradient grid-cols-[_minmax(20px,0.5fr),minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(30px,1fr),_minmax(30px,1fr),_minmax(30px,1fr)] pb-2">
       <div className=" h-[60px] flex items-center justify-center  text-tertiary-text ">#</div>
-      <div className=" h-[60px] flex items-center text-tertiary-text">Pool</div>
+      <div className=" h-[60px] flex items-center text-tertiary-text">{t("pool")}</div>
       <div className=" h-[60px] flex items-center justify-end  text-tertiary-text ">
-        Transactions
+        {t("transactions")}
       </div>
       <HeaderItem label="TVL" sorting={sorting} handleSort={handleSort} />
       <div className=" h-[60px] flex items-center justify-end text-tertiary-text ">
-        1 day volume
+        {t("volume_1d")}
       </div>
       <div className=" h-[60px] flex items-center justify-end text-tertiary-text pr-2">
-        7 day volume
+        {t("volume_7d")}
       </div>
 
       {isLoading
@@ -248,6 +249,7 @@ const PoolsTableItemMobile = ({
   pool: any;
   index: number;
 }) => {
+  const t = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   return (
@@ -277,7 +279,7 @@ const PoolsTableItemMobile = ({
         <div className="flex flex-col gap-2">
           <div className="flex justify-between gap-x-2">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">Transactions</span>
+              <span className="text-14 text-tertiary-text">{t("transactions")}</span>
               <span className="text-14 text-secondary-text">{formatNumberKilos(pool.txCount)}</span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
@@ -291,11 +293,11 @@ const PoolsTableItemMobile = ({
           </div>
           <div className="flex justify-between gap-x-2 pb-1">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">1 day volume</span>
+              <span className="text-14 text-tertiary-text">{t("volume_1d")}</span>
               <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">7 day volume</span>
+              <span className="text-14 text-tertiary-text">{t("volume_7d")}</span>
               <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
             </div>
           </div>
@@ -307,7 +309,7 @@ const PoolsTableItemMobile = ({
             colorScheme={ButtonColor.LIGHT_GREEN}
             size={ButtonSize.MEDIUM}
           >
-            View pool
+            {t("view_pool")}
           </Button>
         </Link>
       </div>
