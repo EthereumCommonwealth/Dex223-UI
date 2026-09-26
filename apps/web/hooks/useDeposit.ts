@@ -23,6 +23,19 @@ const depositeGasLimitMap: Record<DexChainId, { base: bigint; additional: bigint
   [DexChainId.SEPOLIA]: { base: BigInt(100000), additional: BigInt(10000) },
   [DexChainId.BSC_TESTNET]: { base: BigInt(100000), additional: BigInt(10000) },
   [DexChainId.EOS]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.BASE]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.BSC]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.ARBITRUM]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.POLYGON]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.AVALANCHE]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.OPTIMISM]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.MONAD]: { base: BigInt(50000), additional: BigInt(10000) },
+  [DexChainId.UNICHAIN]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.PLASMA]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.SONIC]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.LINEA]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.INK]: { base: BigInt(100000), additional: BigInt(10000) },
+  [DexChainId.MANTLE]: { base: BigInt(100000), additional: BigInt(10000) },
 };
 
 const defaultDepositeValue = BigInt(100000);
