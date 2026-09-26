@@ -1052,5 +1052,16 @@
     "approving_symbol": "Aprobando {symbol}",
     "approved_symbol": "Aprobado {symbol}",
     "approve_symbol_failed": "Falló la aprobación de {symbol}"
+  },
+  "MintTest": {
+    "banner": "Consigue tokens de prueba gratis",
+    "get_free": "Obtener tokens gratis",
+    "title": "Obtener tokens de prueba",
+    "token_for_mint": "Token para acuñar",
+    "amount_label": "Cantidad de tokens",
+    "minting": "Acuñación en curso",
+    "mint": "Acuñar tokens",
+    "minted": "Acuñado con éxito",
+    "bad_data": "Los datos no son válidos"
   }
 }

@@ -1052,5 +1052,16 @@
     "approving_symbol": "Approbation de {symbol}",
     "approved_symbol": "{symbol} approuvé",
     "approve_symbol_failed": "Échec de l’approbation de {symbol}"
+  },
+  "MintTest": {
+    "banner": "Obtenez des jetons de test gratuitement",
+    "get_free": "Obtenir des jetons gratuits",
+    "title": "Obtenir des jetons de test",
+    "token_for_mint": "Jeton à émettre",
+    "amount_label": "Quantité de jetons",
+    "minting": "Émission en cours",
+    "mint": "Émettre des jetons",
+    "minted": "Jetons émis avec succès",
+    "bad_data": "Les données ne sont pas valides"
   }
 }

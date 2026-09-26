@@ -1,5 +1,6 @@
 import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Address, formatUnits, parseUnits } from "viem";
 import { useAccount, usePublicClient, useReadContract, useWalletClient } from "wagmi";
@@ -26,6 +27,11 @@ import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 
 export default function MintTestTokensDialog() {
+  const t = useTranslations("MintTest");
+  const tSwap = useTranslations("Swap");
+  const tWallet = useTranslations("Wallet");
+  const tManage = useTranslations("ManageTokens");
+  const tRevenue = useTranslations("Revenue");
   const { isOpen, handleOpen, handleClose } = useMintTestTokensDialogStore();
   const tokens = useTokens();
   const withoutWrapped = useMemo(() => {
@@ -101,7 +107,7 @@ export default function MintTestTokensDialog() {
 
   const handleMint = useCallback(() => {
     if (!tokenToMint || !walletClient || !publicClient) {
-      addToast("Not correct data", "error");
+      addToast(t("bad_data"), "error");
       return;
     }
 
@@ -122,7 +128,7 @@ export default function MintTestTokensDialog() {
         setIsPending(true);
 
         await publicClient.waitForTransactionReceipt({ hash });
-        addToast("Minted successfully");
+        addToast(t("minted"));
       } catch (e) {
         console.log(e);
       } finally {
@@ -130,15 +136,15 @@ export default function MintTestTokensDialog() {
         setIsPending(false);
       }
     });
-  }, [tokenToMint, walletClient, publicClient, address, mintErc223, amountToMint]);
+  }, [address, amountToMint, mintErc223, publicClient, t, tokenToMint, walletClient]);
 
   const ref = useRef<HTMLButtonElement | null>(null);
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={handleClose}>
-      <DialogHeader onClose={handleClose} title="Get test tokens" />
+      <DialogHeader onClose={handleClose} title={t("title")} />
       <div className="mx-auto card-spacing rounded-2 bg-primary-bg md:w-[600px] w-full border border-transparent">
-        <InputLabel label="Token for mint" />
+        <InputLabel label={t("token_for_mint")} />
         <div className="flex flex-col gap-4 relative">
           <Popover
             placement="bottom-start"
@@ -157,7 +163,7 @@ export default function MintTestTokensDialog() {
                 )}
                 isOpen={isPopoverOpened}
               >
-                {tokenToMint?.symbol || "Select token"}
+                {tokenToMint?.symbol || tManage("select_token")}
               </SelectButton>
             }
           >
@@ -195,12 +201,12 @@ export default function MintTestTokensDialog() {
           </Popover>
 
           <TextField
-            label="Amount of tokens"
-            helperText={`Balance: ${balance && tokenToMint ? `${formatFloat(formatUnits(balance, tokenToMint.decimals))} ${tokenToMint.symbol}` : "0"}`}
+            label={t("amount_label")}
+            helperText={`${tSwap("balance")} ${balance && tokenToMint ? `${formatFloat(formatUnits(balance, tokenToMint.decimals))} ${tokenToMint.symbol}` : "0"}`}
             readOnly
             value={amountToMint}
             onChange={(e) => setAmountToMint(e.target.value)}
-            placeholder="Amount"
+            placeholder={tRevenue("amount")}
             internalText={tokenToMint?.symbol}
             isNumeric
           />
@@ -209,17 +215,17 @@ export default function MintTestTokensDialog() {
             <Button disabled={isLoading || isPending} onClick={handleMint}>
               {isLoading && (
                 <span className="flex items-center gap-2">
-                  <span>Waiting for confirmation</span>
+                  <span>{tSwap("waiting_for_confirmation")}</span>
                   <Preloader color="green" />
                 </span>
               )}
               {isPending && (
                 <span className="flex items-center gap-2">
-                  <span>Minting in progress</span>
+                  <span>{t("minting")}</span>
                   <Preloader color="green" />
                 </span>
               )}
-              {!isLoading && !isPending && "Mint tokens"}
+              {!isLoading && !isPending && t("mint")}
             </Button>
           ) : (
             <Button
@@ -227,7 +233,7 @@ export default function MintTestTokensDialog() {
                 setOpenedWallet(true);
               }}
             >
-              Connect your wallet
+              {tWallet("connect_wallet")}
             </Button>
           )}
         </div>

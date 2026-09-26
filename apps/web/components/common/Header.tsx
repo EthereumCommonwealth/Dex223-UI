@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 
 import Container from "@/components/atoms/Container";
 import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
@@ -16,6 +17,7 @@ import { Link } from "@/i18n/routing";
 
 export default function Header() {
   useRecentTransactionTracking();
+  const t = useTranslations("MintTest");
 
   const { handleOpen } = useMintTestTokensDialogStore();
   return (
@@ -59,7 +61,7 @@ export default function Header() {
           <Container gutter={false} className="flex h-full items-center px-5 max-w-[1920px]">
             <div className="flex justify-between items-center w-full flex-wrap gap-2">
               <div className="flex items-center gap-2 justify-between md:justify-start flex-grow">
-                Get test tokens for free
+                {t("banner")}
                 <Image src="/images/test-tokens.svg" alt="" width={92} height={48} />
               </div>
               <div className="w-full md:w-[170px]">
@@ -69,7 +71,7 @@ export default function Header() {
                   colorScheme={ButtonColor.LIGHT_GREEN}
                   size={ButtonSize.MEDIUM}
                 >
-                  Get free tokens
+                  {t("get_free")}
                 </Button>
               </div>
             </div>
