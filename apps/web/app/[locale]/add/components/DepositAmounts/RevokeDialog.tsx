@@ -76,24 +76,27 @@ export const RevokeDialog = () => {
 
       if (!valueBigInt) {
         if (standard === Standard.ERC20) {
-          setError("No value to revoke");
+          setError(t("no_value_to_revoke"));
           return;
         }
-        setError("Enter amount to withdraw");
+        setError(t("enter_withdraw_amount"));
 
         return;
       }
 
       if (valueBigInt > currentAllowance && standard === Standard.ERC223) {
         setError(
-          `Max withdrawal amount ${formatUnits(currentAllowance, token?.decimals || 18)} ${token?.symbol}`,
+          t("max_withdraw", {
+            amount: formatUnits(currentAllowance, token?.decimals || 18),
+            symbol: token?.symbol,
+          }),
         );
         return;
       }
 
       setError("");
     },
-    [currentAllowance, standard, token],
+    [currentAllowance, standard, token, t],
   );
 
   const {
@@ -289,7 +292,7 @@ export const RevokeDialog = () => {
             <div className="mt-4">
               {!!error ? (
                 <Button fullWidth disabled>
-                  <span className="flex items-center gap-2">Enter correct values</span>
+                  <span className="flex items-center gap-2">{t("enter_correct_values")}</span>
                 </Button>
               ) : [AllowanceStatus.INITIAL].includes(status) ? (
                 <Button

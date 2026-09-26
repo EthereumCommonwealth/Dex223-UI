@@ -577,7 +577,16 @@
     "failed_transaction_error_message": "La transaction a échoué par manque de gas ou en raison d’une erreur interne du contrat. Essayez un slippage ou un gas plus élevé pour garantir son exécution. Si le problème persiste, cliquez sur",
     "gas_price_tooltip": "Les frais que vous payez avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
     "approved_tooltip": "Pour déposer des jetons ERC-20 dans des contrats, vous devez « autoriser » le contrat à prélever le jeton sur votre solde. L’approbation détermine la quantité de jetons de votre solde qu’un contrat peut déplacer en votre nom. Les jetons ERC-223 ne nécessitent pas d’approbation, vous n’avez donc pas à autoriser un contrat à accéder à votre solde.",
-    "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment."
+    "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment.",
+    "loading": "Chargement...",
+    "failed_to_add": "Échec de l'ajout de liquidité",
+    "liquidity_added_ok": "Liquidité ajoutée avec succès",
+    "liquidity_added": "Liquidité ajoutée",
+    "view_positions": "Voir mes positions de liquidité",
+    "list_token": "Lister le jeton",
+    "no_value_to_revoke": "Aucune valeur à révoquer",
+    "enter_withdraw_amount": "Saisissez le montant à retirer",
+    "max_withdraw": "Montant maximal de retrait {amount} {symbol}"
   },
   "Statistics": {
     "title": "Statistiques",

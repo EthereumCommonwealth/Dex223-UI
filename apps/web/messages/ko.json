@@ -577,7 +577,16 @@
     "failed_transaction_error_message": "가스 부족 또는 컨트랙트 내부 오류로 트랜잭션이 실패했습니다. 슬리피지나 가스를 높여 다시 시도해 보세요. 문제가 계속되면 다음을 클릭하세요",
     "gas_price_tooltip": "레거시 트랜잭션에서 지불하는 수수료는 gasPrice * gasUsed로 계산됩니다. gasPrice가 최신 블록의 네트워크 가스 가격 이상이 될 때까지 트랜잭션은 확정되지 않습니다.",
     "approved_tooltip": "ERC-20 토큰을 컨트랙트에 입금하려면 컨트랙트가 잔액에서 토큰을 출금하도록 '승인'해야 합니다. 승인은 컨트랙트가 사용자를 대신해 옮길 수 있는 토큰 수량을 결정합니다. ERC-223 토큰은 승인이 필요 없으므로 컨트랙트에 잔액 접근 권한을 부여하지 않아도 됩니다.",
-    "deposited_tooltip": "ERC-223 토큰으로 작업하려면 먼저 컨트랙트에 입금해야 합니다. 이 수량은 이미 컨트랙트에 있는 토큰의 양을 나타냅니다. 입금한 ERC-223 토큰은 언제든지 컨트랙트에서 출금할 수 있습니다."
+    "deposited_tooltip": "ERC-223 토큰으로 작업하려면 먼저 컨트랙트에 입금해야 합니다. 이 수량은 이미 컨트랙트에 있는 토큰의 양을 나타냅니다. 입금한 ERC-223 토큰은 언제든지 컨트랙트에서 출금할 수 있습니다.",
+    "loading": "불러오는 중...",
+    "failed_to_add": "유동성을 추가하지 못했습니다",
+    "liquidity_added_ok": "유동성이 추가되었습니다",
+    "liquidity_added": "유동성 추가됨",
+    "view_positions": "내 유동성 포지션 보기",
+    "list_token": "토큰 상장",
+    "no_value_to_revoke": "취소할 수량이 없습니다",
+    "enter_withdraw_amount": "출금할 수량을 입력하세요",
+    "max_withdraw": "최대 출금 수량 {amount} {symbol}"
   },
   "Statistics": {
     "title": "통계",
