@@ -21,11 +21,11 @@ export const MarginPositions = () => {
 
   const handleButton = useCallback(async () => {
     try {
-      addToast("Margin positions page under construction", "info");
+      addToast(t("margin_building"), "info");
     } catch (e) {
       // addToast("Clipboard API not supported", "error");
     }
-  }, []);
+  }, [t]);
 
   const loading = false;
 
@@ -37,10 +37,7 @@ export const MarginPositions = () => {
           <div className="flex flex-col z-20">
             <div className="flex items-center gap-1">
               <span className="text-14 lg:text-16 text-secondary-text">{t("margin_balance")}</span>
-              <Tooltip
-                iconSize={20}
-                text="This value represents the sum of all your assets stored in all your active margin positions. These assets are located in the margin module smart-contract and cannot be withdrawn until the position those assets belong to is closed."
-              />
+              <Tooltip iconSize={20} text={t("margin_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">{`$ ${marginBalance > 0 ? marginBalance : "—"}`}</span>
           </div>
@@ -89,9 +86,9 @@ export const MarginPositions = () => {
         {!loading && currentTableData.length ? (
           <div className="pr-5 pl-5 grid rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr),_minmax(50px,1.33fr)] pb-2 relative">
             <div className="pl-5 h-[60px] flex items-center">ID</div>
-            <div className="h-[60px] flex items-center">Amount, $</div>
-            <div className="h-[60px] flex items-center gap-2">Assets</div>
-            <div className="pr-5 h-[60px] flex items-center justify-end">Action / Owner</div>
+            <div className="h-[60px] flex items-center">{t("amount_usd")}</div>
+            <div className="h-[60px] flex items-center gap-2">{t("assets")}</div>
+            <div className="pr-5 h-[60px] flex items-center justify-end">{t("action_owner")}</div>
             {loading ? (
               <div className="flex justify-center items-center h-full min-h-[550px]">
                 <Preloader type="awaiting" size={48} />

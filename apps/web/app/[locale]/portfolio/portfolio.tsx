@@ -63,12 +63,12 @@ const AddWalletInput = ({ onAdd }: { onAdd?: () => void }) => {
     if (tokenAddressToImport && !error) {
       addWallet(tokenAddressToImport as Address);
       setTokenAddressToImport("");
-      addToast("Successfully added!");
+      addToast(t("added"));
       if (onAdd) {
         onAdd();
       }
     }
-  }, [addWallet, onAdd, tokenAddressToImport, error]);
+  }, [addWallet, onAdd, tokenAddressToImport, error, t]);
   return (
     <>
       <div className={clsx("relative w-full")}>
@@ -125,12 +125,12 @@ const WalletSearchInput = ({
     if (searchValue && !error) {
       addWallet(searchValue as Address);
       setSearchValue("");
-      addToast("Successfully added!");
+      addToast(t("added"));
       if (onAdd) {
         onAdd();
       }
     }
-  }, [addWallet, onAdd, searchValue, error, setSearchValue]);
+  }, [addWallet, onAdd, searchValue, error, setSearchValue, t]);
 
   return (
     <div className="relative">
@@ -166,10 +166,12 @@ const WalletSearchInput = ({
 
 export type ManageWalletsPopoverContent = "add" | "list" | "manage";
 
-const PopoverTitles: { [key in ManageWalletsPopoverContent]: string } = {
-  add: "Add wallet",
-  list: "My wallets",
-  manage: "Manage wallets",
+const popoverTitleKey: {
+  [key in ManageWalletsPopoverContent]: "add_wallet" | "my_wallets" | "manage_wallets";
+} = {
+  add: "add_wallet",
+  list: "my_wallets",
+  manage: "manage_wallets",
 };
 
 const ManageWalletsContent = ({
@@ -211,9 +213,9 @@ const ManageWalletsContent = ({
   const handleAddWallet = useCallback(() => {
     addWallet(searchValue as Address);
     setSearchValue("");
-    addToast("Successfully added!");
+    addToast(t("added"));
     setShowFromSearch(false);
-  }, [addWallet, searchValue, setSearchValue, setShowFromSearch]);
+  }, [addWallet, searchValue, setSearchValue, setShowFromSearch, t]);
 
   const popupBackHandler = useCallback(() => {
     if (content === "manage") {
@@ -253,7 +255,7 @@ const ManageWalletsContent = ({
             </Button>
           ) : null
         }
-        title={PopoverTitles[content]}
+        title={t(popoverTitleKey[content])}
       />
       <div className="flex flex-col pb-4 md:pb-5 border-t border-secondary-border">
         {content === "add" ? (
@@ -263,7 +265,7 @@ const ManageWalletsContent = ({
               <>
                 <div className="flex items-center gap-3 mb-4 md:mb-5">
                   <div className="w-full h-[1px] bg-secondary-border" />
-                  <span className="text-secondary-text">or</span>
+                  <span className="text-secondary-text">{t("or")}</span>
                   <div className="w-full h-[1px] bg-secondary-border" />
                 </div>
 
@@ -481,6 +483,7 @@ const ManageWallets = ({
   searchValue: string;
   setSearchValue: (value: string) => void;
 }) => {
+  const t = useTranslations("Portfolio");
   const [isOpened, setIsOpened] = useState(false);
   const { wallets } = usePortfolioWallets();
   const _isMobile = useMediaQuery({ query: "(max-width: 767px)" });
@@ -507,14 +510,16 @@ const ManageWallets = ({
                 alt={address}
               />
             ))}
-            <span className="ml-2 whitespace-nowrap">{`${wallets.length} wallets`}</span>
+            <span className="ml-2 whitespace-nowrap">
+              {t("wallets_count", { count: wallets.length })}
+            </span>
           </div>
         ) : (
-          <span className="pl-2">Add wallet</span>
+          <span className="pl-2">{t("add_wallet")}</span>
         )}
       </SelectButton>
     ),
-    [wallets, isOpened],
+    [wallets, isOpened, t],
   );
 
   return (
@@ -569,8 +574,8 @@ export function Portfolio() {
   const handleAddWallet = useCallback(() => {
     addWallet(searchValue as Address);
     setSearchValue("");
-    addToast("Successfully added!");
-  }, [addWallet, searchValue, setSearchValue]);
+    addToast(t("added"));
+  }, [addWallet, searchValue, setSearchValue, t]);
 
   return (
     <Container>

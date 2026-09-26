@@ -39,6 +39,7 @@ const DepositedTokenTableItem = ({
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
   isOdd: boolean;
 }) => {
+  const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
 
@@ -91,11 +92,11 @@ const DepositedTokenTableItem = ({
               setIsWithdrawDetailsOpened(true);
             }}
           >
-            Details
+            {t("details")}
           </Button>
         ) : (
           <>
-            <span className="text-14 text-secondary-text">Token owner</span>
+            <span className="text-14 text-secondary-text">{t("token_owner")}</span>
             <ExternalTextLink
               text={truncateMiddle(walletAddresses[0] || "", {
                 charsFromStart: 5,
@@ -123,7 +124,7 @@ export const DesktopTable = ({
 }) => {
   let line = -1;
   const { status: revokeStatus } = useRevokeStatusStore();
-  const t = useTranslations("Liquidity");
+  const t = useTranslations("Portfolio");
   const { setIsOpenedRevokeDialog, standard } = useRevokeDialogStatusStore();
 
   return (
@@ -148,15 +149,19 @@ export const DesktopTable = ({
       )}
 
       <div className="hidden lg:grid pr-5 pl-5 rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,2.67fr),_minmax(60px,1.33fr),_minmax(60px,1.33fr),_minmax(50px,1.33fr),_minmax(40px,1.1fr)] pb-2 relative">
-        <div className="text-secondary-text pl-5 h-[60px] flex items-center">Token</div>
+        <div className="text-secondary-text pl-5 h-[60px] flex items-center">{t("col_token")}</div>
         <div className="text-secondary-text h-[60px] flex items-center gap-2">
-          Approved <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
+          {t("approved")} <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
         </div>
         <div className="text-secondary-text h-[60px] flex items-center gap-2">
-          Deposited <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
+          {t("deposited_col")} <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
         </div>
-        <div className="text-secondary-text h-[60px] flex items-center">Total Amount, $</div>
-        <div className="text-secondary-text pr-5 h-[60px] flex items-center">Action / Owner</div>
+        <div className="text-secondary-text h-[60px] flex items-center">
+          {t("total_amount_usd")}
+        </div>
+        <div className="text-secondary-text pr-5 h-[60px] flex items-center">
+          {t("action_owner")}
+        </div>
         {tableData.map((deposite) => {
           line++;
           return (
@@ -193,6 +198,7 @@ const DepositedTokenMobileTableItem = ({
   onWithdrawDetailsClick: () => void;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
 }) => {
+  const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
   const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
@@ -269,11 +275,11 @@ const DepositedTokenMobileTableItem = ({
                 setIsWithdrawDetailsOpened(true);
               }}
             >
-              Details
+              {t("details")}
             </Button>
           ) : (
             <div className="flex justify-between items-center bg-tertiary-bg px-4 py-[10px] rounded-2">
-              <span className="text-14 text-secondary-text">Token owner</span>
+              <span className="text-14 text-secondary-text">{t("token_owner")}</span>
               <ExternalTextLink
                 className="text-14"
                 text={truncateMiddle(walletAddress || "", { charsFromStart: 5, charsFromEnd: 3 })}
