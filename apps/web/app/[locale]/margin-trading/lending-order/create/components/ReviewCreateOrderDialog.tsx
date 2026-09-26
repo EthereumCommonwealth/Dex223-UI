@@ -146,6 +146,7 @@ function createOrderSteps(
 }
 
 function CreateOrderActionButton({ amountToApprove }: { amountToApprove: string }) {
+  const t = useTranslations("Margin");
   const { handleCreateOrder } = useCreateOrder();
 
   const { status, approveHash, depositHash, createOrderHash, transferHash } =
@@ -208,7 +209,7 @@ function CreateOrderActionButton({ amountToApprove }: { amountToApprove: string 
 
   return (
     <Button onClick={() => handleCreateOrder(amountToApprove)} fullWidth>
-      Create lending order
+      {t("create_lending_order")}
     </Button>
   );
 }
@@ -222,6 +223,7 @@ export default function ReviewCreateOrderDialog({
 }) {
   const [isEditApproveActive, setEditApproveActive] = React.useState(false);
   const locale = useLocale();
+  const t = useTranslations("Margin");
 
   const { status, setStatus } = useCreateOrderStatusStore();
 
@@ -272,14 +274,14 @@ export default function ReviewCreateOrderDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title={"Create lending order"} />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("create_lending_order")} />
 
       <div className="card-spacing-x card-spacing-b min-w-[600px]">
         {status !== CreateOrderStatus.ERROR_CONFIRM_ORDER &&
           status !== CreateOrderStatus.ERROR_APPROVE &&
           status !== CreateOrderStatus.SUCCESS && (
             <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4">
-              <p className="text-secondary-text text-14">Loan amount</p>
+              <p className="text-secondary-text text-14">{t("loan_amount")}</p>
               <div className="flex justify-between items-center my-1">
                 <span className="font-medium text-20">{loanAmount}</span>
                 <span className="flex items-center gap-2">
@@ -320,16 +322,14 @@ export default function ReviewCreateOrderDialog({
 
             {status === CreateOrderStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">
-                  Lending order successfully created
-                </h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("order_created")}</h2>
                 <p className="text-center mb-1">
                   {loanAmount} {loanToken?.symbol}
                 </p>
                 <div className="flex justify-center">
                   {orderId && (
                     <ExternalTextLink
-                      text="View my order"
+                      text={t("view_my_order")}
                       href={`/${locale}/margin-trading/lending-order/${orderId}`}
                     />
                   )}
@@ -342,22 +342,22 @@ export default function ReviewCreateOrderDialog({
           <>
             <div className="flex flex-col gap-2 mb-5">
               <LendingOrderDetailsRow
-                title="Margin positions duration"
-                value={`${period.positionDuration} days`}
-                tooltipText="Tooltip text"
+                title={t("margin_positions_duration")}
+                value={t("duration_days", { count: period.positionDuration })}
+                tooltipText={t("position_duration_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Lending order deadline"
+                title={t("order_deadline")}
                 value={timestampToDateString(new Date(period.lendingOrderDeadline).getTime())}
-                tooltipText="Tooltip text"
+                tooltipText={t("order_deadline_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Interest rate per month"
+                title={t("interest_per_month")}
                 value={`${interestRatePerMonth}%`}
-                tooltipText="Tooltip text"
+                tooltipText={t("interest_per_month")}
               />
               <LendingOrderDetailsRow
-                title="Interest rate for the entire period"
+                title={t("interest_entire_period")}
                 value={
                   interestRatePerMonth && period.lendingOrderDeadline
                     ? calculatePeriodInterestRate(
@@ -369,10 +369,10 @@ export default function ReviewCreateOrderDialog({
                       )
                     : "—"
                 }
-                tooltipText="Tooltip text"
+                tooltipText={t("interest_entire_period")}
               />
               <LendingOrderDetailsRow
-                title="You will receive for the entire period"
+                title={t("receive_entire_period")}
                 value={
                   interestRatePerMonth &&
                   period.lendingOrderDeadline &&
@@ -396,27 +396,27 @@ export default function ReviewCreateOrderDialog({
                       })() // or 2 decimals if needed
                     : "—"
                 }
-                tooltipText="Tooltip text"
+                tooltipText={t("receive_entire_period")}
               />
               <LendingOrderDetailsRow
-                title="Leverage"
+                title={t("leverage")}
                 value={`${leverage}x`}
-                tooltipText="Tooltip text"
+                tooltipText={t("leverage_order_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Accepted collateral tokens"
+                title={t("accepted_collateral")}
                 value={<AssetsPreview assets={collateralTokens} />}
-                tooltipText="Tooltip text"
+                tooltipText={t("accepted_collateral_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Tokens allowed for trading"
+                title={t("tokens_allowed_trading")}
                 value={
                   tradingTokens.inputMode === TradingTokensInputMode.MANUAL ? (
                     <AssetsPreview assets={tradingTokens.allowedTokens} />
                   ) : (
                     <span className="flex items-center gap-2">
                       <ExternalTextLink
-                        text={tradingTokens.tradingTokensAutoListing?.name || "Unknown"}
+                        text={tradingTokens.tradingTokensAutoListing?.name || t("unknown")}
                         href={getExplorerLink(
                           ExplorerLinkType.ADDRESS,
                           tradingTokens.tradingTokensAutoListing?.id || ZERO_ADDRESS,
@@ -426,43 +426,43 @@ export default function ReviewCreateOrderDialog({
                     </span>
                   )
                 }
-                tooltipText="Tooltip text"
+                tooltipText={t("tokens_allowed_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Minimum borrowing amount"
+                title={t("min_borrowing_amount")}
                 value={`${minimumBorrowingAmount} ${loanToken?.symbol}`}
-                tooltipText="Tooltip text"
+                tooltipText={t("min_borrowing_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Order currency limit"
+                title={t("order_currency_limit")}
                 value={orderCurrencyLimit}
-                tooltipText="Tooltip text"
+                tooltipText={t("currency_limit_order_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="May initiate liquidation"
-                value={"Anyone"}
-                tooltipText="Tooltip text"
+                title={t("may_initiate_liquidation")}
+                value={t("anyone")}
+                tooltipText={t("may_initiate_liquidation")}
               />
               <LendingOrderDetailsRow
-                title="Pays the liquidation deposit"
-                value={"Borrower"}
-                tooltipText="Tooltip text"
+                title={t("pays_liquidation_deposit")}
+                value={t("borrower")}
+                tooltipText={t("pays_liquidation_deposit")}
               />
               <LendingOrderDetailsRow
-                title="Liquidation fee (for liquidator)"
+                title={t("fee_for_liquidator")}
                 value={`${liquidationFeeForLiquidator} ${liquidationFeeToken?.symbol}`}
-                tooltipText="Tooltip text"
+                tooltipText={t("fee_for_liquidator_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Liquidation fee (for lender)"
+                title={t("fee_for_lender")}
                 value={`${liquidationFeeForLender} ${liquidationFeeToken?.symbol}`}
-                tooltipText="Tooltip text"
+                tooltipText={t("fee_for_lender_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Liquidation price source"
+                title={t("liquidation_price_source")}
                 value={
                   <ExternalTextLink
-                    text="DEX223 Market"
+                    text={t("dex223_market")}
                     href={getExplorerLink(
                       ExplorerLinkType.ADDRESS,
                       ORACLE_ADDRESS[chainId],
@@ -470,7 +470,7 @@ export default function ReviewCreateOrderDialog({
                     )}
                   />
                 }
-                tooltipText="Tooltip text"
+                tooltipText={t("liquidation_price_tooltip")}
               />
             </div>
             <div
@@ -481,13 +481,8 @@ export default function ReviewCreateOrderDialog({
               )}
             >
               <div className="flex items-center gap-1 text-secondary-text whitespace-nowrap">
-                <Tooltip
-                  iconSize={20}
-                  text={
-                    " In order to make a swap with ERC-20 token you need to give the DEX contract permission to withdraw your tokens. All DEX'es require this operation. Here you are specifying the amount of tokens that you allow the contract to transfer on your behalf. Note that this amount never expires."
-                  }
-                />
-                <span className="text-14">Approve amount</span>
+                <Tooltip iconSize={20} text={t("approve_amount_tooltip")} />
+                <span className="text-14">{t("approve_amount")}</span>
               </div>
               <div className="flex items-center gap-2 flex-grow justify-end">
                 {!isEditApproveActive ? (
@@ -514,7 +509,7 @@ export default function ReviewCreateOrderDialog({
                     {parseUnits(amountToApprove, loanToken?.decimals ?? 18) <
                       parseUnits(loanAmount, loanToken?.decimals ?? 18) && (
                       <span className="text-red-light absolute text-12 translate-y-0.5">
-                        Must be higher or equal {loanAmount}
+                        {t("approve_must_be_higher", { amount: loanAmount })}
                       </span>
                     )}
                   </div>
@@ -525,7 +520,7 @@ export default function ReviewCreateOrderDialog({
                     colorScheme={ButtonColor.LIGHT_GREEN}
                     onClick={() => setEditApproveActive(true)}
                   >
-                    Edit
+                    {t("edit")}
                   </Button>
                 ) : (
                   <Button
@@ -537,7 +532,7 @@ export default function ReviewCreateOrderDialog({
                     colorScheme={ButtonColor.LIGHT_GREEN}
                     onClick={() => setEditApproveActive(false)}
                   >
-                    Save
+                    {t("save")}
                   </Button>
                 )}
               </div>

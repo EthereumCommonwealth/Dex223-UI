@@ -1,5 +1,6 @@
 import Alert from "@repo/ui/alert";
 import { Formik } from "formik";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { formatEther, formatGwei } from "viem";
 import * as Yup from "yup";
@@ -67,6 +68,7 @@ export default function ThirdStep({
   setThirdStepValues: (thirdStep: ThirdStepValues) => void;
   setStep: (step: OrderActionStep) => void;
 }) {
+  const t = useTranslations("Margin");
   const nativeCurrency = useNativeCurrency();
   return (
     <Formik
@@ -90,9 +92,9 @@ export default function ThirdStep({
           />
 
           <TextField
-            label="Order currency limit"
-            placeholder="Order currency limit"
-            tooltipText="Tooltip text"
+            label={t("order_currency_limit")}
+            placeholder={t("order_currency_limit")}
+            tooltipText={t("currency_limit_order_tooltip")}
             isNumeric={true}
             value={values.orderCurrencyLimit}
             onChange={(e) => setFieldValue("orderCurrencyLimit", e.target.value)}
@@ -101,10 +103,7 @@ export default function ThirdStep({
           />
 
           {+values.orderCurrencyLimit > 4 && +values.orderCurrencyLimit < 10 && (
-            <Alert
-              type="warning"
-              text="If more than 4 currencies are specified, the liquidation fee (Borrower) will be higher"
-            />
+            <Alert type="warning" text={t("currency_limit_warning")} />
           )}
 
           <LiquidationFeeConfig
@@ -127,7 +126,7 @@ export default function ThirdStep({
               size={ButtonSize.EXTRA_LARGE}
               fullWidth
             >
-              Previous step
+              {t("previous_step")}
             </Button>
             <Button
               size={ButtonSize.EXTRA_LARGE}
@@ -135,7 +134,9 @@ export default function ThirdStep({
               type="submit"
               disabled={Object.keys(touched).length > 0 && Object.keys(errors).length > 0}
             >
-              {mode === OrderActionMode.CREATE ? "Create lending order" : "Edit lending order"}
+              {mode === OrderActionMode.CREATE
+                ? t("create_lending_order")
+                : t("edit_lending_order")}
             </Button>
           </div>
         </form>

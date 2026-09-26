@@ -100,6 +100,7 @@ export default function PickMultipleTokensDialog({
   restrictDisable?: Currency | undefined;
 }) {
   const t = useTranslations("ManageTokens");
+  const tMargin = useTranslations("Margin");
 
   const [internalTokens, setInternalTokens] = useState<Currency[]>(selectedTokens);
 
@@ -145,7 +146,7 @@ export default function PickMultipleTokensDialog({
             onBack={() => {
               setTokenForPortfolio(null);
             }}
-            title={tokenForPortfolio.name || "Unknown"}
+            title={tokenForPortfolio.name || tMargin("unknown")}
           />
           {tokenForPortfolio.isToken && (
             <TokenPortfolioDialogContent
@@ -156,7 +157,7 @@ export default function PickMultipleTokensDialog({
         </>
       ) : (
         <>
-          <DialogHeader onClose={handleClose} title="Tokens allowed for trading" />
+          <DialogHeader onClose={handleClose} title={tMargin("tokens_allowed_trading")} />
 
           {Boolean(tokens.length) && (
             <>
@@ -200,7 +201,7 @@ export default function PickMultipleTokensDialog({
                                   if (isInList) {
                                     if (restrictDisable && restrictDisable.equals(token)) {
                                       return addToast(
-                                        "You can't disable base order token",
+                                        tMargin("cannot_disable_base_token"),
                                         "warning",
                                       );
                                     }
@@ -241,7 +242,7 @@ export default function PickMultipleTokensDialog({
                         handleClose();
                       }}
                     >
-                      Cancel
+                      {tMargin("cancel")}
                     </Button>
                     <Button
                       type="button"
@@ -251,7 +252,7 @@ export default function PickMultipleTokensDialog({
                         handleClose();
                       }}
                     >
-                      Apply
+                      {tMargin("apply")}
                     </Button>
                   </div>
                 )}
