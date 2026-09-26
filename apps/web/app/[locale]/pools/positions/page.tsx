@@ -226,7 +226,7 @@ export default function PoolsPage() {
               active={false}
               onClick={() => router.push("/pools")}
             >
-              Pools
+              {t("pools")}
             </TabButton>
             <TabButton inactiveBackground="bg-secondary-bg" size={48} active>
               {t("liquidity_title")}

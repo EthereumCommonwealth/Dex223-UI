@@ -623,7 +623,8 @@
     "volume_1d": "1 日成交量",
     "volume_7d": "7 日成交量",
     "view_pool": "查看池",
-    "missing_tokens": "缺少代币 A 或代币 B"
+    "missing_tokens": "缺少代币 A 或代币 B",
+    "pools": "流动性池"
   },
   "Statistics": {
     "title": "统计",
