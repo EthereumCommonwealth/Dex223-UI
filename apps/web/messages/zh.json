@@ -1052,5 +1052,16 @@
     "approving_symbol": "正在授权 {symbol}",
     "approved_symbol": "已授权 {symbol}",
     "approve_symbol_failed": "授权 {symbol} 失败"
+  },
+  "MintTest": {
+    "banner": "免费领取测试代币",
+    "get_free": "免费领取代币",
+    "title": "领取测试代币",
+    "token_for_mint": "要铸造的代币",
+    "amount_label": "代币数量",
+    "minting": "正在铸造",
+    "mint": "铸造代币",
+    "minted": "铸造成功",
+    "bad_data": "数据无效"
   }
 }
