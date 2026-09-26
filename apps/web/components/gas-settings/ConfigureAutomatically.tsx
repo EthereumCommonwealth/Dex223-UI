@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React from "react";
 import { formatGwei } from "viem";
 
@@ -16,12 +17,13 @@ export default function ConfigureAutomatically({
   gasPriceModel: GasFeeModel;
   setFieldValue: any;
 }) {
+  const t = useTranslations("GasSettings");
   const chainId = useCurrentChainId();
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
   return (
     <div className="flex justify-between items-center pb-3 pt-3">
       <span>
-        <span className="hidden text-tertiary-text md:inline">Custom gas settings</span>
+        <span className="hidden text-tertiary-text md:inline">{t("custom_gas_settings")}</span>
       </span>
       <TextButton
         colorScheme={ThemeColors.PURPLE}
@@ -50,7 +52,7 @@ export default function ConfigureAutomatically({
         endIcon="reset"
         className="pr-0"
       >
-        Configure automatically
+        {t("configure_automatically")}
       </TextButton>
     </div>
   );

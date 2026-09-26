@@ -161,7 +161,27 @@
     "max_fee_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. Le frais de base dépend de la charge du réseau, le frais de priorité est fixé par l’émetteur. Le gas requis dépend du type d’action réalisée. Le frais maximum fixe la limite supérieure du paiement total autorisé. La transaction ne sera confirmée que lorsque le frais de base sera assez bas pour ne pas dépasser ce maximum.",
     "priority_fee_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. Un frais de priorité plus élevé peut réduire le temps d’inclusion de votre transaction si la charge du réseau est suffisamment faible pour respecter le frais maximum.",
     "gas_limit_tooltip": "Les frais que vous paierez sont calculés comme (baseFee + priorityFee) * gasUsed. La limite de gas fixe la borne supérieure de la variable gasUsed. Si votre transaction consomme moins que la limite, vous ne paierez que le gas nécessaire et le reste sera remboursé. Une limite trop basse peut faire échouer la transaction si les actions déclenchées nécessitent plus de gas.",
-    "gas_price_tooltip": "Les frais payés avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc."
+    "gas_price_tooltip": "Les frais payés avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
+    "title": "Réglages du gas",
+    "advanced_mode": "Mode avancé",
+    "configure_automatically": "Configurer automatiquement",
+    "custom_gas_settings": "Réglages de gas personnalisés",
+    "current": "Actuel",
+    "estimated": "Estimé",
+    "unknown_price": "Prix inconnu",
+    "legacy": "Legacy",
+    "eip1559_formula": "Frais de réseau = gasLimit × (Base Fee + PriorityFee)",
+    "legacy_formula": "Frais de réseau = gasLimit × gasPrice",
+    "max_fee": "Frais max",
+    "priority_fee": "Frais de priorité",
+    "priority_fee_hint": "Modifier uniquement les frais de priorité rend la transaction moins chère ou l’accélère au prix de frais plus élevés.",
+    "max_fee_too_low": "Les frais max sont trop bas pour l’état actuel du réseau",
+    "max_fee_too_high": "Les frais max sont inutilement élevés pour l’état actuel du réseau",
+    "priority_fee_too_low": "Les frais de priorité sont trop bas pour l’état actuel du réseau",
+    "priority_fee_too_high": "Les frais de priorité sont inutilement élevés pour l’état actuel du réseau",
+    "gas_price_too_low": "Le prix du gas est trop bas pour l’état actuel du réseau",
+    "gas_price_too_high": "Le prix du gas est inutilement élevé pour l’état actuel du réseau",
+    "gas_limit_too_low": "La limite de gas est inférieure à la valeur recommandée"
   },
   "Toast": {
     "successfully_copied": "Copié !"
@@ -886,10 +906,10 @@
     "unexpected_error": "Une erreur inattendue s’est produite. Réessayez.",
     "claiming_rewards": "Réclamation des récompenses",
     "token_not_found": "Jeton introuvable",
-  "duration_day": "{count, plural, =0 {# jours} one {# jour} other {# jours}}",
-  "duration_hour": "{count, plural, =0 {# heures} one {# heure} other {# heures}}",
-  "duration_minute": "{count, plural, =0 {# minutes} one {# minute} other {# minutes}}",
-  "duration_second": "{count, plural, =0 {# secondes} one {# seconde} other {# secondes}}"
+    "duration_day": "{count, plural, =0 {# jours} one {# jour} other {# jours}}",
+    "duration_hour": "{count, plural, =0 {# heures} one {# heure} other {# heures}}",
+    "duration_minute": "{count, plural, =0 {# minutes} one {# minute} other {# minutes}}",
+    "duration_second": "{count, plural, =0 {# secondes} one {# seconde} other {# secondes}}"
   },
   "Governance": {
     "title": "Gouvernance",

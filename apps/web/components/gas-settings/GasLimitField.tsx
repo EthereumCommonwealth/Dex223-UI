@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { ChangeEvent, useEffect, useMemo } from "react";
 
 import { InputSize } from "@/components/atoms/Input";
@@ -21,6 +22,7 @@ export default function GasLimitField({
   estimatedGas: bigint;
   gasLimitError: string | undefined;
 }) {
+  const t = useTranslations("GasSettings");
   const colorScheme = useColorScheme();
   const gasLimitErrors = useMemo(() => {
     const _errors: string[] = [];
@@ -40,15 +42,11 @@ export default function GasLimitField({
         colorScheme={colorScheme}
         isNumeric
         decimalScale={0}
-        placeholder="Gas limit"
-        label="Gas limit"
+        placeholder={t("gas_limit")}
+        label={t("gas_limit")}
         name="gasLimit"
         id="gasLimit"
-        tooltipText="The amount of fee that you are going to pay is calculated as (baseFee + priorityFee) * gasUsed.
-
-Gas Limit sets the upper bound for gasUsed variable in this formula. If your transaction will consume less gas than the Gas Limit then you will only pay for the gas required for your transaction to submit and the rest will be refunded.
-
-Setting a low Gas Limit may result in transaction failure if the amount of actions triggered by this transaction require more gas than specified with Gas Limit."
+        tooltipText={t("gas_limit_tooltip")}
         value={value}
         onChange={onChange}
         onBlur={onBlur}
@@ -67,7 +65,7 @@ Setting a low Gas Limit may result in transaction failure if the amount of actio
                 }[colorScheme]
               }
             >
-              Estimated
+              {t("estimated")}
             </button>{" "}
             {estimatedGas ? estimatedGas?.toString() : 100000} Gwei
           </div>

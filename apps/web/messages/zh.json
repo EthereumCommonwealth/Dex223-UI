@@ -161,7 +161,27 @@
     "max_fee_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。基础费用由网络负载决定，优先费用由交易发送者决定，所需 Gas 取决于交易执行的操作类型。最高费用设定了您允许交易总共消耗的上限。只有当网络基础费用低到足以让交易在不超过最高费用的情况下提交时，交易才会被确认。",
     "priority_fee_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。如果网络负载足够低以满足最高费用条件，提高优先费用可以缩短交易提交所需的时间。",
     "gas_limit_tooltip": "您需要支付的费用按 (baseFee + priorityFee) * gasUsed 计算。Gas 上限设定了公式中 gasUsed 变量的最大值。如果交易消耗的 Gas 少于上限，您只需支付交易实际所需的 Gas，其余部分会被退还。Gas 上限设置过低可能导致交易失败，因为交易触发的操作可能需要更多 Gas。",
-    "gas_price_tooltip": "使用传统交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。"
+    "gas_price_tooltip": "使用传统交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。",
+    "title": "Gas 设置",
+    "advanced_mode": "高级模式",
+    "configure_automatically": "自动配置",
+    "custom_gas_settings": "自定义 Gas 设置",
+    "current": "当前",
+    "estimated": "预估",
+    "unknown_price": "价格未知",
+    "legacy": "Legacy",
+    "eip1559_formula": "网络费用 = gasLimit × (Base Fee + PriorityFee)",
+    "legacy_formula": "网络费用 = gasLimit × gasPrice",
+    "max_fee": "最高费用",
+    "priority_fee": "优先费",
+    "priority_fee_hint": "仅调整优先费会让交易更便宜，或以更高费用加快确认。",
+    "max_fee_too_low": "当前网络条件下最高费用过低",
+    "max_fee_too_high": "当前网络条件下最高费用过高",
+    "priority_fee_too_low": "当前网络条件下优先费过低",
+    "priority_fee_too_high": "当前网络条件下优先费过高",
+    "gas_price_too_low": "当前网络条件下 Gas 价格过低",
+    "gas_price_too_high": "当前网络条件下 Gas 价格过高",
+    "gas_limit_too_low": "Gas 上限低于建议值"
   },
   "Toast": {
     "successfully_copied": "复制成功！"
