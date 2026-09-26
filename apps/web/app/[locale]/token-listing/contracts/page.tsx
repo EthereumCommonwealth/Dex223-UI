@@ -3,6 +3,7 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
 import Preloader from "@repo/ui/preloader";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -22,6 +23,7 @@ import { Link } from "@/i18n/routing";
 import { Standard } from "@/sdk_bi/standard";
 
 export default function TokenListingPage() {
+  const t = useTranslations("TokenListing");
   const [searchValue, setSearchValue] = useState("");
 
   const autoListings = useAutoListingContracts();
@@ -50,19 +52,19 @@ export default function TokenListingPage() {
           <Link href="/token-listing">
             <span className="flex items-center gap-2 text-secondary-text hocus:text-green-hover duration-200">
               <Svg iconName="back" />
-              Back to token listing
+              {t("back")}
             </span>
           </Link>
         </div>
         <div className="xl:pb-5 pb-4">
           <div className="flex justify-between flex-col gap-2 xl:flex-row">
-            <h1 className="font-medium  text-24 lg:text-40">Auto-listing contracts</h1>
+            <h1 className="font-medium  text-24 lg:text-40">{t("autolisting_heading")}</h1>
             <div className="w-full md:w-[480px]">
               <SearchInput
                 className="bg-tertiary-bg max-sm:h-10 max-sm:rounded-2 max-sm:pl-4"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
-                placeholder="Search name or paste contract"
+                placeholder={t("search_name_or_contract")}
               />
             </div>
           </div>
@@ -79,7 +81,7 @@ export default function TokenListingPage() {
                   >
                     <div className="text-18 font-medium flex items-center">{autoListing.name}</div>
                     <div className="mb-3 text-14 text-secondary-text">
-                      {autoListing.totalTokens} tokens
+                      {t("tokens_count", { count: autoListing.totalTokens })}
                     </div>
                     <div
                       className={clsxMerge(
@@ -93,7 +95,7 @@ export default function TokenListingPage() {
                           !autoListing.isFree && "basis-full mb-1",
                         )}
                       >
-                        Listing price
+                        {t("listing_price")}
                       </span>
                       {autoListing.tokensToPay.length ? (
                         autoListing.tokensToPay.map((paymentMethod) => (
@@ -132,11 +134,11 @@ export default function TokenListingPage() {
                           </span>
                         ))
                       ) : (
-                        <span className="text-secondary-text px-2">Free</span>
+                        <span className="text-secondary-text px-2">{t("free")}</span>
                       )}
                     </div>
                     <div className="flex justify-between pl-4 pr-2 py-2 sm:py-2.5 bg-tertiary-bg rounded-2 mt-2 mb-4 text-14 items-center">
-                      <span className="text-secondary-text">Contract link</span>
+                      <span className="text-secondary-text">{t("contract_link")}</span>
                       <ExternalTextLink
                         textClassname="w-[13ch]"
                         onClick={(e) => e.stopPropagation()}
@@ -154,7 +156,7 @@ export default function TokenListingPage() {
                           colorScheme={ButtonColor.LIGHT_GREEN}
                           size={ButtonSize.MEDIUM}
                         >
-                          View
+                          {t("view")}
                         </Button>
                       </Link>
 
@@ -163,7 +165,7 @@ export default function TokenListingPage() {
                         href={`/token-listing/add/?autoListingContract=${autoListing.id}&dest=${encodeURIComponent("/token-listing/contracts/")}`}
                       >
                         <Button fullWidth colorScheme={ButtonColor.GREEN} size={ButtonSize.MEDIUM}>
-                          List tokens
+                          {t("list_tokens")}
                         </Button>
                       </Link>
                     </div>
@@ -176,12 +178,12 @@ export default function TokenListingPage() {
               <div className="hidden xl:grid rounded-2 overflow-hidden bg-table-gradient pb-2.5 grid-cols-[minmax(50px,1.67fr),_minmax(77px,1.33fr),_minmax(87px,2.67fr),_minmax(55px,1.33fr),_minmax(50px,max-content)]">
                 <div className="contents text-tertiary-text">
                   <div className="pl-5 h-[60px] flex items-center relative mb-2.5">
-                    Contract name
+                    {t("contract_name")}
                   </div>
-                  <div className="h-[60px] flex items-center relative">Token amount</div>
-                  <div className="h-[60px] flex items-center relative">Listing price</div>
-                  <div className="h-[60px] flex items-center relative">Contact link</div>
-                  <div className="pr-5 h-[60px] flex items-center relative">Action</div>
+                  <div className="h-[60px] flex items-center relative">{t("token_amount")}</div>
+                  <div className="h-[60px] flex items-center relative">{t("listing_price")}</div>
+                  <div className="h-[60px] flex items-center relative">{t("contract_link")}</div>
+                  <div className="pr-5 h-[60px] flex items-center relative">{t("action")}</div>
                 </div>
 
                 {filteredAutoListings.map((autoListing) => {
@@ -201,7 +203,7 @@ export default function TokenListingPage() {
                       </div>
 
                       <div className=" h-[56px] z-10 relative flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                        {autoListing.totalTokens} tokens
+                        {t("tokens_count", { count: autoListing.totalTokens })}
                       </div>
                       <div className=" h-[56px] z-10 relative flex items-center gap-2 group-hocus:bg-tertiary-bg duration-200 pr-2">
                         {autoListing.tokensToPay.length
@@ -240,7 +242,7 @@ export default function TokenListingPage() {
                                 <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
                               </span>
                             ))
-                          : "Free"}
+                          : t("free")}
                       </div>
                       <div className=" h-[56px] z-10 relative flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
                         <ExternalTextLink
@@ -257,7 +259,7 @@ export default function TokenListingPage() {
                           href={`/token-listing/add/?autoListingContract=${autoListing.id}&dest=${encodeURIComponent("/token-listing/contracts/")}`}
                         >
                           <Button colorScheme={ButtonColor.LIGHT_GREEN} size={ButtonSize.MEDIUM}>
-                            List tokens
+                            {t("list_tokens")}
                           </Button>
                         </Link>
                       </div>
@@ -270,7 +272,7 @@ export default function TokenListingPage() {
         )}
         {searchValue && !filteredAutoListings.length && (
           <div className="h-[340px] flex items-center rounded-5 bg-primary-bg justify-center flex-col bg-empty-autolisting-not-found bg-right-top bg-no-repeat max-md:bg-size-180">
-            <span className="text-secondary-text">Auto-listing contract not found</span>
+            <span className="text-secondary-text">{t("contract_not_found")}</span>
           </div>
         )}
       </Container>
