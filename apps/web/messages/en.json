@@ -504,7 +504,8 @@
     "volume_1d": "1 day volume",
     "volume_7d": "7 day volume",
     "view_pool": "View pool",
-    "missing_tokens": "Token A or token B is missing"
+    "missing_tokens": "Token A or token B is missing",
+    "pools": "Pools"
   },
   "Footer": {
     "gas": "Gas:",

@@ -623,7 +623,8 @@
     "volume_1d": "Volume de 1 dia",
     "volume_7d": "Volume de 7 dias",
     "view_pool": "Ver pool",
-    "missing_tokens": "Falta o token A ou o token B"
+    "missing_tokens": "Falta o token A ou o token B",
+    "pools": "Pools"
   },
   "Statistics": {
     "title": "Estatísticas",

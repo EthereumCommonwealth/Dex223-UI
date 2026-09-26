@@ -68,7 +68,7 @@ export default function PoolsPage() {
             className="w-full lg:w-[384px] grid grid-cols-2 bg-primary-bg p-1 gap-1 rounded-3"
           >
             <TabButton inactiveBackground="bg-secondary-bg" size={48} active>
-              Pools
+              {t("pools")}
             </TabButton>
             <TabButton
               inactiveBackground="bg-secondary-bg"
@@ -76,7 +76,7 @@ export default function PoolsPage() {
               active={false}
               onClick={() => router.push("/pools/positions")}
             >
-              Liquidity positions
+              {t("liquidity_title")}
             </TabButton>
           </div>
           <div className="flex w-full lg:w-auto gap-2 items-center ml-auto">

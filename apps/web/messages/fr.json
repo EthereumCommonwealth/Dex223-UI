@@ -623,7 +623,8 @@
     "volume_1d": "Volume sur 1 jour",
     "volume_7d": "Volume sur 7 jours",
     "view_pool": "Voir le pool",
-    "missing_tokens": "Le jeton A ou le jeton B est absent"
+    "missing_tokens": "Le jeton A ou le jeton B est absent",
+    "pools": "Pools"
   },
   "Statistics": {
     "title": "Statistiques",
