@@ -1247,5 +1247,16 @@
     "list_token": "Listar token",
     "issuing_tooltip": "Si está permitido, podrás acuñar más tokens más adelante.",
     "erc20_tooltip": "También despliega un wrapper ERC-20 para este token."
+  },
+  "MintTest": {
+    "banner": "Consigue tokens de prueba gratis",
+    "get_free": "Obtener tokens gratis",
+    "title": "Obtener tokens de prueba",
+    "token_for_mint": "Token para acuñar",
+    "amount_label": "Cantidad de tokens",
+    "minting": "Acuñación en curso",
+    "mint": "Acuñar tokens",
+    "minted": "Acuñado con éxito",
+    "bad_data": "Los datos no son válidos"
   }
 }

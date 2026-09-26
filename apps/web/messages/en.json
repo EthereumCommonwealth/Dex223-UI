@@ -1248,5 +1248,16 @@
     "list_token": "List token",
     "issuing_tooltip": "If allowed, you can mint more tokens later.",
     "erc20_tooltip": "Also deploy an ERC-20 wrapper for this token."
+  },
+  "MintTest": {
+    "banner": "Get test tokens for free",
+    "get_free": "Get free tokens",
+    "title": "Get test tokens",
+    "token_for_mint": "Token for mint",
+    "amount_label": "Amount of tokens",
+    "minting": "Minting in progress",
+    "mint": "Mint tokens",
+    "minted": "Minted successfully",
+    "bad_data": "The data is not valid"
   }
 }

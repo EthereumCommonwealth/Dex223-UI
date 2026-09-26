@@ -1247,5 +1247,16 @@
     "list_token": "Listar token",
     "issuing_tooltip": "Se for permitido, poderá emitir mais tokens mais tarde.",
     "erc20_tooltip": "Também faz o deploy de um wrapper ERC-20 para este token."
+  },
+  "MintTest": {
+    "banner": "Obtenha tokens de teste grátis",
+    "get_free": "Obter tokens grátis",
+    "title": "Obter tokens de teste",
+    "token_for_mint": "Token a emitir",
+    "amount_label": "Quantidade de tokens",
+    "minting": "Emissão em curso",
+    "mint": "Emitir tokens",
+    "minted": "Tokens emitidos com sucesso",
+    "bad_data": "Os dados não são válidos"
   }
 }
