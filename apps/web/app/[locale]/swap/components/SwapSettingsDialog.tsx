@@ -320,22 +320,19 @@ function SwapSettingsDialogContent({
       </div>
       {+customSlippage > 1 && +customSlippage < 50 && slippageType === SlippageType.CUSTOM && (
         <div className="mt-3">
-          <Alert
-            type="warning"
-            text="Slippage tolerance above 1% could result in an unfavorable exchange rate. It’s recommended to use the auto setting unless you know what you’re doing."
-          />
+          <Alert type="warning" text={t("slippage_above_one")} />
         </div>
       )}
       {+customSlippage > 50 && slippageType === SlippageType.CUSTOM && (
         <div className="mt-3">
-          <Alert type="error" text="Max slippage cannot exceed 50%" />
+          <Alert type="error" text={t("slippage_max")} />
         </div>
       )}
       {+customSlippage < 0.05 &&
         Boolean(+customSlippage) &&
         slippageType === SlippageType.CUSTOM && (
           <div className="mt-3">
-            <Alert type="warning" text="Slippage below 0.05% may result in a failed transaction" />
+            <Alert type="warning" text={t("slippage_low")} />
           </div>
         )}
 

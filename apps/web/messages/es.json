@@ -105,7 +105,14 @@
     "maximum_slippage_tooltip": "El precio real del intercambio puede diferir del indicado al enviar la transacción. El deslizamiento determina cuánto cambio de precio se tolera. Si el precio real difiere del esperado más que el deslizamiento máximo, la transacción se revertirá automáticamente y tus tokens no se intercambiarán.",
     "gas_limit_tooltip": "El límite de gas determina la cantidad de operaciones que puede invocar tu transacción. Cuanto más complejas sean las acciones que desencadena en el contrato inteligente, mayor puede ser el límite de gas necesario. Un límite de gas más alto se traduce en una comisión de red mayor.",
     "deadline_tooltip": "El plazo de la transacción determina el tiempo durante el cual tu transacción en cola sigue siendo válida. Una transacción puede permanecer pendiente bastante tiempo por valores de gas bajos o por una red muy cargada. Si se confirma después del plazo indicado, se revertirá automáticamente (pagarás el gas pero no se realizará el intercambio).",
-    "slippage_tooltip": "El precio real del intercambio puede diferir del indicado al enviar la transacción. El deslizamiento determina cuánto cambio de precio se tolera. Un deslizamiento del 5% significa que si el precio del pool cambia más de un 5% respecto al esperado, tu transacción fallará automáticamente (pagarás el gas pero no se realizará el intercambio)."
+    "slippage_tooltip": "El precio real del intercambio puede diferir del indicado al enviar la transacción. El deslizamiento determina cuánto cambio de precio se tolera. Un deslizamiento del 5% significa que si el precio del pool cambia más de un 5% respecto al esperado, tu transacción fallará automáticamente (pagarás el gas pero no se realizará el intercambio).",
+    "approve_amount": "Aprobar cantidad",
+    "approve_amount_tooltip": "Para intercambiar un token ERC-20, da al contrato del DEX permiso para retirar tus tokens. Todos los DEX lo exigen. Aquí indicas cuántos tokens puede transferir el contrato por ti. Esta cantidad no caduca.",
+    "slippage_above_one": "Una tolerancia de deslizamiento superior al 1% puede dar un tipo de cambio desfavorable. Usa el ajuste automático, salvo que sepas lo que haces.",
+    "slippage_max": "El deslizamiento máximo no puede superar el 50%",
+    "slippage_low": "Un deslizamiento inferior al 0,05% puede hacer que la transacción falle",
+    "eip7702_warning": "Tu billetera es una cuenta inteligente EIP-7702 que no puede recibir tokens ERC-223, así que este intercambio fallaría. Recibe ERC-20.",
+    "swap_no_liquidity": "Intercambio no disponible. Uno de los tokens no tiene liquidez. Inténtalo más tarde o elige otro par."
   },
   "Wallet": {
     "my_wallet": "Mi monedero",
