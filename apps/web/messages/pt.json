@@ -577,7 +577,16 @@
     "failed_transaction_error_message": "A transação falhou por falta de gás ou por um erro interno do contrato. Experimente usar um slippage ou gás mais elevado para garantir que é concluída. Se o problema persistir, clique em",
     "gas_price_tooltip": "A taxa que vai pagar com uma transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
     "approved_tooltip": "Para depositar tokens ERC-20 em contratos, precisa de «autorizar» o contrato a levantar o token do seu saldo. A aprovação determina quantos tokens do seu saldo um contrato pode movimentar em seu nome. Os tokens ERC-223 não exigem aprovações, pelo que não precisa de autorizar nenhum contrato a aceder ao seu saldo.",
-    "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento."
+    "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento.",
+    "loading": "A carregar...",
+    "failed_to_add": "Falha ao adicionar liquidez",
+    "liquidity_added_ok": "Liquidez adicionada com sucesso",
+    "liquidity_added": "Liquidez adicionada",
+    "view_positions": "Ver as minhas posições de liquidez",
+    "list_token": "Listar token",
+    "no_value_to_revoke": "Não há valor para revogar",
+    "enter_withdraw_amount": "Introduza a quantia a levantar",
+    "max_withdraw": "Quantia máxima de levantamento {amount} {symbol}"
   },
   "Statistics": {
     "title": "Estatísticas",

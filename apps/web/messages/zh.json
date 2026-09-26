@@ -577,7 +577,16 @@
     "failed_transaction_error_message": "交易因 Gas 不足或合约内部错误而失败。请尝试提高滑点或 Gas 以确保交易完成。如果问题仍然存在，请点击",
     "gas_price_tooltip": "使用传统（legacy）交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。",
     "approved_tooltip": "要将 ERC-20 代币存入合约，您需要“授权”合约从您的余额中提取代币。授权额度决定了合约可以代您转移多少余额中的代币。ERC-223 代币无需授权，因此您不必授权合约访问您的余额。",
-    "deposited_tooltip": "ERC-223 代币必须先存入合约，才能对其进行操作。此数额显示您已存入合约的代币数量。您可以随时从合约中提取已存入的 ERC-223 代币。"
+    "deposited_tooltip": "ERC-223 代币必须先存入合约，才能对其进行操作。此数额显示您已存入合约的代币数量。您可以随时从合约中提取已存入的 ERC-223 代币。",
+    "loading": "加载中...",
+    "failed_to_add": "添加流动性失败",
+    "liquidity_added_ok": "已成功添加流动性",
+    "liquidity_added": "已添加流动性",
+    "view_positions": "查看我的流动性仓位",
+    "list_token": "上架代币",
+    "no_value_to_revoke": "没有可撤销的数量",
+    "enter_withdraw_amount": "请输入提取数量",
+    "max_withdraw": "最大提取数量 {amount} {symbol}"
   },
   "Statistics": {
     "title": "统计",
