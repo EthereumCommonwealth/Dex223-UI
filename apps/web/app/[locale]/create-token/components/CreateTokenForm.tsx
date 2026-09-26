@@ -49,19 +49,21 @@ const isValidIpfsUrl = (value?: string) => {
   return /^ipfs:\/\/.+/i.test(value);
 };
 
-const createTokenSchema = Yup.object({
-  name: Yup.string().trim().required("Please provide token name"),
-  symbol: Yup.string().trim().required("Please provide symbol"),
-  totalSupply: Yup.string().trim().required("Please provide total supply"),
-  imageURL: Yup.string()
-    .trim()
-    .notRequired()
-    .test(
-      "ipfs-or-https",
-      "Enter a link in the format https:// or ipfs://",
-      (val) => !val || isValidIpfsUrl(val) || isValidHttpsUrl(val),
-    ),
-});
+function getCreateTokenSchema(t: ReturnType<typeof useTranslations>) {
+  return Yup.object({
+    name: Yup.string().trim().required(t("name_required")),
+    symbol: Yup.string().trim().required(t("symbol_required")),
+    totalSupply: Yup.string().trim().required(t("supply_required")),
+    imageURL: Yup.string()
+      .trim()
+      .notRequired()
+      .test(
+        "ipfs-or-https",
+        t("image_invalid"),
+        (val) => !val || isValidIpfsUrl(val) || isValidHttpsUrl(val),
+      ),
+  });
+}
 
 export default function CreateTokenForm() {
   const chainId = useCurrentChainId();
@@ -69,7 +71,9 @@ export default function CreateTokenForm() {
   const [createTokenSettings, setCreateTokenSettings] = useState(initialCreateTokenSettings);
   const { isConnected } = useAccount();
 
+  const t = useTranslations("CreateToken");
   const tWallet = useTranslations("Wallet");
+  const tManage = useTranslations("ManageTokens");
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
 
   const {
@@ -106,7 +110,7 @@ export default function CreateTokenForm() {
           setIsOpen(true);
           setCreateTokenSettings(values);
         }}
-        validationSchema={createTokenSchema}
+        validationSchema={getCreateTokenSchema(t)}
       >
         {(props) => (
           <form
@@ -117,34 +121,34 @@ export default function CreateTokenForm() {
           >
             <div className="flex flex-col gap-1 mb-3">
               <TextField
-                label="Token name"
-                tooltipText="tooltip_text"
-                placeholder="Name your token"
+                label={t("token_name")}
+                tooltipText={t("name_tooltip")}
+                placeholder={t("name_placeholder")}
                 value={props.values.name}
                 error={props.touched.name && props.errors.name}
                 onChange={(e) => props.setFieldValue("name", e.target.value)}
               />
               <TextField
-                label="Symbol"
-                tooltipText="tooltip_text"
-                placeholder="Add token symbol (e.g. USDT)"
+                label={tManage("symbol")}
+                tooltipText={t("symbol_tooltip")}
+                placeholder={t("symbol_placeholder")}
                 value={props.values.symbol}
                 error={props.touched.symbol && props.errors.symbol}
                 onChange={(e) => props.setFieldValue("symbol", e.target.value)}
               />
               <TextField
-                label="Total supply"
+                label={t("total_supply")}
                 isNumeric
-                tooltipText="tooltip_text"
-                placeholder="Enter total supply"
+                tooltipText={t("supply_tooltip")}
+                placeholder={t("supply_placeholder")}
                 value={props.values.totalSupply}
                 error={props.touched.totalSupply && props.errors.totalSupply}
                 onChange={(e) => props.setFieldValue("totalSupply", e.target.value)}
               />
               <TextField
-                label="Image  URL (optional)"
-                tooltipText="tooltip_text"
-                placeholder="https:// "
+                label={t("image_url")}
+                tooltipText={t("image_tooltip")}
+                placeholder={t("image_placeholder")}
                 value={props.values.imageURL}
                 error={props.touched.imageURL && props.errors.imageURL}
                 onChange={(e) => props.setFieldValue("imageURL", e.target.value)}
@@ -154,14 +158,14 @@ export default function CreateTokenForm() {
             <div className="flex flex-col gap-4 mb-5">
               <Checkbox
                 checked={props.values.allowMintForOwner}
-                label="Allow owner (you) to issue new tokens"
+                label={t("allow_mint")}
                 handleChange={() =>
                   props.setFieldValue("allowMintForOwner", !props.values.allowMintForOwner)
                 }
                 id="allow-issue-new-tokens"
               />
               <Checkbox
-                label="Make ERC-20 version"
+                label={t("make_erc20")}
                 checked={props.values.createERC20}
                 handleChange={() => props.setFieldValue("createERC20", !props.values.createERC20)}
                 id="make-erc20-version"
@@ -182,7 +186,7 @@ export default function CreateTokenForm() {
                 }
                 fullWidth
               >
-                Create token
+                {t("create_token")}
               </Button>
             ) : (
               <Button type="button" onClick={() => setWalletConnectOpened(true)} fullWidth>
