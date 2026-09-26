@@ -41,6 +41,7 @@ type PositionInfo = {
 };
 
 function PoolPosition({ onClick, positionInfo }: { onClick: any; positionInfo: PositionInfo }) {
+  const t = useTranslations("Liquidity");
   const position = usePositionFromPositionInfo(positionInfo);
 
   const [tokenA, tokenB, fee] = useMemo(() => {
@@ -77,7 +78,7 @@ function PoolPosition({ onClick, positionInfo }: { onClick: any; positionInfo: P
                 percentage={`${FEE_AMOUNT_DETAIL[fee].label}%`}
               />
             ) : (
-              <Badge variant={BadgeVariant.DEFAULT} text="loading..." />
+              <Badge variant={BadgeVariant.DEFAULT} text={t("loading")} />
             )}
           </div>
         </div>

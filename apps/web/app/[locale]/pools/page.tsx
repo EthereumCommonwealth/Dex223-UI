@@ -184,7 +184,7 @@ export default function PoolsPage() {
             <div className="max-md:w-full flex-grow md:flex-grow-0">
               <Link href="/add">
                 <Button fullWidth endIcon="add">
-                  <span className="whitespace-nowrap">New pool</span>
+                  <span className="whitespace-nowrap">{t("new_pool")}</span>
                 </Button>
               </Link>
             </div>
