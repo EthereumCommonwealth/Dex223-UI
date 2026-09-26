@@ -129,7 +129,8 @@ export const config = createConfig({
       http("https://data-seed-prebsc-1-s1.bnbchain.org:8545"),
       http(),
     ]),
-    [eos.id]: http("https://api.evm.eosnetwork.com"),
+    // The Vaulta Foundation shut down the public EOS EVM RPC on 2025-10-08; this must be our own node.
+    [eos.id]: http(process.env.NEXT_PUBLIC_EOSEVM_RPC_URL),
     // Public RPCs. Swap in private endpoints before a chain goes to production.
     [base.id]: fallback([
       http("https://mainnet.base.org"),

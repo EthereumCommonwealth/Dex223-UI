@@ -12,7 +12,7 @@ const marginModuleUrlMap: Record<DexChainId, string> = {
     "https://gateway.thegraph.com/api/subgraphs/id/BefAquxvnQezpqefX5moiRhzXsgQpov9oK4SrZM5CypD",
   [DexChainId.BSC_TESTNET]:
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
-  [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",
+  [DexChainId.EOS]: "",
   [DexChainId.BASE]: "",
   [DexChainId.BSC]: "",
   [DexChainId.ARBITRUM]: "",

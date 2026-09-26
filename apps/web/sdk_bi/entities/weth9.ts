@@ -34,7 +34,7 @@ export const wrappedTokens: Record<DexChainId, Token> = {
   [DexChainId.EOS]: new Token(
     DexChainId.EOS,
     "0xc00592aA41D32D137dC480d9f6d0Df19b860104F",
-    "0x79F4F66C781183b2c290CA5E76C8637B54146527",
+    "0xf0c7F3F97CB0f08B129A64dD4653046e37cBd0d8",
     18,
     "WEOS",
     "Wrapped EOS",

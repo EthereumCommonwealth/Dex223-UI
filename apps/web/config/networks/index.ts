@@ -18,7 +18,7 @@ const networkInfo: Record<DexChainId, { name: string; symbol: string; logo: stri
   },
   [DexChainId.EOS]: {
     name: "EOS EVM Network",
-    symbol: "EOS",
+    symbol: "A",
     logo: "/images/chains/eos.svg",
   },
   [DexChainId.BASE]: {
