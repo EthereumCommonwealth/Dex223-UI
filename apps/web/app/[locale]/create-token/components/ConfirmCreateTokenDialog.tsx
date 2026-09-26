@@ -1,6 +1,7 @@
 import Alert from "@repo/ui/alert";
 import ExternalTextLink from "@repo/ui/external-text-link";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo } from "react";
 
 import useCreateToken from "@/app/[locale]/create-token/hooks/useCreateToken";
@@ -39,19 +40,22 @@ type OperationStepConfig = {
   error: CreateTokenStatus;
 };
 
-function composeCreateTokensSteps(createWrapper: boolean): OperationStepConfig[] {
+function composeCreateTokensSteps(
+  t: ReturnType<typeof useTranslations>,
+  createWrapper: boolean,
+): OperationStepConfig[] {
   const deployTokenStep: OperationStepConfig = {
     iconName: "deploy-token",
     pending: CreateTokenStatus.PENDING_CREATE_TOKEN,
     loading: CreateTokenStatus.LOADING_CREATE_TOKEN,
     error: CreateTokenStatus.ERROR_CREATE_TOKEN,
     textMap: {
-      [OperationStepStatus.IDLE]: "Create new token",
-      [OperationStepStatus.AWAITING_SIGNATURE]: "Confirm token creation",
-      [OperationStepStatus.LOADING]: "Executing token creation",
-      [OperationStepStatus.STEP_COMPLETED]: "Token created",
-      [OperationStepStatus.STEP_FAILED]: "Failed to create token",
-      [OperationStepStatus.OPERATION_COMPLETED]: "Token created",
+      [OperationStepStatus.IDLE]: t("create_new_token"),
+      [OperationStepStatus.AWAITING_SIGNATURE]: t("confirm_creation"),
+      [OperationStepStatus.LOADING]: t("executing_creation"),
+      [OperationStepStatus.STEP_COMPLETED]: t("token_created"),
+      [OperationStepStatus.STEP_FAILED]: t("create_failed"),
+      [OperationStepStatus.OPERATION_COMPLETED]: t("token_created"),
     },
   };
 
@@ -61,12 +65,12 @@ function composeCreateTokensSteps(createWrapper: boolean): OperationStepConfig[]
     loading: CreateTokenStatus.LOADING_CREATE_WRAPPER,
     error: CreateTokenStatus.ERROR_CREATE_WRAPPER,
     textMap: {
-      [OperationStepStatus.IDLE]: "Create ERC-20 version",
-      [OperationStepStatus.AWAITING_SIGNATURE]: "Confirm creation of ERC-20 version",
-      [OperationStepStatus.LOADING]: "Creating ERC-20 version",
-      [OperationStepStatus.STEP_COMPLETED]: "ERC-20 version created",
-      [OperationStepStatus.STEP_FAILED]: "Failed to create ERC-20 version ",
-      [OperationStepStatus.OPERATION_COMPLETED]: "ERC-20 version created",
+      [OperationStepStatus.IDLE]: t("create_erc20_version"),
+      [OperationStepStatus.AWAITING_SIGNATURE]: t("confirm_erc20"),
+      [OperationStepStatus.LOADING]: t("creating_erc20"),
+      [OperationStepStatus.STEP_COMPLETED]: t("erc20_created"),
+      [OperationStepStatus.STEP_FAILED]: t("erc20_failed"),
+      [OperationStepStatus.OPERATION_COMPLETED]: t("erc20_created"),
     },
   };
 
@@ -80,6 +84,7 @@ function CreateTokenActionButton({
   handleCreateToken: () => Promise<void>;
   createWrapper: boolean;
 }) {
+  const t = useTranslations("CreateToken");
   const { status, createTokenHash, createWrapperHash } = useCreateTokenStatusStore();
 
   const hashes = useMemo(() => {
@@ -89,7 +94,7 @@ function CreateTokenActionButton({
   if (status !== CreateTokenStatus.INITIAL) {
     return (
       <OperationRows>
-        {composeCreateTokensSteps(createWrapper).map((step, index) => (
+        {composeCreateTokensSteps(t, createWrapper).map((step, index) => (
           <OperationStepRow
             key={index}
             iconName={step.iconName}
@@ -97,7 +102,7 @@ function CreateTokenActionButton({
             statusTextMap={step.textMap}
             status={operationStatusToStepStatus({
               currentStatus: status,
-              orderedSteps: composeCreateTokensSteps(createWrapper).flatMap((s) => [
+              orderedSteps: composeCreateTokensSteps(t, createWrapper).flatMap((s) => [
                 s.pending,
                 s.loading,
                 s.error,
@@ -117,7 +122,7 @@ function CreateTokenActionButton({
 
   return (
     <Button onClick={() => handleCreateToken()} fullWidth>
-      Confirm token creating
+      {t("confirm_creating")}
     </Button>
   );
 }
@@ -143,6 +148,8 @@ export default function ConfirmCreateTokenDialog({
     createERC20: boolean;
   };
 }) {
+  const t = useTranslations("CreateToken");
+  const tManage = useTranslations("ManageTokens");
   const chainId = useCurrentChainId();
   const { isOpen, setIsOpen } = useCreateTokenDialogStore();
   const { status, setStatus } = useCreateTokenStatusStore();
@@ -173,17 +180,17 @@ export default function ConfirmCreateTokenDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Create a token" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("dialog_title")} />
       <div className="md:w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <div>
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <Card title="Name" value={createTokenSettings.name} />
-              <Card title="Symbol" value={createTokenSettings.symbol} />
+              <Card title={t("token_name")} value={createTokenSettings.name} />
+              <Card title={tManage("symbol")} value={createTokenSettings.symbol} />
             </div>
 
             <div className="rounded-3 bg-tertiary-bg px-5 py-3 flex justify-between items-center">
-              <span className="text-14 text-secondary-text">Total supply</span>
+              <span className="text-14 text-secondary-text">{t("total_supply")}</span>
 
               <div className="flex items-center gap-1">
                 <span>{+createTokenSettings.totalSupply}</span>
@@ -193,14 +200,14 @@ export default function ConfirmCreateTokenDialog({
 
             <div className="flex flex-col gap-1 py-4">
               <SwapDetailsRow
-                title="New tokens issuing"
-                value={createTokenSettings.allowMintForOwner ? "Allowed" : "Not allowed"}
-                tooltipText="Tooltip text"
+                title={t("issuing")}
+                value={createTokenSettings.allowMintForOwner ? t("allowed") : t("not_allowed")}
+                tooltipText={t("issuing_tooltip")}
               />
               <SwapDetailsRow
-                title="Make ERC-20 version"
-                value={createTokenSettings.createERC20 ? "Yes" : "No"}
-                tooltipText="Tooltip text"
+                title={t("make_erc20")}
+                value={createTokenSettings.createERC20 ? t("yes") : t("no")}
+                tooltipText={t("erc20_tooltip")}
               />
             </div>
 
@@ -209,18 +216,20 @@ export default function ConfirmCreateTokenDialog({
                 className="ui-bg-tertiary-bg"
                 text={
                   <p className="">
-                    You are deploying the token to{" "}
-                    <span className="text-primary-text relative inline-block pl-6 ml-0.5">
-                      <Image
-                        className="absolute -left-0" // Next/Image is block by default
-                        width={20}
-                        height={20}
-                        src={network?.logo || ""}
-                        alt=""
-                      />
-                      {network?.name}
-                    </span>{" "}
-                    network
+                    {t.rich("deploy_notice", {
+                      network: () => (
+                        <span className="text-primary-text relative inline-block pl-6 ml-0.5">
+                          <Image
+                            className="absolute -left-0"
+                            width={20}
+                            height={20}
+                            src={network?.logo || ""}
+                            alt=""
+                          />
+                          {network?.name}
+                        </span>
+                      ),
+                    })}
                   </p>
                 }
                 type={"info-border"}
@@ -232,12 +241,12 @@ export default function ConfirmCreateTokenDialog({
         {isLoadingStatus && (
           <div>
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <Card title="Name" value={createTokenSettings.name} />
-              <Card title="Symbol" value={createTokenSettings.symbol} />
+              <Card title={t("token_name")} value={createTokenSettings.name} />
+              <Card title={tManage("symbol")} value={createTokenSettings.symbol} />
             </div>
 
             <div className="rounded-3 bg-tertiary-bg px-5 py-4 flex justify-between">
-              <span className="text-14 text-secondary-text">Total supply</span>
+              <span className="text-14 text-secondary-text">{t("total_supply")}</span>
 
               <div className="flex items-center gap-1">
                 <span>{createTokenSettings.totalSupply}</span>
@@ -270,11 +279,8 @@ export default function ConfirmCreateTokenDialog({
             {(status === CreateTokenStatus.SUCCESS ||
               status === CreateTokenStatus.ERROR_CREATE_WRAPPER) && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Token successfully created</h2>
-                <p className="text-center">
-                  Create a pool and add liquidity so your token can trade, then list it in an
-                  auto-listing contract.
-                </p>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("success_title")}</h2>
+                <p className="text-center">{t("success_body")}</p>
                 {tokenAddress && (
                   <div className="flex justify-center pt-3">
                     <ExternalTextLink
@@ -287,7 +293,7 @@ export default function ConfirmCreateTokenDialog({
             )}
             {status === CreateTokenStatus.ERROR_CREATE_TOKEN && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Fail to create a token</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("fail_title")}</h2>
               </div>
             )}
             <div className="h-px w-full bg-secondary-border mb-4 mt-5" />
@@ -300,11 +306,7 @@ export default function ConfirmCreateTokenDialog({
         />
 
         {status === CreateTokenStatus.ERROR_CREATE_WRAPPER && (
-          <Alert
-            className="mt-4 mb-1"
-            type="error"
-            text="Your ERC-223 token was successfully deployed, but ERC-20 wrapper creation failed"
-          />
+          <Alert className="mt-4 mb-1" type="error" text={t("wrapper_failed")} />
         )}
 
         {(status === CreateTokenStatus.SUCCESS ||
@@ -316,7 +318,7 @@ export default function ConfirmCreateTokenDialog({
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 fullWidth
               >
-                Create pool
+                {t("create_pool")}
               </Button>
             </Link>
             <Link
@@ -329,7 +331,7 @@ export default function ConfirmCreateTokenDialog({
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 fullWidth
               >
-                List token
+                {t("list_token")}
               </Button>
             </Link>
           </div>
