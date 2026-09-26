@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react";
 
 import ConfirmCreateTokenDialog from "@/app/[locale]/create-token/components/ConfirmCreateTokenDialog";
 import { useCreateTokenDialogStore } from "@/app/[locale]/create-token/hooks/useCreateTokenDialogStore";
-import { OrderActionMode, OrderActionStep } from "@/app/[locale]/margin-trading/types";
 import TextField from "@/components/atoms/TextField";
 import Button from "@/components/buttons/Button";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
@@ -23,19 +22,17 @@ import { useAccount } from "wagmi";
 import * as Yup from "yup";
 
 import { useCreateTokenEstimatedGas } from "@/app/[locale]/create-token/hooks/useCreateToken";
+import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
+import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
+import { getFormattedGasPrice } from "@/functions/gasSettings";
+import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+
 import {
   useCreateTokenGasLimitStore,
   useCreateTokenGasModeStore,
   useCreateTokenGasPriceStore,
-} from "@/app/[locale]/create-token/stores/useCreateTokenGasSettingsStore";
-import ConnectWalletDialog from "@/components/dialogs/ConnectWalletDialog";
-import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
-import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
-import { baseFeeMultipliers, SCALING_FACTOR } from "@/config/constants/baseFeeMultipliers";
-import { getFormattedGasPrice } from "@/functions/gasSettings";
-import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
-import { GasFeeModel, GasOption } from "@/stores/factories/createGasPriceStore";
+} from "../stores/useCreateTokenGasSettingsStore";
 
 const isValidHttpsUrl = (value?: string) => {
   try {

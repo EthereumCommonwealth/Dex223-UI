@@ -8,7 +8,7 @@ import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
 import TextField from "@/components/atoms/TextField";
-import Button, { ButtonColor, ButtonVariant } from "@/components/buttons/Button";
+import Button, { ButtonColor } from "@/components/buttons/Button";
 import {
   useConnectWalletDialogStateStore,
   useConnectWalletStore,

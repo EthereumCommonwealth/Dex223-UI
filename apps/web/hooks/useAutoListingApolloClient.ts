@@ -9,7 +9,7 @@ const autoListingUrlMap: Record<DexChainId, string> = {
   [DexChainId.MAINNET]:
     "https://gateway.thegraph.com/api/subgraphs/id/4Zk7s54TCuxMvJVWMzDax5QRsGVRTPoXmw58gKqzZGQi",
   [DexChainId.SEPOLIA]:
-    "https://gateway.thegraph.com/api/subgraphs/id/DTv1kY8trcCLBQVU2CcSEQ4mQpe7TMzcKgVqmt4ew7bY",
+    "https://api.studio.thegraph.com/query/1760635/dex-223-auto-listing-sepolia/version/latest",
   [DexChainId.BSC_TESTNET]:
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",

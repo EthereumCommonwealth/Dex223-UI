@@ -2,11 +2,11 @@ import { isZeroAddress } from "@ethereumjs/util";
 import ExternalTextLink from "@repo/ui/external-text-link";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { useMediaQuery } from "react-responsive";
 import { Address, formatUnits } from "viem";
 
-import { getApproveTextMap } from "@/app/[locale]/margin-trading/lending-order/[id]/helpers/getStepTexts";
 import useAutoListing from "@/app/[locale]/token-listing/add/hooks/useAutoListing";
 import useListToken from "@/app/[locale]/token-listing/add/hooks/useListToken";
 import useTokensToList from "@/app/[locale]/token-listing/add/hooks/useTokensToList";
@@ -54,16 +54,25 @@ type OperationStepConfig = {
 };
 
 function composeListTokensSteps(
+  t: ReturnType<typeof useTranslations>,
   isPaymentTokenNative: boolean,
   isFree: boolean,
   paymentTokenSymbol?: string,
 ): OperationStepConfig[] {
+  const symbol = paymentTokenSymbol || t("unknown");
   const approveStep: OperationStepConfig = {
     iconName: "done",
     pending: ListTokenStatus.PENDING_APPROVE,
     loading: ListTokenStatus.LOADING_APPROVE,
     error: ListTokenStatus.ERROR_APPROVE,
-    textMap: getApproveTextMap(paymentTokenSymbol || "Unknown"),
+    textMap: {
+      [OperationStepStatus.IDLE]: t("approve_symbol", { symbol }),
+      [OperationStepStatus.AWAITING_SIGNATURE]: t("approve_symbol", { symbol }),
+      [OperationStepStatus.LOADING]: t("approving_symbol", { symbol }),
+      [OperationStepStatus.STEP_COMPLETED]: t("approved_symbol", { symbol }),
+      [OperationStepStatus.STEP_FAILED]: t("approve_symbol_failed", { symbol }),
+      [OperationStepStatus.OPERATION_COMPLETED]: t("approved_symbol", { symbol }),
+    },
   };
 
   const listTokensStep: OperationStepConfig = {
@@ -72,12 +81,12 @@ function composeListTokensSteps(
     loading: ListTokenStatus.LOADING_LIST_TOKEN,
     error: ListTokenStatus.ERROR_LIST_TOKEN,
     textMap: {
-      [OperationStepStatus.IDLE]: "Listing token",
-      [OperationStepStatus.AWAITING_SIGNATURE]: "Confirm listing token",
-      [OperationStepStatus.LOADING]: "Executing listing token",
-      [OperationStepStatus.STEP_COMPLETED]: "Token successfully listed",
-      [OperationStepStatus.STEP_FAILED]: "Failed to list token",
-      [OperationStepStatus.OPERATION_COMPLETED]: "Token successfully listed",
+      [OperationStepStatus.IDLE]: t("listing_token"),
+      [OperationStepStatus.AWAITING_SIGNATURE]: t("confirm_listing"),
+      [OperationStepStatus.LOADING]: t("executing_listing"),
+      [OperationStepStatus.STEP_COMPLETED]: t("listed_ok"),
+      [OperationStepStatus.STEP_FAILED]: t("list_failed"),
+      [OperationStepStatus.OPERATION_COMPLETED]: t("listed_ok"),
     },
   };
 
@@ -97,6 +106,7 @@ function ListTokensActionButton({
   paymentTokenSymbol?: string;
   disabled: boolean;
 }) {
+  const t = useTranslations("TokenListing");
   const { status, approveHash, listTokenHash } = useListTokenStatusStore();
 
   const hashes = useMemo(() => {
@@ -106,7 +116,7 @@ function ListTokensActionButton({
   if (status !== ListTokenStatus.INITIAL) {
     return (
       <OperationRows>
-        {composeListTokensSteps(isPaymentTokenNative, isFree, paymentTokenSymbol).map(
+        {composeListTokensSteps(t, isPaymentTokenNative, isFree, paymentTokenSymbol).map(
           (step, index) => (
             <OperationStepRow
               key={index}
@@ -116,6 +126,7 @@ function ListTokensActionButton({
               status={operationStatusToStepStatus({
                 currentStatus: status,
                 orderedSteps: composeListTokensSteps(
+                  t,
                   isPaymentTokenNative,
                   isFree,
                   paymentTokenSymbol,
@@ -136,7 +147,7 @@ function ListTokensActionButton({
 
   return (
     <Button disabled={disabled} onClick={() => handleList()} fullWidth>
-      Confirm listing token
+      {t("confirm_listing")}
     </Button>
   );
 }
@@ -186,6 +197,8 @@ function SingleCard({
   );
 }
 export default function ConfirmListingDialog() {
+  const t = useTranslations("TokenListing");
+  const tRevenue = useTranslations("Revenue");
   const { autoListing } = useAutoListing();
   const { isOpen, setIsOpen } = useConfirmListTokenDialogStore();
   const { status, setStatus } = useListTokenStatusStore();
@@ -270,7 +283,7 @@ export default function ConfirmListingDialog() {
           onClose={() => {
             setIsOpen(false);
           }}
-          title={"Review listing tokens"}
+          title={t("review_title")}
         />
         <div className="card-spacing">
           {(isInitialStatus || isLoadingStatus) && (
@@ -281,7 +294,7 @@ export default function ConfirmListingDialog() {
                     <SingleCard
                       address={tokensToList[0].wrapped.address0}
                       title={tokensToList[0].symbol!}
-                      underlineText="You list token"
+                      underlineText={t("you_list_token")}
                     />
                     <div className="relative">
                       <div className="text-tertiary-text absolute top-1/2 -translate-x-1/2 -translate-y-1/2 left-1/2 flex justify-center items-center w-12 h-12 rounded-full bg-primary-bg">
@@ -290,17 +303,17 @@ export default function ConfirmListingDialog() {
                     </div>
                     <SingleCard
                       address={autoListing?.id!}
-                      title={autoListing?.name || "Unknown"}
-                      underlineText={
-                        isMobile ? "In the auto-listing" : "In the auto-listing contract"
-                      }
+                      title={autoListing?.name || t("unknown")}
+                      underlineText={isMobile ? t("in_autolisting") : t("in_autolisting_contract")}
                     />
                   </div>
                 )}
                 {tokensToList.length === 2 && tokensToList[0] && tokensToList[1] && (
                   <>
                     <div className="p-5 bg-tertiary-bg rounded-3">
-                      <div className="text-center text-secondary-text mb-3">You list tokens</div>
+                      <div className="text-center text-secondary-text mb-3">
+                        {t("you_list_tokens")}
+                      </div>
                       <div className="grid grid-cols-[1fr_12px_1fr]">
                         <SingleCard
                           color="quaternary"
@@ -324,8 +337,8 @@ export default function ConfirmListingDialog() {
 
                     <SingleCard
                       address={autoListing?.id!}
-                      title={autoListing?.name || "Unknown"}
-                      underlineText="In the auto-listing contract"
+                      title={autoListing?.name || t("unknown")}
+                      underlineText={t("in_autolisting_contract")}
                     />
                   </>
                 )}
@@ -333,7 +346,7 @@ export default function ConfirmListingDialog() {
               {autoListing && !autoListing.isFree && paymentToken && (
                 <div className="mb-5">
                   <div className="flex justify-between px-5 py-3.5 rounded-3 bg-tertiary-bg items-center">
-                    <span className="text-14 text-secondary-text">Payment for listing</span>
+                    <span className="text-14 text-secondary-text">{t("payment")}</span>
 
                     <div className="flex items-center gap-1">
                       <Image
@@ -420,9 +433,9 @@ export default function ConfirmListingDialog() {
 
               <div className="flex justify-center">
                 <span className="text-20 font-bold text-primary-text mb-1">
-                  {status === ListTokenStatus.ERROR_LIST_TOKEN && "Failed to list token"}
-                  {status === ListTokenStatus.SUCCESS && "Token successfully listed"}
-                  {status === ListTokenStatus.ERROR_APPROVE && "Approve failed"}
+                  {status === ListTokenStatus.ERROR_LIST_TOKEN && t("list_failed")}
+                  {status === ListTokenStatus.SUCCESS && t("listed_ok")}
+                  {status === ListTokenStatus.ERROR_APPROVE && tRevenue("approve_failed")}
                 </span>
               </div>
 

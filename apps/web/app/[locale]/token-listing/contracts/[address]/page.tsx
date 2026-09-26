@@ -4,6 +4,7 @@ import { isZeroAddress } from "@ethereumjs/util";
 import ExternalTextLink from "@repo/ui/external-text-link";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { HTMLAttributes, ReactNode, use, useMemo, useState } from "react";
 import { Address, formatUnits, isAddress } from "viem";
 import { useReadContract } from "wagmi";
@@ -225,6 +226,9 @@ export default function AutoListingContractDetails({
     address: Address;
   }>;
 }) {
+  const t = useTranslations("TokenListing");
+  const tManage = useTranslations("ManageTokens");
+  const tPortfolio = useTranslations("Portfolio");
   const tokenLists = useTokenLists();
   const chainId = useCurrentChainId();
 
@@ -267,7 +271,7 @@ export default function AutoListingContractDetails({
   }, [searchValue, tokens]);
 
   if (!listingContract) {
-    return <div>Whoops, this autolisting not found.</div>;
+    return <div>{t("not_found_whoops")}</div>;
   }
 
   return (
@@ -277,32 +281,34 @@ export default function AutoListingContractDetails({
           <Link href="/token-listing/contracts">
             <span className="flex items-center gap-2 text-secondary-text hocus:text-green-hover duration-200">
               <Svg iconName="back" />
-              Back to token listing
+              {t("back")}
             </span>
           </Link>
         </div>
         <div className="mt-2 mb-4 xl:my-10">
           <div className="flex justify-between mb-2 xl:mb-5">
-            <h1 className="text-24 xl:text-40 font-medium">Listing contract details</h1>
+            <h1 className="text-24 xl:text-40 font-medium">{t("details")}</h1>
             <Link
               className="hidden xl:block"
               href={`/token-listing/add/?autoListingContract=${use(params).address}&dest=${encodeURIComponent(`/token-listing/contracts/${use(params).address}`)}`}
             >
-              <Button>List token(s)</Button>
+              <Button>{t("list_token_s")}</Button>
             </Link>
           </div>
           <div className="bg-primary-bg rounded-5 grid xl:grid-cols-5 xl:grid-areas-[first_first_first_first_first,second_third_fourth_fifth_sixth] pb-4 px-4 pt-3 xl:p-5 gap-3 mb-4 xl:mb-10 grid-cols-2 grid-areas-[first_first,second_second,third_fourth,fifth_sixth]">
             <div className="flex flex-col justify-center grid-in-[first]">
               <h3 className="text-18 md:text-20 font-medium">{listingContract.name}</h3>
-              <p className="text-secondary-text">{listingContract.totalTokens} tokens</p>
+              <p className="text-secondary-text">
+                {t("tokens_count", { count: listingContract.totalTokens })}
+              </p>
             </div>
             <TokenListInfoCard
-              title="Chain"
-              value={networks.find((n) => n.chainId === chainId)?.name || "Unknown"}
+              title={t("chain")}
+              value={networks.find((n) => n.chainId === chainId)?.name || t("unknown")}
               className="grid-in-[third] xl:grid-in-[second]"
             />
             <TokenListInfoCard
-              title="Source"
+              title={t("source")}
               value={
                 <span className="flex items-center">
                   <ExternalTextLink
@@ -318,7 +324,7 @@ export default function AutoListingContractDetails({
               className="grid-in-[second] xl:grid-in-[third] justify-between flex-row items-center xl:flex-col xl:items-start"
             />
             <TokenListInfoCard
-              title="Last updated"
+              title={t("last_updated")}
               value={new Date(+listingContract.lastUpdated * 1000).toLocaleString("en-us", {
                 month: "short",
                 year: "numeric",
@@ -326,10 +332,10 @@ export default function AutoListingContractDetails({
               })}
               className="grid-in-[fourth]"
             />
-            <TokenListInfoCard title="Version" value="1.0.0" className="grid-in-[fifth]" />
+            <TokenListInfoCard title={t("version")} value="1.0.0" className="grid-in-[fifth]" />
             <TokenListInfoCard
-              title="Listing type"
-              value={listingContract.isFree ? "Free" : "Paid"}
+              title={t("listing_type")}
+              value={listingContract.isFree ? t("free") : t("paid")}
               className="grid-in-[sixth]"
             />
           </div>
@@ -337,19 +343,19 @@ export default function AutoListingContractDetails({
             className="block w-full xl:hidden mb-6"
             href={`/token-listing/add/?autoListingContract=${use(params).address}`}
           >
-            <Button fullWidth>List token(s)</Button>
+            <Button fullWidth>{t("list_token_s")}</Button>
           </Link>
           {!listingContract.isFree && (
             <>
               <div className="mb-2 xl:mb-5">
-                <h1 className="text-18 xl:text-32 font-medium">Listing price</h1>
+                <h1 className="text-18 xl:text-32 font-medium">{t("listing_price")}</h1>
               </div>
               <div className="px-5 pb-5 pt-3 bg-primary-bg rounded-5 mb-10">
                 <div className="flex items-center gap-1 mb-3">
                   <h3 className="text-secondary-text ">
-                    {listingContract.tokensToPay.length} tokens available to pay for listing
+                    {t("pay_tokens_available", { count: listingContract.tokensToPay.length })}
                   </h3>
-                  <Tooltip text="You can only pay for the listing in one of the specified accepted assets." />
+                  <Tooltip text={t("pay_one_asset")} />
                 </div>
                 <div className="flex flex-col sm:grid sm:grid-cols-[minmax(224px,1fr)_minmax(224px,1fr)] md:grid-cols-[minmax(224px,1fr)_minmax(224px,1fr)_minmax(224px,1fr)] xl:grid-cols-[minmax(284px,1fr)_minmax(284px,1fr)_minmax(284px,1fr)_minmax(284px,1fr)] gap-x-2 gap-y-3">
                   {listingContract.tokensToPay.map((tokenToPay, index) => {
@@ -383,14 +389,14 @@ export default function AutoListingContractDetails({
           <div>
             <div>
               <div className="flex justify-between  flex-col xl:flex-row">
-                <h1 className="text-18 xl:text-32 font-medium mb-2 xl:mb-0">Tokens</h1>
+                <h1 className="text-18 xl:text-32 font-medium mb-2 xl:mb-0">{t("tokens")}</h1>
                 {!!listingContract.tokens.length && (
                   <div className="w-full md:w-[480px] mb-4 xl:mb-5">
                     <SearchInput
                       className="bg-tertiary-bg"
                       value={searchValue}
                       onChange={(e) => setSearchValue(e.target.value)}
-                      placeholder="Search name or paste contract"
+                      placeholder={t("search_name_or_contract")}
                     />
                   </div>
                 )}
@@ -398,7 +404,7 @@ export default function AutoListingContractDetails({
             </div>
             {searchValue && !filteredTokens.length && (
               <div className="h-[340px] flex items-center rounded-5 bg-primary-bg justify-center flex-col bg-no-repeat bg-right-top bg-empty-not-found-token max-md:bg-size-180">
-                <span className="text-secondary-text">No tokens found</span>
+                <span className="text-secondary-text">{t("no_tokens_found")}</span>
               </div>
             )}
             {Boolean(
@@ -429,7 +435,7 @@ export default function AutoListingContractDetails({
 
                           <div className="flex items-center">
                             <Tooltip
-                              text={`Token belongs to ${token.lists?.length || 1} token lists`}
+                              text={t("belongs_to_lists", { count: token.lists?.length || 1 })}
                               renderTrigger={(ref, refProps) => {
                                 return (
                                   <span
@@ -446,7 +452,7 @@ export default function AutoListingContractDetails({
                             />
                             <div className="flex items-center justify-end p-2">
                               <Tooltip
-                                text={"Token details"}
+                                text={t("token_details")}
                                 renderTrigger={(ref, refProps) => {
                                   return (
                                     <div
@@ -468,7 +474,7 @@ export default function AutoListingContractDetails({
                         <div className="grid grid-cols-2 gap-2 ">
                           <div className="bg-tertiary-bg pb-1 pl-4 pt-2.5 rounded-2">
                             <div className="flex items-center gap-2 text-secondary-text text-14">
-                              Address
+                              {tManage("address")}
                               <Badge
                                 size="small"
                                 variant={BadgeVariant.STANDARD}
@@ -496,7 +502,7 @@ export default function AutoListingContractDetails({
                           </div>
                           <div className="bg-tertiary-bg pb-1 pl-4 pt-2.5 rounded-2">
                             <div className="flex items-center gap-2 text-secondary-text text-14">
-                              Address
+                              {tManage("address")}
                               <Badge
                                 size="small"
                                 variant={BadgeVariant.STANDARD}
@@ -530,17 +536,17 @@ export default function AutoListingContractDetails({
                 <div className="hidden xl:contents">
                   <div className="grid px-5 py-2.5 bg-tertiary-bg rounded-t-5">
                     <TableRow className="bg-tertiary-bg text-tertiary-text">
-                      <div>Name</div>
+                      <div>{t("col_name")}</div>
                       <div className="flex items-center gap-2">
-                        Address
+                        {tManage("address")}
                         <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
                       </div>
                       <div className="flex items-center gap-2">
-                        Address
+                        {tManage("address")}
                         <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
                       </div>
-                      <div>Found in</div>
-                      <div>Details</div>
+                      <div>{t("col_found_in")}</div>
+                      <div>{tPortfolio("details")}</div>
                     </TableRow>
                   </div>
 
@@ -582,11 +588,13 @@ export default function AutoListingContractDetails({
                             />{" "}
                             <IconButton variant={IconButtonVariant.COPY} text={token.address1} />
                           </div>
-                          <div className="flex items-center">{token.lists?.length || 0} list</div>
+                          <div className="flex items-center">
+                            {t("lists_count", { count: token.lists?.length || 0 })}
+                          </div>
                           <div className="flex items-center justify-end">
                             {" "}
                             <Tooltip
-                              text={"Token details"}
+                              text={t("token_details")}
                               renderTrigger={(ref, refProps) => {
                                 return (
                                   <div
@@ -613,7 +621,7 @@ export default function AutoListingContractDetails({
 
             {!listingContract.tokens.length && (
               <div className="flex items-center justify-center min-h-[340px] bg-primary-bg flex-col gap-2 rounded-5 bg-empty-no-tokens bg-no-repeat bg-right-top max-md:bg-size-180">
-                <span className="text-secondary-text">No listed tokens yet</span>
+                <span className="text-secondary-text">{t("no_listed_yet")}</span>
               </div>
             )}
           </div>

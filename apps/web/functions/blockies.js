@@ -1,11 +1,11 @@
 (function (global, factory) {
-  exports && typeof exports === 'object' && typeof module !== 'undefined'
+  exports && typeof exports === "object" && typeof module !== "undefined"
     ? factory(exports)
-    : typeof define === 'function' && define.amd
-    ? define(['exports'], factory)
-    : factory((global.blockies = {}));
+    : typeof define === "function" && define.amd
+      ? define(["exports"], factory)
+      : factory((global.blockies = {}));
 })(this, (exports) => {
-  'use strict';
+  "use strict";
 
   /**
    * A handy class to calculate color values.
@@ -32,12 +32,7 @@
   }
 
   function byte4(w) {
-    return String.fromCharCode(
-      (w >> 24) & 255,
-      (w >> 16) & 255,
-      (w >> 8) & 255,
-      w & 255,
-    );
+    return String.fromCharCode((w >> 24) & 255, (w >> 16) & 255, (w >> 8) & 255, w & 255);
   }
 
   function byte2lsb(w) {
@@ -53,8 +48,7 @@
     this.pix_size = height * (width + 1);
 
     // deflate header, pix_size, block headers, adler32 checksum
-    this.data_size =
-      2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
+    this.data_size = 2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
 
     // offsets and sizes of Png chunks
     this.ihdr_offs = 0; // IHDR offset and size
@@ -77,7 +71,7 @@
 
     // initialize buffer with zero bytes
     for (var i = 0; i < this.buffer_size; i++) {
-      this.buffer[i] = '\x00';
+      this.buffer[i] = "\x00";
     }
 
     // initialize non-zero elements
@@ -85,15 +79,15 @@
       this.buffer,
       this.ihdr_offs,
       byte4(this.ihdr_size - 12),
-      'IHDR',
+      "IHDR",
       byte4(width),
       byte4(height),
-      '\x08\x03',
+      "\x08\x03",
     );
-    write(this.buffer, this.plte_offs, byte4(this.plte_size - 12), 'PLTE');
-    write(this.buffer, this.trns_offs, byte4(this.trns_size - 12), 'tRNS');
-    write(this.buffer, this.idat_offs, byte4(this.idat_size - 12), 'IDAT');
-    write(this.buffer, this.iend_offs, byte4(this.iend_size - 12), 'IEND');
+    write(this.buffer, this.plte_offs, byte4(this.plte_size - 12), "PLTE");
+    write(this.buffer, this.trns_offs, byte4(this.trns_size - 12), "tRNS");
+    write(this.buffer, this.idat_offs, byte4(this.idat_size - 12), "IDAT");
+    write(this.buffer, this.iend_offs, byte4(this.iend_size - 12), "IEND");
 
     // initialize deflate header
     let header = ((8 + (7 << 4)) << 8) | (3 << 6);
@@ -106,10 +100,10 @@
       var size, bits;
       if (i + 0xffff < this.pix_size) {
         size = 0xffff;
-        bits = '\x00';
+        bits = "\x00";
       } else {
         size = this.pix_size - (i << 16) - i;
-        bits = '\x01';
+        bits = "\x01";
       }
       write(
         this.buffer,
@@ -145,16 +139,15 @@
       alpha = alpha >= 0 ? alpha : 255;
       const color = (((((alpha << 8) | red) << 8) | green) << 8) | blue;
 
-      if (typeof this.palette[color] === 'undefined') {
-        if (this.pindex == this.depth) return '\x00';
+      if (typeof this.palette[color] === "undefined") {
+        if (this.pindex == this.depth) return "\x00";
 
         const ndx = this.plte_offs + 8 + 3 * this.pindex;
 
         this.buffer[ndx + 0] = String.fromCharCode(red);
         this.buffer[ndx + 1] = String.fromCharCode(green);
         this.buffer[ndx + 2] = String.fromCharCode(blue);
-        this.buffer[this.trns_offs + 8 + this.pindex] =
-          String.fromCharCode(alpha);
+        this.buffer[this.trns_offs + 8 + this.pindex] = String.fromCharCode(alpha);
 
         this.palette[color] = String.fromCharCode(this.pindex++);
       }
@@ -165,12 +158,11 @@
     this.getBase64 = function () {
       const s = this.getDump();
 
-      const ch =
-        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+      const ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
       let c1, c2, c3, e1, e2, e3, e4;
       const l = s.length;
       let i = 0;
-      let r = '';
+      let r = "";
 
       do {
         c1 = s.charCodeAt(i);
@@ -215,19 +207,13 @@
       }
       s1 %= BASE;
       s2 %= BASE;
-      write(
-        this.buffer,
-        this.idat_offs + this.idat_size - 8,
-        byte4((s2 << 16) | s1),
-      );
+      write(this.buffer, this.idat_offs + this.idat_size - 8, byte4((s2 << 16) | s1));
 
       // compute crc32 of the PNG chunks
       function crc32(png, offs, size) {
         let crc = -1;
         for (let i = 4; i < size - 4; i += 1) {
-          crc =
-            _crc32[(crc ^ png[offs + i].charCodeAt(0)) & 0xff] ^
-            ((crc >> 8) & 0x00ffffff);
+          crc = _crc32[(crc ^ png[offs + i].charCodeAt(0)) & 0xff] ^ ((crc >> 8) & 0x00ffffff);
         }
         write(png, offs + size - 4, byte4(crc ^ -1));
       }
@@ -239,7 +225,7 @@
       crc32(this.buffer, this.iend_offs, this.iend_size);
 
       // convert PNG to string
-      return '\x89PNG\r\n\x1A\n' + this.buffer.join('');
+      return "\x89PNG\r\n\x1A\n" + this.buffer.join("");
     };
 
     this.fillRect = function (x, y, w, h, color) {
@@ -297,8 +283,7 @@
       randseed[i] = 0;
     }
     for (var i = 0; i < seed.length; i++) {
-      randseed[i % 4] =
-        (randseed[i % 4] << 5) - randseed[i % 4] + seed.charCodeAt(i);
+      randseed[i % 4] = (randseed[i % 4] << 5) - randseed[i % 4] + seed.charCodeAt(i);
     }
   }
 
@@ -354,7 +339,7 @@
 
   function buildOpts(opts) {
     if (!opts.seed) {
-      throw new Error('No seed provided');
+      throw new Error("No seed provided");
     }
 
     seedrand(opts.seed);
@@ -394,13 +379,7 @@
       if (imageData[i]) {
         // if data is 2, choose spot color, if 1 choose foreground
         const pngColor = imageData[i] == 1 ? color : spotcolor;
-        p.fillRect(
-          col * opts.scale,
-          row * opts.scale,
-          opts.scale,
-          opts.scale,
-          pngColor,
-        );
+        p.fillRect(col * opts.scale, row * opts.scale, opts.scale, opts.scale, pngColor);
       }
     }
     const ret = `data:image/png;base64,${p.getBase64()}`;
@@ -410,7 +389,7 @@
 
   exports.toDataUrl = toDataUrl;
 
-  Object.defineProperty(exports, '__esModule', { value: true });
+  Object.defineProperty(exports, "__esModule", { value: true });
 });
 
 /**

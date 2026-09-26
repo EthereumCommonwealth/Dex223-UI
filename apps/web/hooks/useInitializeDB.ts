@@ -157,7 +157,7 @@ export function useAutoListingUpdater() {
         },
       });
 
-      lastUpdatedResult.data?.autoListings.forEach((autoListingInfo: any) => {
+      lastUpdatedResult.data?.autoListings?.forEach((autoListingInfo: any) => {
         const currentListing = allAutoListings.find(
           (listing) =>
             listing.autoListingContract?.toLowerCase() === autoListingInfo.id.toLowerCase(),

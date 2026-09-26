@@ -71,6 +71,7 @@ function OpenConfirmListTokenButton({
 }) {
   const tWallet = useTranslations("Wallet");
   const t = useTranslations("Swap");
+  const tListing = useTranslations("TokenListing");
   const { isConnected } = useAccount();
 
   const { tokenA, tokenB } = useListTokensStore();
@@ -96,7 +97,7 @@ function OpenConfirmListTokenButton({
     return (
       <Button size={ButtonSize.EXTRA_LARGE} tabletSize={ButtonSize.LARGE} fullWidth isLoading>
         <span className="flex items-center gap-2">
-          <span>Processing list operation</span>
+          <span>{tListing("processing")}</span>
           <Preloader size={20} color="black" />
         </span>
       </Button>
@@ -136,7 +137,7 @@ function OpenConfirmListTokenButton({
   if (!isPoolExists) {
     return (
       <Button size={ButtonSize.EXTRA_LARGE} tabletSize={ButtonSize.LARGE} fullWidth disabled>
-        Pool doesn&apos;t exists
+        {tListing("pool_missing")}
       </Button>
     );
   }
@@ -144,7 +145,7 @@ function OpenConfirmListTokenButton({
   if (isBothTokensAlreadyInList) {
     return (
       <Button size={ButtonSize.EXTRA_LARGE} tabletSize={ButtonSize.LARGE} fullWidth disabled>
-        Both tokens are already listed
+        {tListing("both_listed")}
       </Button>
     );
   }
@@ -156,7 +157,7 @@ function OpenConfirmListTokenButton({
       onClick={() => setConfirmListTokenDialogOpened(true)}
       fullWidth
     >
-      List token
+      {tListing("list_token")}
     </Button>
   );
 }
@@ -172,6 +173,9 @@ const poolsFees = [FeeAmount.LOW, FeeAmount.MEDIUM, FeeAmount.HIGH];
 export default function ListTokenPage() {
   useAutoListingSearchParams();
   const t = useTranslations("Swap");
+  const tListing = useTranslations("TokenListing");
+  const tManage = useTranslations("ManageTokens");
+  const tGas = useTranslations("GasSettings");
 
   const params = useSearchParams();
   const router = useRouter();
@@ -326,10 +330,10 @@ export default function ListTokenPage() {
 
   const firstFieldError = useMemo(() => {
     if (tokenAAddress && !isAddress(tokenAAddress)) {
-      return "Token address is invalid";
+      return tListing("invalid_address");
     }
     return;
-  }, [tokenAAddress]);
+  }, [tListing, tokenAAddress]);
 
   const sameTokensSelected = useMemo(() => {
     return Boolean(tokenAAddress && tokenAAddress === tokenBAddress);
@@ -337,13 +341,13 @@ export default function ListTokenPage() {
 
   const secondFieldError = useMemo(() => {
     if (tokenBAddress && !isAddress(tokenBAddress)) {
-      return "Token address is invalid";
+      return tListing("invalid_address");
     }
 
     if (sameTokensSelected) {
-      return "Second token should be different";
+      return tListing("tokens_must_differ");
     }
-  }, [sameTokensSelected, tokenBAddress]);
+  }, [sameTokensSelected, tListing, tokenBAddress]);
 
   const isMobile = useMediaQuery({ query: "(max-width: 519px)" });
   const nativeCurrency = useNativeCurrency();
@@ -379,7 +383,7 @@ export default function ListTokenPage() {
                     variant={IconButtonVariant.BACK}
                     buttonSize={IconButtonSize.LARGE}
                   />
-                  <h3 className="font-bold text-20">List tokens</h3>
+                  <h3 className="font-bold text-20">{tListing("list_tokens")}</h3>
                   <IconButton
                     buttonSize={IconButtonSize.LARGE}
                     active={showRecentTransactions}
@@ -387,17 +391,11 @@ export default function ListTokenPage() {
                     onClick={() => setShowRecentTransactions(!showRecentTransactions)}
                   />
                 </div>
-                <p className="text-secondary-text text-14 mb-4">
-                  List your token automatically using our smart contract. Click the button below to
-                  proceed and leverage our seamless, automated process for adding your token to our
-                  platform. This method ensures a quick and efficient listing, utilizing the power
-                  of smart contracts to handle the process securely and transparently. Get started
-                  now to enjoy hassle-free token listing!
-                </p>
+                <p className="text-secondary-text text-14 mb-4">{tListing("add_intro")}</p>
 
                 <div className="flex flex-col gap-4 pb-5">
                   <div>
-                    <InputLabel label="Token contract address" />
+                    <InputLabel label={tListing("token_address")} />
                     <div className="bg-secondary-bg relative flex items-center rounded-3 pr-[3px]">
                       <input
                         className="bg-transparent peer duration-200 focus:outline-0 h-12 pl-5 placeholder:text-tertiary-text text-16 w-full rounded-2 pr-2"
@@ -406,7 +404,7 @@ export default function ListTokenPage() {
                           handleChange(e, setTokenA, setTokenAAddress);
                         }}
                         type="text"
-                        placeholder="Token contract address"
+                        placeholder={tListing("token_address")}
                       />
                       <button
                         className="flex-shrink-0 p-2 flex items-center border border-transparent gap-1 text-primary-text bg-primary-bg rounded-2 hocus:bg-green-bg hocus:border-green duration-200 hocus:shadow hocus:shadow-green/60"
@@ -424,7 +422,9 @@ export default function ListTokenPage() {
                             alt=""
                           />
                         )}
-                        {tokenA?.symbol || <span className="text-tertiary-text">Select token</span>}
+                        {tokenA?.symbol || (
+                          <span className="text-tertiary-text">{tManage("select_token")}</span>
+                        )}
                         <Svg className="text-secondary-text" iconName="small-expand-arrow" />
                       </button>
                       <div
@@ -438,12 +438,12 @@ export default function ListTokenPage() {
                     </div>
                     <HelperText
                       error={firstFieldError}
-                      helperText="Enter the contract address of the token you want to list"
+                      helperText={tListing("token_address_helper")}
                     />
                   </div>
 
                   <div>
-                    <InputLabel label="Paired token contract address" />
+                    <InputLabel label={tListing("paired_address")} />
                     <div className="bg-secondary-bg relative flex items-center rounded-3 pr-[3px]">
                       <input
                         className="bg-transparent peer duration-200 focus:outline-0 h-12 pl-5 placeholder:text-tertiary-text text-16 w-full rounded-2 pr-2"
@@ -452,7 +452,7 @@ export default function ListTokenPage() {
                           handleChange(e, setTokenB, setTokenBAddress);
                         }}
                         type="text"
-                        placeholder="Token contract address"
+                        placeholder={tListing("token_address")}
                       />
                       <button
                         className="flex-shrink-0 p-2 flex items-center border border-transparent gap-1 text-primary-text bg-primary-bg rounded-2 hocus:bg-green-bg hocus:border-green duration-200 hocus:shadow hocus:shadow-green/60"
@@ -470,7 +470,9 @@ export default function ListTokenPage() {
                             alt=""
                           />
                         )}
-                        {tokenB?.symbol || <span className="text-tertiary-text">Select token</span>}
+                        {tokenB?.symbol || (
+                          <span className="text-tertiary-text">{tManage("select_token")}</span>
+                        )}
                         <Svg className="text-secondary-text" iconName="small-expand-arrow" />
                       </button>
                       <div
@@ -482,37 +484,29 @@ export default function ListTokenPage() {
                         )}
                       />
                     </div>
-                    <HelperText
-                      error={secondFieldError}
-                      helperText="Enter or select the paired token address"
-                    />
+                    <HelperText error={secondFieldError} helperText={tListing("paired_helper")} />
                   </div>
 
                   {!isPoolExists && !sameTokensSelected && tokenA && tokenB && (
                     <Alert
-                      text={
-                        <span>
-                          There is no existing pool, so you cannot list the primary token. Please{" "}
+                      text={tListing.rich("no_pool", {
+                        link: (chunks) => (
                           <Link
                             href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
                             className="text-green underline hocus:text-green-hover duration-200"
                           >
-                            create a pool
-                          </Link>{" "}
-                          first.
-                        </span>
-                      }
+                            {chunks}
+                          </Link>
+                        ),
+                      })}
                       type="warning"
                     />
                   )}
 
-                  <Alert
-                    text="You can only list a token that has a pool on our exchange"
-                    type="info"
-                  />
+                  <Alert text={tListing("pool_required")} type="info" />
 
                   <div>
-                    <InputLabel label="You list in auto-listing contract" />
+                    <InputLabel label={tListing("list_in_contract")} />
                     <SelectButton
                       fullWidth
                       size="medium"
@@ -520,16 +514,16 @@ export default function ListTokenPage() {
                       onClick={() => setAutoListingSelectOpened(true)}
                     >
                       {autoListing?.name || (
-                        <span className="text-tertiary-text">Select token list</span>
+                        <span className="text-tertiary-text">{tListing("select_token_list")}</span>
                       )}
                     </SelectButton>
                     <HelperText
                       helperText={
                         !autoListing ? (
-                          "Choose contract address you want to list"
+                          tListing("choose_contract")
                         ) : (
                           <span className="flex items-center gap-1">
-                            Contract address:{" "}
+                            {tListing("contract_address_label")}{" "}
                             <ExternalTextLink
                               className="text-12"
                               arrowSize={16}
@@ -551,8 +545,8 @@ export default function ListTokenPage() {
                       {autoListing?.tokensToPay.length > 1 ? (
                         <div>
                           <InputLabel
-                            label="Payment for listing"
-                            tooltipText="This amount will be delivered to the auto-listing contract. Different auto-listing contracts may require different payment thresholds. Make sure you are complying with the settings of the auto-listing contract you are going to list your token to."
+                            label={tListing("payment")}
+                            tooltipText={tListing("payment_tooltip")}
                           />
                           <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center pl-5 pr-1">
                             {paymentToken
@@ -605,8 +599,8 @@ export default function ListTokenPage() {
                       ) : (
                         <div>
                           <InputLabel
-                            label="Payment for listing"
-                            tooltipText="This amount will be delivered to the auto-listing contract. Different auto-listing contracts may require different payment thresholds. Make sure you are complying with the settings of the auto-listing contract you are going to list your token to."
+                            label={tListing("payment")}
+                            tooltipText={tListing("payment_tooltip")}
                           />
                           {paymentToken && (
                             <div className="h-12 rounded-2 border w-full border-secondary-border text-primary-text flex justify-between items-center px-5">
@@ -646,18 +640,18 @@ export default function ListTokenPage() {
                 <div className="bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
                   <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
                     <p className="flex flex-col text-tertiary-text">
-                      <span>Gas price:</span>
+                      <span>{tGas("gas_price")}:</span>
                       <span> {formatFloat(formatGwei(formattedGasPrice || BigInt(0)))} GWEI</span>
                     </p>
 
                     <p className="flex flex-col text-tertiary-text">
-                      <span>Gas limit:</span>
+                      <span>{tGas("gas_limit")}:</span>
                       <span>
                         {customGasLimit ? customGasLimit.toString() : estimatedGas?.toString()}
                       </span>
                     </p>
                     <p className="flex flex-col">
-                      <span className="text-tertiary-text">Network fee:</span>
+                      <span className="text-tertiary-text">{tGas("network_fee")}:</span>
                       <span>
                         {formatFloat(
                           formatEther(
@@ -682,7 +676,7 @@ export default function ListTokenPage() {
                       fullWidth={isMobile}
                       className="rounded-5"
                     >
-                      Edit
+                      {t("edit")}
                     </Button>
                   </div>
                 </div>
@@ -698,7 +692,7 @@ export default function ListTokenPage() {
                       <Preloader size={20} />
 
                       {status === ListTokenStatus.LOADING_LIST_TOKEN && (
-                        <span>List token processing</span>
+                        <span>{tListing("processing_list_token")}</span>
                       )}
                       {status === ListTokenStatus.PENDING_LIST_TOKEN ||
                         (status === ListTokenStatus.PENDING_APPROVE && (
@@ -715,7 +709,7 @@ export default function ListTokenPage() {
                       }}
                       size={ButtonSize.EXTRA_SMALL}
                     >
-                      Review details
+                      {tListing("review_details")}
                     </Button>
                   </div>
                 )}
