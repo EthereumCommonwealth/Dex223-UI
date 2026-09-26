@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { parseGwei } from "viem";
 
@@ -12,49 +13,44 @@ export default function useNetworkFeeGasValidation({
   gasLimit: string;
   estimatedGas: bigint;
 }) {
+  const t = useTranslations("GasSettings");
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
 
   const maxFeePerGasError = useMemo(() => {
-    return baseFee && parseGwei(values.maxFeePerGas) < baseFee
-      ? "Max fee per gas is too low for current network condition"
-      : undefined;
-  }, [baseFee, values.maxFeePerGas]);
+    return baseFee && parseGwei(values.maxFeePerGas) < baseFee ? t("max_fee_too_low") : undefined;
+  }, [baseFee, t, values.maxFeePerGas]);
 
   const maxFeePerGasWarning = useMemo(() => {
     return baseFee && parseGwei(values.maxFeePerGas) > baseFee * BigInt(3)
-      ? "Max fee per gas is unnecessarily high for current network condition"
+      ? t("max_fee_too_high")
       : undefined;
-  }, [baseFee, values.maxFeePerGas]);
+  }, [baseFee, t, values.maxFeePerGas]);
 
   const maxPriorityFeePerGasError = useMemo(() => {
     return parseGwei(values.maxPriorityFeePerGas) === BigInt(0)
-      ? "Max priority fee per gas is too low for current network condition"
+      ? t("priority_fee_too_low")
       : undefined;
-  }, [values.maxPriorityFeePerGas]);
+  }, [t, values.maxPriorityFeePerGas]);
 
   const maxPriorityFeePerGasWarning = useMemo(() => {
     return priorityFee && parseGwei(values.maxPriorityFeePerGas) > priorityFee * BigInt(3)
-      ? "Max priority fee per gas is unnecessarily high for current network condition"
+      ? t("priority_fee_too_high")
       : undefined;
-  }, [priorityFee, values.maxPriorityFeePerGas]);
+  }, [priorityFee, t, values.maxPriorityFeePerGas]);
 
   const legacyGasPriceError = useMemo(() => {
-    return gasPrice && parseGwei(values.gasPrice) < gasPrice
-      ? "Gas price is too low for current network condition"
-      : undefined;
-  }, [gasPrice, values.gasPrice]);
+    return gasPrice && parseGwei(values.gasPrice) < gasPrice ? t("gas_price_too_low") : undefined;
+  }, [gasPrice, t, values.gasPrice]);
 
   const legacyGasPriceWarning = useMemo(() => {
     return gasPrice && parseGwei(values.gasPrice) > gasPrice * BigInt(3)
-      ? "Gas price is unnecessarily high for current network condition"
+      ? t("gas_price_too_high")
       : undefined;
-  }, [gasPrice, values.gasPrice]);
+  }, [gasPrice, t, values.gasPrice]);
 
   const gasLimitError = useMemo(() => {
-    return BigInt(values.gasLimit) < values.estimatedGas
-      ? "Gas limit is lower then recommended"
-      : undefined;
-  }, [values.gasLimit, values.estimatedGas]);
+    return BigInt(values.gasLimit) < values.estimatedGas ? t("gas_limit_too_low") : undefined;
+  }, [t, values.gasLimit, values.estimatedGas]);
 
   return {
     maxFeePerGasError,

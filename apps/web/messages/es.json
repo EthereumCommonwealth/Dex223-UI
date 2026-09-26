@@ -161,7 +161,27 @@
     "max_fee_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. La tarifa base la determina la carga de la red y la tarifa de prioridad la determina el emisor. El gas necesario depende del tipo de acción que realice tu transacción. La comisión máxima fija el límite superior del pago total que permites consumir. La transacción no se confirmará hasta que la tarifa base sea lo bastante baja para no superar ese máximo.",
     "priority_fee_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. Una tarifa de prioridad más alta puede reducir el tiempo necesario para que tu transacción se incluya, si la carga de la red es lo bastante baja para cumplir el criterio de comisión máxima.",
     "gas_limit_tooltip": "La comisión que pagarás se calcula como (baseFee + priorityFee) * gasUsed. El límite de gas fija el máximo de la variable gasUsed. Si tu transacción consume menos gas que el límite, solo pagarás el gas necesario y el resto se devolverá. Un límite demasiado bajo puede provocar que la transacción falle si las acciones que desencadena requieren más gas del indicado.",
-    "gas_price_tooltip": "La comisión que pagarás con una transacción legacy se calcula como gasPrice * gasUsed. Tu transacción no se confirmará hasta que tu gasPrice sea igual o superior al precio del gas de la red en el último bloque."
+    "gas_price_tooltip": "La comisión que pagarás con una transacción legacy se calcula como gasPrice * gasUsed. Tu transacción no se confirmará hasta que tu gasPrice sea igual o superior al precio del gas de la red en el último bloque.",
+    "title": "Ajustes de gas",
+    "advanced_mode": "Modo avanzado",
+    "configure_automatically": "Configurar automáticamente",
+    "custom_gas_settings": "Ajustes de gas personalizados",
+    "current": "Actual",
+    "estimated": "Estimado",
+    "unknown_price": "Precio desconocido",
+    "legacy": "Legacy",
+    "eip1559_formula": "Comisión de red = gasLimit × (Base Fee + PriorityFee)",
+    "legacy_formula": "Comisión de red = gasLimit × gasPrice",
+    "max_fee": "Tarifa máxima",
+    "priority_fee": "Tarifa de prioridad",
+    "priority_fee_hint": "Cambiar solo la tarifa de prioridad abarata la transacción o la acelera a cambio de una comisión más alta.",
+    "max_fee_too_low": "La tarifa máxima es demasiado baja para el estado actual de la red",
+    "max_fee_too_high": "La tarifa máxima es innecesariamente alta para el estado actual de la red",
+    "priority_fee_too_low": "La tarifa de prioridad es demasiado baja para el estado actual de la red",
+    "priority_fee_too_high": "La tarifa de prioridad es innecesariamente alta para el estado actual de la red",
+    "gas_price_too_low": "El precio del gas es demasiado bajo para el estado actual de la red",
+    "gas_price_too_high": "El precio del gas es innecesariamente alto para el estado actual de la red",
+    "gas_limit_too_low": "El límite de gas es inferior al recomendado"
   },
   "Toast": {
     "successfully_copied": "¡Copiado correctamente!"

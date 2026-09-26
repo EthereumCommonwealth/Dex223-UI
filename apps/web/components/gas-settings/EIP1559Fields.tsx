@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { ChangeEvent, FocusEvent, ReactNode, useMemo } from "react";
 import { formatGwei } from "viem";
 
@@ -21,7 +22,7 @@ export default function EIP1559Fields({
   maxFeePerGasWarning,
   maxPriorityFeePerGasError,
   maxPriorityFeePerGasWarning,
-  helperButtonText = "Current",
+  helperButtonText,
 }: {
   maxFeePerGas: string;
   maxPriorityFeePerGas: string;
@@ -37,6 +38,8 @@ export default function EIP1559Fields({
   maxPriorityFeePerGasWarning: string | undefined;
   helperButtonText?: ReactNode;
 }) {
+  const t = useTranslations("GasSettings");
+  const currentLabel = helperButtonText ?? t("current");
   const colorScheme = useColorScheme();
   const gasPriceErrors = useMemo(() => {
     const _errors: string[] = [];
@@ -70,14 +73,11 @@ export default function EIP1559Fields({
           isNumeric
           isError={!!maxFeePerGasError}
           isWarning={!!maxFeePerGasWarning}
-          placeholder="Max fee"
-          label="Max fee"
+          placeholder={t("max_fee")}
+          label={t("max_fee")}
           name="maxFeePerGas"
           id="maxFeePerGas"
-          tooltipText="The amount of fee that you are going to pay is calculated as (baseFee + priorityFee) * gasUsed.
-Base fee is determined by the network load. Priority fee is determined by the sender of the transaction. Gas requirement is determined by the type of action your transaction performs.
-
-Max fee sets the upper bound of the payment that you allow your transaction to consume in total. The transaction will not confirm until the base fee in the network is small enough to allow your transaction to submit without exceeding max fee."
+          tooltipText={t("max_fee_tooltip")}
           value={maxFeePerGas}
           onChange={(e) => {
             handleChange(e);
@@ -103,7 +103,7 @@ Max fee sets the upper bound of the payment that you allow your transaction to c
                   }[colorScheme]
                 }
               >
-                {helperButtonText}
+                {currentLabel}
               </button>{" "}
               {currentMaxFeePerGas ? formatFloat(formatGwei(currentMaxFeePerGas)) : "0"} Gwei
             </div>
@@ -116,12 +116,11 @@ Max fee sets the upper bound of the payment that you allow your transaction to c
           isNumeric
           isError={!!maxPriorityFeePerGasError}
           isWarning={!!maxPriorityFeePerGasWarning}
-          placeholder="Priority fee"
-          label="Priority fee"
+          placeholder={t("priority_fee")}
+          label={t("priority_fee")}
           name="maxPriorityFeePerGas"
           id="maxPriorityFeePerGas"
-          tooltipText="The amount of fee that you are going to pay is calculated as (baseFee + priorityFee) * gasUsed.
-Higher priority fee may reduce the amount of time needed for your transaction to submit if the network load is sufficiently low to satisfy the max fee criteria."
+          tooltipText={t("priority_fee_tooltip")}
           value={maxPriorityFeePerGas}
           onChange={(e) => {
             handleChange(e);
@@ -145,7 +144,7 @@ Higher priority fee may reduce the amount of time needed for your transaction to
                   }[colorScheme]
                 }
               >
-                {helperButtonText}
+                {currentLabel}
               </button>{" "}
               {currentMaxPriorityFeePerGas
                 ? formatFloat(formatGwei(currentMaxPriorityFeePerGas))
