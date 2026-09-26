@@ -1247,5 +1247,16 @@
     "list_token": "Lister le jeton",
     "issuing_tooltip": "Si c’est autorisé, vous pourrez émettre d’autres jetons plus tard.",
     "erc20_tooltip": "Déploie aussi un wrapper ERC-20 pour ce jeton."
+  },
+  "MintTest": {
+    "banner": "Obtenez des jetons de test gratuitement",
+    "get_free": "Obtenir des jetons gratuits",
+    "title": "Obtenir des jetons de test",
+    "token_for_mint": "Jeton à émettre",
+    "amount_label": "Quantité de jetons",
+    "minting": "Émission en cours",
+    "mint": "Émettre des jetons",
+    "minted": "Jetons émis avec succès",
+    "bad_data": "Les données ne sont pas valides"
   }
 }
