@@ -105,7 +105,14 @@
     "maximum_slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation de prix tolérée. Si le prix réel s’écarte du prix attendu de plus que le slippage maximum, la transaction sera automatiquement annulée et vos jetons ne seront pas échangés.",
     "gas_limit_tooltip": "La limite de gas détermine le nombre d’opérations que votre transaction peut déclencher. Plus les actions déclenchées dans le contrat intelligent sont complexes, plus la limite de gas requise peut être élevée. Une limite plus élevée entraîne des frais de réseau plus élevés.",
     "deadline_tooltip": "Le délai de transaction définit la période pendant laquelle votre transaction en file d’attente reste valide. Une transaction peut rester en attente assez longtemps en raison de valeurs de gas faibles ou d’une forte charge du réseau. Si elle est confirmée après le délai indiqué, elle sera automatiquement annulée (vous paierez le gas mais aucun échange n’aura lieu).",
-    "slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation tolérée. Un slippage de 5% signifie que si le prix du pool varie de plus de 5% par rapport au prix attendu, votre transaction échouera automatiquement (vous paierez le gas mais aucun échange n’aura lieu)."
+    "slippage_tooltip": "Le prix réel de l’échange peut différer de celui indiqué au moment de l’envoi de la transaction. Le slippage détermine l’ampleur de la variation tolérée. Un slippage de 5% signifie que si le prix du pool varie de plus de 5% par rapport au prix attendu, votre transaction échouera automatiquement (vous paierez le gas mais aucun échange n’aura lieu).",
+    "approve_amount": "Approuver le montant",
+    "approve_amount_tooltip": "Pour échanger un jeton ERC-20, autorisez le contrat du DEX à retirer vos jetons. Tous les DEX exigent cette étape. Vous indiquez ici la quantité de jetons que le contrat peut transférer pour vous. Ce montant n'expire pas.",
+    "slippage_above_one": "Un slippage supérieur à 1 % peut donner un taux d'échange défavorable. Utilisez le réglage automatique, sauf si vous savez ce que vous faites.",
+    "slippage_max": "Le slippage maximal ne peut pas dépasser 50 %",
+    "slippage_low": "Un slippage inférieur à 0,05 % peut faire échouer la transaction",
+    "eip7702_warning": "Votre portefeuille est un compte intelligent EIP-7702 qui ne peut pas recevoir de jetons ERC-223, donc cet échange échouerait. Recevez des ERC-20.",
+    "swap_no_liquidity": "Échange indisponible. L'un des jetons n'a pas de liquidité. Réessayez plus tard ou choisissez une autre paire."
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",
