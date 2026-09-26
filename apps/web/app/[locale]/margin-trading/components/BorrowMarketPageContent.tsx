@@ -1,6 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 
 import BorrowMarketFilter from "@/app/[locale]/margin-trading/components/BorrowMarketFilter";
@@ -27,6 +28,7 @@ const tabKeysMap: Record<number, TabKey> = {
 };
 
 export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: number }) {
+  const t = useTranslations("Margin");
   const [isDrawerOpened, setDrawerOpened] = useState(false);
   const [collateralFilterTokens, setCollateralFilterTokens] = useState<Currency[]>([]);
 
@@ -110,21 +112,21 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
               className="self-stretch sm:self-auto sm:shrink-0"
             >
               <Button endIcon="add" className="w-full sm:w-auto whitespace-nowrap">
-                New lending order
+                {t("new_lending_order")}
               </Button>
             </Link>
           }
         >
-          <Tab title="Borrow market">
+          <Tab title={t("borrow_market")}>
             <div className="pt-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_min-content] gap-2.5 mb-4 [&>*]:min-w-0">
                 <div className="flex flex-col gap-1">
                   <InputLabel
-                    label="Collateral tokens"
-                    tooltipText="Show only lending orders that accept these tokens as collateral."
+                    label={t("collateral_tokens")}
+                    tooltipText={t("collateral_tokens_tooltip")}
                   />
                   <FilterTokensSelector
-                    placeholder="All tokens"
+                    placeholder={t("all_tokens")}
                     extendWidth
                     selectedCurrencies={collateralFilterTokens}
                     handleToggleCurrency={handleToggleCollateral}
@@ -133,12 +135,9 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
                   />
                 </div>
                 <div className="flex flex-col gap-1">
-                  <InputLabel
-                    label="Borrow"
-                    tooltipText="Show only lending orders that lend these tokens."
-                  />
+                  <InputLabel label={t("borrow")} tooltipText={t("borrow_tooltip")} />
                   <FilterTokensSelector
-                    placeholder="All tokens"
+                    placeholder={t("all_tokens")}
                     extendWidth
                     selectedCurrencies={borrowFilterTokens}
                     handleToggleCurrency={handleBorrowCollateral}
@@ -148,11 +147,11 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
                 </div>
                 <div className="flex flex-col gap-1">
                   <InputLabel
-                    label="Tradable tokens"
-                    tooltipText="Show only lending orders that let you trade borrowed funds into these tokens."
+                    label={t("tradable_tokens")}
+                    tooltipText={t("tradable_tokens_tooltip")}
                   />
                   <FilterTokensSelector
-                    placeholder="All tokens"
+                    placeholder={t("all_tokens")}
                     extendWidth
                     selectedCurrencies={tradableFilterTokens}
                     handleToggleCurrency={handleTradableCollateral}
@@ -166,7 +165,7 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
                     colorScheme={ButtonColor.LIGHT_GREEN}
                     endIcon="filter"
                   >
-                    Filter
+                    {t("filter")}
                   </Button>
 
                   <BorrowMarketFilter
@@ -184,10 +183,10 @@ export default function BorrowMarketPageContent({ defaultTab }: { defaultTab: nu
               />
             </div>
           </Tab>
-          <Tab title="Lending orders">
+          <Tab title={t("lending_orders")}>
             <LendingOrdersTab />
           </Tab>
-          <Tab title="Margin positions">
+          <Tab title={t("margin_positions")}>
             <MarginPositionsTab />
           </Tab>
         </Tabs>
