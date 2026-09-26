@@ -5,7 +5,7 @@ import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useFormik } from "formik";
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { use, useCallback, useEffect, useMemo, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { formatUnits, parseUnits } from "viem";
@@ -189,6 +189,7 @@ export default function BorrowPage({
   }>;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Margin");
 
   const { id: orderId } = use(params);
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
@@ -230,12 +231,18 @@ export default function BorrowPage({
         const max = BigInt(order.balance);
 
         if (borrowAmount < min) {
-          errors.borrowAmount = `Min loan is ${formatUnits(min, borrowDecimals)} ${order.baseAsset.symbol}`;
+          errors.borrowAmount = t("min_loan_is", {
+            amount: formatUnits(min, borrowDecimals),
+            symbol: order.baseAsset.symbol,
+          });
         } else if (borrowAmount > max) {
-          errors.borrowAmount = `Max loan is ${formatUnits(max, borrowDecimals)} ${order.baseAsset.symbol}`;
+          errors.borrowAmount = t("max_loan_is", {
+            amount: formatUnits(max, borrowDecimals),
+            symbol: order.baseAsset.symbol,
+          });
         }
       } catch {
-        errors.borrowAmount = "Invalid borrow amount";
+        errors.borrowAmount = t("invalid_borrow_amount");
       }
     }
 
@@ -261,13 +268,19 @@ export default function BorrowPage({
         const maxCollateral = recalculateFromBorrowFixed(BigInt(order.balance), leverage, price);
 
         if (providedCollateral < minCollateral) {
-          errors.collateralAmount = `Min collateral for this leverage is ${formatUnits(minCollateral, collateralDecimals)} ${values.collateralToken.symbol}`;
+          errors.collateralAmount = t("min_collateral_leverage", {
+            amount: formatUnits(minCollateral, collateralDecimals),
+            symbol: values.collateralToken.symbol,
+          });
         } else if (providedCollateral > maxCollateral) {
-          errors.collateralAmount = `Max collateral for this leverage is ${formatUnits(maxCollateral, collateralDecimals)} ${values.collateralToken.symbol}`;
+          errors.collateralAmount = t("max_collateral_leverage", {
+            amount: formatUnits(maxCollateral, collateralDecimals),
+            symbol: values.collateralToken.symbol,
+          });
         }
       } catch (e) {
         console.error("Collateral validation failed", e);
-        errors.collateralAmount = "Invalid collateral amount";
+        errors.collateralAmount = t("invalid_collateral_amount");
       }
     }
 
@@ -368,11 +381,11 @@ export default function BorrowPage({
         setOraclePriceError(undefined);
         return getPrice(outputAmount as bigint, inputAmount);
       } catch (e) {
-        setOraclePriceError("Oracle can't deliver price ratio");
+        setOraclePriceError(t("oracle_no_price"));
         return undefined;
       }
     },
-    [order, publicClient],
+    [order, publicClient, t],
   );
 
   const minCollateralAmount = useMemo(() => {
@@ -431,17 +444,17 @@ export default function BorrowPage({
     const isSameToken = collateralToken.equals(order.liquidationRewardAsset);
 
     if (isSameToken) {
-      if (!collateralBalance) return "Insufficient balance";
+      if (!collateralBalance) return t("insufficient_balance");
       const totalRequired = collateralRequired + feeRequired;
       if (collateralBalance < totalRequired) {
-        return "Insufficient balance to cover fee and collateral";
+        return t("insufficient_balance_fee_and_collateral");
       }
     } else {
       if (collateralBalance != null && collateralBalance < collateralRequired) {
-        return "Insufficient balance to cover collateral";
+        return t("insufficient_balance_collateral");
       }
       if (feeBalance != null && feeBalance < feeRequired) {
-        return "Insufficient balance to cover fee";
+        return t("insufficient_balance_fee");
       }
     }
 
@@ -449,6 +462,7 @@ export default function BorrowPage({
   }, [
     feeToken0Balance?.value,
     order,
+    t,
     token0Balance?.value,
     values.collateralAmount,
     values.collateralToken,
@@ -462,11 +476,11 @@ export default function BorrowPage({
 
   const buttonText = useMemo(() => {
     if (!values.collateralToken) {
-      return "Select collateral asset";
+      return t("select_collateral_asset");
     }
 
     if (!values.collateralAmount) {
-      return "Enter collateral amount";
+      return t("enter_collateral_amount");
     }
 
     if (getBalanceError) {
@@ -477,8 +491,8 @@ export default function BorrowPage({
       return oraclePriceError;
     }
 
-    return "Start borrowing now";
-  }, [getBalanceError, oraclePriceError, values.collateralAmount, values.collateralToken]);
+    return t("start_borrowing");
+  }, [getBalanceError, oraclePriceError, t, values.collateralAmount, values.collateralToken]);
 
   const [formattedEndTime, setFormattedEndTime] = useState<string>("");
 
@@ -520,7 +534,7 @@ export default function BorrowPage({
   }, [chainId, order, values.collateralToken, getOracleRatio]);
 
   if (loading || !order) {
-    return "Loading...";
+    return t("loading");
   }
 
   return (
@@ -555,7 +569,7 @@ export default function BorrowPage({
                     window.history.back();
                   }}
                 />
-                <h3 className="font-bold text-20">Borrow</h3>
+                <h3 className="font-bold text-20">{t("borrow")}</h3>
                 <IconButton
                   buttonSize={IconButtonSize.LARGE}
                   active={showRecentTransactions}
@@ -568,20 +582,20 @@ export default function BorrowPage({
                 <div className="flex justify-between shadow px-4 py-3 rounded-3 mb-2 bg-tertiary-bg">
                   <div className="flex items-center gap-1">
                     <Svg iconName="done" className="text-green" />
-                    Price oracle:
+                    {t("price_oracle")}
                   </div>
                   <span className="flex items-center gap-1 rounded-3">
-                    Default DEX223 Oracle <Tooltip text="Tooltip text" />
+                    {t("default_dex223_oracle")} <Tooltip text={t("default_oracle_tooltip")} />
                   </span>
                 </div>
               ) : (
                 <div className="flex justify-between shadow shadow-red-light px-4 py-3 rounded-3 bg-red-bg mb-2">
                   <div className="flex items-center gap-1">
                     <Svg iconName="warning" className="text-red-light" />
-                    Price oracle:
+                    {t("price_oracle")}
                   </div>
                   <span className="text-red-light flex items-center gap-1 rounded-3 ">
-                    Unknown oracle <Svg iconName="info" />
+                    {t("unknown_oracle")} <Svg iconName="info" />
                   </span>
                 </div>
               )}
@@ -595,7 +609,8 @@ export default function BorrowPage({
                           values.collateralToken?.wrapped.address1.toLowerCase(),
                       ),
                     )}
-                    label="Collateral amount"
+                    label={t("collateral_amount")}
+                    tooltipText={t("collateral_amount_tooltip")}
                     token={values.collateralToken}
                     setToken={async (token: Currency) => {
                       await setFieldValue("collateralToken", token);
@@ -644,15 +659,18 @@ export default function BorrowPage({
                     tokens={order.allowedCollateralAssets}
                     helperText={
                       minCollateralAmount
-                        ? `Min collateral amount: ${minCollateralAmount} ${values.collateralToken?.symbol}`
+                        ? t("min_collateral_amount", {
+                            amount: minCollateralAmount,
+                            symbol: values.collateralToken?.symbol,
+                          })
                         : undefined
                     }
                   />
 
                   <InputLabel
                     inputSize={InputSize.LARGE}
-                    label="Leverage"
-                    tooltipText="Tooltip text"
+                    label={t("leverage")}
+                    tooltipText={t("leverage_borrow_tooltip")}
                   />
                   <div className="flex items-center gap-2">
                     <div className="mb-4 flex-grow">
@@ -744,11 +762,11 @@ export default function BorrowPage({
                 )}
 
                 <TextField
-                  placeholder="Enter borrow amount"
-                  label="I want to borrow"
+                  placeholder={t("enter_borrow_amount")}
+                  label={t("i_want_to_borrow")}
                   helperText={
                     <span>
-                      <span>Min / Max available:</span>{" "}
+                      <span>{t("min_max_available")}</span>{" "}
                       <span className="text-secondary-text">
                         {formatUnits(order.minLoan, order.baseAsset.decimals ?? 18)} /{" "}
                         {formatUnits(order.balance, order.baseAsset.decimals ?? 18)}{" "}
@@ -766,9 +784,9 @@ export default function BorrowPage({
 
                 <div className="my-4">
                   <InputLabel
-                    label="Total liquidation fee"
+                    label={t("total_liquidation_fee")}
                     inputSize={InputSize.LARGE}
-                    tooltipText="Tooltip text"
+                    tooltipText={t("total_liquidation_fee_tooltip")}
                   />
                   <div className="flex justify-between items-center bg-tertiary-bg py-3 px-5 rounded-3">
                     <div className="flex items-center gap-2">
@@ -786,15 +804,15 @@ export default function BorrowPage({
                       />
                     )}
                   </div>
-                  <HelperText helperText="Liquidation fee (Borrower + Lender)" />
+                  <HelperText helperText={t("liquidation_fee_borrower_lender")} />
                 </div>
 
                 <div className="rounded-3 bg-tertiary-bg justify-between flex px-5 py-3 mb-5">
                   <span className="text-tertiary-text">
-                    Lending order id: <span className="text-secondary-text">{orderId}</span>
+                    {t("lending_order_id")}: <span className="text-secondary-text">{orderId}</span>
                   </span>
                   <ExternalTextLink
-                    text="View details"
+                    text={t("view_details")}
                     href={`/${locale}/margin-trading/lending-order/${orderId}`}
                   />
                 </div>
@@ -822,7 +840,7 @@ export default function BorrowPage({
                     onClick={() => setIsDetailsExpanded(!isDetailsExpanded)}
                     className="flex justify-between px-5 py-3 text-secondary-text w-full"
                   >
-                    Borrow details
+                    {t("borrow_details")}
                     <Svg
                       iconName="small-expand-arrow"
                       className={clsx("duration-200", isDetailsExpanded ? "-rotate-180" : "")}
@@ -831,56 +849,56 @@ export default function BorrowPage({
                   <Collapse open={isDetailsExpanded}>
                     <div className="flex flex-col gap-2 mb-5 px-5 pb-5">
                       <LendingOrderDetailsRow
-                        title="Interest rate per month"
+                        title={t("interest_per_month")}
                         value={order.interestRate / 100 + "%"}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("interest_rate_tooltip")}
                       />
                       <LendingOrderDetailsRow
-                        title="Interest rate for the entire period"
+                        title={t("interest_entire_period")}
                         value={calculatePeriodInterestRate(
                           order.interestRate,
                           order.positionDuration,
                         )}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("interest_entire_tooltip")}
                       />
                       <LendingOrderDetailsRow
-                        title="Max leverage"
+                        title={t("max_leverage")}
                         value={`${order.leverage}x`}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("leverage_page_tooltip")}
                       />
                       <LendingOrderDetailsRow
-                        title="Leverage"
+                        title={t("leverage")}
                         value={`${values.leverage}x`}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("leverage_borrow_tooltip")}
                       />
                       <LendingOrderDetailsRow
-                        title="Duration"
-                        value={`${order.positionDuration / 24 / 60 / 60} days`}
-                        tooltipText="Tooltip text"
+                        title={t("duration")}
+                        value={t("duration_days", { count: order.positionDuration / 24 / 60 / 60 })}
+                        tooltipText={t("position_duration_tooltip")}
                       />
                       <LendingOrderDetailsRow
-                        title="Deadline"
+                        title={t("deadline")}
                         value={formattedEndTime}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("deadline_borrow_tooltip")}
                       />
 
                       <LendingOrderDetailsRow
-                        title="Order currency limit"
+                        title={t("order_currency_limit")}
                         value={order.currencyLimit}
-                        tooltipText="Tooltip text"
+                        tooltipText={t("currency_limit_page_tooltip")}
                       />
 
                       <LendingOrderDetailsRow
-                        title="May initiate liquidation"
-                        value={"Anyone"}
-                        tooltipText="Tooltip text"
+                        title={t("may_initiate_liquidation")}
+                        value={t("anyone")}
+                        tooltipText={t("initiate_liquidation_tooltip")}
                       />
 
                       <LendingOrderDetailsRow
-                        title="Liquidation price source"
+                        title={t("liquidation_price_source")}
                         value={
                           <ExternalTextLink
-                            text="Dex223 Market"
+                            text={t("dex223_market")}
                             href={getExplorerLink(
                               ExplorerLinkType.ADDRESS,
                               ORACLE_ADDRESS[chainId],
@@ -888,22 +906,22 @@ export default function BorrowPage({
                             )}
                           />
                         }
-                        tooltipText="Tooltip text"
+                        tooltipText={t("liquidation_price_tooltip")}
                       />
 
                       <div className="bg-primary-bg rounded-3 px-5 pb-5 pt-3">
                         <div className="flex justify-between mb-3 items-center">
                           <div className="flex items-center gap-2 mb-3">
                             <h3 className="text-tertiary-text flex items-center gap-1 text-14">
-                              <Tooltip text="Tooltip text" iconSize={20} />
-                              Tokens allowed for trading
+                              <Tooltip text={t("tokens_allowed_tooltip")} iconSize={20} />
+                              {t("tokens_allowed_trading")}
                             </h3>
                           </div>
                           <div>
                             <SearchInput
                               value={searchTradableTokenValue}
                               onChange={(e) => setSearchTradableTokenValue(e.target.value)}
-                              placeholder="Token name"
+                              placeholder={t("token_name")}
                               className="h-8 text-14 w-[180px] rounded-2"
                             />
                           </div>
@@ -953,7 +971,7 @@ export default function BorrowPage({
                         )}
                         {!filteredTokens.length && searchTradableTokenValue && (
                           <div className="rounded-5 h-[100px] -mt-5 flex items-center justify-center text-secondary-text bg-empty-not-found-token bg-no-repeat bg-right-top bg-[length:64px_64px] -mr-5">
-                            Token not found
+                            {t("token_not_found")}
                           </div>
                         )}
                       </div>
@@ -982,7 +1000,7 @@ export default function BorrowPage({
               >
                 <DialogHeader
                   onClose={() => setTokenForPortfolio(null)}
-                  title={tokenForPortfolio?.name || "Unknown"}
+                  title={tokenForPortfolio?.name || t("unknown")}
                 />
                 {tokenForPortfolio ? (
                   <TokenPortfolioDialogContent token={tokenForPortfolio} />
