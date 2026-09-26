@@ -1,6 +1,7 @@
 import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import {
@@ -16,11 +17,6 @@ import { HelperText, InputLabel } from "@/components/atoms/TextField";
 import IconButton from "@/components/buttons/IconButton";
 import RadioButton from "@/components/buttons/RadioButton";
 
-const labelsMap: Record<TradingTokensInputMode, string> = {
-  [TradingTokensInputMode.MANUAL]: "Tokens",
-  [TradingTokensInputMode.AUTOLISTING]: "Listing contract",
-};
-
 export default function LendingOrderTokensSourceConfig({
   values,
   setValues,
@@ -34,10 +30,11 @@ export default function LendingOrderTokensSourceConfig({
 }) {
   const { setIsOpen: setAllowedListingsOpened } = useAllowedTokenListsDialogOpenedStore();
   const { setIsOpen: setAllowedTokensDialogOpened } = useAllowedTokensDialogOpenedStore();
+  const t = useTranslations("Margin");
 
   return (
     <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4">
-      <InputLabel inputSize={InputSize.LARGE} label="Token source type" />
+      <InputLabel inputSize={InputSize.LARGE} label={t("token_source_type")} />
       <div className="grid grid-cols-2 gap-2 mb-4 mt-1">
         {[TradingTokensInputMode.MANUAL, TradingTokensInputMode.AUTOLISTING].map((_source) => {
           return (
@@ -49,7 +46,9 @@ export default function LendingOrderTokensSourceConfig({
                 setValues({ ...values, inputMode: _source });
               }}
             >
-              {labelsMap[_source]}
+              {_source === TradingTokensInputMode.MANUAL
+                ? t("source_tokens")
+                : t("listing_contract")}
             </RadioButton>
           );
         })}
@@ -60,8 +59,8 @@ export default function LendingOrderTokensSourceConfig({
           <div className="flex justify-between items-center">
             <InputLabel
               inputSize={InputSize.LARGE}
-              label="Tokens allowed for trading"
-              tooltipText="Tooltip text"
+              label={t("tokens_allowed_trading")}
+              tooltipText={t("tokens_allowed_tooltip")}
               noMargin
             />
             <IconButton
@@ -104,8 +103,8 @@ export default function LendingOrderTokensSourceConfig({
 
           <div className="py-2">
             <Checkbox
-              label="Allow ERC-223 trading"
-              tooltipText="Tooltip text"
+              label={t("allow_erc223_trading")}
+              tooltipText={t("allow_erc223_tooltip")}
               labelClassName="text-secondary-text"
               checked={values.includeERC223Trading}
               handleChange={() =>
@@ -122,8 +121,8 @@ export default function LendingOrderTokensSourceConfig({
           <div className="flex justify-between items-center">
             <InputLabel
               inputSize={InputSize.LARGE}
-              label="Tokens allowed for trading"
-              tooltipText="Tooltip text"
+              label={t("tokens_allowed_trading")}
+              tooltipText={t("tokens_allowed_tooltip")}
               noMargin
             />
             <IconButton
@@ -145,7 +144,9 @@ export default function LendingOrderTokensSourceConfig({
               <div className="pb-1.5 pt-0.5 px-4 rounded-2.5 bg-primary-bg">
                 <p>{values.tradingTokensAutoListing.name}</p>
                 <p className="text-12 text-tertiary-text">
-                  {values.tradingTokensAutoListing.totalTokens} tokens
+                  {t("listing_tokens_count", {
+                    count: values.tradingTokensAutoListing.totalTokens,
+                  })}
                 </p>
               </div>
             )}

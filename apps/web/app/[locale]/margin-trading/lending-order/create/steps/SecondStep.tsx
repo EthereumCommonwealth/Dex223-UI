@@ -2,6 +2,7 @@ import Alert from "@repo/ui/alert";
 import clsx from "clsx";
 import { Formik } from "formik";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { array, mixed, number, object } from "yup";
 
@@ -41,6 +42,7 @@ export default function SecondStep({
   setSecondStepValues: (secondStep: SecondStepValues) => void;
   setStep: (step: OrderActionStep) => void;
 }) {
+  const t = useTranslations("Margin");
   const { setIsOpen: setCollateralDialogOpened } = useCollateralTokensDialogOpenedStore();
 
   return (
@@ -88,10 +90,10 @@ export default function SecondStep({
             max={100}
             min={1}
             decimalScale={4}
-            label="Leverage"
-            placeholder="Leverage"
+            label={t("leverage")}
+            placeholder={t("leverage")}
             internalText="x"
-            tooltipText={"Tooltip text"}
+            tooltipText={t("leverage_order_tooltip")}
             value={props.values.leverage}
             error={props.errors.leverage}
             onChange={(e) => props.setFieldValue("leverage", +e.target.value)}
@@ -128,7 +130,7 @@ export default function SecondStep({
 
           <div className="bg-tertiary-bg rounded-3 px-5 py-4 flex flex-col gap-2 mb-5">
             <LendingOrderDetailsRow
-              title="You will receive for the entire period"
+              title={t("receive_entire_period")}
               value={
                 firstStepValues.interestRatePerMonth &&
                 firstStepValues.period.lendingOrderDeadline &&
@@ -161,8 +163,8 @@ export default function SecondStep({
             <div className="flex justify-between items-center">
               <InputLabel
                 inputSize={InputSize.LARGE}
-                label="Accepted collateral tokens"
-                tooltipText="Tooltip text"
+                label={t("accepted_collateral")}
+                tooltipText={t("accepted_collateral_tooltip")}
                 noMargin
               />
               <IconButton
@@ -207,7 +209,7 @@ export default function SecondStep({
                   })}
                 </>
               ) : (
-                <span className="text-tertiary-text pl-3 pt-1">Tokens</span>
+                <span className="text-tertiary-text pl-3 pt-1">{t("source_tokens")}</span>
               )}
             </div>
             <HelperText
@@ -236,10 +238,10 @@ export default function SecondStep({
             isNumeric
             value={props.values.minimumBorrowingAmount}
             onChange={(e) => props.setFieldValue("minimumBorrowingAmount", +e.target.value)}
-            label="Minimum borrowing amount"
-            placeholder="Minimum borrowing amount"
+            label={t("min_borrowing_amount")}
+            placeholder={t("min_borrowing_amount")}
             internalText={firstStepValues.loanToken?.symbol}
-            tooltipText="Tooltip text"
+            tooltipText={t("min_borrowing_tooltip")}
             error={props.touched.minimumBorrowingAmount && props.errors.minimumBorrowingAmount}
             isWarning={Boolean(
               props.values.minimumBorrowingAmount &&
@@ -253,15 +255,15 @@ export default function SecondStep({
 
           {props.values.minimumBorrowingAmount &&
           +props.values.minimumBorrowingAmount < +firstStepValues.loanAmount * 0.2 ? (
-            <Alert
-              text="Setting low values for minimum borrowing amount may result in smaller positions taking loans from your order. Make sure that liquidation collaterals are sufficient to cover the gas fees."
-              type="warning"
-            />
+            <Alert text={t("min_borrowing_low_warning")} type="warning" />
           ) : null}
           {props.values.minimumBorrowingAmount &&
           +props.values.minimumBorrowingAmount > +firstStepValues.loanAmount ? (
             <Alert
-              text={`Minimum borrowing amount exceeds specified Available balance (${firstStepValues.loanAmount} ${firstStepValues.loanToken?.symbol}). Borrowers will not be able to take loans from this order.`}
+              text={t("min_borrowing_exceeds", {
+                amount: firstStepValues.loanAmount,
+                symbol: firstStepValues.loanToken?.symbol ?? "",
+              })}
               type="error"
             />
           ) : null}
@@ -273,7 +275,7 @@ export default function SecondStep({
               size={ButtonSize.EXTRA_LARGE}
               fullWidth
             >
-              Previous step
+              {t("previous_step")}
             </Button>
             <Button
               disabled={
@@ -285,7 +287,7 @@ export default function SecondStep({
               fullWidth
               type="submit"
             >
-              Next step
+              {t("next_step")}
             </Button>
           </div>
 

@@ -1,4 +1,5 @@
 import { Formik } from "formik";
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import * as Yup from "yup";
 
@@ -114,6 +115,7 @@ function getTokenOrAmountError({
   amountError?: string;
   tokenError?: string;
   isEnoughBalance: boolean;
+  insufficientBalance: string;
 }) {
   const errors = [];
 
@@ -126,7 +128,7 @@ function getTokenOrAmountError({
   }
 
   if (!isEnoughBalance) {
-    errors.push("Insufficient balance");
+    errors.push(insufficientBalance);
   }
 
   return errors;
@@ -143,6 +145,7 @@ export default function FirstStep({
   setFirstStepValues: (firstStep: FirstStepValues) => void;
   setStep: (step: OrderActionStep) => void;
 }) {
+  const t = useTranslations("Margin");
   const {
     balance: { erc20Balance: token0Balance, erc223Balance: token1Balance },
     refetch: refetchBalance,
@@ -223,6 +226,7 @@ export default function FirstStep({
                     tokenError: props.errors.loanToken,
                     amountError: props.errors.loanAmount,
                     isEnoughBalance,
+                    insufficientBalance: t("insufficient_balance"),
                   })
                 : []
             }
@@ -239,8 +243,8 @@ export default function FirstStep({
           />
           <TextField
             isNumeric
-            label="Interest rate per month"
-            placeholder="Interest rate per month"
+            label={t("interest_per_month")}
+            placeholder={t("interest_per_month")}
             internalText="%"
             error={
               props.touched.interestRatePerMonth && props.errors.interestRatePerMonth
@@ -255,7 +259,7 @@ export default function FirstStep({
           {/**/}
           <div className="bg-tertiary-bg rounded-3 px-5 py-4 flex flex-col gap-2 mb-5 mt-4">
             <LendingOrderDetailsRow
-              title="Interest rate for the entire period"
+              title={t("interest_entire_period")}
               value={
                 props.values.interestRatePerMonth && props.values.period.lendingOrderDeadline
                   ? calculatePeriodInterestRate(
@@ -271,7 +275,7 @@ export default function FirstStep({
               }
             />
             <LendingOrderDetailsRow
-              title="You will receive for the entire period"
+              title={t("receive_entire_period")}
               value={
                 props.values.interestRatePerMonth &&
                 props.values.period.lendingOrderDeadline &&
@@ -309,7 +313,7 @@ export default function FirstStep({
             size={ButtonSize.EXTRA_LARGE}
             fullWidth
           >
-            Next step
+            {t("next_step")}
           </Button>
         </form>
       )}
