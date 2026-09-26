@@ -1,10 +1,51 @@
-import { fallback, http, webSocket } from "viem";
-import { bscTestnet, mainnet } from "viem/chains";
+import { Chain, fallback, http, webSocket } from "viem";
+import {
+  arbitrum,
+  avalanche,
+  base,
+  bsc,
+  bscTestnet,
+  ink,
+  linea,
+  mainnet,
+  mantle,
+  optimism,
+  polygon,
+  sonic,
+  unichain,
+} from "viem/chains";
 import { createConfig, createStorage, parseCookie } from "wagmi";
 import { coinbaseWallet, injected, metaMask, walletConnect } from "wagmi/connectors";
 
 import { eos } from "@/config/chains/eos";
+import { monad } from "@/config/chains/monad";
+import { plasma } from "@/config/chains/plasma";
 import { sepolia } from "@/config/chains/sepolia";
+import { DEX_SUPPORTED_CHAINS, DexChainId } from "@/sdk_bi/chains";
+
+const viemChains: Record<DexChainId, Chain> = {
+  [DexChainId.MAINNET]: mainnet,
+  [DexChainId.SEPOLIA]: sepolia,
+  [DexChainId.BSC_TESTNET]: bscTestnet,
+  [DexChainId.EOS]: eos,
+  [DexChainId.BASE]: base,
+  [DexChainId.BSC]: bsc,
+  [DexChainId.ARBITRUM]: arbitrum,
+  [DexChainId.POLYGON]: polygon,
+  [DexChainId.AVALANCHE]: avalanche,
+  [DexChainId.OPTIMISM]: optimism,
+  [DexChainId.MONAD]: monad,
+  [DexChainId.UNICHAIN]: unichain,
+  [DexChainId.PLASMA]: plasma,
+  [DexChainId.SONIC]: sonic,
+  [DexChainId.LINEA]: linea,
+  [DexChainId.INK]: ink,
+  [DexChainId.MANTLE]: mantle,
+};
+
+const enabledChains = (
+  process.env.NEXT_PUBLIC_ENV === "production" ? [DexChainId.MAINNET] : DEX_SUPPORTED_CHAINS
+).map((chainId) => viemChains[chainId]) as [Chain, ...Chain[]];
 
 const cookieStorage = {
   getItem(key: string) {
@@ -23,8 +64,7 @@ const cookieStorage = {
 };
 
 export const config = createConfig({
-  chains:
-    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
+  chains: enabledChains,
   connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
@@ -89,6 +129,39 @@ export const config = createConfig({
       http("https://data-seed-prebsc-1-s1.bnbchain.org:8545"),
       http(),
     ]),
-    [eos.id]: http("https://api.evm.eosnetwork.com"),
+    // The Vaulta Foundation shut down the public EOS EVM RPC on 2025-10-08; this must be our own node.
+    [eos.id]: http(process.env.NEXT_PUBLIC_EOSEVM_RPC_URL),
+    // Public RPCs. Swap in private endpoints before a chain goes to production.
+    [base.id]: fallback([
+      http("https://mainnet.base.org"),
+      http("https://base-rpc.publicnode.com"),
+    ]),
+    [bsc.id]: fallback([
+      http("https://bsc-dataseed.bnbchain.org"),
+      http("https://bsc-rpc.publicnode.com"),
+    ]),
+    [arbitrum.id]: fallback([
+      http("https://arb1.arbitrum.io/rpc"),
+      http("https://arbitrum-one-rpc.publicnode.com"),
+    ]),
+    [polygon.id]: fallback([
+      http("https://polygon.drpc.org"),
+      http("https://polygon-bor-rpc.publicnode.com"),
+    ]),
+    [avalanche.id]: fallback([
+      http("https://api.avax.network/ext/bc/C/rpc"),
+      http("https://avalanche-c-chain-rpc.publicnode.com"),
+    ]),
+    [optimism.id]: fallback([
+      http("https://mainnet.optimism.io"),
+      http("https://optimism-rpc.publicnode.com"),
+    ]),
+    [monad.id]: http("https://rpc.monad.xyz"),
+    [unichain.id]: http("https://mainnet.unichain.org"),
+    [plasma.id]: http("https://rpc.plasma.to"),
+    [sonic.id]: http("https://rpc.soniclabs.com"),
+    [linea.id]: http("https://rpc.linea.build"),
+    [ink.id]: http("https://rpc-gel.inkonchain.com"),
+    [mantle.id]: http("https://rpc.mantle.xyz"),
   },
 });

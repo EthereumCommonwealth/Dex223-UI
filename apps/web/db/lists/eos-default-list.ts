@@ -1,29 +1,22 @@
+// Tokens on the new EOS EVM deploy (Dex223-contracts deploy-chain.ts). The USDT address is unverified:
+// EOS EVM has had no public RPC since 2025-10-08. Check it against our node before enabling the chain.
 export const eosDefaultList = {
   version: {
-    major: 1,
+    major: 2,
     minor: 0,
-    patch: 2,
+    patch: 0,
   },
   logoURI: "/token-list-placeholder.svg",
   name: "DEX223 EOS Default",
   tokens: [
     {
-      address0: "0x1e6951b73f44E7C71B43Dfc1FFA63cA2eab2cEdA", // ERC-20
-      address1: "0xC7A152911edE7016b8c7B8705F4Df66Ec04CaD78", // ERC-223
-      name: "Dex223 Test token 1",
-      logoURI: "/images/tokens/placeholder.svg",
+      address0: "0x33B57dC70014FD7AA6e1ed3080eeD2B619632B8e", // ERC-20
+      address1: "0xDBCbbFC51A9449277181bc6f101C4eAc28c8De05", // ERC-223, predicted from converter 0xa7d6…0108
+      name: "Tether USD",
+      logoURI: "/images/tokens/USDT.svg",
       chainId: 17777,
       decimals: 6,
-      symbol: "DTST1",
-    },
-    {
-      address0: "0xfCCB28483d26EadB90A11cD50e09c12E553fFb22", // ERC-20
-      address1: "0x6eeaa35Da5C72D22FC8D99906C73A149c2CfB615", // ERC-223
-      name: "Dex223 Test token 2",
-      logoURI: "/images/tokens/placeholder.svg",
-      chainId: 17777,
-      decimals: 18,
-      symbol: "DTST2",
+      symbol: "USDT",
     },
   ],
 };

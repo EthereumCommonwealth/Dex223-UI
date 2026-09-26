@@ -5,8 +5,8 @@ export const eos = defineChain({
   name: "EOS EVM",
   nativeCurrency: {
     decimals: 18,
-    name: "EOS",
-    symbol: "EOS",
+    name: "Vaulta",
+    symbol: "A",
   },
   fees: {
     baseFeeMultiplier: 1,

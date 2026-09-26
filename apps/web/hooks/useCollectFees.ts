@@ -160,6 +160,19 @@ const unwrapGasLimitMap: Record<DexChainId, { base: bigint; additional: bigint }
   [DexChainId.SEPOLIA]: { base: BigInt(46200), additional: BigInt(10000) },
   [DexChainId.BSC_TESTNET]: { base: BigInt(46200), additional: BigInt(10000) },
   [DexChainId.EOS]: { base: BigInt(46200), additional: BigInt(10000) },
+  [DexChainId.BASE]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.BSC]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.ARBITRUM]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.POLYGON]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.AVALANCHE]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.OPTIMISM]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.MONAD]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.UNICHAIN]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.PLASMA]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.SONIC]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.LINEA]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.INK]: { base: BigInt(50000), additional: BigInt(12000) },
+  [DexChainId.MANTLE]: { base: BigInt(60000), additional: BigInt(15000) },
 };
 const defaultUnwrapValue = BigInt(46000);
 
