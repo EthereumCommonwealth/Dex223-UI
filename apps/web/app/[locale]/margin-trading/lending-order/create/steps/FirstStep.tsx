@@ -109,6 +109,7 @@ function getTokenOrAmountError({
   amountError,
   tokenError,
   isEnoughBalance,
+  insufficientBalance,
 }: {
   touchedAmount?: boolean;
   touchedToken?: boolean;
