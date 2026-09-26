@@ -623,7 +623,8 @@
     "volume_1d": "1일 거래량",
     "volume_7d": "7일 거래량",
     "view_pool": "풀 보기",
-    "missing_tokens": "토큰 A 또는 토큰 B가 없습니다"
+    "missing_tokens": "토큰 A 또는 토큰 B가 없습니다",
+    "pools": "풀"
   },
   "Statistics": {
     "title": "통계",

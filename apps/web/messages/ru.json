@@ -623,7 +623,8 @@
     "volume_1d": "Объём за 1 день",
     "volume_7d": "Объём за 7 дней",
     "view_pool": "Открыть пул",
-    "missing_tokens": "Нет токена A или токена B"
+    "missing_tokens": "Нет токена A или токена B",
+    "pools": "Пулы"
   },
   "Statistics": {
     "title": "Статистика",
