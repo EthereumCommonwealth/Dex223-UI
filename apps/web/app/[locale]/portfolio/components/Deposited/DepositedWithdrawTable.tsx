@@ -322,7 +322,7 @@ const WithdrawMobileTableItem = ({
                 onClick();
               }}
             >
-              {isRevoke ? "Revoke" : "Withdraw"}
+              {isRevoke ? t("revoke") : t("withdraw")}
             </Button>
           ) : (
             <div className="flex justify-between items-center bg-tertiary-bg px-4 py-[10px] rounded-2">

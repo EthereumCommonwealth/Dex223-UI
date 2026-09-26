@@ -2,6 +2,7 @@
 
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { useMediaQuery } from "react-responsive";
 
@@ -17,16 +18,17 @@ export const BalancesDesktopTable = ({
   tableData: any;
   setTokenForPortfolio: (currency: Currency | null) => void;
 }) => {
+  const t = useTranslations("Portfolio");
   return (
     <div className="hidden lg:grid pr-5 pl-5 pb-5 rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr)] relative">
-      <div className="text-tertiary-text pl-5 h-[60px] flex items-center">Token</div>
+      <div className="text-tertiary-text pl-5 h-[60px] flex items-center">{t("col_token")}</div>
       <div className="text-tertiary-text h-[60px] flex items-center gap-2">
-        Amount <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
+        {t("amount_title")} <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
       </div>
       <div className="text-tertiary-text h-[60px] flex items-center gap-2">
-        Amount <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
+        {t("amount_title")} <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
       </div>
-      <div className="text-tertiary-text h-[60px] flex items-center">Amount, $</div>
+      <div className="text-tertiary-text h-[60px] flex items-center">{t("amount_usd")}</div>
       {tableData.map((o: any, index: number) => {
         const key = o?.token?.address0 ? o.token.address0 : `item-${index}`;
 
