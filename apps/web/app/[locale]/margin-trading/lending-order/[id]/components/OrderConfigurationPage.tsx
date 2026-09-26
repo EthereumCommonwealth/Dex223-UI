@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { useCallback } from "react";
 
 import { useLendingOrderRecentTransactionsStore } from "@/app/[locale]/margin-trading/lending-order/create/hooks/useLendingOrderRecentTransactionsStore";
@@ -27,12 +28,6 @@ type Props = {
   mode: OrderActionMode;
 };
 
-const stepsLabels: Record<OrderActionStep, string> = {
-  [OrderActionStep.FIRST]: "Loan",
-  [OrderActionStep.SECOND]: "Parameters",
-  [OrderActionStep.THIRD]: "Liquidation",
-};
-
 export default function OrderConfigurationPage({
   mode,
 
@@ -49,6 +44,7 @@ export default function OrderConfigurationPage({
 
   openPreviewDialog,
 }: Props) {
+  const t = useTranslations("Margin");
   const renderSteps = useCallback(() => {
     switch (step) {
       case OrderActionStep.FIRST:
@@ -105,7 +101,7 @@ export default function OrderConfigurationPage({
             <IconButton iconName="back" />
           </Link>
           <h1 className="text-20 font-bold">
-            {mode === OrderActionMode.CREATE ? "New lending order" : "Edit lending order"}
+            {mode === OrderActionMode.CREATE ? t("new_lending_order") : t("edit_lending_order")}
           </h1>
           <IconButton
             buttonSize={IconButtonSize.LARGE}
@@ -136,7 +132,11 @@ export default function OrderConfigurationPage({
                         _step === step ? "text-primary-text" : "text-tertiary-text",
                       )}
                     >
-                      {stepsLabels[_step]}
+                      {_step === OrderActionStep.FIRST
+                        ? t("step_loan")
+                        : _step === OrderActionStep.SECOND
+                          ? t("step_parameters")
+                          : t("step_liquidation")}
                     </span>
                   </div>
                   {_step !== OrderActionStep.THIRD && (
