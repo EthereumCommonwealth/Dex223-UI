@@ -1,6 +1,7 @@
 import Checkbox from "@repo/ui/checkbox";
 import clsx from "clsx";
 import { Formik } from "formik";
+import { useTranslations } from "next-intl";
 import React, { PropsWithChildren } from "react";
 
 import { useBorrowMarketFilterStore } from "@/app/[locale]/margin-trading/stores/useBorrowMarketFilterStore";
@@ -67,12 +68,13 @@ export default function BorrowMarketFilter({
     setLiquidationPriceSource,
     setLeverage,
   } = useBorrowMarketFilterStore();
+  const t = useTranslations("Margin");
 
   return (
     <Drawer isOpen={isDrawerOpened} setIsOpen={setDrawerOpened} placement="left">
       <div className="w-[432px] pr-6 pl-10 pt-4">
         <div className="flex justify-between">
-          <h3 className="text-20 font-bold">Filter</h3>
+          <h3 className="text-20 font-bold">{t("filter")}</h3>
           <IconButton
             variant={IconButtonVariant.CLOSE}
             handleClose={() => setDrawerOpened(false)}
@@ -106,73 +108,73 @@ export default function BorrowMarketFilter({
             return (
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <InputLabel label="Min order balance" tooltipText="Period tooltip" />
+                  <InputLabel label={t("min_order_balance")} tooltipText={t("period_tooltip")} />
                   <Input
                     value={values.minOrderBalance}
                     onChange={(e) => setFieldValue("minOrderBalance", e.target.value)}
-                    placeholder="Min order balance"
+                    placeholder={t("min_order_balance")}
                   />
                 </div>
                 <div className="mb-4">
-                  <InputLabel label="Min loan amount" tooltipText="Period tooltip" />
+                  <InputLabel label={t("min_loan_amount")} tooltipText={t("period_tooltip")} />
                   <Input
                     value={values.minLoanAmount}
                     onChange={(e) => setFieldValue("minLoanAmount", e.target.value)}
-                    placeholder="Min loan amount"
+                    placeholder={t("min_loan_amount")}
                   />
                 </div>
                 <div className="mb-6">
-                  <InputLabel label="Max. leverage" tooltipText="Max leverage tooltip" />
+                  <InputLabel label={t("max_leverage_short")} tooltipText={t("leverage_tooltip")} />
                   <Input
                     value={values.leverage}
                     onChange={(e) => setFieldValue("leverage", e.target.value)}
                     className="mb-3"
-                    placeholder="Max. leverage"
+                    placeholder={t("max_leverage_short")}
                   />
                 </div>
                 <div className="mb-4">
-                  <InputLabel label="Duration, days" tooltipText="Period tooltip" />
+                  <InputLabel label={t("duration_days_label")} tooltipText={t("period_tooltip")} />
                   <div className="grid grid-cols-[1fr_12px_1fr] gap-2">
                     <Input
                       value={values.minPositionDuration}
                       onChange={(e) => setFieldValue("minPositionDuration", e.target.value)}
-                      placeholder="From"
+                      placeholder={t("from")}
                     />
                     <div className="h-full flex items-center">—</div>
                     <Input
                       value={values.maxPositionDuration}
                       onChange={(e) => setFieldValue("maxPositionDuration", e.target.value)}
-                      placeholder="To"
+                      placeholder={t("to")}
                     />
                   </div>
                 </div>
                 <div className="mb-4">
                   <InputLabel
-                    label="Max interest rate per month"
-                    tooltipText="Max interest rate per month tooltip"
+                    label={t("max_interest_per_month")}
+                    tooltipText={t("interest_tooltip")}
                   />
                   <Input
                     value={values.maxInterestRatePerMonth}
                     onChange={(e) => setFieldValue("maxInterestRatePerMonth", e.target.value)}
-                    placeholder="Interest rate"
+                    placeholder={t("interest_rate")}
                   />
                 </div>
                 <div className="mb-4">
                   <InputLabel
-                    label="Order currency limit"
-                    tooltipText="Order currency limit tooltip"
+                    label={t("order_currency_limit")}
+                    tooltipText={t("currency_limit_tooltip")}
                   />
                   <Input
                     value={values.orderCurrencyLimit}
                     onChange={(e) => setFieldValue("orderCurrencyLimit", e.target.value)}
-                    placeholder="Order currency limit"
+                    placeholder={t("order_currency_limit")}
                   />
                 </div>
 
                 <div className="mb-8">
                   <InputLabel
-                    label="Liquidation price source"
-                    tooltipText="Liquidation price source tooltip"
+                    label={t("liquidation_price_source")}
+                    tooltipText={t("liquidation_price_tooltip")}
                   />
                   <div className="flex flex-col gap-3">
                     <CheckboxExternalLink
@@ -180,13 +182,13 @@ export default function BorrowMarketFilter({
                       checked={true}
                       handleChange={() => {}}
                       id="liqu_src_1"
-                      label="DEX223 market"
+                      label={t("dex223_market")}
                     />
                   </div>
                 </div>
                 <ButtonRow>
-                  <Button colorScheme={ButtonColor.LIGHT_GREEN}>Cancel</Button>
-                  <Button>Apply</Button>
+                  <Button colorScheme={ButtonColor.LIGHT_GREEN}>{t("cancel")}</Button>
+                  <Button>{t("apply")}</Button>
                 </ButtonRow>
               </form>
             );
