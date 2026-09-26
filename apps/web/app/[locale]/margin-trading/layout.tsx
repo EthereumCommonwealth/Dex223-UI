@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-import { getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import React, { PropsWithChildren } from "react";
 
 import MarginAvailabilityGate from "@/components/common/MarginAvailabilityGate";
