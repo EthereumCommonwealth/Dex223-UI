@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 
@@ -114,6 +115,7 @@ export default function OrderWithdrawDialog({
   order: LendingOrder;
 }) {
   const { status, setStatus } = useWithdrawOrderStatusStore();
+  const t = useTranslations("Margin");
 
   const [amountToWithdraw, setAmountToWithdraw] = useState<string>("");
 
@@ -142,30 +144,30 @@ export default function OrderWithdrawDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Withdraw" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
       <div className="w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
-            <p className="text-secondary-text mb-4">
-              You are withdrawing funds from your available balance, which decreases the amount that
-              new borrowers can borrow
-            </p>
+            <p className="text-secondary-text mb-4">{t("withdraw_hint")}</p>
             <TextField
-              label="Withdraw amount"
-              tooltipText="Tooltip text"
+              label={t("withdraw_amount")}
+              tooltipText={t("withdraw_amount_tooltip")}
               internalText={order.baseAsset.symbol}
-              placeholder="Withdraw amount"
+              placeholder={t("withdraw_amount")}
               value={amountToWithdraw}
               onChange={(e) => setAmountToWithdraw(e.target.value)}
-              helperText={`Maximum withdraw amount: ${formatUnits(order.balance, order.baseAsset.decimals)} ${order.baseAsset.symbol}`}
+              helperText={t("max_withdraw_amount", {
+                amount: formatUnits(order.balance, order.baseAsset.decimals),
+                symbol: order.baseAsset.symbol,
+              })}
               error={error}
             />
 
             <div className="mt-3 ">
               <InputLabel
                 inputSize={InputSize.LARGE}
-                label={`Standard for ${order.baseAsset.symbol}`}
-                tooltipText="Tooltip text"
+                label={t("standard_for", { symbol: order.baseAsset.symbol })}
+                tooltipText={t("withdraw_limit_tooltip")}
               />
               <div className="grid grid-cols-2 gap-3">
                 {[Standard.ERC20, Standard.ERC223].map((st) => {
@@ -187,7 +189,7 @@ export default function OrderWithdrawDialog({
             <InputLabel
               inputSize={InputSize.LARGE}
               label="Withdraw limit"
-              tooltipText="Tooltip text"
+              tooltipText={t("withdraw_limit_tooltip")}
             />
             <div className="pt-4 pb-5 px-5 rounded-4 bg-tertiary-bg mb-4">
               <p className="mb-2">
@@ -226,7 +228,7 @@ export default function OrderWithdrawDialog({
 
             {status === OrderWithdrawStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Successfully withdrawn</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("withdraw_success")}</h2>
                 <p className="text-center mb-1">
                   {amountToWithdraw} {order.baseAsset.symbol}
                 </p>
@@ -235,7 +237,7 @@ export default function OrderWithdrawDialog({
             {status === OrderWithdrawStatus.ERROR_WITHDRAW && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Failed to withdraw
+                  {t("withdraw_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {amountToWithdraw} {order.baseAsset.symbol}
@@ -252,7 +254,7 @@ export default function OrderWithdrawDialog({
               amount={amountToWithdraw}
               amountUSD={"0"}
               standard={Standard.ERC20}
-              title={"Withdraw amount"}
+              title={t("withdraw_amount")}
             />
             <div className="h-px bg-secondary-border my-4" />
           </>

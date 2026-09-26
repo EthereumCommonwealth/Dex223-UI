@@ -3,6 +3,7 @@ import ExternalTextLink from "@repo/ui/external-text-link";
 import GradientCard, { CardGradient } from "@repo/ui/gradient-card";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { use, useMemo, useRef, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { formatUnits } from "viem";
@@ -72,6 +73,7 @@ export default function LendingOrder({
   const requestTimeRef = useRef<number>(Date.now());
 
   const [searchTradableTokenValue, setSearchTradableTokenValue] = useState("");
+  const t = useTranslations("Margin");
 
   const [filteredTokens, isTokenFilterActive] = useMemo(() => {
     return searchTradableTokenValue
@@ -80,7 +82,7 @@ export default function LendingOrder({
   }, [searchTradableTokenValue, order?.allowedTradingAssets]);
 
   if (loading || !order) {
-    return <div className="text-24 p-5">Order is loading...</div>;
+    return <div className="text-24 p-5">{t("order_loading")}</div>;
   }
 
   return (
@@ -89,22 +91,22 @@ export default function LendingOrder({
         <div className="mb-10">
           <Link href="/margin-trading" className="flex items-center gap-1">
             <Svg iconName="back" />
-            Back to lending orders
+            {t("back_to_lending_orders")}
           </Link>
         </div>
 
-        <h1 className="text-40 font-medium mb-3">Lending order details</h1>
+        <h1 className="text-40 font-medium mb-3">{t("lending_order_details")}</h1>
 
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 pl-5 pr-4 py-1 min-h-12 text-tertiary-text">
-            Owner:{" "}
+            {t("owner")}:{" "}
             <ExternalTextLink
               text={truncateMiddle(order.owner, { charsFromEnd: 6, charsFromStart: 6 })}
               href={getExplorerLink(ExplorerLinkType.ADDRESS, order.owner, chainId)}
             />
           </div>
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 px-5 py-1 min-h-12 text-tertiary-text">
-            Lending order ID: <span className="text-secondary-text">{id}</span>
+            {t("lending_order_id")}: <span className="text-secondary-text">{id}</span>
           </div>
         </div>
 
@@ -115,12 +117,12 @@ export default function LendingOrder({
               <span className="text-secondary-text text-18 font-bold">{order.baseAsset.name}</span>
               {order.alive ? (
                 <div className="flex items-center gap-3 text-green">
-                  Active
+                  {t("status_active")}
                   <div className="w-2 h-2 rounded-full bg-green"></div>
                 </div>
               ) : (
                 <div className="flex items-center gap-1 text-tertiary-text">
-                  Closed
+                  {t("status_closed")}
                   <Svg iconName="closed" />
                 </div>
               )}
@@ -133,18 +135,18 @@ export default function LendingOrder({
                     onClick={() => setIsCloseDialogOpened(true)}
                     colorScheme={ButtonColor.LIGHT_GREEN}
                   >
-                    Close
+                    {t("close")}
                   </Button>
                 ) : (
                   <Button
                     onClick={() => setIsOpenDialogOpened(true)}
                     colorScheme={ButtonColor.LIGHT_GREEN}
                   >
-                    Open
+                    {t("open")}
                   </Button>
                 )}
                 <Link href={`/margin-trading/lending-order/${order.id}/edit`}>
-                  <Button>Edit</Button>
+                  <Button>{t("edit")}</Button>
                 </Link>
               </div>
             ) : (
@@ -156,7 +158,7 @@ export default function LendingOrder({
                       href={`/margin-trading/lending-order/${order.id}/borrow`}
                     >
                       <Button disabled colorScheme={ButtonColor.LIGHT_PURPLE}>
-                        Margin swap
+                        {t("margin_swap")}
                       </Button>
                     </Link>
                     <Link
@@ -176,7 +178,7 @@ export default function LendingOrder({
                           order.allowedTradingAssets.length === 0
                         }
                       >
-                        Borrow
+                        {t("borrow")}
                       </Button>
                     </Link>
                   </div>
@@ -192,8 +194,8 @@ export default function LendingOrder({
             >
               <div className="">
                 <div className="items-center flex gap-1 text-tertiary-text">
-                  Available balance
-                  <Tooltip text="Tooltip text" />
+                  {t("available_balance")}
+                  <Tooltip text={t("available_balance_tooltip")} />
                 </div>
 
                 <p className="font-medium text-20">
@@ -209,7 +211,7 @@ export default function LendingOrder({
                     className="border-green disabled:bg-green-bg disabled:opacity-50"
                     colorScheme={ButtonColor.LIGHT_GREEN}
                   >
-                    Deposit
+                    {t("deposit")}
                   </Button>
                   <Button
                     disabled={!order.alive}
@@ -217,7 +219,7 @@ export default function LendingOrder({
                     className="border-green disabled:bg-green-bg disabled:opacity-50"
                     colorScheme={ButtonColor.LIGHT_GREEN}
                   >
-                    Withdraw
+                    {t("withdraw")}
                   </Button>
                 </div>
               )}
@@ -226,8 +228,8 @@ export default function LendingOrder({
               <GradientCard className=" px-5 py-3 ">
                 <div className="">
                   <div className="items-center flex gap-1 text-tertiary-text">
-                    Total balance
-                    <Tooltip text="Tooltip text" />
+                    {t("total_balance")}
+                    <Tooltip text={t("total_balance_tooltip")} />
                   </div>
 
                   <p className="font-medium text-20">
@@ -242,8 +244,8 @@ export default function LendingOrder({
               <GradientCard className=" px-5 py-3 ">
                 <div className="">
                   <div className="items-center flex gap-1 text-tertiary-text">
-                    Min borrowing
-                    <Tooltip text="Tooltip text" />
+                    {t("min_borrowing")}
+                    <Tooltip text={t("min_borrowing_page_tooltip")} />
                   </div>
 
                   <p className="font-medium text-20">
@@ -259,31 +261,33 @@ export default function LendingOrder({
         <div className="bg-primary-bg rounded-5 mb-5 py-3 px-10 flex items-center justify-between">
           <div>
             <div className="items-center flex gap-1 text-tertiary-text">
-              Number of margin positions
-              <Tooltip text="Tooltip text" />
+              {t("positions_count_label")}
+              <Tooltip text={t("positions_count_tooltip")} />
             </div>
-            <span className="text-20">{order.positions?.length} margin position(s)</span>
+            <span className="text-20">
+              {t("margin_positions_count", { count: order.positions?.length ?? 0 })}
+            </span>
           </div>
           {!!order.positions?.length && (
             <Button colorScheme={ButtonColor.LIGHT_GREEN} endIcon="next">
-              View margin positions
+              {t("view_margin_positions")}
             </Button>
           )}
         </div>
 
         <div className="grid grid-cols-2 rounded-5 gap-x-5 gap-y-4 bg-primary-bg px-10 pt-4 pb-5 mb-5">
           <OrderInfoBlock
-            title="Interest rate"
+            title={t("interest_rate")}
             cards={[
               {
-                title: "Per month",
-                tooltipText: "Tooltip text",
+                title: t("per_month"),
+                tooltipText: t("interest_rate_tooltip"),
                 value: `${order.interestRate / 100}%`,
                 bg: "percentage",
               },
               {
-                title: "Per entire period",
-                tooltipText: "Tooltip text",
+                title: t("per_entire_period"),
+                tooltipText: t("interest_entire_tooltip"),
                 value: calculatePeriodInterestRate(order.interestRate, order.positionDuration),
                 bg: "percentage",
               },
@@ -292,69 +296,71 @@ export default function LendingOrder({
           <OrderInfoBlock
             cards={[
               {
-                title: "Margin positions duration",
-                tooltipText: "Tooltip text",
-                value: `${formatFloat(order.positionDuration / 24 / 60 / 60)} days`,
+                title: t("margin_positions_duration"),
+                tooltipText: t("position_duration_tooltip"),
+                value: t("duration_days", {
+                  count: formatFloat(order.positionDuration / 24 / 60 / 60),
+                }),
                 bg: "margin_positions_duration",
               },
               {
-                title: "Lending order deadline",
-                tooltipText: "Tooltip text",
+                title: t("order_deadline"),
+                tooltipText: t("order_deadline_tooltip"),
                 value: timestampToDateString(order.deadline, { withUTC: false }),
                 bg: "deadline",
               },
             ]}
-            title="Time frame"
+            title={t("time_frame")}
           />
           <OrderInfoBlock
             cards={[
               {
-                title: "Max leverage",
-                tooltipText: "Tooltip text",
+                title: t("max_leverage"),
+                tooltipText: t("leverage_page_tooltip"),
                 value: `${order.leverage}x`,
                 bg: "leverage",
               },
               {
-                title: "LTV",
-                tooltipText: "Tooltip text",
+                title: t("ltv"),
+                tooltipText: t("ltv_tooltip"),
                 value: "-",
                 bg: "ltv",
               },
             ]}
-            title="Financial metrics"
+            title={t("financial_metrics")}
           />
           <OrderInfoBlock
             cards={[
               {
-                title: "Liquidation fee",
-                tooltipText: "Tooltip text",
+                title: t("liquidation_fee"),
+                tooltipText: t("liquidation_fee_tooltip"),
                 value: `${formatFloat(order.liquidationRewardAmount.formatted)} ${order.liquidationRewardAsset.symbol}`,
                 bg: "liquidation_fee",
               },
               {
-                title: "Order currency limit",
-                tooltipText: "Tooltip text",
-                value: `${order.currencyLimit} currencies`,
+                title: t("order_currency_limit"),
+                tooltipText: t("currency_limit_page_tooltip"),
+                value: t("currencies_count", { count: order.currencyLimit }),
                 bg: "currency",
               },
             ]}
-            title="Fee and currency limit"
+            title={t("fee_and_currency_limit")}
           />
         </div>
 
         <div className="bg-primary-bg rounded-5 px-10 pt-4 pb-5 flex flex-col gap-3 mb-5">
-          <h3 className="text-20 text-secondary-text font-medium">Trading and collateral tokens</h3>
+          <h3 className="text-20 text-secondary-text font-medium">{t("trading_and_collateral")}</h3>
 
           <div className="bg-tertiary-bg rounded-3 pl-5 pb-5 pt-2 bg-[url(/images/card-bg/collateral.svg)] bg-[length:120px_80px] bg-right-top bg-no-repeat">
             <div className="grid grid-cols-[1fr_120px] gap-3">
               <div>
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-tertiary-text flex items-center gap-1">
-                    Accepted collateral tokens
-                    <Tooltip text="Tooltip text" />
+                    {t("accepted_collateral")}
+                    <Tooltip text={t("accepted_collateral_tooltip")} />
                   </h3>
                   <span className="text-20 font-medium">
-                    {order.allowedCollateralAssets.length} tokens
+                    {t("listing_tokens_count", { count: order.allowedCollateralAssets.length })}
                   </span>
                 </div>
                 <div className="flex gap-1">
@@ -406,18 +412,18 @@ export default function LendingOrder({
             <div className="flex justify-between mb-3">
               <div className="flex items-center gap-2 mb-3">
                 <h3 className="text-tertiary-text flex items-center gap-1">
-                  Tokens allowed for trading
-                  <Tooltip text="Tooltip text" />
+                  {t("tokens_allowed_trading")}
+                  <Tooltip text={t("tokens_allowed_tooltip")} />
                 </h3>
                 <span className="text-20 font-medium">
-                  {order.allowedTradingAssets.length} tokens
+                  {t("listing_tokens_count", { count: order.allowedTradingAssets.length })}
                 </span>
               </div>
               <div>
                 <SearchInput
                   value={searchTradableTokenValue}
                   onChange={(e) => setSearchTradableTokenValue(e.target.value)}
-                  placeholder="Token name"
+                  placeholder={t("token_name")}
                   className="bg-primary-bg"
                 />
               </div>
@@ -470,38 +476,40 @@ export default function LendingOrder({
             )}
             {!filteredTokens.length && searchTradableTokenValue && (
               <div className="rounded-5 h-[232px] -mt-5 flex items-center justify-center text-secondary-text bg-empty-not-found-token bg-no-repeat bg-right-top bg-[length:212px_212px] -mr-5">
-                Token not found
+                {t("token_not_found")}
               </div>
             )}
           </div>
         </div>
 
         <div className=" bg-primary-bg rounded-5 px-10 pt-4 pb-5 mb-5 flex flex-col gap-3">
-          <h3 className="text-20 text-secondary-text font-medium">Liquidation details</h3>
+          <h3 className="text-20 text-secondary-text font-medium">{t("liquidation_details")}</h3>
           <div className="grid grid-cols-2 gap-3">
             <OrderInfoCard
               value={
                 <ExternalTextLink
-                  text="DEX223 Market"
+                  text={t("dex223_market")}
                   href={getExplorerLink(ExplorerLinkType.ADDRESS, ORACLE_ADDRESS[chainId], chainId)}
                 />
               }
-              title="Liquidation price source"
+              title={t("liquidation_price_source")}
               bg="liquidation_price_source"
-              tooltipText="Tooltip text"
+              tooltipText={t("liquidation_price_tooltip")}
             />
             <OrderInfoCard
-              value={"Anyone"}
-              title="Initiate liquidation "
+              value={t("anyone")}
+              title={t("initiate_liquidation")}
               bg="initiate_liquidation"
-              tooltipText="Tooltip text"
+              tooltipText={t("initiate_liquidation_tooltip")}
             />
           </div>
         </div>
 
         {!!order.positions?.length && (
           <>
-            <h2 className="text-32 text-secondary-text font-medium mb-5">Margin positions</h2>
+            <h2 className="text-32 text-secondary-text font-medium mb-5">
+              {t("margin_positions")}
+            </h2>
             <div className="grid gap-5">
               {!!order.positions?.length &&
                 order.positions.map((position, index) => (
@@ -544,7 +552,7 @@ export default function LendingOrder({
       <DrawerDialog isOpen={!!tokenForPortfolio} setIsOpen={() => setTokenForPortfolio(null)}>
         <DialogHeader
           onClose={() => setTokenForPortfolio(null)}
-          title={tokenForPortfolio?.name || "Unknown"}
+          title={tokenForPortfolio?.name || t("unknown")}
         />
         {tokenForPortfolio ? <TokenPortfolioDialogContent token={tokenForPortfolio} /> : null}
       </DrawerDialog>
