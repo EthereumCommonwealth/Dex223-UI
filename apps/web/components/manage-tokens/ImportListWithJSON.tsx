@@ -34,7 +34,7 @@ export default function ImportListWithJSON({ setContent }: Props) {
     if (file) {
       setTokenListFile(file);
       if (file.size > 2097152) {
-        setError("File is larger then 2MB");
+        setError(t("file_too_large"));
       } else {
         setError("");
       }
@@ -56,7 +56,7 @@ export default function ImportListWithJSON({ setContent }: Props) {
             //TODO: Check that all tokens in list from same chain
 
             if (!parsedJson.tokens || !parsedJson.tokens || !parsedJson.version) {
-              setError("Unsupported tokenlist format");
+              setError(t("unsupported_list_format"));
               return;
             } else {
               setError("");
@@ -141,7 +141,7 @@ export default function ImportListWithJSON({ setContent }: Props) {
 
     setTokenListFile(event.dataTransfer.files[0]);
     if (event.dataTransfer.files[0].size > 2097152) {
-      setError("File is larger then 2MB");
+      setError(t("file_too_large"));
     } else {
       setError("");
     }
@@ -236,7 +236,7 @@ export default function ImportListWithJSON({ setContent }: Props) {
               t("import_files_or_drag_and_drop")
             )}
           </div>
-          <HelperText helperText={"Max 2MB, file type JSON"} error={error ? error : undefined} />
+          <HelperText helperText={t("json_file_limit")} error={error ? error : undefined} />
         </>
       )}
       {tokenListFileContent && !!alreadyImportedList && (
@@ -271,15 +271,10 @@ export default function ImportListWithJSON({ setContent }: Props) {
               {/*</a>*/}
             </div>
 
-            <Alert
-              text={
-                "This token list has already been imported. You cannot import a list with the same name twice."
-              }
-              type={"info"}
-            />
+            <Alert text={t("list_already_imported_name")} type={"info"} />
           </div>
           <Button fullWidth disabled size={ButtonSize.LARGE}>
-            List already imported
+            {t("list_already_imported")}
           </Button>
         </>
       )}
