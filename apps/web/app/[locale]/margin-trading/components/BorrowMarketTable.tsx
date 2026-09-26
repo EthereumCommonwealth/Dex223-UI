@@ -290,8 +290,8 @@ export default function BorrowMarketTable({
                 },
               }}
             >
-              <div className="min-w-[920px] lg:min-w-0">
-                <div className="grid overflow-hidden bg-table-gradient grid-cols-[minmax(0,1.62fr)_minmax(0,0.93fr)_minmax(0,0.85fr)_minmax(0,0.9fr)_minmax(0,0.65fr)_minmax(0,1.15fr)_minmax(0,1.15fr)_minmax(0,1.35fr)] pb-2 px-2.5">
+              <div className="min-w-[1020px]">
+                <div className="grid overflow-hidden bg-table-gradient grid-cols-[minmax(175px,1.62fr)_minmax(110px,0.93fr)_minmax(100px,0.85fr)_minmax(106px,0.9fr)_minmax(78px,0.65fr)_minmax(140px,1.15fr)_minmax(132px,1.15fr)_minmax(150px,1.35fr)] pb-2 px-2.5">
                   {headerColumns.map((columnData, index) => (
                     <HeaderItem
                       key={columnData.field}
