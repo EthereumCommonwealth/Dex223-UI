@@ -220,7 +220,7 @@ export default function DecreaseLiquidityPage({
     setTokenId(tokenId);
   }, [tokenId, setTokenId, reset]);
 
-  if (!tokenA || !tokenB) return <div>Error: Token A or B undefined</div>;
+  if (!tokenA || !tokenB) return <div>{t("missing_tokens")}</div>;
 
   return (
     <Container>
@@ -375,7 +375,7 @@ export default function DecreaseLiquidityPage({
                       position?.amount0
                         .multiply(new Percent(percentage))
                         .divide(BigInt(100))
-                        .toSignificant() || "Loading..."
+                        .toSignificant() || t("loading")
                     }
                   />
                   <PositionLiquidityCard
@@ -385,7 +385,7 @@ export default function DecreaseLiquidityPage({
                       position?.amount1
                         .multiply(new Percent(percentage))
                         .divide(BigInt(100))
-                        .toSignificant() || "Loading..."
+                        .toSignificant() || t("loading")
                     }
                   />
                 </div>
@@ -587,7 +587,7 @@ export default function DecreaseLiquidityPage({
                   position?.amount0
                     .multiply(new Percent(percentage))
                     .divide(BigInt(100))
-                    .toSignificant() || "Loading..."
+                    .toSignificant() || t("loading")
                 }
               />
               <RemoveLiquidityRow
@@ -596,7 +596,7 @@ export default function DecreaseLiquidityPage({
                   position?.amount1
                     .multiply(new Percent(percentage))
                     .divide(BigInt(100))
-                    .toSignificant() || "Loading..."
+                    .toSignificant() || t("loading")
                 }
               />
             </div>
