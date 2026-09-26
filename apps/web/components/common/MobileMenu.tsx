@@ -184,6 +184,7 @@ const mobileLinks: {
   iconName: IconName;
   title: any;
   marginOnly?: boolean;
+  plain?: boolean;
 }[] = [
   {
     href: "/swap",
@@ -221,6 +222,13 @@ const mobileLinks: {
     href: "/token-listing",
     iconName: "listing",
     title: "token_listing",
+  },
+  // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
+  {
+    href: "/rewards",
+    iconName: "star",
+    title: "rewards",
+    plain: true,
   },
 ];
 
@@ -302,12 +310,14 @@ export default function MobileMenu() {
         <div className="flex flex-col justify-between h-full min-w-[300px]">
           <div className="py-6 grid gap-1">
             {[
-              mobileLinks.map(({ href, iconName, title, marginOnly }) => {
+              mobileLinks.map(({ href, iconName, title, marginOnly, plain }) => {
                 return (
                   <MobileLink
                     isMenu
                     key={href}
-                    href={href}
+                    href={plain ? `${href}/${locale}` : href}
+                    isExternal={plain}
+                    openInNewTab={false}
                     iconName={iconName}
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}

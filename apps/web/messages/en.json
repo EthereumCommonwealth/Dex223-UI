@@ -39,7 +39,8 @@
     "margin_unavailable_switch": "Switch to {networks} in the network picker to use margin trading and lending.",
     "margin_unavailable_description": "The margin trading contract is not deployed on this network yet. You can keep trading on Swap.",
     "margin_unavailable_go_to_swap": "Go to Swap",
-    "send": "Send"
+    "send": "Send",
+    "rewards": "Rewards"
   },
   "RecentTransactions": {
     "transactions": "Transactions",

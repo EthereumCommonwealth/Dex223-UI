@@ -85,7 +85,7 @@ const menuItems: Array<
       submenu: (handleClose: () => void, t: any, pathname?: string) => ReactNode;
       activeFlags: string[];
     }
-  | { label: any; href: string }
+  | { label: any; href: string; plain?: boolean }
 > = [
   {
     label: "trade",
@@ -135,6 +135,12 @@ const menuItems: Array<
   {
     label: "portfolio",
     href: "/portfolio",
+  },
+  // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
+  {
+    label: "rewards",
+    href: "/rewards",
+    plain: true,
   },
   {
     label: "token_listing",
@@ -384,6 +390,7 @@ function NavigationMoreDropdown() {
 
 export default function Navigation() {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
 
   const pathname = usePathname();
 
@@ -407,7 +414,10 @@ export default function Navigation() {
             <NavigationItem
               id={menuItem.label}
               title={t(menuItem.label)}
-              href={menuItem.href}
+              href={
+                "plain" in menuItem && menuItem.plain ? `${menuItem.href}/${locale}` : menuItem.href
+              }
+              plain={"plain" in menuItem && menuItem.plain}
               active={pathname.includes(menuItem.href)}
             />
           </li>
