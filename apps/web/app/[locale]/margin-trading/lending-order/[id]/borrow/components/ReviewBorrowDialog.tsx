@@ -1,7 +1,7 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { parseUnits } from "viem";
@@ -54,6 +54,7 @@ function CreateMarginPositionActionButton({
   amountToApprove: string;
   feeAmountToApprove: string;
 }) {
+  const t = useTranslations("Margin");
   const { handleCreateMarginPosition } = useCreateMarginPosition(order);
   const {
     status,
@@ -107,7 +108,7 @@ function CreateMarginPositionActionButton({
       fullWidth
       onClick={() => handleCreateMarginPosition(orderId, amountToApprove, feeAmountToApprove)}
     >
-      Confirm borrow
+      {t("confirm_borrow")}
     </Button>
   );
 }
@@ -120,6 +121,7 @@ export default function ReviewBorrowDialog({
   order: LendingOrder;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Margin");
 
   const { isOpen, setIsOpen } = useConfirmBorrowPositionDialogStore();
   const { values, setValues } = useCreateMarginPositionConfigStore();
@@ -208,26 +210,26 @@ export default function ReviewBorrowDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title={"Review borrow"} />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("review_borrow")} />
 
       <div className="card-spacing-x card-spacing-b w-[600px]">
         {!isFinalStatus && (
           <>
-            <InputLabel inputSize={InputSize.LARGE} label="You send" />
+            <InputLabel inputSize={InputSize.LARGE} label={t("you_send")} />
             <div className="grid grid-cols-2 gap-2">
               <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4 text-14">
-                <p className="text-secondary-text ">Collateral</p>
+                <p className="text-secondary-text ">{t("collateral")}</p>
                 <div className="flex items-center gap-1 items-center my-1">
                   <Image
                     className="mr-1"
                     src={"/images/tokens/placeholder.svg"}
-                    alt={values.collateralToken?.symbol || "Unknown"}
+                    alt={values.collateralToken?.symbol || t("unknown")}
                     width={20}
                     height={20}
                   />
                   <span className="">{formatFloat(values.collateralAmount)}</span>
                   <span className="text-secondary-text">
-                    {values.collateralToken?.symbol || "Unknown"}
+                    {values.collateralToken?.symbol || t("unknown")}
                   </span>
                   <Badge
                     size="small"
@@ -237,18 +239,18 @@ export default function ReviewBorrowDialog({
                 </div>
               </div>
               <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4 text-14">
-                <p className="text-secondary-text ">Liquidation fee</p>
+                <p className="text-secondary-text ">{t("liquidation_fee")}</p>
                 <div className="flex items-center gap-1 items-center my-1">
                   <Image
                     className="mr-1"
                     src={"/images/tokens/placeholder.svg"}
-                    alt={order.liquidationRewardAsset.symbol || "Unknown"}
+                    alt={order.liquidationRewardAsset.symbol || t("unknown")}
                     width={20}
                     height={20}
                   />
                   <span className="">{formatFloat(order.liquidationRewardAmount.formatted)}</span>
                   <span className="text-secondary-text">
-                    {order.liquidationRewardAsset.symbol || "Unknown"}
+                    {order.liquidationRewardAsset.symbol || t("unknown")}
                   </span>
                   <Badge
                     size="small"
@@ -258,19 +260,21 @@ export default function ReviewBorrowDialog({
                 </div>
               </div>
             </div>
-            <InputLabel inputSize={InputSize.LARGE} label="You receive" />
+            <InputLabel inputSize={InputSize.LARGE} label={t("you_receive")} />
             <div className="bg-tertiary-bg rounded-3 py-[14px] px-5 mb-4 text-14 flex items-center justify-between">
-              <p className="text-secondary-text ">Borrow</p>
+              <p className="text-secondary-text ">{t("borrow")}</p>
               <div className="flex items-center gap-1">
                 <Image
                   className="mr-1"
                   src={"/images/tokens/placeholder.svg"}
-                  alt={order.baseAsset?.symbol || "Unknown"}
+                  alt={order.baseAsset?.symbol || t("unknown")}
                   width={20}
                   height={20}
                 />
                 <span className="">{formatFloat(values.borrowAmount)}</span>
-                <span className="text-secondary-text">{order.baseAsset?.symbol || "Unknown"}</span>
+                <span className="text-secondary-text">
+                  {order.baseAsset?.symbol || t("unknown")}
+                </span>
                 {/*<Badge*/}
                 {/*  size="small"*/}
                 {/*  variant={BadgeVariant.STANDARD}*/}
@@ -285,40 +289,40 @@ export default function ReviewBorrowDialog({
           <>
             <div className="flex flex-col gap-2 mb-5">
               <LendingOrderDetailsRow
-                title="Interest rate per month"
+                title={t("interest_per_month")}
                 value={`${order.interestRate / 100}%`}
-                tooltipText="Tooltip text"
+                tooltipText={t("interest_rate_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Interest rate for the entire period"
+                title={t("interest_entire_period")}
                 value={calculatePeriodInterestRate(order.interestRate, order.positionDuration)}
-                tooltipText="Tooltip text"
+                tooltipText={t("interest_entire_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Max leverage"
+                title={t("max_leverage")}
                 value={`${order.leverage}x`}
-                tooltipText="Tooltip text"
+                tooltipText={t("leverage_page_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Leverage"
+                title={t("leverage")}
                 value={`${values.leverage}x`}
-                tooltipText="Tooltip text"
+                tooltipText={t("leverage_borrow_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Deadline"
+                title={t("deadline")}
                 value={formattedEndTime}
-                tooltipText="Tooltip text"
+                tooltipText={t("deadline_borrow_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Order currency limit"
+                title={t("order_currency_limit")}
                 value={order.currencyLimit}
-                tooltipText="Tooltip text"
+                tooltipText={t("currency_limit_page_tooltip")}
               />
               <LendingOrderDetailsRow
-                title="Liquidation price source"
+                title={t("liquidation_price_source")}
                 value={
                   <ExternalTextLink
-                    text="Dex223 Market"
+                    text={t("dex223_market")}
                     href={getExplorerLink(
                       ExplorerLinkType.ADDRESS,
                       ORACLE_ADDRESS[chainId],
@@ -326,22 +330,22 @@ export default function ReviewBorrowDialog({
                     )}
                   />
                 }
-                tooltipText="Tooltip text"
+                tooltipText={t("liquidation_price_tooltip")}
               />
             </div>
             <div className="bg-tertiary-bg rounded-3 px-5 pb-5 pt-3">
               <div className="flex justify-between mb-3 items-center">
                 <div className="flex items-center gap-2 mb-3">
                   <h3 className="text-tertiary-text flex items-center gap-1 text-14">
-                    <Tooltip text="Tooltip text" iconSize={20} />
-                    Tokens allowed for trading
+                    <Tooltip text={t("tokens_allowed_tooltip")} iconSize={20} />
+                    {t("tokens_allowed_trading")}
                   </h3>
                 </div>
                 <div>
                   <SearchInput
                     value={searchTradableTokenValue}
                     onChange={(e) => setSearchTradableTokenValue(e.target.value)}
-                    placeholder="Token name"
+                    placeholder={t("token_name")}
                     className="h-8 text-14 w-[180px] rounded-2"
                   />
                 </div>
@@ -369,7 +373,7 @@ export default function ReviewBorrowDialog({
               )}
               {!filteredTokens.length && isTokenFilterActive && (
                 <div className="rounded-5 h-[76px] -mt-5 flex items-center justify-center text-secondary-text bg-empty-not-found-token bg-no-repeat bg-right-top bg-[length:64px_64px] -mr-5">
-                  Token not found
+                  {t("token_not_found")}
                 </div>
               )}
             </div>
@@ -449,13 +453,15 @@ export default function ReviewBorrowDialog({
 
             {status === CreateMarginPositionStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Successfully borrowed</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">
+                  {t("successfully_borrowed")}
+                </h2>
                 <p className="text-center mb-1">
                   {order.baseAsset.symbol} {values.borrowAmount}
                 </p>
                 <div className="flex justify-center">
                   <ExternalTextLink
-                    text="View my position"
+                    text={t("view_my_position")}
                     href={`/${locale}/margin-trading/position/${positionId}`}
                   />
                 </div>
@@ -465,7 +471,7 @@ export default function ReviewBorrowDialog({
             {status === CreateMarginPositionStatus.ERROR_BORROW && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Failed to confirm a borrowing
+                  {t("borrow_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {order.baseAsset.symbol} {values.borrowAmount}
@@ -476,7 +482,7 @@ export default function ReviewBorrowDialog({
             {status === CreateMarginPositionStatus.ERROR_APPROVE_BORROW && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Approve failed
+                  {t("approve_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {order.baseAsset.symbol} {values.borrowAmount}
@@ -487,7 +493,7 @@ export default function ReviewBorrowDialog({
             {status === CreateMarginPositionStatus.ERROR_TRANSFER && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Transfer to contract failed
+                  {t("transfer_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {order.baseAsset.symbol} {values.borrowAmount}

@@ -26,6 +26,7 @@ export default function LendingOrderTokenSelect({
   helperText,
   allowedErc223,
   readonly,
+  tooltipText,
 }: {
   token: Currency | undefined;
   setToken: (token: Currency) => Promise<void>;
@@ -40,6 +41,7 @@ export default function LendingOrderTokenSelect({
   helperText?: string;
   allowedErc223: boolean;
   readonly?: boolean;
+  tooltipText?: string;
 }) {
   const t = useTranslations("Margin");
   const resolvedLabel = label ?? t("loan_amount");
@@ -100,7 +102,7 @@ export default function LendingOrderTokenSelect({
       <InputLabel
         inputSize={InputSize.LARGE}
         label={resolvedLabel}
-        tooltipText={t("loan_amount_tooltip")}
+        tooltipText={tooltipText ?? t("loan_amount_tooltip")}
       />
       <TokenInput
         readOnly={readonly}
