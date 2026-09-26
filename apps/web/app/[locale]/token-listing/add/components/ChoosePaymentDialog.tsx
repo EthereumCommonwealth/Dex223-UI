@@ -1,5 +1,6 @@
 import { isZeroAddress } from "@ethereumjs/util";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { formatUnits } from "viem";
 
@@ -16,6 +17,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import truncateMiddle from "@/functions/truncateMiddle";
 
 export default function ChoosePaymentDialog() {
+  const t = useTranslations("TokenListing");
   const { isOpen: isPaymentDialogSelectOpened, setIsOpen: setPaymentDialogSelectOpened } =
     useChoosePaymentDialogStore();
   const [searchValue, setSearchValue] = useState("");
@@ -40,7 +42,7 @@ export default function ChoosePaymentDialog() {
     <DrawerDialog isOpen={isPaymentDialogSelectOpened} setIsOpen={setPaymentDialogSelectOpened}>
       <DialogHeader
         onClose={() => setPaymentDialogSelectOpened(false)}
-        title="Select a payment for listing"
+        title={t("select_payment")}
       />
       <div className="card-spacing">
         <SearchInput
@@ -48,7 +50,7 @@ export default function ChoosePaymentDialog() {
           onChange={(e) => {
             setSearchValue(e.target.value);
           }}
-          placeholder="Search name or paste contract"
+          placeholder={t("search_name_or_contract")}
         />
       </div>
       <div className="flex flex-col gap-2 pb-4 h-[511px]">
@@ -96,7 +98,7 @@ export default function ChoosePaymentDialog() {
           })}
         {searchValue && payments && !payments.length && (
           <div className="h-[531px] flex items-center rounded-5 bg-primary-bg justify-center flex-col bg-empty-listing-payment-method-not-found bg-right-top bg-no-repeat pt-5 -mt-5 max-md:bg-size-180">
-            <span className="text-secondary-text">Listing payment method not found</span>
+            <span className="text-secondary-text">{t("payment_not_found")}</span>
           </div>
         )}
       </div>
