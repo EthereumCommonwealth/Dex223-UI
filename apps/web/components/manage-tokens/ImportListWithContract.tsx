@@ -66,7 +66,7 @@ export default function ImportListWithContract({ setContent }: Props) {
 
   const error = useMemo(() => {
     if (addressToImport && !isAddress(addressToImport)) {
-      return "Enter contract address in correct format";
+      return t("contract_address_format");
     }
 
     if (
@@ -75,11 +75,11 @@ export default function ImportListWithContract({ setContent }: Props) {
       !loading &&
       !Boolean(data?.autoListings?.[0])
     ) {
-      return "Contract address does not contain a token list";
+      return t("contract_no_list");
     }
 
     return "";
-  }, [addressToImport, data?.autoListings, loading]);
+  }, [addressToImport, data?.autoListings, loading, t]);
 
   const alreadyImportedList = useMemo(() => {
     return tokenLists?.find((tokenList) => {
@@ -92,28 +92,26 @@ export default function ImportListWithContract({ setContent }: Props) {
       <TextField
         size={InputSize.LARGE}
         variant="search"
-        label="Import token list from contract"
+        label={t("import_list_from_contract")}
         type="text"
         value={addressToImport}
         onChange={(e) => {
           setAddressToImport(e.target.value);
         }}
-        placeholder="Contract address"
+        placeholder={t("contract_address")}
         error={error}
       />
 
       {!addressToImport && (
         <div className="flex-grow flex justify-center items-center flex-col gap-2 bg-empty-import-list bg-no-repeat bg-right-top max-md:bg-size-180 px-4 -mx-4 md:px-10 md:-mx-10 -mt-5 pt-5">
-          <p className="text-secondary-text text-center">
-            To import a list through a contract, enter contract address in correct format
-          </p>
+          <p className="text-secondary-text text-center">{t("import_through_contract")}</p>
         </div>
       )}
 
       {addressToImport && !isAddress(addressToImport) && (
         <div className="flex-grow flex justify-center items-center flex-col gap-2">
           <EmptyStateIcon iconName="warning" />
-          <p className="text-red-light text-center">Enter valid contract address</p>
+          <p className="text-red-light text-center">{t("enter_valid_contract")}</p>
         </div>
       )}
 
@@ -123,9 +121,7 @@ export default function ImportListWithContract({ setContent }: Props) {
         !Boolean(data?.autoListings?.[0]) && (
           <div className="flex-grow flex justify-center items-center flex-col gap-2">
             <EmptyStateIcon iconName="warning" />
-            <p className="text-red-light text-center">
-              Contract address does not contain a token list
-            </p>
+            <p className="text-red-light text-center">{t("contract_no_list")}</p>
           </div>
         )}
 
@@ -162,15 +158,10 @@ export default function ImportListWithContract({ setContent }: Props) {
               </a>
             </div>
 
-            <Alert
-              text={
-                "This token list has already been imported. You cannot import same autolisting contract twice."
-              }
-              type={"info"}
-            />
+            <Alert text={t("list_already_imported_contract")} type={"info"} />
           </div>
           <Button fullWidth disabled size={ButtonSize.MEDIUM}>
-            List already imported
+            {t("list_already_imported")}
           </Button>
         </>
       )}
@@ -215,7 +206,7 @@ export default function ImportListWithContract({ setContent }: Props) {
               onClick={async () => {
                 const queryRes = data?.autoListings?.[0];
                 if (!queryRes) {
-                  addToast("Something went wrong, please, contact support");
+                  addToast(t("import_failed"));
                   return;
                 }
                 await db.tokenLists.add({
@@ -247,7 +238,7 @@ export default function ImportListWithContract({ setContent }: Props) {
                   chainId,
                   enabled: true,
                 });
-                addToast("Tokenlist imported successfully!");
+                addToast(t("list_imported"));
                 setContent("default");
               }}
             >

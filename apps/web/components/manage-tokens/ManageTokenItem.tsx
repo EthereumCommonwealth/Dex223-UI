@@ -62,7 +62,7 @@ export default function ManageTokenItem({
                   );
 
                   if (!totalTokensInOtherEnabledLists || totalTokensInOtherEnabledLists === 2) {
-                    addToast("You can't delete this token now", "warning");
+                    addToast(t("cant_delete_token"), "warning");
                     return;
                   }
                   setDeleteOpened(true);
@@ -106,7 +106,7 @@ export default function ManageTokenItem({
                                 (t) => t.address0 !== token.wrapped.address0,
                               ),
                             });
-                            addToast("Custom token successfully deleted");
+                            addToast(t("custom_token_deleted"));
                           }
                           setDeleteOpened(false);
                         }}
@@ -121,7 +121,7 @@ export default function ManageTokenItem({
           )}
           {token.isToken && (
             <Tooltip
-              text={`Token belongs to ${token.lists?.length || 1} token lists`}
+              text={t("token_belongs_to", { amount: token.lists?.length || 1 })}
               renderTrigger={(ref, refProps) => {
                 return (
                   <span
@@ -149,7 +149,7 @@ export default function ManageTokenItem({
               if (pinnedTokens[token.chainId]?.length < 8 || isTokenPinned) {
                 toggleToken(token.isNative ? "native" : token.address0, token.chainId);
               } else {
-                addToast("Pinning limit reached: 8 tokens", "info");
+                addToast(t("pinning_limit"), "info");
               }
             }}
             buttonSize={40}
