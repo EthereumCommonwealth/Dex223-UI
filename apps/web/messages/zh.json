@@ -38,7 +38,8 @@
     "margin_unavailable_go_to_swap": "前往兑换",
     "send": "发送",
     "revenue": "收益",
-    "governance": "治理"
+    "governance": "治理",
+    "rewards": "奖励"
   },
   "Swap": {
     "high_price_impact_warning": "价格影响较高（{impact}%）。你收到的数量将明显低于当前市场价格。",

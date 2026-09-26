@@ -38,7 +38,8 @@
     "margin_unavailable_go_to_swap": "Ir para Swap",
     "send": "Enviar",
     "revenue": "Receitas",
-    "governance": "Governação"
+    "governance": "Governação",
+    "rewards": "Recompensas"
   },
   "Swap": {
     "high_price_impact_warning": "Impacto no preço alto ({impact}%). Você receberá bem menos do que o preço atual de mercado.",

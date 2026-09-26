@@ -38,7 +38,8 @@
     "margin_unavailable_go_to_swap": "Перейти к Swap",
     "send": "Отправить",
     "revenue": "Доход",
-    "governance": "Управление"
+    "governance": "Управление",
+    "rewards": "Награды"
   },
   "Swap": {
     "high_price_impact_warning": "Сильное влияние на цену ({impact}%). Вы получите заметно меньше текущей рыночной цены.",
