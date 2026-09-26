@@ -14,8 +14,13 @@ interface Props {
   title: string;
   active?: boolean;
   id?: string;
+  /**
+   * A plain link instead of the locale-aware one, for pages served by another
+   * app on this domain (DEX223 Rewards at /rewards). `href` is used as given.
+   */
+  plain?: boolean;
 }
-export default function NavigationItem({ href, title, active, id }: Props) {
+export default function NavigationItem({ href, title, active, id, plain = false }: Props) {
   const t = useTranslations("Navigation");
   const isMarginAvailable = useIsMarginAvailable();
   const isComingSoon = id === "borrow_lend" && !isMarginAvailable;
@@ -36,9 +41,11 @@ export default function NavigationItem({ href, title, active, id }: Props) {
     );
   }
 
+  const LinkComponent = plain ? "a" : Link;
+
   return (
     <span className="relative">
-      <Link
+      <LinkComponent
         className={clsx(
           "px-3 py-5 duration-200 inline-flex",
           active
@@ -48,7 +55,7 @@ export default function NavigationItem({ href, title, active, id }: Props) {
         href={href}
       >
         {title}
-      </Link>
+      </LinkComponent>
     </span>
   );
 }

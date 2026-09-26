@@ -53,7 +53,9 @@ export const config = {
     "/(es|en|zh)/:path*",
 
     // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
-    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static|api).*)",
+    // (e.g. `/pathnames` -> `/en/pathnames`). `rewards` is excluded: those
+    // paths belong to the rewards app (see next.config.js), which has its own
+    // locale handling under /rewards/<locale>.
+    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static|api|rewards).*)",
   ],
 };
