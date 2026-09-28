@@ -1,13 +1,14 @@
 import type { MetadataRoute } from "next";
 
-import { isIndexable, SITE_URL } from "@/config/site";
+import { indexingOrigin } from "@/config/site";
 
-export default function robots(): MetadataRoute.Robots {
-  // The previous public/robots.txt was an unconditional "Disallow: /", which is correct
-  // for the test deployment but shipped to production too - Search Console reports the
-  // application as "URL is unknown to Google", never crawled. Gate it on the deployment
-  // instead of blocking everywhere.
-  if (!isIndexable()) {
+export const dynamic = "force-dynamic";
+
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const { url, indexable } = await indexingOrigin();
+
+  // Test and preview deployments must not compete with production.
+  if (!indexable) {
     return {
       rules: [{ userAgent: "*", disallow: "/" }],
     };
@@ -18,9 +19,15 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        // Routes keyed by a position or pool identifier are per-user and endless;
-        // there is nothing for a crawler to gain and they would burn crawl budget.
+        // Account pages and routes keyed by a position, order, or pool id are
+        // private or unbounded. Keep them out of the crawl.
         disallow: [
+          "/*/portfolio",
+          "/*/pools/positions",
+          "/*/send",
+          "/*/pay",
+          "/*/dev",
+          "/*/requests",
           "/*/remove/",
           "/*/increase/",
           "/*/pool/",
@@ -30,7 +37,7 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: `${SITE_URL}/sitemap.xml`,
-    host: SITE_URL,
+    sitemap: `${url}/sitemap.xml`,
+    host: url,
   };
 }
