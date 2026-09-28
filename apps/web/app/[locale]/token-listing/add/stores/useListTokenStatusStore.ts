@@ -1,3 +1,5 @@
+import { create } from "zustand";
+
 import { createOperationStatusStore } from "@/stores/factories/createOperationStatusStore";
 
 export enum ListTokenStatus {
@@ -24,3 +26,12 @@ export const useListTokenStatusStore = createOperationStatusStore({
   operations: ["approve", "listToken"],
   errorType: ListError.UNKNOWN,
 });
+
+// Revert reason from the autolisting contract, shown under the failed status so a user can act on it.
+export const useListTokenErrorReasonStore = create<{
+  reason: string | undefined;
+  setReason: (reason: string | undefined) => void;
+}>((set) => ({
+  reason: undefined,
+  setReason: (reason) => set({ reason }),
+}));

@@ -1,7 +1,13 @@
 import { isZeroAddress } from "@ethereumjs/util";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo } from "react";
-import { getAbiItem, parseUnits } from "viem";
+import {
+  BaseError,
+  ContractFunctionRevertedError,
+  getAbiItem,
+  parseUnits,
+  UserRejectedRequestError,
+} from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import { useAutoListingContract } from "@/app/[locale]/token-listing/add/hooks/useAutoListingContracts";
@@ -15,6 +21,7 @@ import { useListTokensStore } from "@/app/[locale]/token-listing/add/stores/useL
 import {
   ListError,
   ListTokenStatus,
+  useListTokenErrorReasonStore,
   useListTokenStatusStore,
 } from "@/app/[locale]/token-listing/add/stores/useListTokenStatusStore";
 import { usePaymentTokenStore } from "@/app/[locale]/token-listing/add/stores/usePaymentTokenStore";
@@ -207,6 +214,7 @@ export default function useListToken() {
     setErrorType,
     setListTokenHash,
   } = useListTokenStatusStore();
+  const { setReason: setListErrorReason } = useListTokenErrorReasonStore();
   const chainId = useCurrentChainId();
   const { addRecentTransaction } = useRecentTransactionsStore();
 
@@ -282,6 +290,7 @@ export default function useListToken() {
         return;
       }
 
+      setListErrorReason(undefined);
       setListTokenStatus(ListTokenStatus.PENDING_LIST_TOKEN);
       openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
@@ -378,6 +387,19 @@ export default function useListToken() {
       } catch (e) {
         console.log(e);
         closeConfirmInWalletAlert();
+
+        if (e instanceof BaseError && e.walk((err) => err instanceof UserRejectedRequestError)) {
+          setListTokenStatus(ListTokenStatus.INITIAL);
+          return;
+        }
+
+        const reverted =
+          e instanceof BaseError
+            ? e.walk((err) => err instanceof ContractFunctionRevertedError)
+            : null;
+        setListErrorReason(
+          reverted instanceof ContractFunctionRevertedError ? reverted.reason : undefined,
+        );
         setListTokenStatus(ListTokenStatus.ERROR_LIST_TOKEN);
       }
     },
@@ -399,6 +421,7 @@ export default function useListToken() {
       setErrorType,
       setListTokenHash,
       setListTokenStatus,
+      setListErrorReason,
       t,
       tokenA,
       tokenB,
