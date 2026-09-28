@@ -50,7 +50,6 @@ export function useCreateTokenEstimatedGas(createTokenSettings: {
     IIFE(async () => {
       if (!address) {
         setEstimatedGas(BigInt(900000));
-        console.log("Can't estimate gas");
         return;
       }
 

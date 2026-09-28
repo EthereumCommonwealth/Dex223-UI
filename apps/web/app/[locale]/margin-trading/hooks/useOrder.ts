@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { ApolloError, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { useMemo, useRef, useState } from "react";
 import { Address } from "viem";
@@ -133,6 +133,7 @@ export function useOrders({
 }): {
   loading: boolean;
   orders: LendingOrder[];
+  error: ApolloError | undefined;
   isFilterActive: boolean;
 } {
   const apolloClient = useMarginModuleApolloClient();
