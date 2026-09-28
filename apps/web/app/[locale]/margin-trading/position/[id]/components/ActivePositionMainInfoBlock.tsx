@@ -1,6 +1,7 @@
 import GradientCard from "@repo/ui/gradient-card";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { formatUnits } from "viem";
 
@@ -14,27 +15,28 @@ import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { Link } from "@/i18n/routing";
 
 function BalanceCard({ position }: { position: MarginPosition }) {
+  const t = useTranslations("Margin");
   const { expectedBalance, actualBalance } = usePositionStatus(position);
 
   return (
     <GradientCard className="px-5 py-3">
       <div className="">
         <div className="flex items-center gap-1 text-tertiary-text">
-          Total balance
-          <Tooltip text="Tooltip text" />
+          {t("total_balance")}
+          <Tooltip text={t("total_balance_position_tooltip")} />
           <span>/</span>
-          Expected balance
-          <Tooltip text="Tooltip text" />
+          {t("expected_balance")}
+          <Tooltip text={t("expected_balance_tooltip")} />
         </div>
 
         <p className="font-medium text-20">
           {actualBalance
             ? formatFloat(formatUnits(actualBalance, position.loanAsset.decimals))
-            : "Loading..."}{" "}
+            : t("loading")}{" "}
           /{" "}
           {expectedBalance
             ? formatFloat(formatUnits(expectedBalance, position.loanAsset.decimals))
-            : "Loading..."}
+            : t("loading")}
           <span className="text-secondary-text"> {position.loanAsset.symbol}</span>
         </p>
       </div>
@@ -51,6 +53,7 @@ export default function ActivePositionMainInfoBlock({
   setIsWithdrawDialogOpened: (isOpened: boolean) => void;
   setIsCloseDialogOpened: (isOpened: boolean) => void;
 }) {
+  const t = useTranslations("Margin");
   const { formatted } = usePositionLiquidationCost(position);
   const nativeCurrency = useNativeCurrency();
 
@@ -76,7 +79,7 @@ export default function ActivePositionMainInfoBlock({
             <Image width={32} height={32} src="/images/tokens/placeholder.svg" alt="" />
             <span className="text-secondary-text text-18 font-bold">{position.loanAsset.name}</span>
             <div className="flex items-center gap-3 text-green">
-              Active
+              {t("status_active")}
               <div className="w-2 h-2 rounded-full bg-green" />
             </div>
           </div>
@@ -85,20 +88,20 @@ export default function ActivePositionMainInfoBlock({
         <div className="flex items-center gap-2 justify-end">
           <Link className={subjectToLiquidation ? "pointer-events-none" : ""} href={"/margin-swap"}>
             <Button colorScheme={ButtonColor.LIGHT_GREEN} disabled={subjectToLiquidation} fullWidth>
-              Trade
+              {t("trade")}
             </Button>
           </Link>
           <Link href={`/margin-trading/position/${position.id}/deposit`}>
             <Button
               colorScheme={subjectToLiquidation ? ButtonColor.LIGHT_RED : ButtonColor.LIGHT_GREEN}
             >
-              Deposit
+              {t("deposit")}
             </Button>
           </Link>
 
           {subjectToLiquidation ? (
             <Link href={`/margin-trading/position/${position.id}/liquidate`}>
-              <Button colorScheme={ButtonColor.RED}>Liquidate</Button>
+              <Button colorScheme={ButtonColor.RED}>{t("liquidate")}</Button>
             </Link>
           ) : (
             <>
@@ -107,13 +110,13 @@ export default function ActivePositionMainInfoBlock({
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 onClick={() => setIsWithdrawDialogOpened(true)}
               >
-                Withdraw
+                {t("withdraw")}
               </Button>
               <Button
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 onClick={() => setIsCloseDialogOpened(true)}
               >
-                Close
+                {t("close")}
               </Button>
             </>
           )}
@@ -125,11 +128,11 @@ export default function ActivePositionMainInfoBlock({
         <GradientCard className="px-5 py-3">
           <div className="">
             <div className="flex items-center gap-1 text-tertiary-text">
-              Liquidation fee
-              <Tooltip text="Tooltip text" />
+              {t("liquidation_fee")}
+              <Tooltip text={t("liquidation_fee_position_tooltip")} />
               <span>/</span>
-              Liquidation cost
-              <Tooltip text="Tooltip text" />
+              {t("liquidation_cost")}
+              <Tooltip text={t("liquidation_cost_tooltip")} />
             </div>
 
             <p className="font-medium text-20">

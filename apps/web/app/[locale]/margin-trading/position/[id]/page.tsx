@@ -1,7 +1,7 @@
 "use client";
 import ExternalTextLink from "@repo/ui/external-text-link";
 import Link from "next/link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { use, useMemo, useState } from "react";
 
 import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
@@ -34,6 +34,7 @@ export default function MarginPositionPage({
   }>;
 }) {
   const locale = useLocale();
+  const t = useTranslations("Margin");
   const { id: positionId } = use(params);
   const chainId = useCurrentChainId();
   const { position, loading } = useMarginPositionById({ id: positionId });
@@ -42,7 +43,7 @@ export default function MarginPositionPage({
   const [isLiquidateDialogOpened, setIsLiquidateDialogOpened] = useState(false);
 
   if (loading || !position) {
-    return "Loading";
+    return t("loading");
   }
 
   return (
@@ -51,25 +52,25 @@ export default function MarginPositionPage({
         <div className="mb-10">
           <button onClick={() => window.history.back()} className="flex items-center gap-1">
             <Svg iconName="back" />
-            Back to margin positions
+            {t("back_to_margin_positions")}
           </button>
         </div>
 
-        <h1 className="text-40 font-medium mb-3">Margin position details</h1>
+        <h1 className="text-40 font-medium mb-3">{t("margin_position_details")}</h1>
 
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 pl-5 pr-4 py-1 min-h-12 text-tertiary-text">
-            Owner:{" "}
+            {t("owner")}:{" "}
             <ExternalTextLink
               text={truncateMiddle(position.owner, { charsFromEnd: 6, charsFromStart: 6 })}
               href={getExplorerLink(ExplorerLinkType.ADDRESS, position.owner, chainId)}
             />
           </div>
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 pl-5 pr-4 py-1 min-h-12 text-tertiary-text">
-            Margin position ID: <span className="text-secondary-text">{position.id}</span>
+            {t("margin_position_id")}: <span className="text-secondary-text">{position.id}</span>
           </div>
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 pl-5 pr-4 py-1 min-h-12 text-tertiary-text">
-            Lending order ID:{" "}
+            {t("lending_order_id")}:{" "}
             <ExternalTextLink
               text={position.order.id.toString()}
               href={`/${locale}/margin-trading/lending-order/${position.order.id.toString()}`}

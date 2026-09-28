@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 
@@ -61,6 +62,7 @@ function PositionDepositActionButton({
   position: MarginPosition;
   handleSaveResults: () => void;
 }) {
+  const t = useTranslations("Margin");
   const { handlePositionWithdraw } = usePositionWithdraw({
     position: position,
   });
@@ -100,7 +102,7 @@ function PositionDepositActionButton({
       }}
       fullWidth
     >
-      Withdraw
+      {t("withdraw")}
     </Button>
   );
 }
@@ -114,6 +116,7 @@ export default function ClosedPositionWithdrawDialog({
   setIsOpen: (isOpen: boolean) => void;
   position: MarginPosition;
 }) {
+  const t = useTranslations("Margin");
   const { status, setStatus } = useWithdrawPositionStatusStore();
 
   const [withdrawnAssets, setWithdrawnAssets] = useState<
@@ -144,11 +147,14 @@ export default function ClosedPositionWithdrawDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Withdraw" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
       <div className="w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
-            <InputLabel label="Tokens for withdrawal" tooltipText="Tooltip text" />
+            <InputLabel
+              label={t("tokens_for_withdrawal")}
+              tooltipText={t("tokens_for_withdrawal_tooltip")}
+            />
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
@@ -170,22 +176,22 @@ export default function ClosedPositionWithdrawDialog({
             <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
               <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
                 <p className="flex flex-col text-tertiary-text">
-                  <span>Gas price:</span>
+                  <span>{t("gas_price")}</span>
                   <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
                 </p>
 
                 <p className="flex flex-col text-tertiary-text">
-                  <span>Gas limit:</span>
+                  <span>{t("gas_limit")}</span>
                   <span>{329000}</span>
                 </p>
                 <p className="flex flex-col">
-                  <span className="text-tertiary-text">Network fee:</span>
+                  <span className="text-tertiary-text">{t("network_fee")}</span>
                   <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
                 </p>
               </div>
               <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
                 <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                  Cheaper
+                  {t("cheap")}
                 </span>
                 <Button
                   colorScheme={ButtonColor.LIGHT_GREEN}
@@ -194,7 +200,7 @@ export default function ClosedPositionWithdrawDialog({
                   fullWidth={false}
                   className="rounded-5"
                 >
-                  Edit
+                  {t("edit")}
                 </Button>
               </div>
             </div>
@@ -203,7 +209,10 @@ export default function ClosedPositionWithdrawDialog({
 
         {isLoadingStatus && (
           <>
-            <InputLabel label="Tokens for withdrawal" tooltipText="Tooltip text" />
+            <InputLabel
+              label={t("tokens_for_withdrawal")}
+              tooltipText={t("tokens_for_withdrawal_tooltip")}
+            />
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
@@ -247,7 +256,7 @@ export default function ClosedPositionWithdrawDialog({
 
             {status === PositionWithdrawStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Successfully withdrawed</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("withdraw_success")}</h2>
                 <p className="text-center mb-1">ID: {position.id}</p>
               </div>
             )}
@@ -255,7 +264,7 @@ export default function ClosedPositionWithdrawDialog({
             {status === PositionWithdrawStatus.ERROR_WITHDRAW && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Failed to withdraw tokens
+                  {t("withdraw_failed")}
                 </h2>
                 <p className="text-center mb-1">ID: {position.id}</p>
               </div>
@@ -273,7 +282,7 @@ export default function ClosedPositionWithdrawDialog({
 
         {status === PositionWithdrawStatus.SUCCESS && withdrawnAssets.length > 0 && (
           <div className="mt-4">
-            <InputLabel label="Tokens withdwawn" tooltipText="Tooltip text" />
+            <InputLabel label={t("tokens_withdrawn")} tooltipText={t("tokens_withdrawn_tooltip")} />
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {withdrawnAssets

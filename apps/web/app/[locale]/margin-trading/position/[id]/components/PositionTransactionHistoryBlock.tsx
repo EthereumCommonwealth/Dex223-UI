@@ -1,5 +1,6 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { ReactNode } from "react";
 import { formatUnits } from "viem";
 
@@ -26,54 +27,53 @@ const recentTransactionIconMap: Record<MarginPositionTransactionType, ReactNode>
   [MarginPositionTransactionType.LIQUIDATED]: <Svg iconName="liquidated" />,
 };
 
-const recentTransactionTextMap: Record<MarginPositionTransactionType, ReactNode> = {
-  [MarginPositionTransactionType.BORROW]: "Borrow",
-  [MarginPositionTransactionType.MARGIN_SWAP]: "Margin swap",
-  [MarginPositionTransactionType.CLOSED]: "Closed",
-  [MarginPositionTransactionType.DEPOSIT]: "Deposit",
-  [MarginPositionTransactionType.FROZEN]: "Frozen",
-  [MarginPositionTransactionType.WITHDRAW]: "Withdraw",
-  [MarginPositionTransactionType.LIQUIDATED]: "Liquidated",
-};
-
 function PositionTransactionDescription({
   transaction,
 }: {
   transaction: MarginPositionRecentTransaction;
 }) {
+  const t = useTranslations("Margin");
+
   switch (transaction.type) {
     case MarginPositionTransactionType.BORROW:
       return (
         <div>
-          Borrowing {formatUnits(transaction.amount, transaction.assetToken.decimals)}{" "}
-          {transaction.assetToken.symbol}
+          {t("history_borrow", {
+            amount: formatUnits(transaction.amount, transaction.assetToken.decimals),
+            symbol: transaction.assetToken.symbol,
+          })}
         </div>
       );
     case MarginPositionTransactionType.MARGIN_SWAP:
       return (
         <div>
-          {formatUnits(transaction.amountIn, transaction.assetInToken.decimals)}{" "}
-          {transaction.assetInToken.symbol} was swapped for {transaction.assetOutToken.symbol} at a
-          rate 1 {transaction.assetInToken.symbol} ={" "}
-          {formatFloat(
-            +formatUnits(transaction.amountIn, transaction.assetInToken.decimals) /
-              +formatUnits(transaction.amountOut, transaction.assetOutToken.decimals),
-          )}{" "}
-          {transaction.assetOutToken.symbol}
+          {t("history_swap", {
+            amount: formatUnits(transaction.amountIn, transaction.assetInToken.decimals),
+            symbolIn: transaction.assetInToken.symbol,
+            symbolOut: transaction.assetOutToken.symbol,
+            rate: formatFloat(
+              +formatUnits(transaction.amountIn, transaction.assetInToken.decimals) /
+                +formatUnits(transaction.amountOut, transaction.assetOutToken.decimals),
+            ),
+          })}
         </div>
       );
     case MarginPositionTransactionType.DEPOSIT:
       return (
         <div>
-          Deposit {formatUnits(transaction.amount, transaction.assetToken.decimals)}{" "}
-          {transaction.assetToken.symbol}
+          {t("history_deposit", {
+            amount: formatUnits(transaction.amount, transaction.assetToken.decimals),
+            symbol: transaction.assetToken.symbol,
+          })}
         </div>
       );
     case MarginPositionTransactionType.WITHDRAW:
       return (
         <div>
-          Withdraw {formatUnits(transaction.amount, transaction.assetToken.decimals)}{" "}
-          {transaction.assetToken.symbol}
+          {t("history_withdraw", {
+            amount: formatUnits(transaction.amount, transaction.assetToken.decimals),
+            symbol: transaction.assetToken.symbol,
+          })}
         </div>
       );
   }
@@ -84,24 +84,35 @@ export default function PositionTransactionHistoryBlock({
 }: {
   position: MarginPosition;
 }) {
+  const t = useTranslations("Margin");
   const { loading, recentTransactions } = useMarginPositionRecentTransactionsById({
     id: position.id.toString(),
   });
 
   const chainId = useCurrentChainId();
 
+  const recentTransactionTextMap: Record<MarginPositionTransactionType, ReactNode> = {
+    [MarginPositionTransactionType.BORROW]: t("borrow"),
+    [MarginPositionTransactionType.MARGIN_SWAP]: t("margin_swap"),
+    [MarginPositionTransactionType.CLOSED]: t("status_closed"),
+    [MarginPositionTransactionType.DEPOSIT]: t("deposit"),
+    [MarginPositionTransactionType.FROZEN]: t("frozen"),
+    [MarginPositionTransactionType.WITHDRAW]: t("withdraw"),
+    [MarginPositionTransactionType.LIQUIDATED]: t("liquidated"),
+  };
+
   if (loading || !recentTransactions) {
-    return "Loading...";
+    return t("loading");
   }
 
   return (
     <div className=" bg-primary-bg rounded-5  pt-4 pb-5 mb-5 flex flex-col gap-3">
-      <h3 className="text-20 text-secondary-text font-medium px-10">Transactions history</h3>
+      <h3 className="text-20 text-secondary-text font-medium px-10">{t("transactions_history")}</h3>
       <div className="grid rounded-2 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,1.33fr),_minmax(77px,1.33fr),_minmax(87px,1.33fr),_minmax(50px,2.67fr)] pb-2">
-        <div className="h-[60px] flex items-center pl-10">Txn hash</div>
-        <div className="h-[60px] flex items-center">Age</div>
-        <div className="h-[60px] flex items-center">Type</div>
-        <div className="h-[60px] flex items-center pr-5">Action</div>
+        <div className="h-[60px] flex items-center pl-10">{t("txn_hash")}</div>
+        <div className="h-[60px] flex items-center">{t("age")}</div>
+        <div className="h-[60px] flex items-center">{t("type")}</div>
+        <div className="h-[60px] flex items-center pr-5">{t("action")}</div>
 
         {recentTransactions.map((o, index) => {
           return (
@@ -129,9 +140,9 @@ export default function PositionTransactionHistoryBlock({
                 )}
               >
                 <span className="text-tertiary-text">
-                  {o.type != null ? recentTransactionIconMap[o.type] : "Unknown"}
+                  {o.type != null ? recentTransactionIconMap[o.type] : t("unknown")}
                 </span>
-                {o.type != null ? recentTransactionTextMap[o.type] : "Unknown"}
+                {o.type != null ? recentTransactionTextMap[o.type] : t("unknown")}
               </div>
               <div
                 className={clsx(
