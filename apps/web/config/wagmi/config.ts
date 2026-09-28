@@ -3,6 +3,7 @@ import { bscTestnet, mainnet } from "viem/chains";
 import { createConfig, createStorage, parseCookie } from "wagmi";
 import { coinbaseWallet, injected, metaMask, walletConnect } from "wagmi/connectors";
 
+import { eos } from "@/config/chains/eos";
 import { sepolia } from "@/config/chains/sepolia";
 
 const cookieStorage = {
@@ -22,7 +23,8 @@ const cookieStorage = {
 };
 
 export const config = createConfig({
-  chains: process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [sepolia, bscTestnet],
+  chains:
+    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [sepolia, bscTestnet, eos],
   connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
@@ -87,5 +89,6 @@ export const config = createConfig({
       http("https://data-seed-prebsc-1-s1.bnbchain.org:8545"),
       http(),
     ]),
+    [eos.id]: http("https://api.evm.eosnetwork.com"),
   },
 });
