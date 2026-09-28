@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { formatUnits } from "viem";
 
@@ -15,6 +16,7 @@ export default function ClosedPositionInfoBlock({
   position: MarginPosition;
   setIsWithdrawDialogOpened: (isOpen: boolean) => void;
 }) {
+  const t = useTranslations("Margin");
   const isTokensToWithdraw = useMemo(() => {
     return position.assetsWithBalances.some((assetWithBalance) => {
       return !!assetWithBalance.balance && assetWithBalance.balance > BigInt(0);
@@ -28,7 +30,7 @@ export default function ClosedPositionInfoBlock({
           <Image width={40} height={40} src="/images/tokens/placeholder.svg" alt="" />
           <span className="text-secondary-text text-18 font-bold">{position.loanAsset.name}</span>
           <div className="flex items-center gap-3 text-tertiary-text">
-            Executed
+            {t("executed")}
             <Svg iconName="done" />
           </div>
         </div>
@@ -37,7 +39,7 @@ export default function ClosedPositionInfoBlock({
             colorScheme={ButtonColor.LIGHT_GREEN}
             onClick={() => setIsWithdrawDialogOpened(true)}
           >
-            Withdraw
+            {t("withdraw")}
           </Button>
         )}
       </div>
@@ -49,15 +51,20 @@ export default function ClosedPositionInfoBlock({
             " " +
             position.loanAsset.symbol
           }
-          title={"Borrowed"}
-          tooltipText="tooltip text"
+          title={t("borrowed")}
+          tooltipText={t("borrowed_tooltip")}
           bg="borrowed"
         />
-        <OrderInfoCard value={"-"} title={"Profit"} tooltipText="tooltip text" bg="borrowed" />
+        <OrderInfoCard
+          value={"-"}
+          title={t("profit")}
+          tooltipText={t("profit_tooltip")}
+          bg="borrowed"
+        />
         <OrderInfoCard
           value={formatFloat(position.initialLeverage)}
-          title={"Initial leverage"}
-          tooltipText="tooltip text"
+          title={t("initial_leverage")}
+          tooltipText={t("initial_leverage_tooltip")}
           bg="borrowed"
         />
       </div>
