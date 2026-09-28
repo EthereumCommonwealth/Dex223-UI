@@ -1,6 +1,7 @@
 import Alert from "@repo/ui/alert";
 import Checkbox from "@repo/ui/checkbox";
 import Tooltip from "@repo/ui/tooltip";
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { formatEther, formatGwei, formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -61,6 +62,7 @@ enum ActionWithAssets {
 }
 
 export default function LiquidateForm({ position }: { position: MarginPosition }) {
+  const t = useTranslations("Margin");
   const [isLiquidateDialogOpened, setIsLiquidateDialogOpened] = useState(false);
 
   const { handleLiquidatePosition } = useLiquidatePosition(position);
@@ -85,7 +87,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
             window.history.back();
           }}
         />
-        <h3 className="font-bold text-20">Liquidation</h3>
+        <h3 className="font-bold text-20">{t("liquidation")}</h3>
         <div className="flex items-center relative left-3">
           <IconButton
             buttonSize={IconButtonSize.LARGE}
@@ -95,18 +97,14 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
           />
         </div>
       </div>
-      <p className="text-secondary-text mb-4">
-        When an asset is liquidated, the proceeds from its sale are first used to pay off any
-        outstanding debts and obligations. Once creditors have been settled, any remaining funds are
-        distributed to the shareholders or owners of the asset
-      </p>
+      <p className="text-secondary-text mb-4">{t("liquidation_intro")}</p>
 
       <div className="flex flex-col gap-5">
         <div className="bg-tertiary-bg rounded-3 flex flex-col gap-3 pb-5 px-5 pt-3">
           <div className="flex justify-between items-center">
-            <h2 className="text-secondary-text font-bold">Position to be liquidated</h2>
+            <h2 className="text-secondary-text font-bold">{t("position_to_liquidate")}</h2>
             <div className="px-4 py-2 rounded-2 bg-quaternary-bg text-12">
-              <span className="text-tertiary-text">ID:</span>
+              <span className="text-tertiary-text">{t("order_id")}:</span>
               <span className="text-secondary-text">{position.id}</span>
             </div>
           </div>
@@ -115,40 +113,40 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
             value1={
               actualBalance
                 ? formatFloat(formatUnits(actualBalance, position.loanAsset.decimals))
-                : "Loading..."
+                : t("loading")
             }
             value2={
               expectedBalance
                 ? formatFloat(formatUnits(expectedBalance, position.loanAsset.decimals))
-                : "Loading..."
+                : t("loading")
             }
             currency={position.loanAsset}
-            label1={"Total balance"}
-            label2="Expected balance"
-            tooltip1={"TOOLTIP_TEXT"}
-            tooltip2={"TOOLTIP_TEXT"}
+            label1={t("total_balance")}
+            label2={t("expected_balance")}
+            tooltip1={t("total_balance_position_tooltip")}
+            tooltip2={t("expected_balance_tooltip")}
           />
           <PositionInfoCard
             value1={position.order.liquidationRewardAmount.formatted}
             value2={"0"}
             currency={position.loanAsset}
-            label1={"Liquidation fee"}
-            label2="Liquidation cost"
-            tooltip1={"TOOLTIP_TEXT"}
-            tooltip2={"TOOLTIP_TEXT"}
+            label1={t("liquidation_fee")}
+            label2={t("liquidation_cost")}
+            tooltip1={t("liquidation_fee_position_tooltip")}
+            tooltip2={t("liquidation_cost_tooltip")}
           />
         </div>
 
         {address?.toLowerCase() === position.order.owner.toLowerCase() && (
           <div className="bg-tertiary-bg rounded-3 flex flex-col gap-3 pb-5 px-5 pt-3">
-            <h2 className="text-secondary-text font-bold">Type of received assets</h2>
+            <h2 className="text-secondary-text font-bold">{t("type_of_received_assets")}</h2>
 
             <div className="grid grid-cols-2 gap-3">
               <RadioButton className="min-h-10 py-2 pr-4" isActive={true}>
-                Loaned currency
+                {t("loaned_currency")}
               </RadioButton>
               <RadioButton disabled className="min-h-10 py-2 pr-4" isActive={false}>
-                Borrower currencies
+                {t("borrower_currencies")}
               </RadioButton>
             </div>
           </div>
@@ -156,38 +154,30 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
 
         {address?.toLowerCase() === position.order.owner.toLowerCase() && (
           <div className="bg-tertiary-bg rounded-3 flex flex-col gap-3 pb-5 px-5 pt-3">
-            <h2 className="text-secondary-text font-bold">Action with assets</h2>
+            <h2 className="text-secondary-text font-bold">{t("action_with_assets")}</h2>
 
             <div className="grid grid-cols-2 gap-3">
               <RadioButton className="min-h-10 py-2 pr-4" isActive={true}>
-                Return to order
+                {t("return_to_order")}
               </RadioButton>
               <RadioButton disabled className="min-h-10 py-2 pr-4" isActive={false}>
-                Send to address
+                {t("send_to_address")}
               </RadioButton>
             </div>
           </div>
         )}
 
-        <Alert
-          text="The asset prices at the time of liquidation may not match the current prices"
-          withIcon={false}
-          type="warning"
-        />
+        <Alert text={t("prices_may_differ")} withIcon={false} type="warning" />
 
         <div className="flex flex-col gap-3">
-          <Alert
-            text="The margin position will be initially frozen and subsequently liquidated"
-            withIcon={false}
-            type="info"
-          />
+          <Alert text={t("freeze_then_liquidate")} withIcon={false} type="info" />
 
           <div className="flex flex-col gap-4 py-2">
             <Checkbox
               checked={checkedPrices}
               handleChange={() => setCheckedPrices(!checkedPrices)}
               id={"agree-liquidation"}
-              label="I agree that liquidation prices may differ from current prices"
+              label={t("agree_prices_differ")}
             />
 
             <Checkbox
@@ -196,7 +186,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
               id={"agree-terms"}
               label={
                 <span>
-                  I understand and agree to the{" "}
+                  {t("agree_terms_prefix")}{" "}
                   <a
                     className="text-green underline"
                     onClick={(e) => {
@@ -206,7 +196,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
                     rel="noopener noreferrer"
                     href="https://www.google.com"
                   >
-                    terms and conditions of liquidation
+                    {t("terms_of_liquidation")}
                   </a>
                 </span>
               }
@@ -216,22 +206,22 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
           <div className="bg-tertiary-bg px-5 py-2 flex justify-between items-center rounded-3 flex-col xs:flex-row">
             <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
               <p className="flex flex-col text-tertiary-text">
-                <span>Gas price:</span>
+                <span>{t("gas_price")}</span>
                 <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
               </p>
 
               <p className="flex flex-col text-tertiary-text">
-                <span>Gas limit:</span>
+                <span>{t("gas_limit")}</span>
                 <span>{329000}</span>
               </p>
               <p className="flex flex-col">
-                <span className="text-tertiary-text">Network fee:</span>
+                <span className="text-tertiary-text">{t("network_fee")}</span>
                 <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
               </p>
             </div>
             <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
               <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                Cheaper
+                {t("cheap")}
               </span>
               <Button
                 colorScheme={ButtonColor.LIGHT_GREEN}
@@ -240,7 +230,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
                 fullWidth={false}
                 className="rounded-5"
               >
-                Edit
+                {t("edit")}
               </Button>
             </div>
           </div>
@@ -256,11 +246,11 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
             disabled={!checkedTerms || !checkedPrices}
             colorScheme={ButtonColor.RED}
           >
-            Liquidate position
+            {t("liquidate_position")}
           </Button>
         ) : (
           <Button fullWidth disabled>
-            Position already liquidated
+            {t("position_already_liquidated")}
           </Button>
         )}
       </div>
