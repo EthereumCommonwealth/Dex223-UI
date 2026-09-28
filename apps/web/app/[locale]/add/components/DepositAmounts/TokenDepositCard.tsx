@@ -99,8 +99,9 @@ function InputTotalAmount({
 
   const maxBalance = currency?.isNative
     ? token0Balance?.value || BigInt(0)
-    : (token0Balance?.value || BigInt(0)) * BigInt((100 - tokenStandardRatio) / 100) +
-      ((token1Balance?.value || BigInt(0)) + currentDeposit) * BigInt(tokenStandardRatio / 100);
+    : ((token0Balance?.value || BigInt(0)) * BigInt(100 - tokenStandardRatio) +
+        ((token1Balance?.value || BigInt(0)) + currentDeposit) * BigInt(tokenStandardRatio)) /
+      BigInt(100);
 
   const maxHandler = () => {
     if (currency) {
@@ -430,7 +431,8 @@ export default function TokenDepositCard({
     contractAddress: NONFUNGIBLE_POSITION_MANAGER_ADDRESS[chainId as DexChainId],
   });
 
-  const { currentDeposit: currentDeposit } = useWithdraw({
+  // Undefined until the deposit read resolves; default it so BigInt math never sees undefined.
+  const { currentDeposit = BigInt(0) } = useWithdraw({
     token: currency,
     contractAddress: NONFUNGIBLE_POSITION_MANAGER_ADDRESS[chainId as DexChainId],
   });

@@ -823,6 +823,12 @@
     "increase_price": "Augmenter le prix",
     "decrease_price": "Baisser le prix"
   },
+  "PageError": {
+    "title": "Une erreur est survenue",
+    "description": "Cette page a rencontré une erreur inattendue. Vos fonds sont en sécurité. Réessayez ou revenez au trading.",
+    "try_again": "Réessayer",
+    "go_to_swap": "Aller à l'échange"
+  },
   "NotFound": {
     "title": "Page introuvable",
     "description": "Cette page n'existe pas ou a été déplacée. Vérifiez l'adresse ou revenez au trading.",

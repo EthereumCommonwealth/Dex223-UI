@@ -32,12 +32,12 @@ const useWithdrawParams = ({
 }: {
   token: Currency | undefined;
   contractAddress: Address | undefined;
-  amountToWithdraw: bigint;
+  amountToWithdraw: bigint | undefined;
 }) => {
   const { address } = useAccount();
 
   return useMemo(() => {
-    if (!contractAddress || !token || !address || !(amountToWithdraw >= 0)) return {};
+    if (!contractAddress || !token || !address || amountToWithdraw === undefined) return {};
 
     const params = {
       account: address as Address,
@@ -120,7 +120,7 @@ export default function useWithdraw({
     },
   });
 
-  const amountToWithdraw = currentDeposit.data as bigint;
+  const amountToWithdraw = currentDeposit.data;
 
   const { blockNumber } = useGlobalBlockNumber();
 
@@ -238,6 +238,6 @@ export default function useWithdraw({
     withdrawHash: hash,
     withdrawStatus: status,
     withdrawHandler: writeTokenWithdraw,
-    currentDeposit: currentDeposit.data as bigint,
+    currentDeposit: currentDeposit.data,
   };
 }
