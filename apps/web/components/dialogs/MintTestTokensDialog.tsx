@@ -57,7 +57,9 @@ export default function MintTestTokensDialog() {
   const [tokenToMint, setTokenToMint] = useState(withoutWrapped[0]);
 
   useEffect(() => {
-    if (withoutWrapped.length && !tokenToMint) {
+    if (!withoutWrapped.length) return;
+    const stillListed = tokenToMint && withoutWrapped.some((token) => token.equals(tokenToMint));
+    if (!stillListed) {
       setTokenToMint(withoutWrapped[0]);
     }
   }, [tokenToMint, withoutWrapped]);

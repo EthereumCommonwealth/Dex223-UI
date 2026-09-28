@@ -228,7 +228,7 @@ export default function BorrowMarketTable({
     minPositionDuration,
   } = useBorrowMarketFilterStore();
 
-  const { loading, orders, isFilterActive } = useOrders({
+  const { loading, orders, error, isFilterActive } = useOrders({
     sortingDirection: sorting.direction,
     orderBy: sorting.field,
     leverage_lte: leverage,
@@ -503,9 +503,13 @@ export default function BorrowMarketTable({
           />
         </>
       ) : null}
-      {isFilterActive && !orders?.length && (
+      {!loading && !orders?.length && (
         <div className="bg-primary-bg rounded-5 h-[340px] flex items-center justify-center text-secondary-text bg-empty-no-borrow-found bg-no-repeat bg-right-top">
-          No results found. Adjust your filters and try again
+          {error
+            ? "Lending orders could not be loaded."
+            : isFilterActive
+              ? "No results found. Adjust your filters and try again"
+              : "No lending orders yet"}
         </div>
       )}
     </>
