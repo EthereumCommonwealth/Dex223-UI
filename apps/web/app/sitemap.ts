@@ -1,10 +1,12 @@
 import type { MetadataRoute } from "next";
 
-import { SITE_URL } from "@/config/site";
+import { indexingOrigin } from "@/config/site";
 import { locales } from "@/i18n/routing";
 
-// Public, crawlable surfaces only. Routes keyed by a position or pool id are
-// per-user and unbounded, so they are excluded here and in robots.ts.
+export const dynamic = "force-dynamic";
+
+// Public product pages only. Portfolio, positions, payments, and id-keyed
+// routes are private or unbounded, so they stay out of the sitemap and robots.ts.
 const ROUTES: {
   path: string;
   priority: number;
@@ -12,47 +14,37 @@ const ROUTES: {
 }[] = [
   { path: "swap", priority: 1, changeFrequency: "daily" },
   { path: "pools", priority: 0.9, changeFrequency: "daily" },
-  { path: "pools/positions", priority: 0.6, changeFrequency: "weekly" },
   { path: "add", priority: 0.8, changeFrequency: "monthly" },
   { path: "margin-trading", priority: 0.8, changeFrequency: "weekly" },
-  { path: "portfolio", priority: 0.6, changeFrequency: "weekly" },
+  { path: "margin-swap", priority: 0.7, changeFrequency: "weekly" },
   { path: "token-listing", priority: 0.7, changeFrequency: "weekly" },
+  { path: "token-listing/contracts", priority: 0.6, changeFrequency: "weekly" },
+  { path: "create-token", priority: 0.6, changeFrequency: "monthly" },
   { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
   { path: "converter", priority: 0.7, changeFrequency: "monthly" },
-  { path: "revenue", priority: 0.7, changeFrequency: "weekly" },
-  { path: "governance", priority: 0.5, changeFrequency: "monthly" },
-  { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
-  { path: "guidelines/swap", priority: 0.4, changeFrequency: "yearly" },
-  { path: "guidelines/converter", priority: 0.4, changeFrequency: "yearly" },
-  { path: "guidelines/token-lists", priority: 0.4, changeFrequency: "yearly" },
-  { path: "guidelines/token-listing", priority: 0.4, changeFrequency: "yearly" },
-  { path: "guidelines/fiat", priority: 0.4, changeFrequency: "yearly" },
   { path: "statistics", priority: 0.7, changeFrequency: "daily" },
-  { path: "statistics/tokens", priority: 0.6, changeFrequency: "daily" },
-  { path: "statistics/pools", priority: 0.6, changeFrequency: "daily" },
+  { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
 ];
 
-const url = (locale: string, path: string) => `${SITE_URL}/${locale}/${path}`;
-
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const lastModified = new Date();
+  const { url: siteUrl, indexable } = await indexingOrigin();
+  if (!indexable) return [];
 
-  // One entry per locale per route, each carrying the full alternates set. The
-  // previous sitemap emitted `languages: {}` - an empty hreflang map - so search
-  // engines had no way to associate the translated pages with each other and were
-  // free to treat them as duplicates.
+  const lastModified = new Date();
+  const pageUrl = (locale: string, path: string) => `${siteUrl}/${locale}/${path}`;
+
   return ROUTES.flatMap(({ path, priority, changeFrequency }) => {
-    const languages = Object.fromEntries(locales.map((l) => [l, url(l, path)]));
+    const languages = Object.fromEntries(locales.map((locale) => [locale, pageUrl(locale, path)]));
 
     return locales.map((locale) => ({
-      url: url(locale, path),
+      url: pageUrl(locale, path),
       lastModified,
       changeFrequency,
       priority,
       alternates: {
         languages: {
           ...languages,
-          "x-default": url("en", path),
+          "x-default": pageUrl("en", path),
         },
       },
     }));
