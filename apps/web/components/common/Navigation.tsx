@@ -10,7 +10,7 @@ import Svg from "@/components/atoms/Svg";
 import { MobileLink } from "@/components/common/MobileMenu";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { usePathname } from "@/i18n/routing";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 
@@ -63,18 +63,18 @@ function MarginTradingSubmenuLink({
   title: string;
   handleClose: () => void;
 }) {
-  const isMarginAvailable = useIsMarginAvailable();
+  const comingSoon = isBorrowLendComingSoon();
 
   return (
     <MobileLink
-      disabled={!isMarginAvailable}
+      disabled={comingSoon}
       isActive={isActive}
       href="/margin-swap"
       iconName="margin-trading"
       title={title}
       handleClose={handleClose}
-      className={clsx("min-w-[238px]", !isMarginAvailable && "pr-5")}
-      comingSoon={!isMarginAvailable}
+      className={clsx("min-w-[238px]", comingSoon && "pr-5")}
+      comingSoon={comingSoon}
     />
   );
 }
