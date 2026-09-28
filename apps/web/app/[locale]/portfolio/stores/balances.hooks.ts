@@ -12,6 +12,8 @@ import { Currency } from "@/sdk_bi/entities/currency";
 import { useActiveAddresses } from "./hooks";
 import { useWalletsBalances, WalletBalances } from "./useWalletsBalances";
 
+const BALANCES_REFRESH_MS = 30_000;
+
 const getWalletBalances = async (
   addressToCheck: Address,
   currencies: Currency[],
@@ -83,14 +85,43 @@ export const useActiveWalletBalances = ({
   const { balances, setAllBalances } = useWalletsBalances();
 
   useEffect(() => {
-    (async () => {
-      const walletsBalances = await Promise.all(
-        activeAddresses.map((address) => {
-          return getWalletBalances(address, tokens, chainId);
-        }),
-      );
-      setAllBalances(walletsBalances);
-    })();
+    let cancelled = false;
+    let inFlight = false;
+
+    const load = async () => {
+      if (inFlight || document.visibilityState === "hidden") return;
+      inFlight = true;
+      try {
+        const walletsBalances = await Promise.all(
+          activeAddresses.map((address) => {
+            return getWalletBalances(address, tokens, chainId);
+          }),
+        );
+        // A newer run (other chain, wallets or token list) owns the store now.
+        if (!cancelled) setAllBalances(walletsBalances);
+      } catch {
+        // Keep the last balances shown. The next refresh retries.
+      } finally {
+        inFlight = false;
+      }
+    };
+
+    // Balances change without this page knowing: swaps in another tab, faucet mints,
+    // transfers from the wallet. Re-read them so the table does not go stale.
+    const onVisible = () => {
+      if (document.visibilityState === "visible") load();
+    };
+    load();
+    const interval = setInterval(load, BALANCES_REFRESH_MS);
+    document.addEventListener("visibilitychange", onVisible);
+    window.addEventListener("focus", onVisible);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisible);
+      window.removeEventListener("focus", onVisible);
+    };
   }, [tokens, activeAddresses, chainId, setAllBalances]);
 
   const tokenBalances = useMemo(() => {
