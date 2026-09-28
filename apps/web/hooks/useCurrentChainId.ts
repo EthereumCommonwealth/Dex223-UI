@@ -2,14 +2,15 @@ import { useMemo } from "react";
 import { useAccount } from "wagmi";
 
 import { useConnectWalletStore } from "@/components/dialogs/stores/useConnectWalletStore";
-import { DEX_SUPPORTED_CHAINS, DexChainId } from "@/sdk_bi/chains";
+import { networks } from "@/config/networks";
+import { DexChainId } from "@/sdk_bi/chains";
 
 export default function useCurrentChainId() {
   const { chainId } = useAccount();
   const { chainToConnect } = useConnectWalletStore();
 
   return useMemo(() => {
-    if (chainId && DEX_SUPPORTED_CHAINS.includes(chainId)) {
+    if (chainId && networks.some((network) => network.chainId === chainId)) {
       return chainId as DexChainId;
     }
 
