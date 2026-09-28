@@ -1,12 +1,12 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 
 import StatisticsShell from "@/app/[locale]/statistics/components/StatisticsShell";
 import { useTokensData } from "@/app/[locale]/statistics/hooks";
-import { tokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import TokenLogo from "@/components/atoms/TokenLogo";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Link } from "@/i18n/routing";
@@ -14,6 +14,7 @@ import { Link } from "@/i18n/routing";
 export default function StatisticsTokensPage() {
   const t = useTranslations("Statistics");
   const chainId = useCurrentChainId();
+  const tokenMeta = useTokenMeta();
   const { data, loading, error } = useTokensData(chainId, 50);
   const tokens = useMemo(() => data?.tokens ?? [], [data?.tokens]);
 
@@ -51,15 +52,7 @@ export default function StatisticsTokensPage() {
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-secondary-text text-14 w-6 shrink-0">{index + 1}</span>
                       <span className="w-7 h-7 rounded-full overflow-hidden bg-secondary-bg shrink-0">
-                        <Image
-                          src={meta.image}
-                          alt={meta.symbol}
-                          width={28}
-                          height={28}
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = "/images/tokens/placeholder.svg";
-                          }}
-                        />
+                        <TokenLogo src={meta.image} alt={meta.symbol} size={28} />
                       </span>
                       <div className="min-w-0">
                         <div className="font-medium truncate">{meta.symbol}</div>
