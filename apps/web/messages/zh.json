@@ -823,6 +823,12 @@
     "increase_price": "提高价格",
     "decrease_price": "降低价格"
   },
+  "PageError": {
+    "title": "出了点问题",
+    "description": "此页面遇到意外错误。您的资金是安全的。请重试，或返回交易。",
+    "try_again": "重试",
+    "go_to_swap": "前往兑换"
+  },
   "NotFound": {
     "title": "页面未找到",
     "description": "此页面不存在或已被移动。请检查地址，或返回交易。",

@@ -823,6 +823,12 @@
     "increase_price": "Subir precio",
     "decrease_price": "Bajar precio"
   },
+  "PageError": {
+    "title": "Algo salió mal",
+    "description": "Esta página tuvo un error inesperado. Tus fondos están seguros. Inténtalo de nuevo o vuelve a operar.",
+    "try_again": "Intentar de nuevo",
+    "go_to_swap": "Ir a intercambiar"
+  },
   "NotFound": {
     "title": "Página no encontrada",
     "description": "Esta página no existe o se ha movido. Revisa la dirección o vuelve a operar.",
