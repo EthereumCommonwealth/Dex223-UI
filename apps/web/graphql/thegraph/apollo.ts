@@ -27,8 +27,7 @@ const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
   [DexChainId.MAINNET]:
     "https://gateway.thegraph.com/api/subgraphs/id/A3mMtVLVvdbpgXduav8znCv7qdvXhSeWxST27pxdx4Mm",
   [DexChainId.SEPOLIA]:
-    "https://gateway.thegraph.com/api/subgraphs/id/9oohHEx5ivUXguYBGVJojrKuBQHLtLzg7df1pUC6mg8w",
-  // "https://api.studio.thegraph.com/query/56540/dex223-v1-sepolia/version/latest",
+    "https://api.studio.thegraph.com/query/1760635/dex-223-v-1-sepolia/version/latest",
   // [DexChainId.CALLISTO]: "",
   [DexChainId.BSC_TESTNET]: "https://api.studio.thegraph.com/query/56540/dex223-v1-chapel/1.0.82",
   [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-eosevm",
