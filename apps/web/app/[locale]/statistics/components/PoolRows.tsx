@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
-
-import { tokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import TokenLogo from "@/components/atoms/TokenLogo";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import { Link } from "@/i18n/routing";
@@ -17,6 +16,8 @@ export default function PoolRows({
   chainId: number;
   tvlLabel: string;
 }) {
+  const tokenMeta = useTokenMeta();
+
   return (
     <div className="divide-y divide-secondary-border">
       {pools.map((pool: any, index: number) => {
@@ -35,26 +36,10 @@ export default function PoolRows({
             <span className="text-secondary-text w-6 shrink-0 text-14">{index + 1}</span>
             <div className="relative w-10 h-6 shrink-0">
               <span className="absolute left-0 top-0 w-6 h-6 rounded-full overflow-hidden bg-secondary-bg">
-                <Image
-                  src={token0.image}
-                  alt={token0.symbol}
-                  width={24}
-                  height={24}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/tokens/placeholder.svg";
-                  }}
-                />
+                <TokenLogo src={token0.image} alt={token0.symbol} size={24} />
               </span>
               <span className="absolute left-3 top-0 w-6 h-6 rounded-full overflow-hidden bg-secondary-bg">
-                <Image
-                  src={token1.image}
-                  alt={token1.symbol}
-                  width={24}
-                  height={24}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/tokens/placeholder.svg";
-                  }}
-                />
+                <TokenLogo src={token1.image} alt={token1.symbol} size={24} />
               </span>
             </div>
             <div className="flex-grow min-w-0">

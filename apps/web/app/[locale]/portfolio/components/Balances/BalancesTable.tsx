@@ -60,11 +60,13 @@ export const BalancesDesktopTable = ({
             </div>
             <div
               className={clsx("h-[56px] flex items-center", index % 2 !== 0 && "bg-tertiary-bg")}
+              title={`${o.amountERC20} ${o.token.symbol}`}
             >
               {`${formatNumberKilos(parseFloat(o.amountERC20))} ${o.token.symbol}`}
             </div>
             <div
               className={clsx("h-[56px] flex items-center", index % 2 !== 0 && "bg-tertiary-bg")}
+              title={`${o.amountERC223} ${o.token.symbol}`}
             >
               {`${formatNumberKilos(parseFloat(o.amountERC223))} ${o.token.symbol}`}
             </div>
