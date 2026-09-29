@@ -1,16 +1,35 @@
+import { useCallback, useMemo } from "react";
 import { getAddress } from "viem";
 
-export function tokenMeta(token: { id: string; symbol: string; addressERC223?: string | null }): {
+import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useTokens } from "@/hooks/useTokenLists";
+import { DexChainId } from "@/sdk_bi/chains";
+
+const PLACEHOLDER = "/images/tokens/placeholder.svg";
+
+type SubgraphToken = { id: string; symbol: string; addressERC223?: string | null };
+
+export function tokenMeta(
+  token: SubgraphToken,
+  chainId: number,
+  listLogos?: Map<string, string>,
+): {
   symbol: string;
   image: string;
 } {
   let symbol = token.symbol;
-  let image = "/images/tokens/placeholder.svg";
+  let image =
+    listLogos?.get(token.id.toLowerCase()) ??
+    (token.addressERC223 ? listLogos?.get(token.addressERC223.toLowerCase()) : undefined) ??
+    PLACEHOLDER;
 
-  try {
-    image = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${getAddress(token.id)}/logo.png`;
-  } catch {
-    // invalid address: keep placeholder
+  // Trust Wallet only hosts Ethereum mainnet logos. Other chains 404 there.
+  if (image === PLACEHOLDER && chainId === DexChainId.MAINNET) {
+    try {
+      image = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${getAddress(token.id)}/logo.png`;
+    } catch {
+      // invalid address: keep placeholder
+    }
   }
 
   const d223 = "0x0908078Da2935A14BC7a17770292818C85b580dd";
@@ -26,4 +45,26 @@ export function tokenMeta(token: { id: string; symbol: string; addressERC223?: s
   }
 
   return { symbol, image };
+}
+
+// Resolves subgraph tokens against the token lists for the current chain,
+// so testnet tokens get their listed logo instead of a missing mainnet one.
+export function useTokenMeta() {
+  const chainId = useCurrentChainId();
+  const tokens = useTokens();
+
+  const listLogos = useMemo(() => {
+    const map = new Map<string, string>();
+    tokens.forEach((token) => {
+      if (!("address0" in token) || !token.logoURI || token.logoURI === PLACEHOLDER) return;
+      map.set(token.address0.toLowerCase(), token.logoURI);
+      map.set(token.address1.toLowerCase(), token.logoURI);
+    });
+    return map;
+  }, [tokens]);
+
+  return useCallback(
+    (token: SubgraphToken) => tokenMeta(token, chainId, listLogos),
+    [chainId, listLogos],
+  );
 }
