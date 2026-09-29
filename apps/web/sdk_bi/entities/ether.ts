@@ -28,8 +28,9 @@ const nativeCurrenciesMap: Record<DexChainId, { symbol: string; name: string; lo
     logoURI: "/images/coins/BNB.svg",
   },
   [DexChainId.EOS]: {
-    symbol: "EOS",
-    name: "EOS",
+    // Gas token switched from EOS to A (Vaulta) on 2025-10-01.
+    symbol: "A",
+    name: "Vaulta",
     logoURI: "/images/coins/EOS.svg",
   },
   [DexChainId.BASE]: {

@@ -27,5 +27,4 @@ export const DEX_SUPPORTED_CHAINS: DexChainId[] = [
   DexChainId.MAINNET,
   DexChainId.SEPOLIA,
   DexChainId.BSC_TESTNET,
-  DexChainId.EOS,
 ];
