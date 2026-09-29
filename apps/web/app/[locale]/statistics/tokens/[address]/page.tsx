@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React, { use, useEffect, useRef, useState } from "react";
 
@@ -9,7 +8,8 @@ import PoolRows from "@/app/[locale]/statistics/components/PoolRows";
 import StatisticsShell from "@/app/[locale]/statistics/components/StatisticsShell";
 import ValueChart, { ValuePoint } from "@/app/[locale]/statistics/components/ValueChart";
 import { useTokenDetail } from "@/app/[locale]/statistics/hooks";
-import { tokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
+import TokenLogo from "@/components/atoms/TokenLogo";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { ChartRange } from "@/hooks/usePoolPriceChart";
@@ -23,6 +23,7 @@ export default function StatisticsTokenDetailPage({
   const { address } = use(params);
   const t = useTranslations("Statistics");
   const chainId = useCurrentChainId();
+  const tokenMeta = useTokenMeta();
   const [days, setDays] = useState<ChartRange>(30);
   const { token, priceSeries, volumeSeries, loading, error } = useTokenDetail(
     chainId,
@@ -89,15 +90,7 @@ export default function StatisticsTokenDetailPage({
           <div className="flex items-center gap-3 mb-5">
             {meta ? (
               <span className="w-10 h-10 rounded-full overflow-hidden bg-secondary-bg">
-                <Image
-                  src={meta.image}
-                  alt={meta.symbol}
-                  width={40}
-                  height={40}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "/images/tokens/placeholder.svg";
-                  }}
-                />
+                <TokenLogo src={meta.image} alt={meta.symbol} size={40} />
               </span>
             ) : null}
             <div>
@@ -121,12 +114,14 @@ export default function StatisticsTokenDetailPage({
             </div>
             <div className="bg-primary-bg rounded-5 px-5 py-4">
               <div className="text-14 text-secondary-text">{t("transactions")}</div>
-              <div className="text-20 font-medium">{formatNumberKilos(Number(token.txCount))}</div>
+              <div className="text-20 font-medium">
+                {formatNumberKilos(Number(token.txCount), { trimZero: true })}
+              </div>
             </div>
             <div className="bg-primary-bg rounded-5 px-5 py-4">
               <div className="text-14 text-secondary-text">{t("pools")}</div>
               <div className="text-20 font-medium">
-                {formatNumberKilos(Number(token.poolCount))}
+                {formatNumberKilos(Number(token.poolCount), { trimZero: true })}
               </div>
             </div>
           </div>

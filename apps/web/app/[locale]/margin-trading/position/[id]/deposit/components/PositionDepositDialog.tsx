@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { parseUnits } from "viem";
 
@@ -93,6 +94,7 @@ function PositionDepositActionButton({
   assetToDeposit: Currency;
   assetToDepositStandard: Standard;
 }) {
+  const t = useTranslations("Margin");
   const { handlePositionDeposit } = usePositionDeposit({
     position: position,
     currency: assetToDeposit,
@@ -151,7 +153,7 @@ function PositionDepositActionButton({
 
   return (
     <Button disabled={disabled} onClick={() => handlePositionDeposit(amountToApprove)} fullWidth>
-      Deposit {assetToDeposit.symbol}
+      {t("deposit_symbol", { symbol: assetToDeposit.symbol })}
     </Button>
   );
 }
@@ -171,6 +173,7 @@ export default function PositionDepositDialog({
   assetToDepositStandard: Standard;
   amountToDeposit: string;
 }) {
+  const t = useTranslations("Margin");
   const { status, setStatus } = useDepositPositionStatusStore();
   const [isEditApproveActive, setEditApproveActive] = useState(false);
 
@@ -204,7 +207,7 @@ export default function PositionDepositDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Deposit" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
       <div className="w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
@@ -213,12 +216,12 @@ export default function PositionDepositDialog({
               amount={amountToDeposit}
               amountUSD={"0"}
               standard={Standard.ERC20}
-              title={"Deposit amount"}
+              title={t("deposit_amount")}
             />
             <div className="flex flex-col mt-4">
               <SwapDetailsRow
-                title={"Leverage"}
-                tooltipText="Tooltip text"
+                title={t("leverage")}
+                tooltipText={t("leverage_deposit_tooltip")}
                 value={position.order.leverage}
               />
             </div>
@@ -242,7 +245,7 @@ export default function PositionDepositDialog({
               amount={amountToDeposit}
               amountUSD={"0"}
               standard={Standard.ERC20}
-              title={"Deposit amount"}
+              title={t("deposit_amount")}
             />
             <div className="h-px bg-secondary-border my-4" />
           </>
@@ -269,7 +272,7 @@ export default function PositionDepositDialog({
 
             {status === PositionDepositStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Successfully deposited</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("deposit_success")}</h2>
                 <p className="text-center mb-1">
                   {amountToDeposit} {position.loanAsset.symbol}
                 </p>

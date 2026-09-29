@@ -64,7 +64,7 @@ export const RevokeDialog = () => {
   });
 
   const currentAllowance =
-    standard === Standard.ERC20 ? revokeAllowance || BigInt(0) : currentDeposit;
+    standard === Standard.ERC20 ? revokeAllowance || BigInt(0) : currentDeposit || BigInt(0);
   const currentHash = standard === Standard.ERC20 ? revokeHash : withdrawHash;
   const revokeHandler = standard === Standard.ERC20 ? rHandler : withdrawHandler;
 
