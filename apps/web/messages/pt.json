@@ -91,7 +91,7 @@
     "approving_in_progress": "Aprovação em curso",
     "looking_for_the_best_trade": "A procurar a melhor rota...",
     "swap_is_unavailable_for_this_pair": "A troca não está disponível para este par",
-    "cannot_receive_erc223": "Esta carteira não pode receber ERC-223",
+    "cannot_receive_erc223": "Escolha ERC-20 para continuar",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Definições aplicadas",
     "tokens_in_two_standards_title": "Tokens nos padrões ERC-20 e ERC-223",
@@ -112,7 +112,9 @@
     "slippage_above_one": "Uma tolerância de slippage acima de 1% pode resultar numa taxa de câmbio desfavorável. Use a definição automática, a menos que saiba o que está a fazer.",
     "slippage_max": "O slippage máximo não pode exceder 50%",
     "slippage_low": "Um slippage abaixo de 0,05% pode fazer a transação falhar",
-    "eip7702_warning": "A sua carteira é uma conta inteligente EIP-7702 que não pode receber tokens ERC-223, por isso esta troca falharia. Receba ERC-20.",
+    "eip7702_title": "Esta carteira não pode receber a versão ERC-223",
+    "eip7702_warning": "Sua conta é uma conta inteligente (EIP-7702), por exemplo uma conta inteligente da MetaMask. Contas inteligentes podem guardar e enviar tokens ERC-223, inclusive os que você já tem, mas não podem receber novos. Nada foi enviado e seus fundos estão seguros.",
+    "eip7702_fix": "<receive>Receba a versão ERC-20</receive>, ou volte sua carteira para uma conta padrão para receber ERC-223.",
     "swap_no_liquidity": "Troca indisponível. Um dos tokens não tem liquidez. Tente mais tarde ou escolha outro par."
   },
   "Wallet": {

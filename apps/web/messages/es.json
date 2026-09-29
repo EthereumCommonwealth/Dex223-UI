@@ -91,7 +91,7 @@
     "approving_in_progress": "Aprobación en curso",
     "looking_for_the_best_trade": "Buscando la mejor operación...",
     "swap_is_unavailable_for_this_pair": "El intercambio no está disponible para este par",
-    "cannot_receive_erc223": "Esta billetera no puede recibir ERC-223",
+    "cannot_receive_erc223": "Elige ERC-20 para continuar",
     "insufficient_balance": "Saldo insuficiente",
     "settings_applied": "Ajustes aplicados",
     "tokens_in_two_standards_title": "Tokens en los estándares ERC-20 y ERC-223",
@@ -112,7 +112,9 @@
     "slippage_above_one": "Una tolerancia de deslizamiento superior al 1% puede dar un tipo de cambio desfavorable. Usa el ajuste automático, salvo que sepas lo que haces.",
     "slippage_max": "El deslizamiento máximo no puede superar el 50%",
     "slippage_low": "Un deslizamiento inferior al 0,05% puede hacer que la transacción falle",
-    "eip7702_warning": "Tu billetera es una cuenta inteligente EIP-7702 que no puede recibir tokens ERC-223, así que este intercambio fallaría. Recibe ERC-20.",
+    "eip7702_title": "Esta billetera no puede recibir la versión ERC-223",
+    "eip7702_warning": "Tu cuenta es una cuenta inteligente (EIP-7702), por ejemplo una cuenta inteligente de MetaMask. Las cuentas inteligentes pueden guardar y enviar tokens ERC-223, incluidos los que ya tienes, pero no pueden recibir nuevos. No se ha enviado nada y tus fondos están seguros.",
+    "eip7702_fix": "<receive>Recibe la versión ERC-20</receive>, o vuelve a cambiar tu billetera a una cuenta estándar para recibir ERC-223.",
     "swap_no_liquidity": "Intercambio no disponible. Uno de los tokens no tiene liquidez. Inténtalo más tarde o elige otro par."
   },
   "Wallet": {

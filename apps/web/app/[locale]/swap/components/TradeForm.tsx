@@ -687,7 +687,37 @@ export default function TradeForm({
 
       {tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223 && (
         <div className="mt-5">
-          <Alert text={t("eip7702_warning")} type="warning" />
+          <Alert
+            type="warning"
+            text={
+              <span className="flex flex-col gap-2">
+                {/* Non-breaking hyphens keep "ERC-223" from splitting across lines. */}
+                <span className="font-medium text-primary-text">
+                  {t("eip7702_title").replace(/ERC-(\d+)/g, "ERC\u2011$1")}
+                </span>
+                <span>{t("eip7702_warning").replace(/ERC-(\d+)/g, "ERC\u2011$1")}</span>
+                <span>
+                  {t.rich("eip7702_fix", {
+                    receive: (chunks) => (
+                      <button
+                        type="button"
+                        className="text-green underline hocus:text-green-hover duration-200"
+                        onClick={() => {
+                          setTokenBStandard(Standard.ERC20);
+                          // Same token on both sides is a conversion, so the input takes the other standard.
+                          if (tokenA && tokenA.wrapped.equals(tokenB.wrapped)) {
+                            setTokenAStandard(Standard.ERC223);
+                          }
+                        }}
+                      >
+                        {chunks}
+                      </button>
+                    ),
+                  })}
+                </span>
+              </span>
+            }
+          />
         </div>
       )}
 
