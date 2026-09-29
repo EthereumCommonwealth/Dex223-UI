@@ -17,12 +17,6 @@ export const networks: Array<{
       ]
     : [
         {
-          chainId: DexChainId.MAINNET,
-          name: "Ethereum",
-          symbol: "ETH",
-          logo: "/images/chains/ethereum.svg",
-        },
-        {
           chainId: DexChainId.SEPOLIA,
           name: "Sepolia",
           symbol: "SEP",
@@ -33,11 +27,5 @@ export const networks: Array<{
           name: "BSC Testnet",
           symbol: "tBNB",
           logo: "/images/chains/bsc.svg",
-        },
-        {
-          chainId: DexChainId.EOS,
-          name: "EOS EVM Network",
-          symbol: "EOS",
-          logo: "/images/chains/eos.svg",
         },
       ];

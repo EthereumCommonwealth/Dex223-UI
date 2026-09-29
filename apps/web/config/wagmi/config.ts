@@ -24,7 +24,7 @@ const cookieStorage = {
 
 export const config = createConfig({
   chains:
-    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [mainnet, sepolia, bscTestnet, eos],
+    process.env.NEXT_PUBLIC_ENV === "production" ? [mainnet] : [sepolia, bscTestnet, eos],
   connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",

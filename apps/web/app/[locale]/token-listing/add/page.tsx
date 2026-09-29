@@ -503,7 +503,9 @@ export default function ListTokenPage() {
                     />
                   )}
 
-                  <Alert text={tListing("pool_required")} type="info" />
+                  {!isPoolExists && (!tokenA || !tokenB || sameTokensSelected) && (
+                    <Alert text={tListing("pool_required")} type="info" />
+                  )}
 
                   <div>
                     <InputLabel label={tListing("list_in_contract")} />

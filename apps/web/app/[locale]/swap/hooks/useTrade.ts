@@ -76,6 +76,7 @@ export function useTradeComputation() {
       // no valid pair yet
       return;
     }
+    console.log("Poasdsd:", pools);
     const valid = filterPools(pools);
     if (valid.length === 0) {
       setError(TradeError.NO_POOLS);

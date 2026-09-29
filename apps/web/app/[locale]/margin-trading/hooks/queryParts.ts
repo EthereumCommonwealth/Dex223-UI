@@ -71,6 +71,5 @@ export const GQL_ORDER_FIELDS = `
       ${GQL_TOKEN_FIELDS}
     }
     minLoan
-    oracle
     createdAt
 `;

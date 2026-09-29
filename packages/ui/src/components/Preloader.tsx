@@ -6,6 +6,7 @@ interface Props {
   type?: "circular" | "linear" | "awaiting";
   color?: "green" | "black";
   smallDots?: boolean;
+  className?: string;
 }
 
 export default function Preloader({
@@ -13,6 +14,7 @@ export default function Preloader({
   type = "circular",
   color = "green",
   smallDots = false,
+  className,
 }: Props) {
   const internalSize = useMemo(() => {
     return size / Math.sqrt(2);
@@ -23,7 +25,7 @@ export default function Preloader({
       return (
         <div
           style={{ width: size, height: size }}
-          className="ui-flex ui-items-center ui-justify-center ui-relative"
+          className={clsx("ui-flex ui-items-center ui-justify-center ui-relative", className)}
         >
           <div
             style={{ borderWidth: size > 50 ? 4 : 2 }}
@@ -38,7 +40,7 @@ export default function Preloader({
       );
     case "linear":
       return (
-        <div className="ui-flex ui-items-center ui-gap-[5px]" style={{ height: size }}>
+        <div className={clsx("ui-flex ui-items-center ui-gap-[5px]", className)} style={{ height: size }}>
           <span
             className={clsx(
               "ui-block ui-rounded-full ui-animate-flicker1 ui-bg-green",
@@ -61,7 +63,7 @@ export default function Preloader({
       );
     case "awaiting":
       return (
-        <div className="ui-flex ui-items-center ui-justify-center" style={{ width: size, height: size }}>
+        <div className={clsx("ui-flex ui-items-center ui-justify-center", className)} style={{ width: size, height: size }}>
           <div
             style={{ width: internalSize, height: internalSize }}
             className={`ui-rotate-45 ui-relative`}
@@ -90,10 +92,10 @@ export default function Preloader({
   }
 }
 
-export function CircularProgress({ size = 24 }: Props) {
+export function CircularProgress({ size = 24, className }: Props) {
   return (
     <div
-      className="MuiCircularProgressIndeterminate"
+      className={clsx("MuiCircularProgressIndeterminate", className)}
       role="progressbar"
       style={{
         width: size,

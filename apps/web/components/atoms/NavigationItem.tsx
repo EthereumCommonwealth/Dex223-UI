@@ -6,7 +6,7 @@ import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
 import Badge from "@/components/badges/Badge";
 import IconButton from "@/components/buttons/IconButton";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 
 interface Props {
@@ -22,8 +22,7 @@ interface Props {
 }
 export default function NavigationItem({ href, title, active, id, plain = false }: Props) {
   const t = useTranslations("Navigation");
-  const isMarginAvailable = useIsMarginAvailable();
-  const isComingSoon = id === "borrow_lend" && !isMarginAvailable;
+  const isComingSoon = id === "borrow_lend" && isBorrowLendComingSoon();
 
   if (isComingSoon) {
     return (
