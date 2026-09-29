@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import CreateTokenForm from "@/app/[locale]/create-token/components/CreateTokenForm";
@@ -11,6 +12,7 @@ import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import RecentTransactions from "@/components/common/RecentTransactions";
 
 export default function DecreaseLiquidityPage() {
+  const t = useTranslations("CreateToken");
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useCreateTokenRecentTransactionsStore();
 
@@ -38,7 +40,7 @@ export default function DecreaseLiquidityPage() {
           <div className="lg:w-[600px] bg-primary-bg mx-auto card-spacing rounded-5">
             <div className="flex justify-between py-1.5 -mr-3">
               <h2 className="text-18 lg:text-20 font-bold flex justify-center items-center text-nowrap">
-                Create a new ERC-223 token
+                {t("title")}
               </h2>
               <div className="flex items-center gap-2 justify-end">
                 <IconButton

@@ -1,5 +1,6 @@
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatEther, formatGwei, parseUnits } from "viem";
 
@@ -189,6 +190,7 @@ export default function OrderDepositDialog({
   order: LendingOrder;
 }) {
   const [isEditApproveActive, setEditApproveActive] = useState(false);
+  const t = useTranslations("Margin");
   const {
     balance: { erc20Balance: tokenA0Balance, erc223Balance: tokenA1Balance },
     refetch: refetchABalance,
@@ -249,19 +251,17 @@ export default function OrderDepositDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Deposit" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
       <div className="w-[600px] card-spacing-x card-spacing-b">
         {status === OrderDepositStatus.INITIAL ? (
           <>
-            <p className="text-secondary-text mb-4">
-              You will increase the available balance of your lending order by making a deposit
-            </p>
+            <p className="text-secondary-text mb-4">{t("deposit_hint")}</p>
             <TextField
-              label="Deposit amount"
+              label={t("deposit_amount")}
               internalText={order.baseAsset.symbol}
               value={amountToDeposit}
               isNumeric
-              placeholder="Deposit amount"
+              placeholder={t("deposit_amount")}
               onChange={(e) => {
                 const value = e.target.value;
                 setAmountToDeposit(value);
@@ -274,7 +274,10 @@ export default function OrderDepositDialog({
                   setAmountToApproveModified(false);
                 }
               }}
-              helperText={`Available balance: ${currentBalance} ${order.baseAsset.symbol}`}
+              helperText={t("available_balance_value", {
+                amount: currentBalance,
+                symbol: order.baseAsset.symbol,
+              })}
               error={error}
             />
 
@@ -293,7 +296,7 @@ export default function OrderDepositDialog({
                       "In order to make a swap with ERC-20 token you need to give the DEX contract permission to withdraw your tokens. All DEX'es require this operation. Here you are specifying the amount of tokens that you allow the contract to transfer on your behalf. Note that this amount never expires."
                     }
                   />
-                  <span className="text-14">Approve amount</span>
+                  <span className="text-14">{t("approve_amount")}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-grow justify-end">
                   {!isEditApproveActive ? (
@@ -355,16 +358,16 @@ export default function OrderDepositDialog({
             <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
               <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
                 <p className="flex flex-col text-tertiary-text">
-                  <span>Gas price:</span>
+                  <span>{t("gas_price")}</span>
                   <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
                 </p>
 
                 <p className="flex flex-col text-tertiary-text">
-                  <span>Gas limit:</span>
+                  <span>{t("gas_limit")}</span>
                   <span>{329000}</span>
                 </p>
                 <p className="flex flex-col">
-                  <span className="text-tertiary-text">Network fee:</span>
+                  <span className="text-tertiary-text">{t("network_fee")}</span>
                   <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
                 </p>
               </div>
@@ -412,7 +415,7 @@ export default function OrderDepositDialog({
 
                 {status === OrderDepositStatus.SUCCESS && (
                   <div>
-                    <h2 className="text-center mb-1 font-bold text-20 ">Successfully deposited</h2>
+                    <h2 className="text-center mb-1 font-bold text-20 ">{t("deposit_success")}</h2>
                     <p className="text-center mb-1">
                       {amountToDeposit} {order.baseAsset.symbol}
                     </p>
@@ -425,8 +428,8 @@ export default function OrderDepositDialog({
                   <div>
                     <h2 className="text-center mb-1 font-bold text-20 text-red-light">
                       {status === OrderDepositStatus.ERROR_DEPOSIT
-                        ? "Failed to deposit"
-                        : "Failed to approve"}
+                        ? t("deposit_failed")
+                        : t("approve_failed")}
                     </h2>
                     <p className="text-center mb-1">
                       {amountToDeposit} {order.baseAsset.symbol}
@@ -440,7 +443,7 @@ export default function OrderDepositDialog({
                 amount={amountToDeposit}
                 amountUSD={"0"}
                 standard={order.baseAssetStandard}
-                title={"Deposit amount"}
+                title={t("deposit_amount")}
               />
             )}
 

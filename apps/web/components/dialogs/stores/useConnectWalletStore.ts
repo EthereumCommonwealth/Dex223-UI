@@ -1,6 +1,7 @@
 import { create } from "zustand";
 
-import { DEX_SUPPORTED_CHAINS, DexChainId } from "@/sdk_bi/chains";
+import { networks } from "@/config/networks";
+import { DexChainId } from "@/sdk_bi/chains";
 
 export type WalletName = "metamask" | "wc" | "coinbase" | "trustWallet" | "keystore" | "safe";
 
@@ -19,10 +20,11 @@ export const useConnectWalletStore = create<ConnectWalletStore>((set, get) => ({
   walletName: "metamask",
   setName: (walletName) => set({ walletName }),
 
-  chainToConnect: DexChainId.MAINNET,
+  chainToConnect:
+    process.env.NEXT_PUBLIC_ENV === "production" ? DexChainId.MAINNET : DexChainId.SEPOLIA,
   setChainToConnect: (chainToConnect) => set({ chainToConnect }),
 
-  wcChainsToConnect: DEX_SUPPORTED_CHAINS,
+  wcChainsToConnect: networks.map((network) => network.chainId),
   addChainToConnect: (chain) => {
     const newChainsSet = [...get().wcChainsToConnect, chain];
     return set({ wcChainsToConnect: newChainsSet });

@@ -1,5 +1,5 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
-import { useLocale } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 
 import useAutoListing from "@/app/[locale]/token-listing/add/hooks/useAutoListing";
@@ -20,6 +20,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 export default function ChooseAutoListingDialog() {
   const { isOpen: isAutoListingSelectOpened, setIsOpen: setAutoListingSelectOpened } =
     useChooseAutoListingDialogStore();
+  const t = useTranslations("TokenListing");
   const locale = useLocale();
   const chainId = useCurrentChainId();
   const [searchValue, setSearchValue] = useState("");
@@ -43,7 +44,7 @@ export default function ChooseAutoListingDialog() {
     <DrawerDialog isOpen={isAutoListingSelectOpened} setIsOpen={setAutoListingSelectOpened}>
       <DialogHeader
         onClose={() => setAutoListingSelectOpened(false)}
-        title="Select auto-listing contract"
+        title={t("select_contract")}
       />
       <div className="card-spacing-x mb-3">
         <SearchInput
@@ -51,7 +52,7 @@ export default function ChooseAutoListingDialog() {
           onChange={(e) => {
             setSearchValue(e.target.value);
           }}
-          placeholder="Search name or paste contract"
+          placeholder={t("search_name_or_contract")}
         />
       </div>
 
@@ -71,16 +72,18 @@ export default function ChooseAutoListingDialog() {
                   <span className="font-medium w-[70px] overflow-ellipsis overflow-hidden md:w-[244px] whitespace-nowrap text-left">
                     {a.name}
                   </span>
-                  <span className="text-14 text-secondary-text">{a.tokens.length} tokens</span>
+                  <span className="text-14 text-secondary-text">
+                    {t("tokens_count", { count: a.tokens.length })}
+                  </span>
                 </div>
                 <div className="flex items-center md:gap-3 gap-2">
                   {a.id === autoListing?.id && (
                     <Svg iconName="check" className="text-green" size={32} />
                   )}
                   {a.isFree ? (
-                    <Badge variant={BadgeVariant.COLORED} text="Free" color="green_outline" />
+                    <Badge variant={BadgeVariant.COLORED} text={t("free")} color="green_outline" />
                   ) : (
-                    <Badge variant={BadgeVariant.COLORED} text="Paid" color="grey_outline" />
+                    <Badge variant={BadgeVariant.COLORED} text={t("paid")} color="grey_outline" />
                   )}
                   <ExternalTextLink
                     textClassname="min-w-[75px] text-left"
@@ -104,7 +107,7 @@ export default function ChooseAutoListingDialog() {
       )}
       {searchValue && !filteredAutoListings?.length && (
         <div className="h-[531px] flex-grow flex items-center rounded-5 bg-primary-bg justify-center flex-col bg-no-repeat bg-right-top bg-empty-autolisting-not-found -mt-5 pt-5 max-md:bg-size-180">
-          <span className="text-secondary-text">Auto-listing contract not found</span>
+          <span className="text-secondary-text">{t("contract_not_found")}</span>
         </div>
       )}
     </DrawerDialog>

@@ -313,7 +313,13 @@ export function RecentTransactionLogo({ title }: { title: IRecentTransactionTitl
     case RecentTransactionTitleTemplate.TRANSFER:
       return (
         <div className="flex items-center justify-center w-12 h-12 flex-shrink-0">
-          <Image className="rounded-full" width={36} height={36} src={title.logoURI} alt="" />
+          <Image
+            className="rounded-full"
+            width={36}
+            height={36}
+            src={title.logoURI || "/images/tokens/placeholder.svg"}
+            alt=""
+          />
         </div>
       );
     case RecentTransactionTitleTemplate.SWAP:
@@ -327,11 +333,16 @@ export function RecentTransactionLogo({ title }: { title: IRecentTransactionTitl
             className="absolute left-0 top-0"
             width={32}
             height={32}
-            src={title.logoURI0}
+            src={title.logoURI0 || "/images/tokens/placeholder.svg"}
             alt=""
           />
           <div className="w-[34px] h-[34px] flex absolute right-0 bottom-0 bg-tertiary-bg rounded-full items-center justify-center">
-            <Image width={32} height={32} src={title.logoURI1} alt="" />
+            <Image
+              width={32}
+              height={32}
+              src={title.logoURI1 || "/images/tokens/placeholder.svg"}
+              alt=""
+            />
           </div>
         </div>
       );

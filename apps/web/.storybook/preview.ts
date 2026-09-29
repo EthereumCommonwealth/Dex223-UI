@@ -1,27 +1,27 @@
 import type { Preview } from "@storybook/react";
-import '../assets/styles/tw.css';
+import "../assets/styles/tw.css";
 import "@repo/ui/styles.css";
 
 import nextIntl from "./next-intl";
 
 const preview: Preview = {
   initialGlobals: {
-    locale: 'en',
+    locale: "en",
     locales: {
-      en: 'English',
-      es: 'Spanish',
-      zh: 'Chinese',
+      en: "English",
+      es: "Spanish",
+      zh: "Chinese",
     },
   },
   parameters: {
     nextIntl,
     options: {
       storySort: {
-        order: ['Atoms', 'Buttons', 'Molecules'],
+        order: ["Atoms", "Buttons", "Molecules"],
       },
     },
     backgrounds: {
-      default: 'dark',
+      default: "dark",
     },
     controls: {
       matchers: {
@@ -31,7 +31,5 @@ const preview: Preview = {
     },
   },
 };
-
-
 
 export default preview;

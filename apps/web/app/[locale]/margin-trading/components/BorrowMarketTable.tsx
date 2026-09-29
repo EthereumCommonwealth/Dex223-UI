@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { Address, formatUnits } from "viem";
@@ -17,7 +18,7 @@ import IconButton, {
   SortingType,
 } from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
-import { formatFloat } from "@/functions/formatFloat";
+import { formatFloat, formatNumberKilos } from "@/functions/formatFloat";
 import { Link } from "@/i18n/routing";
 import { Currency } from "@/sdk_bi/entities/currency";
 
@@ -53,7 +54,7 @@ export function HeaderItem({
         if (handleSort) handleSort(field);
       }}
       className={clsx(
-        "h-[60px] flex items-center relative mb-2  text-tertiary-text",
+        "h-[60px] min-w-0 flex items-center relative mb-2 text-tertiary-text",
         isFirst && "pl-3.5",
         handleSort && "-left-3",
       )}
@@ -66,23 +67,116 @@ export function HeaderItem({
           sorting={sorting}
         />
       )}
-      {label}
+      <span className="truncate">{label}</span>
     </div>
   );
 }
 
 const PAGE_SIZE = 10;
 
-const headerColumns: Array<{ field: SortingField; title: string; sortable: boolean }> = [
-  { field: "balance", title: "Order balance", sortable: true },
-  { field: "leverage", title: "Leverage", sortable: true },
-  { field: "interestRate", title: "Interest", sortable: true },
-  { field: "duration", title: "Duration", sortable: true },
-  { field: "currencyLimit", title: "Limit", sortable: true },
-  { field: "collateralTokens", title: "Collateral tokens", sortable: false },
-  { field: "tradableTokens", title: "Tradable tokens", sortable: false },
-  { field: "minLoan", title: "Min borrowing", sortable: true },
+const headerColumns: Array<{ field: SortingField; sortable: boolean }> = [
+  { field: "balance", sortable: true },
+  { field: "leverage", sortable: true },
+  { field: "interestRate", sortable: true },
+  { field: "duration", sortable: true },
+  { field: "currencyLimit", sortable: true },
+  { field: "collateralTokens", sortable: false },
+  { field: "tradableTokens", sortable: false },
+  { field: "minLoan", sortable: true },
 ];
+
+function columnTitle(t: ReturnType<typeof useTranslations<"Margin">>, field: SortingField) {
+  switch (field) {
+    case "balance":
+      return t("order_balance");
+    case "leverage":
+      return t("leverage");
+    case "interestRate":
+      return t("interest");
+    case "duration":
+      return t("duration");
+    case "currencyLimit":
+      return t("limit");
+    case "collateralTokens":
+      return t("collateral_tokens");
+    case "tradableTokens":
+      return t("tradable_tokens");
+    case "minLoan":
+      return t("min_borrowing");
+  }
+}
+
+function formatOrderAmount(raw: string) {
+  const amount = Number(raw);
+  if (!Number.isFinite(amount)) {
+    return "0";
+  }
+  if (Math.abs(amount) >= 1_000_000) {
+    return formatNumberKilos(amount, { trimZero: true });
+  }
+  return formatFloat(amount, { trimZero: true });
+}
+
+function formatOrderDuration(seconds: number, t: ReturnType<typeof useTranslations<"Margin">>) {
+  if (!Number.isFinite(seconds) || seconds <= 0) {
+    return t("duration_zero");
+  }
+  if (seconds < 3600) {
+    return t("duration_minutes", { count: Math.max(1, Math.round(seconds / 60)) });
+  }
+  if (seconds < 86400) {
+    return t("duration_hours", { count: formatFloat(seconds / 3600, { trimZero: true }) });
+  }
+  return t("duration_days", { count: formatFloat(seconds / 86400, { trimZero: true }) });
+}
+
+function OrderActions({
+  order,
+  address,
+  currentTimestamp,
+}: {
+  order: LendingOrder;
+  address?: Address;
+  currentTimestamp: number;
+}) {
+  const t = useTranslations("Margin");
+  const borrowDisabled =
+    order.balance < order.minLoan ||
+    currentTimestamp > order.deadline ||
+    order.allowedTradingAssets.length === 0;
+
+  if (order.owner.toLowerCase() === address?.toLowerCase()) {
+    return (
+      <Link className="flex-grow" href={`/margin-trading/lending-order/${order.id}`}>
+        <Button fullWidth size={ButtonSize.MEDIUM} colorScheme={ButtonColor.LIGHT_GREEN}>
+          {t("view_my_order")}
+        </Button>
+      </Link>
+    );
+  }
+
+  return (
+    <>
+      <Link className="flex-shrink-0 pointer-events-none" href={`/margin-swap`}>
+        <Button disabled size={ButtonSize.MEDIUM} colorScheme={ButtonColor.LIGHT_PURPLE}>
+          {t("margin_swap")}
+        </Button>
+      </Link>
+      <Link
+        className={clsx("flex-shrink-0", borrowDisabled && "pointer-events-none")}
+        href={`/margin-trading/lending-order/${order.id}/borrow`}
+      >
+        <Button
+          disabled={borrowDisabled}
+          size={ButtonSize.MEDIUM}
+          colorScheme={ButtonColor.LIGHT_GREEN}
+        >
+          {t("borrow")}
+        </Button>
+      </Link>
+    </>
+  );
+}
 
 export default function BorrowMarketTable({
   borrowAssets,
@@ -93,6 +187,7 @@ export default function BorrowMarketTable({
   collateralAssets: Currency[];
   tradableAssets: Currency[];
 }) {
+  const t = useTranslations("Margin");
   const [currentPage, setCurrentPage] = useState(1);
 
   const [sorting, setSorting] = useState<{ field: SortingField; direction: SortingType }>({
@@ -133,7 +228,7 @@ export default function BorrowMarketTable({
     minPositionDuration,
   } = useBorrowMarketFilterStore();
 
-  const { loading, orders, isFilterActive } = useOrders({
+  const { loading, orders, error, isFilterActive } = useOrders({
     sortingDirection: sorting.direction,
     orderBy: sorting.field,
     leverage_lte: leverage,
@@ -176,18 +271,18 @@ export default function BorrowMarketTable({
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
     <>
       {orders?.length ? (
         <>
-          <div className="grid grid-cols-[minmax(0,1fr)_300px] w-full rounded-5 overflow-hidden">
+          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] w-full rounded-5 overflow-hidden">
             <SimpleBar
               autoHide={false}
-              style={{ maxWidth: "100%", minWidth: "100%", width: "100%" }}
-              className="max-w-full"
+              style={{ maxWidth: "100%", minWidth: 0, width: "100%" }}
+              className="max-w-full min-w-0"
               scrollableNodeProps={{
                 onMouseDown(e: any) {
                   const el = e.currentTarget;
@@ -219,12 +314,12 @@ export default function BorrowMarketTable({
                 },
               }}
             >
-              <div className="min-w-[1400px]">
-                <div className="grid overflow-hidden bg-table-gradient grid-cols-[minmax(50px,2.67fr),_minmax(77px,1.33fr),_minmax(87px,1.33fr),_minmax(55px,1.33fr),_minmax(55px,1.33fr),_minmax(50px,2.67fr),_minmax(50px,2.67fr),_minmax(78px,1.67fr)] pb-2 px-2.5">
+              <div className="min-w-[1020px]">
+                <div className="grid overflow-hidden bg-table-gradient grid-cols-[minmax(175px,1.62fr)_minmax(110px,0.93fr)_minmax(100px,0.85fr)_minmax(106px,0.9fr)_minmax(78px,0.65fr)_minmax(140px,1.15fr)_minmax(132px,1.15fr)_minmax(150px,1.35fr)] pb-2 px-2.5">
                   {headerColumns.map((columnData, index) => (
                     <HeaderItem
                       key={columnData.field}
-                      label={columnData.title}
+                      label={columnTitle(t, columnData.field)}
                       sorting={
                         sorting.field === columnData.field ? sorting.direction : SortingType.NONE
                       }
@@ -236,191 +331,162 @@ export default function BorrowMarketTable({
 
                   {currentTableData.map((o: LendingOrder) => {
                     return (
-                      <Link
-                        href={`/margin-trading/lending-order/${o.id}`}
-                        className="group contents"
-                        key={o.id}
-                        onClick={(e) => {
-                          // if we dragged, cancel navigation
-                          if (didDrag.current) {
-                            e.preventDefault();
-                            didDrag.current = false;
-                          }
-                        }}
-                      >
-                        <div className="pl-2.5 rounded-l-3 h-[56px] flex items-center gap-2 group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          {o.allowedTradingAssets.length === 0 && (
-                            <Svg iconName="warning" className="text-red-light" />
-                          )}
-                          <Image
-                            src="/images/tokens/placeholder.svg"
-                            width={24}
-                            height={24}
-                            alt=""
+                      <React.Fragment key={o.id}>
+                        <Link
+                          href={`/margin-trading/lending-order/${o.id}`}
+                          className="group contents"
+                          onClick={(e) => {
+                            // if we dragged, cancel navigation
+                            if (didDrag.current) {
+                              e.preventDefault();
+                              didDrag.current = false;
+                            }
+                          }}
+                        >
+                          <div className="pl-2.5 rounded-l-3 h-[56px] min-w-0 flex items-center gap-2 overflow-hidden group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            {o.allowedTradingAssets.length === 0 ? (
+                              <Svg iconName="warning" className="text-red-light shrink-0" />
+                            ) : (
+                              <Image
+                                src="/images/tokens/placeholder.svg"
+                                width={24}
+                                height={24}
+                                alt=""
+                                className="shrink-0"
+                              />
+                            )}
+                            <span
+                              className={clsx(
+                                "font-medium truncate",
+                                o.balance < o.minLoan && "text-yellow-light",
+                              )}
+                            >
+                              {formatOrderAmount(
+                                formatUnits(o.balance, o.baseAsset.decimals ?? 18),
+                              )}
+                            </span>
+                            <span className="text-secondary-texts shrink-0">
+                              {o.baseAsset.symbol}
+                            </span>
+                          </div>
+                          <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            {o.leverage}x
+                          </div>
+                          <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            {Math.floor(o.interestRate / 100)}%
+                          </div>
+                          <div className="h-[56px] min-w-0 flex items-center whitespace-nowrap group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            {formatOrderDuration(o.positionDuration, t)}
+                          </div>
+                          <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            {o.currencyLimit}
+                          </div>
+                          <div className="h-[56px] min-w-0 overflow-hidden flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            <span className="flex gap-2 min-w-0">
+                              {o.allowedCollateralAssets.length > 2 ? (
+                                <>
+                                  {o.allowedCollateralAssets.slice(0, 2).map((token) => (
+                                    <span
+                                      key={token.wrapped.address0}
+                                      className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
+                                    >
+                                      {token.symbol}
+                                    </span>
+                                  ))}
+                                  <span className="px-1 text-16 flex items-end">{"..."}</span>
+
+                                  <span className="rounded-2 border border-secondary-border font-medium py-1 px-2 min-w-8 flex items-center justify-center">
+                                    {o.allowedCollateralAssets.length - 2}
+                                  </span>
+                                </>
+                              ) : (
+                                o.allowedCollateralAssets.map((token) => (
+                                  <span
+                                    key={token.wrapped.address0}
+                                    className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2 pr-3"
+                                  >
+                                    {token.symbol}
+                                  </span>
+                                ))
+                              )}
+                            </span>
+                          </div>
+                          <div className="h-[56px] min-w-0 overflow-hidden flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
+                            <span className="flex gap-2 min-w-0">
+                              {o.allowedTradingAssets.length > 2 ? (
+                                <>
+                                  {o.allowedTradingAssets.slice(0, 2).map((token) => (
+                                    <span
+                                      key={token.wrapped.address0}
+                                      className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
+                                    >
+                                      {token.symbol}
+                                    </span>
+                                  ))}
+                                  <span className="px-1 text-16 flex items-end">{"..."}</span>
+
+                                  <span className="rounded-2 border border-secondary-border font-medium py-1 px-2 min-w-8 flex items-center justify-center">
+                                    {o.allowedTradingAssets.length - 2}
+                                  </span>
+                                </>
+                              ) : (
+                                o.allowedTradingAssets.map((token) => (
+                                  <span
+                                    key={token.wrapped.address0}
+                                    className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
+                                  >
+                                    {token.symbol}
+                                  </span>
+                                ))
+                              )}
+                            </span>
+                          </div>
+                          <div className="h-[56px] min-w-0 rounded-r-3 flex items-center overflow-hidden group-hocus:bg-tertiary-bg duration-200 pr-2 gap-2">
+                            <span
+                              className={clsx(
+                                "font-medium truncate",
+                                o.balance < o.minLoan && "text-yellow-light",
+                              )}
+                            >
+                              {formatOrderAmount(
+                                formatUnits(o.minLoan, o.baseAsset.decimals ?? 18),
+                              )}
+                            </span>
+                            <span className="text-secondary-texts shrink-0">
+                              {o.baseAsset.symbol}
+                            </span>
+                          </div>
+                        </Link>
+                        <div className="col-span-full flex items-center gap-2 px-2.5 pb-3 lg:hidden">
+                          <OrderActions
+                            order={o}
+                            address={address}
+                            currentTimestamp={currentTimestamp}
                           />
-                          <span
-                            className={clsx(
-                              "font-medium",
-                              o.balance < o.minLoan && "text-yellow-light",
-                            )}
-                          >
-                            {formatFloat(formatUnits(o.balance, o.baseAsset.decimals ?? 18))}
-                          </span>
-                          <span className="text-secondary-texts">{o.baseAsset.symbol}</span>
                         </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          {o.leverage}x
-                        </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          {Math.floor(o.interestRate / 100)}%
-                        </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          {formatFloat(o.positionDuration / 60 / 60 / 24, { trimZero: true })} days
-                        </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          {o.currencyLimit}
-                        </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          <span className="flex gap-2">
-                            {o.allowedCollateralAssets.length > 2 ? (
-                              <>
-                                {o.allowedCollateralAssets.slice(0, 2).map((token) => (
-                                  <span
-                                    key={token.wrapped.address0}
-                                    className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
-                                  >
-                                    {token.symbol}
-                                  </span>
-                                ))}
-                                <span className="px-1 text-16 flex items-end">{"..."}</span>
-
-                                <span className="rounded-2 border border-secondary-border font-medium py-1 px-2 min-w-8 flex items-center justify-center">
-                                  {o.allowedCollateralAssets.length - 2}
-                                </span>
-                              </>
-                            ) : (
-                              o.allowedCollateralAssets.map((token) => (
-                                <span
-                                  key={token.wrapped.address0}
-                                  className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2 pr-3"
-                                >
-                                  {token.symbol}
-                                </span>
-                              ))
-                            )}
-                          </span>
-                        </div>
-                        <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                          <span className="flex gap-2">
-                            {o.allowedTradingAssets.length > 2 ? (
-                              <>
-                                {o.allowedTradingAssets.slice(0, 2).map((token) => (
-                                  <span
-                                    key={token.wrapped.address0}
-                                    className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
-                                  >
-                                    {token.symbol}
-                                  </span>
-                                ))}
-                                <span className="px-1 text-16 flex items-end">{"..."}</span>
-
-                                <span className="rounded-2 border border-secondary-border font-medium py-1 px-2 min-w-8 flex items-center justify-center">
-                                  {o.allowedTradingAssets.length - 2}
-                                </span>
-                              </>
-                            ) : (
-                              o.allowedTradingAssets.map((token) => (
-                                <span
-                                  key={token.wrapped.address0}
-                                  className="rounded-2 flex items-center gap-1 border border-secondary-border py-1 px-2"
-                                >
-                                  {token.symbol}
-                                </span>
-                              ))
-                            )}
-                          </span>
-                        </div>
-                        <div className=" h-[56px] rounded-r-3 flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2 gap-2">
-                          <span
-                            className={clsx(
-                              "font-medium",
-                              o.balance < o.minLoan && "text-yellow-light",
-                            )}
-                          >
-                            {formatUnits(o.minLoan, o.baseAsset.decimals ?? 18)}
-                          </span>
-                          <span className="text-secondary-texts">{o.baseAsset.symbol}</span>
-                        </div>
-                      </Link>
+                      </React.Fragment>
                     );
                   })}
                 </div>
               </div>
             </SimpleBar>
-            <div className="h-full border-l border-secondary-border shadow-[0px_4px_40px_0px_#000000] relative z-40">
+            <div className="hidden lg:block h-full border-l border-secondary-border shadow-[0px_4px_40px_0px_#000000] relative z-40">
               <div
                 className={clsx(
                   "h-[60px] flex items-center bg-quaternary-bg pl-5 text-tertiary-text",
                 )}
               >
-                Actions
+                {t("actions")}
               </div>
               <div className="py-2.5 px-3 bg-primary-bg">
                 {currentTableData.map((o: LendingOrder) => {
                   return (
                     <div key={o.id} className="p-2 gap-2 flex items-center">
-                      {o.owner.toLowerCase() === address?.toLowerCase() ? (
-                        <Link
-                          className={"flex-grow"}
-                          href={`/margin-trading/lending-order/${o.id}`}
-                        >
-                          <Button
-                            fullWidth
-                            size={ButtonSize.MEDIUM}
-                            colorScheme={ButtonColor.LIGHT_GREEN}
-                          >
-                            View my order
-                          </Button>
-                        </Link>
-                      ) : (
-                        <>
-                          <Link
-                            className={"flex-shrink-0 pointer-events-none"}
-                            href={`/margin-swap`}
-                          >
-                            <Button
-                              // disabled={o.balance < o.minLoan}
-                              disabled
-                              size={ButtonSize.MEDIUM}
-                              colorScheme={ButtonColor.LIGHT_PURPLE}
-                            >
-                              Margin swap
-                            </Button>
-                          </Link>
-                          <Link
-                            className={clsx(
-                              "flex-shrink-0",
-                              (o.balance < o.minLoan ||
-                                currentTimestamp > o.deadline ||
-                                o.allowedTradingAssets.length === 0) &&
-                                "pointer-events-none",
-                            )}
-                            href={`/margin-trading/lending-order/${o.id}/borrow`}
-                          >
-                            <Button
-                              disabled={
-                                o.balance < o.minLoan ||
-                                currentTimestamp > o.deadline ||
-                                o.allowedTradingAssets.length === 0
-                              }
-                              size={ButtonSize.MEDIUM}
-                              colorScheme={ButtonColor.LIGHT_GREEN}
-                            >
-                              Borrow
-                            </Button>
-                          </Link>
-                        </>
-                      )}
+                      <OrderActions
+                        order={o}
+                        address={address}
+                        currentTimestamp={currentTimestamp}
+                      />
                     </div>
                   );
                 })}
@@ -437,9 +503,13 @@ export default function BorrowMarketTable({
           />
         </>
       ) : null}
-      {isFilterActive && !orders?.length && (
+      {!loading && !orders?.length && (
         <div className="bg-primary-bg rounded-5 h-[340px] flex items-center justify-center text-secondary-text bg-empty-no-borrow-found bg-no-repeat bg-right-top">
-          No results found. Adjust your filters and try again
+          {error
+            ? "Lending orders could not be loaded."
+            : isFilterActive
+              ? "No results found. Adjust your filters and try again"
+              : "No lending orders yet"}
         </div>
       )}
     </>

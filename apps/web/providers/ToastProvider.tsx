@@ -6,6 +6,7 @@ export default function ToastProvider({ children }: PropsWithChildren) {
     <>
       {children}
       <Toaster className="w-[380px]" position="bottom-center" />
+      <Toaster className="w-[380px]" position="top-right" />
     </>
   );
 }

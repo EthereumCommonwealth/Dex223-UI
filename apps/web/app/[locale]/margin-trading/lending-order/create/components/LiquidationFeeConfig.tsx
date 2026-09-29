@@ -1,5 +1,6 @@
 import { FormikErrors, FormikTouched } from "formik";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useCallback, useState } from "react";
 
 import { ThirdStepValues } from "@/app/[locale]/margin-trading/lending-order/create/stores/useCreateOrderConfigStore";
@@ -13,11 +14,6 @@ import { Currency } from "@/sdk_bi/entities/currency";
 import { Standard } from "@/sdk_bi/standard";
 
 type LiquidationFeePayer = "borrower" | "lender";
-
-const labelsMap: Record<LiquidationFeePayer, string> = {
-  borrower: "Borrower",
-  lender: "Lender",
-};
 
 const feePayers: LiquidationFeePayer[] = ["borrower", "lender"];
 
@@ -36,6 +32,7 @@ export default function LiquidationFeeConfig({
   errors: FormikErrors<ThirdStepValues>;
   touched: FormikTouched<ThirdStepValues>;
 }) {
+  const t = useTranslations("Margin");
   const [feePayer, setFeePayer] = React.useState<LiquidationFeePayer>("borrower");
   const [isOpenedTokenPick, setIsOpenedTokenPick] = useState(false);
 
@@ -50,7 +47,7 @@ export default function LiquidationFeeConfig({
 
   return (
     <div className="bg-tertiary-bg rounded-3 py-4 px-5 mt-4 mb-6">
-      <InputLabel inputSize={InputSize.LARGE} label="Pays the liquidation deposit" />
+      <InputLabel inputSize={InputSize.LARGE} label={t("pays_liquidation_deposit")} />
       <div className="grid grid-cols-2 gap-2 mb-4 mt-1">
         {feePayers.map((_feePayer) => {
           return (
@@ -63,13 +60,13 @@ export default function LiquidationFeeConfig({
               }}
               key={_feePayer}
             >
-              {labelsMap[_feePayer]}
+              {_feePayer === "borrower" ? t("borrower") : t("lender")}
             </RadioButton>
           );
         })}
       </div>
 
-      <InputLabel inputSize={InputSize.LARGE} label="Liquidation fee token" />
+      <InputLabel inputSize={InputSize.LARGE} label={t("liquidation_fee_token")} />
       <SelectButton
         type="button"
         className="bg-quaternary-bg mb-6 pl-5"
@@ -84,15 +81,15 @@ export default function LiquidationFeeConfig({
             height={24}
             alt=""
           />
-          {values.liquidationFeeToken?.symbol || "Select token"}
+          {values.liquidationFeeToken?.symbol || t("select_token")}
         </span>
       </SelectButton>
 
       <TextField
         isNumeric
-        label="Liquidation fee (for liquidator)"
-        tooltipText="Tooltip text"
-        placeholder="Liquidation fee (for liquidator)"
+        label={t("fee_for_liquidator")}
+        tooltipText={t("fee_for_liquidator_tooltip")}
+        placeholder={t("fee_for_liquidator")}
         internalText={values.liquidationFeeToken?.symbol}
         value={values.liquidationFeeForLiquidator}
         onChange={(e) => setFieldValue("liquidationFeeForLiquidator", e.target.value)}
@@ -100,9 +97,9 @@ export default function LiquidationFeeConfig({
       />
       <TextField
         disabled
-        label="Liquidation fee (for lender)"
-        tooltipText="Tooltip text"
-        placeholder="Liquidation fee (for lender)"
+        label={t("fee_for_lender")}
+        tooltipText={t("fee_for_lender_tooltip")}
+        placeholder={t("fee_for_lender")}
         internalText={values.liquidationFeeToken?.symbol}
         value={values.liquidationFeeForLender}
         onChange={(e) => setFieldValue("liquidationFeeForLender", e.target.value)}

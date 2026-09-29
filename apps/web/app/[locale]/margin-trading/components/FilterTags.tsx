@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import {
@@ -8,6 +9,7 @@ import {
 import Svg from "@/components/atoms/Svg";
 
 export default function FilterTags() {
+  const t = useTranslations("Margin");
   const {
     leverage,
     setLeverage,
@@ -34,14 +36,14 @@ export default function FilterTags() {
         value: minOrderBalance,
         defaultValue: defaultBorrowMarketFilterValues.minOrderBalance,
         onReset: () => setMinOrderBalance(defaultBorrowMarketFilterValues.minOrderBalance),
-        label: "Min order balance",
+        label: t("min_order_balance"),
       },
       {
         key: "minLoanAmount",
         value: minLoanAmount,
         defaultValue: defaultBorrowMarketFilterValues.minLoanAmount,
         onReset: () => setMinLoanAmount(defaultBorrowMarketFilterValues.minLoanAmount),
-        label: "Min loan amount",
+        label: t("min_loan_amount"),
       },
       {
         key: "leverage",
@@ -49,7 +51,7 @@ export default function FilterTags() {
         formattedValue: `${leverage}x`,
         defaultValue: defaultBorrowMarketFilterValues.leverage,
         onReset: () => setLeverage(defaultBorrowMarketFilterValues.leverage),
-        label: "Max leverage",
+        label: t("max_leverage"),
       },
       {
         key: "maxInterestRatePerMonth",
@@ -58,14 +60,14 @@ export default function FilterTags() {
         defaultValue: defaultBorrowMarketFilterValues.maxInterestRatePerMonth,
         onReset: () =>
           setMaxInterestRatePerMonth(defaultBorrowMarketFilterValues.maxInterestRatePerMonth),
-        label: "Max interest rate per month",
+        label: t("max_interest_per_month"),
       },
       {
         key: "orderCurrencyLimit",
         value: orderCurrencyLimit,
         defaultValue: defaultBorrowMarketFilterValues.orderCurrencyLimit,
         onReset: () => setOrderCurrencyLimit(defaultBorrowMarketFilterValues.orderCurrencyLimit),
-        label: "Order currency limit",
+        label: t("order_currency_limit"),
       },
 
       // …add more filters here as needed
@@ -79,10 +81,10 @@ export default function FilterTags() {
       filtersArray.push({
         key: "maxPositionDuration",
         value: maxPositionDuration,
-        formattedValue: `${maxPositionDuration} days`,
+        formattedValue: t("duration_days", { count: maxPositionDuration }),
         defaultValue: defaultBorrowMarketFilterValues.maxPositionDuration,
         onReset: () => setMaxPositionDuration(defaultBorrowMarketFilterValues.maxPositionDuration),
-        label: "Max position duration",
+        label: t("max_position_duration"),
       });
     }
 
@@ -94,10 +96,10 @@ export default function FilterTags() {
       filtersArray.push({
         key: "minPositionDuration",
         value: minPositionDuration,
-        formattedValue: `${minPositionDuration} days`,
+        formattedValue: t("duration_days", { count: minPositionDuration }),
         defaultValue: defaultBorrowMarketFilterValues.minPositionDuration,
         onReset: () => setMinPositionDuration(defaultBorrowMarketFilterValues.minPositionDuration),
-        label: "Min position duration",
+        label: t("min_position_duration"),
       });
     }
 
@@ -110,7 +112,10 @@ export default function FilterTags() {
       filtersArray.push({
         key: "minPositionDuration",
         value: minPositionDuration + maxPositionDuration,
-        formattedValue: `${minPositionDuration} - ${maxPositionDuration} days`,
+        formattedValue: t("duration_days_range", {
+          min: minPositionDuration,
+          max: maxPositionDuration,
+        }),
         defaultValue:
           defaultBorrowMarketFilterValues.minPositionDuration +
           defaultBorrowMarketFilterValues.maxPositionDuration,
@@ -118,7 +123,7 @@ export default function FilterTags() {
           setMaxPositionDuration(defaultBorrowMarketFilterValues.maxPositionDuration);
           setMinPositionDuration(defaultBorrowMarketFilterValues.minPositionDuration);
         },
-        label: "Position duration",
+        label: t("position_duration"),
       });
     }
 
@@ -138,6 +143,7 @@ export default function FilterTags() {
     setMinOrderBalance,
     setMinPositionDuration,
     setOrderCurrencyLimit,
+    t,
   ]);
 
   const isFiltersActive = useMemo(() => {

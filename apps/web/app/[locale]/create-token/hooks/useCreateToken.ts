@@ -3,10 +3,6 @@ import { getAbiItem, getContractAddress, parseEventLogs, parseUnits } from "viem
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import {
-  useCreateTokenGasLimitStore,
-  useCreateTokenGasPriceStore,
-} from "@/app/[locale]/create-token/stores/useCreateTokenGasSettingsStore";
-import {
   CreateTokenStatus,
   useCreateTokenStatusStore,
 } from "@/app/[locale]/create-token/stores/useCreateTokenStatusStore";
@@ -32,6 +28,11 @@ import {
   useRecentTransactionsStore,
 } from "@/stores/useRecentTransactionsStore";
 
+import {
+  useCreateTokenGasLimitStore,
+  useCreateTokenGasPriceStore,
+} from "../stores/useCreateTokenGasSettingsStore";
+
 export function useCreateTokenEstimatedGas(createTokenSettings: {
   name: string;
   symbol: string;
@@ -49,7 +50,6 @@ export function useCreateTokenEstimatedGas(createTokenSettings: {
     IIFE(async () => {
       if (!address) {
         setEstimatedGas(BigInt(900000));
-        console.log("Can't estimate gas");
         return;
       }
 

@@ -1,4 +1,5 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
+import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
 import { useAllowedTokenListsDialogOpenedStore } from "@/app/[locale]/margin-trading/stores/dialogStates";
@@ -20,6 +21,7 @@ export default function PickAllowedTokenListsDialog({
   const autolistings = useAutoListingContracts();
   const chainId = useCurrentChainId();
   const [searchValue, setSearchValue] = useState("");
+  const t = useTranslations("Margin");
 
   const filteredAutoListing = useMemo(() => {
     if (!searchValue) {
@@ -36,19 +38,19 @@ export default function PickAllowedTokenListsDialog({
 
   return (
     <Dialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Tokens allowed for trading" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("tokens_allowed_trading")} />
       <div className="flex flex-col gap-2 max-h-[640px] pb-5">
         <div className="card-spacing-x ">
           <SearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search autolisting"
+            placeholder={t("search_autolisting")}
           />
         </div>
 
         {searchValue && !filteredAutoListing?.length && (
           <div className="h-[532px] flex items-center justify-center bg-empty-not-found-list bg-no-repeat bg-right-top -mt-2 flex-shrink-0">
-            Listing contract not found
+            {t("listing_not_found")}
           </div>
         )}
 
@@ -68,12 +70,12 @@ export default function PickAllowedTokenListsDialog({
                   <div className="flex flex-col">
                     <span className="font-medium">{autolisting.name}</span>
                     <span className="text-12 text-secondary-text">
-                      {autolisting.totalTokens} tokens
+                      {t("listing_tokens_count", { count: autolisting.totalTokens })}
                     </span>
                   </div>
 
                   <span className="flex items-center gap-2">
-                    Description:
+                    {t("listing_description")}
                     <ExternalTextLink
                       text={truncateMiddle(autolisting.id, { charsFromStart: 6, charsFromEnd: 6 })}
                       href={getExplorerLink(ExplorerLinkType.ADDRESS, autolisting.id, chainId)}

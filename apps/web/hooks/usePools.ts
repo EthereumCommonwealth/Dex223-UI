@@ -113,6 +113,7 @@ export function useStorePools(poolsParams: PoolsParams): PoolsResult {
 
         fetchPoolData(key, address, token0, token1, tier)
           .then((pool) => {
+            console.log(pool);
             if (pool) {
               setStatus(key, PoolState.EXISTS, pool);
             } else {

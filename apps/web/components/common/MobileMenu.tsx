@@ -18,7 +18,7 @@ import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -184,6 +184,7 @@ const mobileLinks: {
   iconName: IconName;
   title: any;
   marginOnly?: boolean;
+  plain?: boolean;
 }[] = [
   {
     href: "/swap",
@@ -221,6 +222,13 @@ const mobileLinks: {
     href: "/token-listing",
     iconName: "listing",
     title: "token_listing",
+  },
+  // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
+  {
+    href: "/rewards",
+    iconName: "star",
+    title: "rewards",
+    plain: true,
   },
 ];
 
@@ -270,7 +278,7 @@ export default function MobileMenu() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
-  const isMarginAvailable = useIsMarginAvailable();
+  const borrowLendComingSoon = isBorrowLendComingSoon();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
   const {
     setIsOpen: setManageTokensOpen,
@@ -302,19 +310,21 @@ export default function MobileMenu() {
         <div className="flex flex-col justify-between h-full min-w-[300px]">
           <div className="py-6 grid gap-1">
             {[
-              mobileLinks.map(({ href, iconName, title, marginOnly }) => {
+              mobileLinks.map(({ href, iconName, title, marginOnly, plain }) => {
                 return (
                   <MobileLink
                     isMenu
                     key={href}
-                    href={href}
+                    href={plain ? `${href}/${locale}` : href}
+                    isExternal={plain}
+                    openInNewTab={false}
                     iconName={iconName}
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}
                     isActive={pathname.includes(href)}
-                    disabled={marginOnly && !isMarginAvailable}
-                    comingSoon={marginOnly && !isMarginAvailable}
-                    className={marginOnly && !isMarginAvailable ? "justify-between pr-4" : ""}
+                    disabled={marginOnly && borrowLendComingSoon}
+                    comingSoon={marginOnly && borrowLendComingSoon}
+                    className={marginOnly && borrowLendComingSoon ? "justify-between pr-4" : ""}
                   />
                 );
               }),

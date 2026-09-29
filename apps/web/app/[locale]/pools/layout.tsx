@@ -1,9 +1,11 @@
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
-export const metadata: Metadata = {
-  title: "Pools",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("Liquidity");
+  return { title: t("pools") };
+}
 export default function Layout({ children }: PropsWithChildren) {
   return <>{children}</>;
 }

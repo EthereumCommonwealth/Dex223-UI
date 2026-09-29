@@ -97,11 +97,8 @@ export const Deposited = ({
         <div className="flex items-center justify-between bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 md:py-3 lg:px-5 py-2.5  lg:py-6 w-full relative overflow-hidden">
           <div className="flex flex-col ">
             <div className="flex items-center gap-1 z-10">
-              <span className="text-14 lg:text-16 text-secondary-text">Approved</span>
-              <Tooltip
-                iconSize={20}
-                text="Amount of approvals issued to Dex223 smart-contracts. Approval grants the contract permission to manipulate the tokens on your wallets balance. It is recommended to revoke unnecessary approvals so that to protect your funds from unauthorized access."
-              />
+              <span className="text-14 lg:text-16 text-secondary-text">{t("approved")}</span>
+              <Tooltip iconSize={20} text={t("approvals_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">$ —</span>
             <Image
@@ -117,11 +114,10 @@ export const Deposited = ({
         <div className="flex items-center justify-between bg-gradient-card-blue-light-fill rounded-3 px-4 py-2.5  md:py-3 lg:px-5 lg:py-6 w-full relative overflow-hidden">
           <div className="flex flex-col ">
             <div className="flex items-center gap-1 z-10">
-              <span className="text-14 lg:text-16 text-secondary-text">Deposited to contract</span>
-              <Tooltip
-                iconSize={20}
-                text="Sum of all assets stored in different Dex223 smart-contracts. This option is provided for you to track the 'stuck' tokens that you can withdraw from system contracts."
-              />
+              <span className="text-14 lg:text-16 text-secondary-text">
+                {t("deposited_contract")}
+              </span>
+              <Tooltip iconSize={20} text={t("stuck_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">$ —</span>
             <Image
@@ -183,7 +179,7 @@ export const Deposited = ({
             onClose={() => {
               setIsWithdrawDetailsOpened(false);
             }}
-            title="Details"
+            title={t("details")}
           />
           <div className="px-4 lg:px-10 lg:pb-10 pb-4">
             <WithdrawDesktopTable
@@ -206,7 +202,7 @@ export const Deposited = ({
         <DrawerDialog isOpen={isTokenInfoOpened} setIsOpen={handleCloseTokenInfo}>
           <DialogHeader
             onClose={handleCloseTokenInfo}
-            title={tokenForPortfolio?.name || "Unknown"}
+            title={tokenForPortfolio?.name || t("unknown")}
           />
           {tokenForPortfolio ? <TokenPortfolioDialogContent token={tokenForPortfolio} /> : null}
         </DrawerDialog>

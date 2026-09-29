@@ -1,13 +1,14 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
 import clsx from "clsx";
-import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-import { Address, getAddress } from "viem";
+import { Address } from "viem";
 
+import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
 import Svg from "@/components/atoms/Svg";
+import TokenLogo from "@/components/atoms/TokenLogo";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/buttons/Button";
 import { SortingType } from "@/components/buttons/IconButton";
@@ -83,21 +84,23 @@ const PoolsTableDesktop = ({
   handleSort: () => any;
   isLoading?: boolean;
 }) => {
+  const t = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
+  const tokenMeta = useTokenMeta();
 
   return (
     <div className="hidden lg:grid pr-3 pl-2 rounded-3 overflow-hidden bg-table-gradient grid-cols-[_minmax(20px,0.5fr),minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(30px,1fr),_minmax(30px,1fr),_minmax(30px,1fr)] pb-2">
       <div className=" h-[60px] flex items-center justify-center  text-tertiary-text ">#</div>
-      <div className=" h-[60px] flex items-center text-tertiary-text">Pool</div>
+      <div className=" h-[60px] flex items-center text-tertiary-text">{t("pool")}</div>
       <div className=" h-[60px] flex items-center justify-end  text-tertiary-text ">
-        Transactions
+        {t("transactions")}
       </div>
       <HeaderItem label="TVL" sorting={sorting} handleSort={handleSort} />
       <div className=" h-[60px] flex items-center justify-end text-tertiary-text ">
-        1 day volume
+        {t("volume_1d")}
       </div>
       <div className=" h-[60px] flex items-center justify-end text-tertiary-text pr-2">
-        7 day volume
+        {t("volume_7d")}
       </div>
 
       {isLoading
@@ -141,31 +144,8 @@ const PoolsTableDesktop = ({
             </React.Fragment>
           ))
         : tableData.map((o: any, index: number) => {
-            let token0Symbol = o.token0.symbol;
-            let token1Symbol = o.token1.symbol;
-
-            let token0Image = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${getAddress(o.token0.id)}/logo.png`;
-            let token1Image = `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${getAddress(o.token1.id)}/logo.png`;
-
-            const d223 = "0x0908078Da2935A14BC7a17770292818C85b580dd";
-            if (o.token0.addressERC223 === d223.toLowerCase()) {
-              token0Symbol = "D223";
-              token0Image = "/images/tokens/DEX.svg";
-            }
-            if (o.token1.addressERC223 === d223.toLowerCase()) {
-              token1Symbol = "D223";
-              token1Image = "/images/tokens/DEX.svg";
-            }
-
-            const weth9 = "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2";
-            if (o.token0.id === weth9.toLowerCase()) {
-              token0Symbol = "ETH";
-              token0Image = "/images/tokens/ETH.svg";
-            }
-            if (o.token1.id === weth9.toLowerCase()) {
-              token1Symbol = "ETH";
-              token1Image = "/images/tokens/ETH.svg";
-            }
+            const { symbol: token0Symbol, image: token0Image } = tokenMeta(o.token0);
+            const { symbol: token1Symbol, image: token1Image } = tokenMeta(o.token1);
 
             return (
               <Link
@@ -181,20 +161,18 @@ const PoolsTableDesktop = ({
                 >
                   <div className="flex items-center ">
                     <span className="w-[26px] h-[26px] rounded-full bg-primary-bg flex items-center justify-center overflow-hidden">
-                      <Image
-                        src={token0Image || "/images/tokens/placeholder.svg"}
-                        alt="Ethereum"
-                        width={24}
-                        height={24}
+                      <TokenLogo
+                        src={token0Image}
+                        alt={token0Symbol}
+                        size={24}
                         className="h-[24px] w-[24px] rounded-full"
                       />
                     </span>
                     <span className="w-[26px] h-[26px]   rounded-full bg-primary-bg flex items-center justify-center -ml-3.5 overflow-hidden">
-                      <Image
-                        src={token1Image || "/images/tokens/placeholder.svg"}
-                        alt="Ethereum"
-                        width={24}
-                        height={24}
+                      <TokenLogo
+                        src={token1Image}
+                        alt={token1Symbol}
+                        size={24}
                         className="h-[24px] w-[24px] rounded-full"
                       />
                     </span>
@@ -248,22 +226,25 @@ const PoolsTableItemMobile = ({
   pool: any;
   index: number;
 }) => {
+  const t = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
+  const tokenMeta = useTokenMeta();
+  const token0 = tokenMeta(pool.token0);
+  const token1 = tokenMeta(pool.token1);
 
   return (
     <React.Fragment key={index}>
       <div className="flex flex-col bg-primary-bg pt-3 px-4 pb-4 rounded-3 gap-3">
         <div className="flex justify-between gap-2">
           <div className="flex flex-row items-start gap-x-2 text-16">
-            <Image src="/images/tokens/placeholder.svg" width={24} height={24} alt="" />
-            <Image
-              src="/images/tokens/placeholder.svg"
-              width={24}
-              height={24}
-              alt=""
+            <TokenLogo src={token0.image} alt={token0.symbol} size={24} className="rounded-full" />
+            <TokenLogo
+              src={token1.image}
+              alt={token1.symbol}
+              size={24}
               className="ml-[-20px] bg-primary-bg rounded-full"
             />
-            <span>{`${pool.token0.symbol}/${pool.token1.symbol}`}</span>
+            <span>{`${token0.symbol}/${token1.symbol}`}</span>
           </div>
           <div className="flex gap-2 items-baseline mt-0.5 justify-start mr-auto">
             <Badge
@@ -277,7 +258,7 @@ const PoolsTableItemMobile = ({
         <div className="flex flex-col gap-2">
           <div className="flex justify-between gap-x-2">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">Transactions</span>
+              <span className="text-14 text-tertiary-text">{t("transactions")}</span>
               <span className="text-14 text-secondary-text">{formatNumberKilos(pool.txCount)}</span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
@@ -291,11 +272,11 @@ const PoolsTableItemMobile = ({
           </div>
           <div className="flex justify-between gap-x-2 pb-1">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">1 day volume</span>
+              <span className="text-14 text-tertiary-text">{t("volume_1d")}</span>
               <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">7 day volume</span>
+              <span className="text-14 text-tertiary-text">{t("volume_7d")}</span>
               <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
             </div>
           </div>
@@ -307,7 +288,7 @@ const PoolsTableItemMobile = ({
             colorScheme={ButtonColor.LIGHT_GREEN}
             size={ButtonSize.MEDIUM}
           >
-            View pool
+            {t("view_pool")}
           </Button>
         </Link>
       </div>

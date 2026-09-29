@@ -145,6 +145,7 @@ export default function ConfirmLiquidatePositionDialog({
   setIsOpen: (isOpen: boolean) => void;
   position: MarginPosition;
 }) {
+  const t = useTranslations("Margin");
   const [isEditApproveActive, setEditApproveActive] = React.useState(false);
 
   const { status, setStatus } = usePositionLiquidateStatusStore();
@@ -179,7 +180,7 @@ export default function ConfirmLiquidatePositionDialog({
 
   const formattedActualExpected = useMemo(() => {
     if (!actualBalance || !expectedBalance) {
-      return "Loading...";
+      return t("loading");
     }
 
     return (
@@ -191,11 +192,11 @@ export default function ConfirmLiquidatePositionDialog({
         <span className="text-tertiary-text"> {position.loanAsset.symbol}</span>
       </span>
     );
-  }, [actualBalance, expectedBalance, position.loanAsset.decimals, position.loanAsset.symbol]);
+  }, [actualBalance, expectedBalance, position.loanAsset.decimals, position.loanAsset.symbol, t]);
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title={"Liquidation"} />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("liquidation")} />
 
       <div className="card-spacing-x card-spacing-b min-w-[600px]">
         {isFinalStatus && (
@@ -220,7 +221,7 @@ export default function ConfirmLiquidatePositionDialog({
 
             {status === PositionLiquidateStatus.SUCCESS && (
               <div>
-                <h2 className="text-center mb-1 font-bold text-20 ">Successfully liquidated</h2>
+                <h2 className="text-center mb-1 font-bold text-20 ">{t("liquidate_success")}</h2>
                 <p className="text-center mb-1">
                   {position.loanAsset.symbol}{" "}
                   <span className="text-secondary-text">(ID: {position.id})</span>
@@ -230,7 +231,7 @@ export default function ConfirmLiquidatePositionDialog({
             {status === PositionLiquidateStatus.ERROR_LIQUIDATE && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Liquidation failed
+                  {t("liquidate_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {position.loanAsset.symbol}{" "}
@@ -241,7 +242,7 @@ export default function ConfirmLiquidatePositionDialog({
             {status === PositionLiquidateStatus.ERROR_FREEZE && (
               <div>
                 <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                  Freezing failed
+                  {t("freeze_failed")}
                 </h2>
                 <p className="text-center mb-1">
                   {position.loanAsset.symbol}{" "}
@@ -256,12 +257,12 @@ export default function ConfirmLiquidatePositionDialog({
           <div className="flex flex-col gap-2 pb-5 border-b border-secondary-border mb-4">
             <SimpleInfoBlock
               value={formattedActualExpected}
-              title="Total balance / Expected balance"
-              tooltipText={"Tooltip text"}
+              title={t("total_expected_balance")}
+              tooltipText={t("total_expected_balance_tooltip")}
             />
             <InfoBlockWithBorder
-              title={"Liquidation fee"}
-              tooltipText={"Tooltip text"}
+              title={t("liquidation_fee")}
+              tooltipText={t("liquidation_fee_position_tooltip")}
               value={`${position.order.liquidationRewardAmount.formatted} ${position.order.liquidationRewardAsset.symbol}`}
             />
           </div>

@@ -21,7 +21,7 @@ import { eos } from "@/config/chains/eos";
 import { monad } from "@/config/chains/monad";
 import { plasma } from "@/config/chains/plasma";
 import { sepolia } from "@/config/chains/sepolia";
-import { DEX_SUPPORTED_CHAINS, DexChainId } from "@/sdk_bi/chains";
+import { DexChainId } from "@/sdk_bi/chains";
 
 const viemChains: Record<DexChainId, Chain> = {
   [DexChainId.MAINNET]: mainnet,
@@ -43,8 +43,12 @@ const viemChains: Record<DexChainId, Chain> = {
   [DexChainId.MANTLE]: mantle,
 };
 
+// Real networks stay off the test app (#257). EOS stays in the wallet config only so calls typed
+// against every DexChainId still typecheck; the network picker does not offer it.
 const enabledChains = (
-  process.env.NEXT_PUBLIC_ENV === "production" ? [DexChainId.MAINNET] : DEX_SUPPORTED_CHAINS
+  process.env.NEXT_PUBLIC_ENV === "production"
+    ? [DexChainId.MAINNET]
+    : [DexChainId.SEPOLIA, DexChainId.BSC_TESTNET, DexChainId.EOS]
 ).map((chainId) => viemChains[chainId]) as [Chain, ...Chain[]];
 
 const cookieStorage = {

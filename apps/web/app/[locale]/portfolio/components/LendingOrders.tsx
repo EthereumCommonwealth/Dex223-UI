@@ -19,11 +19,11 @@ export const LendingOrders = () => {
   const [lendingOrders, setLendingOrders] = useState<any[]>([]);
   const handleButton = useCallback(async () => {
     try {
-      addToast("Lending orders page under construction", "info");
+      addToast(t("lending_building"), "info");
     } catch (e) {
       // addToast("Clipboard API not supported", "error");
     }
-  }, []);
+  }, [t]);
 
   const loading = false;
 
@@ -35,10 +35,7 @@ export const LendingOrders = () => {
           <div className="flex flex-col z-20">
             <div className="flex items-center gap-1">
               <span className="text-14 lg:text-16 text-secondary-text">{t("lending_balance")}</span>
-              <Tooltip
-                iconSize={20}
-                text="This value represents the sum of all your assets stored in all your active lending orders. These assets are located in the margin module smart-contract. You can withdraw these assets by interacting with the corresponding lending order."
-              />
+              <Tooltip iconSize={20} text={t("lending_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">$ —</span>
           </div>
@@ -90,10 +87,10 @@ export const LendingOrders = () => {
         ) : currentTableData.length ? (
           <div className="pr-5 pl-5 grid rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr),_minmax(50px,1.33fr)] pb-2 relative">
             <div className="pl-5 h-[60px] flex items-center">ID</div>
-            <div className="h-[60px] flex items-center gap-2">Token</div>
-            <div className="h-[60px] flex items-center gap-2">Available balance</div>
-            <div className="h-[60px] flex items-center">Loan, interest balance</div>
-            <div className="pr-5 h-[60px] flex items-center justify-end">Amount, $</div>
+            <div className="h-[60px] flex items-center gap-2">{t("col_token")}</div>
+            <div className="h-[60px] flex items-center gap-2">{t("available_balance")}</div>
+            <div className="h-[60px] flex items-center">{t("loan_interest_balance")}</div>
+            <div className="pr-5 h-[60px] flex items-center justify-end">{t("amount_usd")}</div>
 
             {currentTableData.map((o: any, index: number) => {
               return (
@@ -145,11 +142,11 @@ export const LendingOrders = () => {
           </div>
         ) : Boolean(searchValue) ? (
           <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-lending-order bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">Lending orders not found</span>
+            <span className="text-secondary-text">{t("lending_not_found")}</span>
           </div>
         ) : (
           <div className="flex relative flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-no-lendings-orders-yet bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">No lending orders yet</span>
+            <span className="text-secondary-text">{t("no_lending_yet")}</span>
           </div>
         )}
       </div>

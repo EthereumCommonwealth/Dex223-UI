@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { useReadContract } from "wagmi";
 
@@ -16,6 +17,7 @@ export default function SelectCollateralTokenDialog({
   collateralAsset: number;
   setCollateralAsset: (assetId: number) => void;
 }) {
+  const t = useTranslations("Margin");
   const chainId = useCurrentChainId();
   const [isOpen, setIsOpen] = useState(false);
   const { data } = useReadContract({
@@ -28,11 +30,11 @@ export default function SelectCollateralTokenDialog({
   return (
     <>
       <Button type="button" onClick={() => setIsOpen(true)}>
-        {data?.[collateralAsset] || "Choose collateral asset"}
+        {data?.[collateralAsset] || t("choose_collateral_asset")}
       </Button>
       <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
         {!data ? (
-          "Loading..."
+          t("loading")
         ) : (
           <div className="flex flex-col gap-3">
             {data.map((address, index) => {
