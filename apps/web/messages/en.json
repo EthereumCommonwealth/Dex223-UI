@@ -962,6 +962,12 @@
     "phase_note": "Until voting ships, listing prices and protocol fees stay under factory owner control. Stakers use Revenue to earn collected fees.",
     "revenue_link": "Go to Revenue staking"
   },
+  "PageError": {
+    "title": "Something went wrong",
+    "description": "This page hit an unexpected error. Your funds are safe. Try again, or go back to trading.",
+    "try_again": "Try again",
+    "go_to_swap": "Go to swap"
+  },
   "NotFound": {
     "title": "Page not found",
     "description": "This page does not exist or has moved. Check the address, or head back to trading.",
