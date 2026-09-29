@@ -47,6 +47,10 @@ interface Props {
   theme: ChartTheme;
   /** The viewer's own trades, drawn as markers. */
   myTrades?: Trade[];
+  /** Bars requested per history page (default 300). */
+  pageSize?: number;
+  /** Bars in view after the first load; Infinity shows everything loaded. */
+  initialVisible?: number;
   onHover?: (bar: Bar | null) => void;
   onLastBar?: (bar: Bar | null) => void;
   onState?: (state: LoadState) => void;
@@ -56,9 +60,11 @@ interface Props {
 const t = (seconds: number) => seconds as UTCTimestamp;
 
 const tickFormatters = {
-  year: new Intl.DateTimeFormat(undefined, { year: "numeric" }),
-  month: new Intl.DateTimeFormat(undefined, { month: "short" }),
-  day: new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short" }),
+  // The chart places year, month and day ticks on UTC boundaries, so they are labelled
+  // in UTC; in a local zone behind UTC, 1 January 00:00 UTC would read as 31 December.
+  year: new Intl.DateTimeFormat(undefined, { year: "numeric", timeZone: "UTC" }),
+  month: new Intl.DateTimeFormat(undefined, { month: "short", timeZone: "UTC" }),
+  day: new Intl.DateTimeFormat(undefined, { day: "numeric", month: "short", timeZone: "UTC" }),
   time: new Intl.DateTimeFormat(undefined, { hour: "2-digit", minute: "2-digit" }),
 };
 
@@ -110,6 +116,8 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     onLastBar,
     onState,
     onTrades,
+    pageSize = PAGE,
+    initialVisible = INITIAL_VISIBLE,
   },
   ref,
 ) {
@@ -123,6 +131,8 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
 
   const resolutionRef = useRef(resolution);
   resolutionRef.current = resolution;
+  const visibleRef = useRef(initialVisible);
+  visibleRef.current = initialVisible;
 
   // Latest props for handlers registered once.
   const props = useRef({ onHover, onLastBar, onState, onTrades, chartType, theme });
@@ -134,7 +144,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
       const count = barsRef.current.length;
       if (!chart || !count) return;
       chart.timeScale().setVisibleLogicalRange({
-        from: Math.max(0, count - INITIAL_VISIBLE),
+        from: Math.max(0, count - visibleRef.current),
         to: count + 4,
       });
       chart.priceScale("right").applyOptions({ autoScale: true });
@@ -356,7 +366,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
 
     const now = Math.floor(Date.now() / 1000);
     datafeed
-      .getBars({ symbol, resolution, to: now, countback: PAGE }, controller.signal)
+      .getBars({ symbol, resolution, to: now, countback: pageSize }, controller.signal)
       .then((bars) => {
         if (cancelled) return;
         setAll(bars);
@@ -364,7 +374,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         props.current.onState?.(bars.length ? "ready" : "empty");
         if (bars.length) {
           chart.timeScale().setVisibleLogicalRange({
-            from: Math.max(0, bars.length - INITIAL_VISIBLE),
+            from: Math.max(0, bars.length - initialVisible),
             to: bars.length + 4,
           });
         }
@@ -381,7 +391,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
       loadingOlder = true;
       const first = barsRef.current[0].time;
       datafeed
-        .getBars({ symbol, resolution, to: first - 1, countback: PAGE }, controller.signal)
+        .getBars({ symbol, resolution, to: first - 1, countback: pageSize }, controller.signal)
         .then((older) => {
           if (cancelled) return;
           const fresh = older.filter((b) => b.time < first);
@@ -457,7 +467,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
       chart.timeScale().unsubscribeVisibleLogicalRangeChange(onRange);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [datafeed, symbol, resolution]);
+  }, [datafeed, symbol, resolution, pageSize, initialVisible]);
 
   return <div ref={containerRef} className="absolute inset-0" />;
 });

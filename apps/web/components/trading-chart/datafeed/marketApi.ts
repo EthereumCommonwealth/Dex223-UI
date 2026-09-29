@@ -96,7 +96,8 @@ export class MarketApiDatafeed implements Datafeed {
   }
 
   subscribe(symbol: string, resolution: Resolution, handlers: LiveHandlers) {
-    if (typeof EventSource === "undefined") return () => {};
+    // CoinGecko-only coins have no push feed; their chart refreshes with the page.
+    if (typeof EventSource === "undefined" || symbol.startsWith("COINGECKO:")) return () => {};
     const params = new URLSearchParams({ symbol, resolution });
     // EventSource reconnects on its own (the server sends `retry: 3000`), so a dropped
     // connection or a server deploy heals without any code here.

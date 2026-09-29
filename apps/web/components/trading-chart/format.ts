@@ -56,6 +56,9 @@ export function formatPriceTicks(prices: number[]): string[] {
   const largest = Math.max(...prices.map(Math.abs));
 
   return prices.map((price) => {
+    // Prices are never negative; the scale only dips below zero into the band kept free
+    // for the volume bars, where a label would read as a real price.
+    if (price < 0) return "";
     const abs = Math.abs(price);
     const sign = price < 0 ? "-" : "";
     if (largest >= 1 || abs === 0) {
@@ -120,7 +123,10 @@ export function formatBarTime(time: number, intraday: boolean): string {
         hour: "2-digit",
         minute: "2-digit",
       }).format(date)
-    : formatter("day", { year: "numeric", month: "short", day: "numeric" }).format(date);
+    : // Daily and weekly bars are UTC days; a local zone would shift them by a day.
+      formatter("day", { year: "numeric", month: "short", day: "numeric", timeZone: "UTC" }).format(
+        date,
+      );
 }
 
 export function formatTradeTime(time: number): string {
