@@ -1,4 +1,5 @@
 import ExternalTextLink from "@repo/ui/external-text-link";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import { OrderInfoBlock } from "@/app/[locale]/margin-trading/components/widgets/OrderInfoBlock";
@@ -8,24 +9,25 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 
 export default function ClosedPositionDateInfoBlock({ position }: { position: MarginPosition }) {
+  const t = useTranslations("Margin");
   const chainId = useCurrentChainId();
   return (
     <div className="rounded-5 gap-x-5 gap-y-4 bg-primary-bg px-10 pt-4 pb-5 mb-5">
       <OrderInfoBlock
-        title="Closing details"
+        title={t("closing_details")}
         cards={[
           {
-            title: "Сlosing date",
-            tooltipText: "Tooltip text",
+            title: t("closing_date"),
+            tooltipText: t("closing_date_tooltip"),
             value: timestampToDateString(position.closedAt, { withUTC: false, withSeconds: true }),
             bg: "liquidation_date",
           },
           {
-            title: "Closing",
-            tooltipText: "Tooltip text",
+            title: t("closing"),
+            tooltipText: t("closing_tx_tooltip"),
             value: (
               <ExternalTextLink
-                text={"Closing transaction"}
+                text={t("closing_transaction")}
                 href={getExplorerLink(ExplorerLinkType.TRANSACTION, position.txClosed, chainId)}
               />
             ),

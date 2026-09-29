@@ -1,4 +1,4 @@
-import { DEX_SUPPORTED_CHAINS, DexChainId } from "@/sdk_bi/chains";
+import { DexChainId } from "@/sdk_bi/chains";
 
 const networkInfo: Record<DexChainId, { name: string; symbol: string; logo: string }> = {
   [DexChainId.MAINNET]: {
@@ -88,11 +88,14 @@ const networkInfo: Record<DexChainId, { name: string; symbol: string; logo: stri
   },
 };
 
+// The test app offers testnets only (#257). Add a chain here once it is deployed.
 export const networks: Array<{
   chainId: DexChainId;
   name: string;
   symbol: string;
   logo: string;
 }> = (
-  process.env.NEXT_PUBLIC_ENV === "production" ? [DexChainId.MAINNET] : DEX_SUPPORTED_CHAINS
+  process.env.NEXT_PUBLIC_ENV === "production"
+    ? [DexChainId.MAINNET]
+    : [DexChainId.SEPOLIA, DexChainId.BSC_TESTNET]
 ).map((chainId) => ({ chainId, ...networkInfo[chainId] }));

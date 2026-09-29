@@ -1,4 +1,5 @@
 import Alert from "@repo/ui/alert";
+import { useTranslations } from "next-intl";
 import React from "react";
 
 import {
@@ -14,11 +15,6 @@ import RadioButton from "@/components/buttons/RadioButton";
 import Tab from "@/components/tabs/Tab";
 import Tabs from "@/components/tabs/Tabs";
 
-const labelsMap: Record<LendingOrderPeriodType, string> = {
-  [LendingOrderPeriodType.FIXED]: "Fixed period",
-  [LendingOrderPeriodType.PERPETUAL]: "Perpetual period",
-};
-
 export default function LendingOrderPeriodConfig({
   values,
   setValues,
@@ -28,9 +24,10 @@ export default function LendingOrderPeriodConfig({
   setValues: (values: LendingOrderPeriod) => void;
   errors?: LendingOrderPeriodErrors;
 }) {
+  const t = useTranslations("Margin");
   return (
     <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4">
-      <InputLabel inputSize={InputSize.LARGE} label="Period type" />
+      <InputLabel inputSize={InputSize.LARGE} label={t("period_type")} />
       <div className="grid grid-cols-2 gap-2 mb-4 mt-1">
         {[LendingOrderPeriodType.FIXED, LendingOrderPeriodType.PERPETUAL].map((_period) => (
           <RadioButton
@@ -42,15 +39,15 @@ export default function LendingOrderPeriodConfig({
             }}
             disabled={_period === LendingOrderPeriodType.PERPETUAL}
           >
-            {labelsMap[_period]}
+            {_period === LendingOrderPeriodType.FIXED ? t("fixed_period") : t("perpetual_period")}
           </RadioButton>
         ))}
       </div>
       {values.type === LendingOrderPeriodType.FIXED && (
         <div className="flex flex-col gap-1.5">
           <DateTimePicker
-            label="Lending order deadline"
-            tooltipText="tooltip text"
+            label={t("order_deadline")}
+            tooltipText={t("order_deadline_tooltip")}
             placeholder="DD.MM.YYYY hh:mm:ss aa"
             value={values.lendingOrderDeadline}
             onChange={(e) =>
@@ -62,10 +59,10 @@ export default function LendingOrderPeriodConfig({
             error={errors?.lendingOrderDeadline}
           />
           <TextField
-            internalText="days"
-            label="Margin positions duration"
+            internalText={t("days")}
+            label={t("margin_positions_duration")}
             placeholder={"0"}
-            tooltipText="tooltip text"
+            tooltipText={t("position_duration_tooltip")}
             value={values.positionDuration}
             onChange={(e) =>
               setValues({
@@ -90,15 +87,15 @@ export default function LendingOrderPeriodConfig({
             fullWidth
             colorScheme={"secondary"}
           >
-            <Tab title="Days">
+            <Tab title={t("days")}>
               <div className="mt-4">
                 <TextField
                   isNumeric
                   decimalScale={0}
-                  label="Borrowing period"
-                  tooltipText="tooltip text"
+                  label={t("borrowing_period")}
+                  tooltipText={t("borrowing_period_tooltip")}
                   placeholder="0"
-                  internalText={"days"}
+                  internalText={t("days")}
                   value={values.borrowingPeriod.borrowingPeriodInDays}
                   onChange={(e) =>
                     setValues({
@@ -113,16 +110,16 @@ export default function LendingOrderPeriodConfig({
                 />
               </div>
             </Tab>
-            <Tab title="Minutes">
+            <Tab title={t("minutes")}>
               <div className="mt-4">
                 <TextField
                   isNumeric
                   decimalScale={0}
-                  label="Borrowing period"
-                  tooltipText="tooltip text"
+                  label={t("borrowing_period")}
+                  tooltipText={t("borrowing_period_tooltip")}
                   placeholder="0"
-                  internalText={"seconds"}
-                  helperText={"1440 seconds = 1 day"}
+                  internalText={t("seconds")}
+                  helperText={t("seconds_in_day")}
                   value={values.borrowingPeriod.borrowingPeriodInMinutes}
                   onChange={(e) =>
                     setValues({
@@ -139,10 +136,7 @@ export default function LendingOrderPeriodConfig({
             </Tab>
           </Tabs>
           <div className="mt-4">
-            <Alert
-              text="The countdown for each borrower starts when they borrow your assets, not when the lending order is created"
-              type="info"
-            />
+            <Alert text={t("borrower_countdown")} type="info" />
           </div>
         </div>
       )}

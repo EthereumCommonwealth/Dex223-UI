@@ -66,20 +66,21 @@ function CollectRow({
   hash?: Address | undefined;
 }) {
   const t = useTranslations("Swap");
+  const tL = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   const text = useMemo(() => {
     switch (status) {
       case CollectFeesStatus.ERROR:
-        return "Failed to collect fees";
+        return tL("claim_failed");
       case CollectFeesStatus.LOADING:
-        return "Claiming fees";
+        return tL("claiming_fees");
       case CollectFeesStatus.SUCCESS:
-        return "Fees successfully claimed";
+        return tL("fees_claimed");
       default:
-        return "Claim fees";
+        return tL("claim_fees_title");
     }
-  }, [status]);
+  }, [status, tL]);
 
   const icon = useMemo(() => {
     switch (status) {
@@ -167,24 +168,25 @@ function UnwrapWETH9Row({
   hash?: Address | undefined;
 }) {
   const t = useTranslations("Swap");
+  const tL = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
 
   const text = useMemo(() => {
     switch (status) {
       case CollectFeesStatus.INITIAL:
-        return "Unwrap WETH to ETH";
+        return tL("unwrap_weth");
       case CollectFeesStatus.ERROR:
-        return "Failed to unwrap WETH";
+        return tL("unwrap_failed");
       case CollectFeesStatus.LOADING:
-        return "Unwrapping WETH";
+        return tL("unwrapping_weth");
       case CollectFeesStatus.PENDING:
-        return "Unwrap WETH to ETH";
+        return tL("unwrap_weth");
       case CollectFeesStatus.SUCCESS:
-        return "Unwrapped WETH to ETH";
+        return tL("unwrapped_weth");
       default:
-        return "Unwrap WETH to ETH";
+        return tL("unwrap_weth");
     }
-  }, [status]);
+  }, [status, tL]);
 
   const isDisabled = useMemo(() => {
     return (
@@ -262,7 +264,7 @@ function Rows({ children }: PropsWithChildren<{}>) {
 }
 
 function CollectActionButton() {
-  const t = useTranslations("Swap");
+  const tL = useTranslations("Liquidity");
 
   const { handleCollectFees, isETHPool } = usePositionFees();
 
@@ -279,7 +281,7 @@ function CollectActionButton() {
 
   return (
     <Button onClick={() => handleCollectFees()} fullWidth>
-      Collect fees
+      {tL("collect_fees_title")}
     </Button>
   );
 }
@@ -502,11 +504,8 @@ export default function PoolPage({
             ) : (
               <div className="flex items-center gap-2 lg:gap-3 mb-4 lg:mb-5 flex-wrap">
                 <div className="flex items-center gap-1 px-3 justify-between py-2 rounded-2 bg-tertiary-bg">
-                  <Tooltip
-                    text="Each liquidity position is represented by a NFT. This is the identifier of the token associated with this position"
-                    iconSize={isMobile ? 16 : 24}
-                  />
-                  <span className="text-tertiary-text text-12 lg:text-16">NFT ID:</span>
+                  <Tooltip text={t("nft_id_tooltip")} iconSize={isMobile ? 16 : 24} />
+                  <span className="text-tertiary-text text-12 lg:text-16">{t("nft_id")}:</span>
                   <ExternalTextLink
                     text={tokenId}
                     className="text-12 lg:text-16"
@@ -519,20 +518,14 @@ export default function PoolPage({
                   />
                 </div>
                 <div className="flex items-center gap-1 px-3 py-2 rounded-2 bg-tertiary-bg">
-                  <Tooltip
-                    text="This value is used within internal calculations of the pool and determines the lower boundary of the price for your position."
-                    iconSize={isMobile ? 16 : 24}
-                  />
+                  <Tooltip text={t("min_price_tooltip")} iconSize={isMobile ? 16 : 24} />
                   <span className="text-tertiary-text text-12 lg:text-16">{t("min_tick")}:</span>
                   <span className="text-12 text-secondary-text lg:text-16">
                     {position?.tickLower}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 px-3 py-2 rounded-2 bg-tertiary-bg">
-                  <Tooltip
-                    text="This value is used within internal calculations of the pool and determines the upper boundary of the price for your position"
-                    iconSize={isMobile ? 16 : 24}
-                  />
+                  <Tooltip text={t("max_price_tooltip")} iconSize={isMobile ? 16 : 24} />
                   <span className="text-tertiary-text text-12 lg:text-16">{t("max_tick")}:</span>
                   <span className="text-12 text-secondary-text lg:text-16">
                     {position?.tickUpper}
@@ -642,16 +635,16 @@ export default function PoolPage({
                     <PositionLiquidityCard
                       token={token0}
                       standards={token0?.isNative ? "native" : [Standard.ERC20, Standard.ERC223]}
-                      amount={position?.amount0.toSignificant() || "Loading..."}
-                      percentage={ratio ? (showFirst ? ratio : 100 - ratio) : "Loading..."}
+                      amount={position?.amount0.toSignificant() || t("loading")}
+                      percentage={ratio ? (showFirst ? ratio : 100 - ratio) : t("loading")}
                     />
                   </div>
                   <div className="p-4 lg:p-0 bg-quaternary-bg lg:bg-transparent rounded-3">
                     <PositionLiquidityCard
                       token={token1}
                       standards={token1?.isNative ? "native" : [Standard.ERC20, Standard.ERC223]}
-                      amount={position?.amount1.toSignificant() || "Loading..."}
-                      percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : "Loading..."}
+                      amount={position?.amount1.toSignificant() || t("loading")}
+                      percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : t("loading")}
                     />
                   </div>
                 </div>

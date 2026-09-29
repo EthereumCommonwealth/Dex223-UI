@@ -144,8 +144,12 @@ export default function Badge(props: Props) {
       );
     }
 
-    case BadgeVariant.STANDARD:
+    case BadgeVariant.STANDARD: {
       const { standard, color = "green", size = "default", className } = props;
+
+      if (!standard || !badgeImagesMap[standard] || !badgeImagesMap[standard][color]) {
+        return null;
+      }
 
       return (
         <Image
@@ -156,5 +160,6 @@ export default function Badge(props: Props) {
           height={standardBadgeSizes[size].height}
         />
       );
+    }
   }
 }

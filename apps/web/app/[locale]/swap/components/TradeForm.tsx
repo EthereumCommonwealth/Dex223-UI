@@ -215,7 +215,13 @@ const gasOptionTitle: Record<GasOption, any> = {
   [GasOption.FAST]: "fast",
   [GasOption.CUSTOM]: "custom",
 };
-export default function TradeForm() {
+export default function TradeForm({
+  setIsChartVisible,
+  isChartVisible,
+}: {
+  setIsChartVisible?: (isVisible: boolean) => void;
+  isChartVisible?: boolean;
+}) {
   const t = useTranslations("Swap");
   const tA11y = useTranslations("A11y");
   const { address } = useAccount();
@@ -491,6 +497,14 @@ export default function TradeForm() {
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">
+          {setIsChartVisible && tokenA && tokenB && (
+            <IconButton
+              buttonSize={IconButtonSize.LARGE}
+              active={isChartVisible}
+              iconName="toggle-trading-view"
+              onClick={() => setIsChartVisible(!isChartVisible)}
+            />
+          )}
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}
@@ -673,19 +687,13 @@ export default function TradeForm() {
 
       {tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223 && (
         <div className="mt-5">
-          <Alert
-            text="Your wallet is an EIP-7702 smart account that cannot receive ERC-223 tokens, so this swap would fail. Receive ERC-20 instead."
-            type="warning"
-          />
+          <Alert text={t("eip7702_warning")} type="warning" />
         </div>
       )}
 
       {error === TradeError.NO_LIQUIDITY && (
         <div className="mt-5">
-          <Alert
-            text="Swap unavailable. One of the tokens lacks liquidity. Please try again later or choose another pair"
-            type="warning"
-          />
+          <Alert text={t("swap_no_liquidity")} type="warning" />
         </div>
       )}
 

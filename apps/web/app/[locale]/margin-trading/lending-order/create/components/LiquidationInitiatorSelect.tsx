@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { isAddress } from "viem";
 
@@ -12,11 +13,6 @@ import Button from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
 import RadioButton from "@/components/buttons/RadioButton";
 
-const labelsMap: Record<LiquidationType, string> = {
-  [LiquidationType.ANYONE]: "Anyone",
-  [LiquidationType.SPECIFIED]: "Specified addresses",
-};
-
 export default function LiquidationInitiatorSelect({
   values,
   setValue,
@@ -24,11 +20,12 @@ export default function LiquidationInitiatorSelect({
   values: LiquidationMode;
   setValue: (values: LiquidationMode) => void;
 }) {
+  const t = useTranslations("Margin");
   const [inputValue, setInputValue] = useState("");
 
   return (
     <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-6">
-      <InputLabel label="May initiate liquidation" />
+      <InputLabel label={t("may_initiate_liquidation")} />
       <div className="grid grid-cols-2 gap-2 mb-4 mt-1">
         {[LiquidationType.ANYONE, LiquidationType.SPECIFIED].map((_initiator) => (
           <RadioButton
@@ -40,14 +37,17 @@ export default function LiquidationInitiatorSelect({
             }}
             disabled={_initiator === LiquidationType.SPECIFIED}
           >
-            {labelsMap[_initiator]}
+            {_initiator === LiquidationType.ANYONE ? t("anyone") : t("specified_addresses")}
           </RadioButton>
         ))}
       </div>
 
       {values.type === LiquidationType.SPECIFIED && (
         <div>
-          <InputLabel label="Address eligible for liquidation" tooltipText="Tooltip text" />
+          <InputLabel
+            label={t("liquidation_address")}
+            tooltipText={t("liquidation_address_tooltip")}
+          />
           <div className="grid grid-cols-[1fr_48px] gap-3">
             <Input
               value={inputValue}

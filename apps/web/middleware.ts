@@ -23,6 +23,11 @@ function rewriteConverterHostPath(pathname: string): string | null {
   return null;
 }
 
+// Account and id-keyed routes. Google may still fetch a linked URL, so mark
+// them noindex even when robots.txt also skips them.
+const PRIVATE_PATH =
+  /^\/(?:[a-z]{2}\/)?(?:portfolio|pools\/positions|send|pay|dev|requests|remove\/|increase\/|pool\/|margin-trading\/(?:position|lending-order))(?:\/|$)/;
+
 export default function middleware(request: NextRequest) {
   const host = request.headers.get("host") ?? "";
 
@@ -40,7 +45,11 @@ export default function middleware(request: NextRequest) {
     }
   }
 
-  return handleI18nRouting(request);
+  const response = handleI18nRouting(request);
+  if (PRIVATE_PATH.test(request.nextUrl.pathname)) {
+    response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  }
+  return response;
 }
 
 export const config = {
@@ -53,7 +62,9 @@ export const config = {
     "/(es|en|zh)/:path*",
 
     // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
-    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static|api).*)",
+    // (e.g. `/pathnames` -> `/en/pathnames`). `rewards` is excluded: those
+    // paths belong to the rewards app (see next.config.js), which has its own
+    // locale handling under /rewards/<locale>.
+    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static|api|rewards).*)",
   ],
 };

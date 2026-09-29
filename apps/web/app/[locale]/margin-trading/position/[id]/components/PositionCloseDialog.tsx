@@ -1,5 +1,6 @@
 import Alert from "@repo/ui/alert";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, isAddress } from "viem";
 
@@ -59,6 +60,7 @@ const closePositionSteps: OperationStepConfig[] = [
 ];
 
 function PositionCloseActionButton({ position }: { position: MarginPosition }) {
+  const t = useTranslations("Margin");
   const { handlePositionClose } = usePositionClose({
     position,
   });
@@ -92,7 +94,7 @@ function PositionCloseActionButton({ position }: { position: MarginPosition }) {
 
   return (
     <Button onClick={() => handlePositionClose()} fullWidth>
-      Close margin position
+      {t("close_margin_position")}
     </Button>
   );
 }
@@ -111,6 +113,7 @@ export default function PositionCloseDialog({
   setIsOpen: (isOpen: boolean) => void;
   position: MarginPosition;
 }) {
+  const t = useTranslations("Margin");
   const { status } = usePositionCloseStatusStore();
 
   const isInitialStatus = useMemo(() => status === PositionCloseStatus.INITIAL, [status]);
@@ -174,7 +177,7 @@ export default function PositionCloseDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Close margin position" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("close_margin_position")} />
       <div className={clsx(" card-spacing-x card-spacing-b w-[600px]")}>
         {!!baseAssetAmount && !!expectedBalance && baseAssetAmount > expectedBalance ? (
           <>
@@ -202,7 +205,7 @@ export default function PositionCloseDialog({
                     {status === PositionCloseStatus.SUCCESS && (
                       <div>
                         <h2 className="text-center mb-1 font-bold text-20 ">
-                          Margin position closed successfully
+                          {t("close_success")}
                         </h2>
                         <p className="text-center mb-1">
                           {position.loanAsset.symbol}{" "}
@@ -214,7 +217,7 @@ export default function PositionCloseDialog({
                     {status === PositionCloseStatus.ERROR_CLOSE && (
                       <div>
                         <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                          Failed to close position
+                          {t("close_failed")}
                         </h2>
                         <p className="text-center mb-1">
                           {position.loanAsset.symbol}{" "}
@@ -231,9 +234,9 @@ export default function PositionCloseDialog({
                   <div className="flex flex-col">
                     <div className="pt-4 px-5 pb-5 bg-tertiary-bg rounded-3">
                       <InputLabel
-                        label="You will receive"
+                        label={t("you_will_receive")}
                         inputSize={InputSize.LARGE}
-                        tooltipText={"Tooltip text"}
+                        tooltipText={t("you_will_receive_tooltip")}
                       />
                       <div className="flex flex-wrap gap-2 bg-quaternary-bg rounded-3 p-2">
                         {positionOwnerReceive?.map(({ asset, balance }, index) => (
@@ -244,7 +247,7 @@ export default function PositionCloseDialog({
                             <span className="text-primary-text">
                               {balance
                                 ? formatFloat(formatUnits(balance, asset.decimals))
-                                : "Loading..."}
+                                : t("loading")}
                             </span>{" "}
                             {asset.symbol}
                           </div>
@@ -254,7 +257,7 @@ export default function PositionCloseDialog({
 
                     {isInitialStatus && (
                       <div className="px-5 py-4 bg-tertiary-bg rounded-3 flex-grow mt-5">
-                        <InputLabel inputSize={InputSize.LARGE} label="Action with assets" />
+                        <InputLabel inputSize={InputSize.LARGE} label={t("action_with_assets")} />
                         <div className="grid grid-cols-2 gap-3">
                           {[
                             ActionWithAssets.RETURN_TO_CONTRACT,
@@ -270,8 +273,8 @@ export default function PositionCloseDialog({
                               >
                                 {
                                   {
-                                    [ActionWithAssets.RETURN_TO_CONTRACT]: "Return to contract",
-                                    [ActionWithAssets.SEND_TO_ADDRESS]: "Send to address",
+                                    [ActionWithAssets.RETURN_TO_CONTRACT]: t("return_to_contract"),
+                                    [ActionWithAssets.SEND_TO_ADDRESS]: t("send_to_address"),
                                   }[action]
                                 }
                               </RadioButton>
@@ -287,10 +290,10 @@ export default function PositionCloseDialog({
                                 setAddressForAssets(e.target.value);
                               }}
                               inputSize={InputSize.LARGE}
-                              label="Address to send assets"
-                              tooltipText="TOOLTIP_TEXT"
+                              label={t("address_to_send_assets")}
+                              tooltipText={t("address_to_send_tooltip")}
                               placeholder="0x..."
-                              error={isAddress(addressForAssets) ? undefined : "Invalid address"}
+                              error={isAddress(addressForAssets) ? undefined : t("invalid_address")}
                             />
                           </div>
                         )}
@@ -300,8 +303,8 @@ export default function PositionCloseDialog({
 
                   <div className="my-4">
                     <SwapDetailsRow
-                      tooltipText="Tooltip text"
-                      title={"Will be paid back to lender"}
+                      tooltipText={t("paid_back_to_lender_tooltip")}
+                      title={t("paid_back_to_lender")}
                       value={`${formatFloat(formatUnits(expectedBalance || BigInt(0), position.order.baseAsset.decimals))} ${position.loanAsset.symbol}`}
                     />
                   </div>
@@ -309,22 +312,22 @@ export default function PositionCloseDialog({
                     <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
                       <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
                         <p className="flex flex-col text-tertiary-text">
-                          <span>Gas price:</span>
+                          <span>{t("gas_price")}</span>
                           <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
                         </p>
 
                         <p className="flex flex-col text-tertiary-text">
-                          <span>Gas limit:</span>
+                          <span>{t("gas_limit")}</span>
                           <span>{329000}</span>
                         </p>
                         <p className="flex flex-col">
-                          <span className="text-tertiary-text">Network fee:</span>
+                          <span className="text-tertiary-text">{t("network_fee")}</span>
                           <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
                         </p>
                       </div>
                       <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
                         <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                          Cheaper
+                          {t("cheap")}
                         </span>
                         <Button
                           colorScheme={ButtonColor.LIGHT_GREEN}
@@ -333,7 +336,7 @@ export default function PositionCloseDialog({
                           fullWidth={false}
                           className="rounded-5"
                         >
-                          Edit
+                          {t("edit")}
                         </Button>
                       </div>
                     </div>
@@ -350,9 +353,9 @@ export default function PositionCloseDialog({
               <>
                 <div className="pt-4 px-5 pb-5 bg-tertiary-bg rounded-3 mt-4">
                   <InputLabel
-                    label="You received"
+                    label={t("you_received")}
                     inputSize={InputSize.LARGE}
-                    tooltipText={"Tooltip text"}
+                    tooltipText={t("you_received_tooltip")}
                   />
                   <div className="flex flex-wrap gap-2 bg-quaternary-bg rounded-3 p-2">
                     {positionOwnerReceive?.map(({ asset, balance }, index) => (
@@ -363,7 +366,7 @@ export default function PositionCloseDialog({
                         <span className="text-primary-text">
                           {balance
                             ? formatFloat(formatUnits(balance, asset.decimals))
-                            : "Loading..."}
+                            : t("loading")}
                         </span>{" "}
                         {asset.symbol}
                       </div>
@@ -372,8 +375,8 @@ export default function PositionCloseDialog({
                 </div>
                 <div className="mt-4">
                   <SwapDetailsRow
-                    tooltipText="Tooltip text"
-                    title={"Paid back to lender"}
+                    tooltipText={t("paid_back_to_lender_tooltip")}
+                    title={t("paid_back_to_lender_done")}
                     value={`${formatFloat(formatUnits(expectedBalance || BigInt(0), position.order.baseAsset.decimals))} ${position.loanAsset.symbol}`}
                   />
                 </div>
@@ -382,18 +385,18 @@ export default function PositionCloseDialog({
           </>
         ) : (
           <div className="flex flex-col gap-4 text-secondary-text">
-            You do not have enough loaned asset to close margin position
+            {t("not_enough_to_close")}
             <div className="grid grid-cols-2 gap-3 mb-1">
               <SimpleInfoBlock
-                title={"Expected balance"}
-                tooltipText={"Tooltip text"}
+                title={t("expected_balance")}
+                tooltipText={t("expected_balance_tooltip")}
                 value={`${formatFloat(
                   formatUnits(expectedBalance || BigInt(0), position.order.baseAsset.decimals),
                 )} ${position.loanAsset.symbol}`}
               />
               <SimpleInfoBlock
-                title={"Loaned currency balance"}
-                tooltipText={"Tooltip text"}
+                title={t("loaned_currency_balance")}
+                tooltipText={t("loaned_currency_balance_tooltip")}
                 value={`${formatFloat(
                   formatUnits(baseAssetAmount || BigInt(0), position.order.baseAsset.decimals),
                 )} ${position.loanAsset.symbol}`}
@@ -401,16 +404,19 @@ export default function PositionCloseDialog({
             </div>
             <Alert
               type={"info"}
-              text={`Go to Margin swap and exchange your assets for ${formatFloat(
-                formatUnits(
-                  BigInt(expectedBalance || 0) - BigInt(baseAssetAmount || 0),
-                  position.order.baseAsset.decimals,
+              text={t("go_to_margin_swap_hint", {
+                amount: formatFloat(
+                  formatUnits(
+                    BigInt(expectedBalance || 0) - BigInt(baseAssetAmount || 0),
+                    position.order.baseAsset.decimals,
+                  ),
                 ),
-              )} ${position.loanAsset.symbol}`}
+                symbol: position.loanAsset.symbol,
+              })}
             />
             <div className="mt-1">
               <Link href="/margin-swap">
-                <Button fullWidth>Go to margin swap</Button>
+                <Button fullWidth>{t("go_to_margin_swap")}</Button>
               </Link>
             </div>
           </div>

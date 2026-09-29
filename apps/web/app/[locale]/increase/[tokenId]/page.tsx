@@ -173,14 +173,14 @@ export default function IncreaseLiquidityPage({
                 <div className="grid gap-3 px-4 py-3 lg:p-5">
                   <PositionLiquidityCard
                     token={tokenA}
-                    amount={existedPosition?.amount0.toSignificant() || "Loading..."}
-                    percentage={ratio ? (showFirst ? ratio : 100 - ratio) : "Loading..."}
+                    amount={existedPosition?.amount0.toSignificant() || t("loading")}
+                    percentage={ratio ? (showFirst ? ratio : 100 - ratio) : t("loading")}
                     standards={[Standard.ERC20, Standard.ERC223]} // TODO
                   />
                   <PositionLiquidityCard
                     token={tokenB}
-                    amount={existedPosition?.amount1.toSignificant() || "Loading..."}
-                    percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : "Loading..."}
+                    amount={existedPosition?.amount1.toSignificant() || t("loading")}
+                    percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : t("loading")}
                     standards={[Standard.ERC20, Standard.ERC223]} // TODO
                   />
                 </div>
@@ -190,7 +190,7 @@ export default function IncreaseLiquidityPage({
                 <span className="text-14 lg:text-16">
                   {existedPosition
                     ? FEE_AMOUNT_DETAIL[existedPosition?.pool.fee].label
-                    : "Loading..."}
+                    : t("loading")}
                   %
                 </span>
               </div>

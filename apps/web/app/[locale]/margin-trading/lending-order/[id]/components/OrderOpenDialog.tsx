@@ -1,6 +1,7 @@
 import GradientCard, { CardGradient } from "@repo/ui/gradient-card";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo } from "react";
 import { formatEther, formatGwei, formatUnits } from "viem";
 
@@ -100,6 +101,7 @@ export default function OrderOpenDialog({
   order: LendingOrder | undefined;
 }) {
   const { status, setStatus } = useOpenOrderStatusStore();
+  const t = useTranslations("Margin");
 
   const isInitialStatus = useMemo(() => status === OpenOrderStatus.INITIAL, [status]);
   const isFinalStatus = useMemo(
@@ -121,7 +123,7 @@ export default function OrderOpenDialog({
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-      <DialogHeader onClose={() => setIsOpen(false)} title="Open lending order" />
+      <DialogHeader onClose={() => setIsOpen(false)} title={t("open_lending_order")} />
       {order ? (
         <div className="card-spacing-x card-spacing-b w-[600px]">
           {isInitialStatus && (
@@ -133,12 +135,12 @@ export default function OrderOpenDialog({
                     {order.baseAsset.name}
                   </span>
                   <div className="flex items-center gap-1 text-tertiary-text">
-                    Closed
+                    {t("status_closed")}
                     <Svg iconName="closed" />
                   </div>
                 </div>
                 <div className="text-secondary-text text-12 py-2 px-4 rounded-2 bg-tertiary-bg">
-                  <span className="text-tertiary-text">ID: </span>
+                  <span className="text-tertiary-text">{t("order_id")}: </span>
                   {order.id}
                 </div>
               </div>
@@ -150,8 +152,8 @@ export default function OrderOpenDialog({
                 >
                   <div className="">
                     <div className="items-center flex gap-1 text-tertiary-text">
-                      Available balance
-                      <Tooltip text="Tooltip text" />
+                      {t("available_balance")}
+                      <Tooltip text={t("available_balance_tooltip")} />
                     </div>
 
                     <p className="font-medium text-20">
@@ -164,8 +166,8 @@ export default function OrderOpenDialog({
                 <GradientCard className=" px-5 py-3 ">
                   <div className="">
                     <div className="items-center flex gap-1 text-tertiary-text">
-                      Total balance
-                      <Tooltip text="Tooltip text" />
+                      {t("total_balance")}
+                      <Tooltip text={t("total_balance_tooltip")} />
                     </div>
 
                     <p className="font-medium text-20">
@@ -195,12 +197,12 @@ export default function OrderOpenDialog({
                     {order.baseAsset.name}
                   </span>
                   <div className="flex items-center gap-1 text-tertiary-text">
-                    Closed
+                    {t("status_closed")}
                     <Svg iconName="closed" />
                   </div>
                 </div>
                 <div className="text-secondary-text text-12 py-2 px-4 rounded-2 bg-tertiary-bg">
-                  <span className="text-tertiary-text">ID: </span>
+                  <span className="text-tertiary-text">{t("order_id")}: </span>
                   {order.id}
                 </div>
               </div>
@@ -212,8 +214,8 @@ export default function OrderOpenDialog({
                 >
                   <div className="">
                     <div className="items-center flex gap-1 text-tertiary-text">
-                      Available balance
-                      <Tooltip text="Tooltip text" />
+                      {t("available_balance")}
+                      <Tooltip text={t("available_balance_tooltip")} />
                     </div>
 
                     <p className="font-medium text-20">
@@ -226,8 +228,8 @@ export default function OrderOpenDialog({
                 <GradientCard className=" px-5 py-3 ">
                   <div className="">
                     <div className="items-center flex gap-1 text-tertiary-text">
-                      Total balance
-                      <Tooltip text="Tooltip text" />
+                      {t("total_balance")}
+                      <Tooltip text={t("total_balance_tooltip")} />
                     </div>
 
                     <p className="font-medium text-20">
@@ -263,9 +265,7 @@ export default function OrderOpenDialog({
 
               {status === OpenOrderStatus.SUCCESS && (
                 <div>
-                  <h2 className="text-center mb-1 font-bold text-20 ">
-                    Lending order opened successfully
-                  </h2>
+                  <h2 className="text-center mb-1 font-bold text-20 ">{t("order_opened")}</h2>
                   <p className="text-center mb-1">
                     {order.baseAsset.symbol}{" "}
                     <span className="text-tertiary-text">(ID: {order.id})</span>
@@ -275,7 +275,7 @@ export default function OrderOpenDialog({
               {status === OpenOrderStatus.ERROR_OPEN_ORDER && (
                 <div>
                   <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                    Failed to open lending order
+                    {t("order_open_failed")}
                   </h2>
                   <p className="text-center mb-1">
                     {order.baseAsset.symbol}{" "}
@@ -290,7 +290,7 @@ export default function OrderOpenDialog({
           <OrderCloseActionButton order={order} />
         </div>
       ) : (
-        <div>No order provided</div>
+        <div>{t("no_order_provided")}</div>
       )}
     </DrawerDialog>
   );

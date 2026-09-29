@@ -3,6 +3,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 import clsx from "clsx";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 
@@ -18,6 +19,7 @@ import { Link } from "@/i18n/routing";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 
 const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+  const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
   const { inRange, removed } = usePositionRangeStatus({ position });
 
@@ -51,7 +53,7 @@ const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo
 
         {position
           ? `${position.amount0.toSignificant()} ${position.pool.token0.symbol}/${position.amount1.toSignificant()} ${position.pool.token1.symbol}`
-          : "Loading..."}
+          : t("loading")}
       </div>
       <div
         className={clsx(
@@ -93,6 +95,7 @@ export const LiquidityPositionsDesktopTable = ({
   tableData: WalletPositions[];
   isLoading: boolean;
 }) => {
+  const t = useTranslations("Portfolio");
   return (
     <div className="hidden lg:grid px-5 rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,1.33fr),_minmax(87px,2.67fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr),_minmax(50px,1.33fr)] pb-2.5 relative">
       {isLoading ? (
@@ -124,10 +127,14 @@ export const LiquidityPositionsDesktopTable = ({
       ) : (
         <React.Fragment>
           <div className="text-tertiary-text pl-5 h-[60px] flex items-center">ID</div>
-          <div className="text-tertiary-text h-[60px] flex items-center gap-2">Amount tokens</div>
-          <div className="text-tertiary-text h-[60px] flex items-center">Amount, $</div>
-          <div className="text-tertiary-text h-[60px] flex items-center">Unclaimed fees</div>
-          <div className="text-tertiary-text pr-5 h-[60px] flex items-center mb-2.5">Status</div>
+          <div className="text-tertiary-text h-[60px] flex items-center gap-2">
+            {t("amount_tokens")}
+          </div>
+          <div className="text-tertiary-text h-[60px] flex items-center">{t("amount_usd")}</div>
+          <div className="text-tertiary-text h-[60px] flex items-center">{t("unclaimed_fees")}</div>
+          <div className="text-tertiary-text pr-5 h-[60px] flex items-center mb-2.5">
+            {t("status")}
+          </div>
         </React.Fragment>
       )}
 
@@ -183,6 +190,7 @@ export const LiquidityPositionsDesktopTable = ({
 };
 
 const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+  const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
   const { inRange, removed } = usePositionRangeStatus({ position });
 
@@ -205,7 +213,7 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
 
             {position
               ? `${position.amount0.toSignificant()} ${position.pool.token0.symbol}/${position.amount1.toSignificant()} ${position.pool.token1.symbol}`
-              : "Loading..."}
+              : t("loading")}
           </div>
           <RangeBadge
             status={
@@ -223,12 +231,12 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
             <span className="text-14 font-medium">{`${positionInfo.tokenId}`}</span>
           </div>
           <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
-            <span className="text-14 text-secondary-text">Amount:</span>
+            <span className="text-14 text-secondary-text">{t("amount_label")}</span>
             <span className="text-14 font-medium">{`$ —`}</span>
           </div>
         </div>
         <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
-          <span className="text-14 text-secondary-text">Unclaimed fees:</span>
+          <span className="text-14 text-secondary-text">{t("unclaimed_fees_label")}</span>
           <span className="text-14 font-medium">{`$ —`}</span>
         </div>
       </Link>

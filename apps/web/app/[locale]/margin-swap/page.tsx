@@ -41,7 +41,7 @@ export default function MarginSwapPage() {
     const matching: MarginPosition[] = [];
     const other: MarginPosition[] = [];
 
-    for (const position of openedPositions) {
+    for (const position of openedPositions ?? []) {
       const hasA = tokenA && position.assets.some((asset) => asset.equals(tokenA));
 
       const hasB =

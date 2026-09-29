@@ -10,7 +10,7 @@ import Svg from "@/components/atoms/Svg";
 import { MobileLink } from "@/components/common/MobileMenu";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { usePathname } from "@/i18n/routing";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
 
@@ -63,18 +63,18 @@ function MarginTradingSubmenuLink({
   title: string;
   handleClose: () => void;
 }) {
-  const isMarginAvailable = useIsMarginAvailable();
+  const comingSoon = isBorrowLendComingSoon();
 
   return (
     <MobileLink
-      disabled={!isMarginAvailable}
+      disabled={comingSoon}
       isActive={isActive}
       href="/margin-swap"
       iconName="margin-trading"
       title={title}
       handleClose={handleClose}
-      className={clsx("min-w-[238px]", !isMarginAvailable && "pr-5")}
-      comingSoon={!isMarginAvailable}
+      className={clsx("min-w-[238px]", comingSoon && "pr-5")}
+      comingSoon={comingSoon}
     />
   );
 }
@@ -85,7 +85,7 @@ const menuItems: Array<
       submenu: (handleClose: () => void, t: any, pathname?: string) => ReactNode;
       activeFlags: string[];
     }
-  | { label: any; href: string }
+  | { label: any; href: string; plain?: boolean }
 > = [
   {
     label: "trade",
@@ -112,6 +112,14 @@ const menuItems: Array<
           handleClose={handleClose}
           className="min-w-[238px]"
         />
+        {/* <MobileLink
+          isActive={pathname === "/multisig"}
+          href="/multisig"
+          iconName="high-trust"
+          title={t("multisig")}
+          handleClose={handleClose}
+          className="min-w-[238px]"
+        /> */}
       </div>
     ),
     activeFlags: ["/swap", "/margin-trading", "/buy-crypto"],
@@ -127,6 +135,12 @@ const menuItems: Array<
   {
     label: "portfolio",
     href: "/portfolio",
+  },
+  // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
+  {
+    label: "rewards",
+    href: "/rewards",
+    plain: true,
   },
   {
     label: "token_listing",
@@ -376,6 +390,7 @@ function NavigationMoreDropdown() {
 
 export default function Navigation() {
   const t = useTranslations("Navigation");
+  const locale = useLocale();
 
   const pathname = usePathname();
 
@@ -399,7 +414,10 @@ export default function Navigation() {
             <NavigationItem
               id={menuItem.label}
               title={t(menuItem.label)}
-              href={menuItem.href}
+              href={
+                "plain" in menuItem && menuItem.plain ? `${menuItem.href}/${locale}` : menuItem.href
+              }
+              plain={"plain" in menuItem && menuItem.plain}
               active={pathname.includes(menuItem.href)}
             />
           </li>

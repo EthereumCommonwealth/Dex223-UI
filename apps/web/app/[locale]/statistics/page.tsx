@@ -165,11 +165,19 @@ export default function StatisticsOverviewPage() {
             />
             <StatCard
               label={t("pools")}
-              value={loading && !factory ? "—" : formatNumberKilos(Number(factory?.poolCount ?? 0))}
+              value={
+                loading && !factory
+                  ? "—"
+                  : formatNumberKilos(Number(factory?.poolCount ?? 0), { trimZero: true })
+              }
             />
             <StatCard
               label={t("transactions")}
-              value={loading && !factory ? "—" : formatNumberKilos(Number(factory?.txCount ?? 0))}
+              value={
+                loading && !factory
+                  ? "—"
+                  : formatNumberKilos(Number(factory?.txCount ?? 0), { trimZero: true })
+              }
             />
           </div>
 

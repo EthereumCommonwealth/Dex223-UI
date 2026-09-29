@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useCallback, useEffect, useState } from "react";
 import { parseUnits } from "viem";
 
@@ -19,12 +20,13 @@ export default function LendingOrderTokenSelect({
   standard,
   setStandard,
   errors,
-  label = "Loan amount",
+  label,
   setIsEnoughBalance,
   tokens,
   helperText,
   allowedErc223,
   readonly,
+  tooltipText,
 }: {
   token: Currency | undefined;
   setToken: (token: Currency) => Promise<void>;
@@ -39,7 +41,10 @@ export default function LendingOrderTokenSelect({
   helperText?: string;
   allowedErc223: boolean;
   readonly?: boolean;
+  tooltipText?: string;
 }) {
+  const t = useTranslations("Margin");
+  const resolvedLabel = label ?? t("loan_amount");
   const [isOpenedTokenPick, setIsOpenedTokenPick] = useState(false);
 
   const handlePick = useCallback(
@@ -94,7 +99,11 @@ export default function LendingOrderTokenSelect({
 
   return (
     <div className="">
-      <InputLabel inputSize={InputSize.LARGE} label={label} tooltipText="Tooltip text" />
+      <InputLabel
+        inputSize={InputSize.LARGE}
+        label={resolvedLabel}
+        tooltipText={tooltipText ?? t("loan_amount_tooltip")}
+      />
       <TokenInput
         readOnly={readonly}
         readOnlyToken={readonly}

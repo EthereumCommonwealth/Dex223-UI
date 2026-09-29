@@ -1,5 +1,6 @@
 "use client";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { use } from "react";
 
 import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
@@ -15,6 +16,7 @@ export default function LiquidatePositionPage({
     id: string;
   }>;
 }) {
+  const t = useTranslations("Margin");
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useSwapRecentTransactionsStore();
 
@@ -23,7 +25,7 @@ export default function LiquidatePositionPage({
   const { position, loading } = useMarginPositionById({ id: positionId });
 
   if (loading || !position) {
-    return "Loading";
+    return t("loading");
   }
 
   return (

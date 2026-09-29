@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client";
+import { ApolloError, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { useMemo, useRef, useState } from "react";
 import { Address } from "viem";
@@ -133,6 +133,7 @@ export function useOrders({
 }): {
   loading: boolean;
   orders: LendingOrder[];
+  error: ApolloError | undefined;
   isFilterActive: boolean;
 } {
   const apolloClient = useMarginModuleApolloClient();
@@ -202,7 +203,7 @@ export function useOrders({
     tradableAssets_filter,
   ]);
 
-  const { data, loading } = useQuery<any, any>(queryAllOrders, {
+  const { data, loading, error } = useQuery<any, any>(queryAllOrders, {
     variables: {
       orderBy: sortingDirection !== SortingType.NONE ? orderBy : undefined,
       orderDirection: sortingDirection !== SortingType.NONE ? sortingDirection : undefined,
@@ -228,7 +229,9 @@ export function useOrders({
     });
   }, [chainId, data]);
 
-  return { loading, orders, isFilterActive: Object.keys(where).length !== 0 };
+  const isFilterActive = Object.keys(where).some((key) => key !== "alive" && key !== "deadline_gt");
+
+  return { loading, orders, error, isFilterActive };
 }
 
 export function useOrdersByOwner({ owner }: { owner: Address | undefined }): {

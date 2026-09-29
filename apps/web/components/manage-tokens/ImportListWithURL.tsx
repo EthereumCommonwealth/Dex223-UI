@@ -203,15 +203,10 @@ export default function ImportListWithURL({ setContent }: Props) {
               </a>
             </div>
 
-            <Alert
-              text={
-                "This token list has already been imported. You cannot import a list with the same name twice."
-              }
-              type={"info"}
-            />
+            <Alert text={t("list_already_imported_name")} type={"info"} />
           </div>
           <Button fullWidth disabled size={ButtonSize.LARGE}>
-            List already imported
+            {t("list_already_imported")}
           </Button>
         </>
       )}
@@ -225,13 +220,13 @@ export default function ImportListWithURL({ setContent }: Props) {
       {tokenListAddressToImport && !isValidUrl(tokenListAddressToImport) && !isLoading && (
         <div className="flex-grow flex justify-center items-center flex-col gap-2">
           <EmptyStateIcon iconName="warning" />
-          <p className="text-red-light text-center">Enter valid list location</p>
+          <p className="text-red-light text-center">{t("enter_valid_list_location")}</p>
         </div>
       )}
 
       {isNotFound && (
         <div className="flex-grow flex justify-center items-center flex-col gap-2 bg-empty-not-found-list bg-right-top bg-no-repeat max-md:bg-size-180 px-4 -mx-4 md:px-10 md:-mx-10 -mt-5 pt-5">
-          <p className="text-secondary-text text-center">List not found</p>
+          <p className="text-secondary-text text-center">{t("list_not_found")}</p>
         </div>
       )}
 

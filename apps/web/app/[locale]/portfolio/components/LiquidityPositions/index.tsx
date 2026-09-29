@@ -80,10 +80,7 @@ export const LiquidityPositions = ({
                   <span className="text-14 lg:text-16 text-secondary-text">
                     {t("provided_liq_balance")}
                   </span>
-                  <Tooltip
-                    iconSize={20}
-                    text="This value represents the sum of all your assets provided as liquidity across all Dex223 Pool contracts."
-                  />
+                  <Tooltip iconSize={20} text={t("liquidity_tooltip")} />
                 </div>
                 <span className="text-24 lg:text-32 font-medium">$ —</span>
               </>

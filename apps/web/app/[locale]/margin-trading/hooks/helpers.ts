@@ -1,6 +1,7 @@
 import { Address, formatUnits, Hash } from "viem";
 
 import { LendingOrder, MarginPosition } from "@/app/[locale]/margin-trading/types";
+import { ORACLE_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { NativeCoin } from "@/sdk_bi/entities/ether";
@@ -152,6 +153,7 @@ export function serializeGqlOrder(
 
   return {
     ...rest,
+    oracle: gqlOrder.oracle || ORACLE_ADDRESS[chainId],
     minLoan: BigInt(minLoan),
     liquidationRewardAmount: {
       value: BigInt(liquidationRewardAmount),

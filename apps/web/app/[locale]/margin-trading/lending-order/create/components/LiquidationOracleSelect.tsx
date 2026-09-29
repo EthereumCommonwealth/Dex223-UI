@@ -1,3 +1,4 @@
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { Address } from "viem";
 
@@ -28,10 +29,11 @@ const oracleValuesMap: Record<LiquidationOracle, Address> = {
 const oracles: LiquidationOracle[] = ["dex223"];
 
 export default function LiquidationOracleSelect() {
+  const t = useTranslations("Margin");
   const [oracle, setOracle] = useState<LiquidationOracle>("dex223");
   return (
     <div className="mb-[34px]">
-      <InputLabel inputSize={InputSize.LARGE} label="Liquidation price source" />
+      <InputLabel inputSize={InputSize.LARGE} label={t("liquidation_price_source")} />
       <div className="grid gap-2 mb-4 mt-1">
         {oracles.map((_oracle) => (
           <RadioButton
@@ -42,7 +44,7 @@ export default function LiquidationOracleSelect() {
             onClick={() => setOracle(_oracle)}
           >
             <span className="items-center flex flex-grow justify-between">
-              {labelsMap[_oracle]}
+              {_oracle === "dex223" ? t("dex223_price_relay") : labelsMap[_oracle]}
               <a
                 className="text-tertiary-text hover:text-green-hover duration-200"
                 href={linksMap[_oracle]}

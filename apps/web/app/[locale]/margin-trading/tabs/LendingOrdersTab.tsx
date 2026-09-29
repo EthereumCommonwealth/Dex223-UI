@@ -1,4 +1,5 @@
 import Preloader from "@repo/ui/preloader";
+import { useTranslations } from "next-intl";
 import React, { useState } from "react";
 import { isAddress } from "viem";
 import { useAccount } from "wagmi";
@@ -15,6 +16,7 @@ import { HelperText } from "@/components/atoms/TextField";
 import OrderCloseDialog from "../lending-order/[id]/components/OrderCloseDialog";
 
 export default function LendingOrdersTab() {
+  const t = useTranslations("Margin");
   const { address, isConnected } = useAccount();
   const [searchValue, setSearchValue] = useState("");
 
@@ -33,17 +35,19 @@ export default function LendingOrdersTab() {
         {loading ? (
           <Preloader size={24} />
         ) : (
-          <span className="text-20 text-tertiary-text">{orders?.length || 0} lending orders</span>
+          <span className="text-20 text-tertiary-text">
+            {t("lending_orders_count", { count: orders?.length || 0 })}
+          </span>
         )}
         <div className="max-w-[460px] flex-grow">
           <SearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search address"
+            placeholder={t("search_address")}
             className="bg-primary-bg"
             isError={!!searchValue && !isAddress(searchValue)}
           />
-          <HelperText error={!!searchValue && !isAddress(searchValue) && "Invalid address"} />
+          <HelperText error={!!searchValue && !isAddress(searchValue) && t("invalid_address")} />
         </div>
       </div>
 
@@ -119,17 +123,17 @@ export default function LendingOrdersTab() {
     return (
       <>
         <div className="flex justify-between my-5 items-center">
-          <span className="text-20 text-tertiary-text">Loading...</span>
+          <span className="text-20 text-tertiary-text">{t("loading")}</span>
           <div className="max-w-[460px] flex-grow">
             <SearchInput
               value={searchValue}
               onChange={(e) => setSearchValue(e.target.value)}
-              placeholder="Search address"
+              placeholder={t("search_address")}
               className="bg-primary-bg"
             />
           </div>
         </div>
-        <div>Loading...</div>
+        <div>{t("loading")}</div>
       </>
     );
   }
@@ -137,12 +141,14 @@ export default function LendingOrdersTab() {
   return (
     <>
       <div className="flex justify-between my-5 items-center">
-        <span className="text-20 text-tertiary-text">{orders.length} lending orders</span>
+        <span className="text-20 text-tertiary-text">
+          {t("lending_orders_count", { count: orders.length })}
+        </span>
         <div className="max-w-[460px] flex-grow">
           <SearchInput
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Search address"
+            placeholder={t("search_address")}
             className="bg-primary-bg"
           />
         </div>
