@@ -31,6 +31,19 @@ const allowanceGasLimitMap: Record<DexChainId, { base: bigint; additional: bigin
   [DexChainId.SEPOLIA]: { base: BigInt(46200), additional: BigInt(10000) },
   [DexChainId.BSC_TESTNET]: { base: BigInt(46200), additional: BigInt(10000) },
   [DexChainId.EOS]: { base: BigInt(46200), additional: BigInt(10000) },
+  [DexChainId.BASE]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.BSC]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.ARBITRUM]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.POLYGON]: { base: BigInt(70000), additional: BigInt(15000) },
+  [DexChainId.AVALANCHE]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.OPTIMISM]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.MONAD]: { base: BigInt(90000), additional: BigInt(15000) },
+  [DexChainId.UNICHAIN]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.PLASMA]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.SONIC]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.LINEA]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.INK]: { base: BigInt(60000), additional: BigInt(15000) },
+  [DexChainId.MANTLE]: { base: BigInt(60000), additional: BigInt(15000) },
 };
 
 const defaultApproveValue = BigInt(46000);
