@@ -224,6 +224,7 @@ export default function TradeForm({
 }) {
   const t = useTranslations("Swap");
   const tA11y = useTranslations("A11y");
+  const tChart = useTranslations("TradingChart");
   const { address } = useAccount();
   const canReceiveERC223 = useCanReceiveERC223(address);
   useTradeComputation();
@@ -502,6 +503,8 @@ export default function TradeForm({
               buttonSize={IconButtonSize.LARGE}
               active={isChartVisible}
               iconName="toggle-trading-view"
+              aria-label={isChartVisible ? tChart("hide_chart") : tChart("show_chart")}
+              aria-pressed={isChartVisible}
               onClick={() => setIsChartVisible(!isChartVisible)}
             />
           )}
