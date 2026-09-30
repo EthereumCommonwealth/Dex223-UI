@@ -14,6 +14,12 @@ const stroke = {
 };
 
 const ICONS: Record<DrawingTool | "magnet" | "trash" | "clear", React.ReactNode> = {
+  alert: (
+    <>
+      <path {...stroke} d="M6 8.5a4 4 0 018 0v3l1.5 2h-11L6 11.5z" />
+      <path {...stroke} d="M8.5 15.5a1.6 1.6 0 003 0" />
+    </>
+  ),
   cursor: <path {...stroke} d="M5 3l11 6.5-4.8 1.3L9 15.5z" />,
   trend: (
     <>
@@ -52,7 +58,16 @@ const ICONS: Record<DrawingTool | "magnet" | "trash" | "clear", React.ReactNode>
   ),
 };
 
-const TOOLS: DrawingTool[] = ["cursor", "trend", "hline", "vline", "rect", "fib", "measure"];
+const TOOLS: DrawingTool[] = [
+  "cursor",
+  "trend",
+  "hline",
+  "vline",
+  "rect",
+  "fib",
+  "measure",
+  "alert",
+];
 
 export default function DrawingToolbar({
   tool,

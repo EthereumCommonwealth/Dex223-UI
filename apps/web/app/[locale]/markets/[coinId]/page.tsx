@@ -113,13 +113,11 @@ export default function CoinPage({ params }: { params: Promise<{ coinId: string 
               <CoinChart
                 symbol={coin.chart_symbol}
                 label={`${coin.symbol}/USD`}
+                volumeUnit={coin.symbol}
+                sourceLong={`${t("chart_source", { source })} · ${t("attribution")}`}
                 onLastBar={setLiveBar}
               />
             )}
-
-            <p className="text-12 text-tertiary-text">
-              {t("chart_source", { source })} · {t("attribution")}
-            </p>
           </div>
 
           {/* Stats */}

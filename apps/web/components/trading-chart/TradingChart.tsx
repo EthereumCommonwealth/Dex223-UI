@@ -9,29 +9,16 @@ import { useAccount } from "wagmi";
 import Svg from "@/components/atoms/Svg";
 import TokenLogo from "@/components/atoms/TokenLogo";
 import { Link } from "@/i18n/routing";
-import { useColorScheme } from "@/lib/color-scheme";
 import { Currency } from "@/sdk_bi/entities/currency";
 
-import ChartCanvas, {
-  ChartCanvasHandle,
-  IndicatorValues,
-  LoadState,
-  PaneLayout,
-} from "./ChartCanvas";
-import ChartFooter from "./ChartFooter";
-import { PaneLabels, PriceLegend } from "./ChartLegend";
-import { Bar, RESOLUTIONS, resolutionSeconds, Trade } from "./datafeed/types";
-import { Drawing, DrawingTool } from "./drawings/primitive";
-import DrawingToolbar from "./DrawingToolbar";
+import { Bar, Resolution, RESOLUTIONS, Trade } from "./datafeed/types";
 import { compact, formatPercent, formatPrice } from "./format";
 import { useChartMarket } from "./hooks/useChartMarket";
 import { useMarketTrades, usePairStats } from "./hooks/useMarketData";
-import IndicatorsMenu from "./IndicatorsMenu";
 import MarketTrades from "./MarketTrades";
-import { ChartType, useTradingChartStore } from "./store";
-import { chartTheme } from "./theme";
-
-const CHART_TYPES: ChartType[] = ["candles", "line", "area"];
+import ProChart from "./ProChart";
+import { useTradingChartStore } from "./store";
+import { ChartSkeleton, EmptyState } from "./ui";
 
 interface Props {
   tokenA?: Currency;
@@ -45,68 +32,37 @@ interface Props {
   className?: string;
 }
 
+/** The chart for the pair being traded: pool header and 24h stats, the chart, trades. */
 export default function TradingChart({
   tokenA,
   tokenB,
   routedFee,
-  heightClassName = "h-[360px] md:h-[440px] xl:h-[520px]",
+  heightClassName = "h-[380px] md:h-[460px] xl:h-[540px]",
   showTrades = true,
   className,
 }: Props) {
   const t = useTranslations("TradingChart");
-  const scheme = useColorScheme();
-  const theme = useMemo(() => chartTheme(scheme), [scheme]);
   const { address } = useAccount();
   const queryClient = useQueryClient();
 
   const market = useChartMarket({ tokenA, tokenB, routedFee });
-  const {
-    resolution,
-    chartType,
-    showVolume,
-    indicators,
-    drawings: allDrawings,
-    magnet,
-    scaleMode,
-    setResolution,
-    setChartType,
-    setShowVolume,
-    setIndicators,
-    setDrawings,
-    setMagnet,
-    setScaleMode,
-  } = useTradingChartStore();
+  const { resolution, setResolution } = useTradingChartStore();
 
   const { data: stats } = usePairStats(market);
   const { data: myTrades } = useMarketTrades(market, { origin: address ?? "", limit: 200 });
 
-  const canvasRef = useRef<ChartCanvasHandle>(null);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<{ bar: Bar; values?: IndicatorValues } | null>(null);
-  const [last, setLast] = useState<{ bar: Bar; values?: IndicatorValues } | null>(null);
-  const [tool, setTool] = useState<DrawingTool>("cursor");
-  const [selectedDrawing, setSelectedDrawing] = useState<string | null>(null);
-  const [paneLayout, setPaneLayout] = useState<PaneLayout[]>([]);
-  const lastBar = last?.bar ?? null;
-  const [loadState, setLoadState] = useState<LoadState>("loading");
+  const [lastBar, setLastBar] = useState<Bar | null>(null);
   const [liveTrades, setLiveTrades] = useState<Trade[]>([]);
-  const [fullscreen, setFullscreen] = useState(false);
-  const [reloadKey, setReloadKey] = useState(0);
 
   const datafeed = market.datafeed;
   // The fallback feed has no minute data; show the nearest resolution it does have.
-  const activeResolution =
+  const activeResolution: Resolution =
     datafeed && !datafeed.resolutions.includes(resolution) ? datafeed.resolutions[0] : resolution;
 
-  useEffect(() => setLiveTrades([]), [market.symbol]);
-
-  const symbolKey = market.symbol ?? "";
-  const drawings = useMemo(() => allDrawings[symbolKey] ?? [], [allDrawings, symbolKey]);
-  const onDrawingsChange = useCallback(
-    (next: Drawing[]) => symbolKey && setDrawings(symbolKey, next),
-    [setDrawings, symbolKey],
-  );
-  const removeIndicator = (id: string) => setIndicators(indicators.filter((c) => c.id !== id));
+  useEffect(() => {
+    setLiveTrades([]);
+    setLastBar(null);
+  }, [market.symbol]);
 
   const onTrades = useCallback(
     (trades: Trade[]) => {
@@ -123,25 +79,19 @@ export default function TradingChart({
     [address, queryClient],
   );
 
-  useEffect(() => {
-    const onChange = () => setFullscreen(document.fullscreenElement === rootRef.current);
-    document.addEventListener("fullscreenchange", onChange);
-    return () => document.removeEventListener("fullscreenchange", onChange);
-  }, []);
-
-  const toggleFullscreen = () => {
-    if (document.fullscreenElement) document.exitFullscreen();
-    else rootRef.current?.requestFullscreen?.();
-  };
-
-  const saveImage = () => {
-    const canvas = canvasRef.current?.screenshot();
-    if (!canvas || !market.base || !market.quote) return;
-    const link = document.createElement("a");
-    link.download = `${market.base.symbol}-${market.quote.symbol}-${activeResolution}.png`;
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  };
+  const intervals = useMemo(
+    () =>
+      RESOLUTIONS.map((r) => {
+        const available = !datafeed || datafeed.resolutions.includes(r.value);
+        return {
+          value: r.value,
+          label: r.label,
+          disabled: !available,
+          title: available ? undefined : t("interval_unavailable"),
+        };
+      }),
+    [datafeed, t],
+  );
 
   // Header price: the live bar beats the stats poll, which trails it by up to 15s.
   const price = lastBar?.close ?? stats?.price ?? null;
@@ -160,21 +110,12 @@ export default function TradingChart({
     );
   }
 
-  const legend = hovered ?? last;
   const base = market.base ?? tokenB;
   const quote = market.quote ?? tokenA;
-  const intervalLabel = RESOLUTIONS.find((r) => r.value === activeResolution)?.label ?? "";
   const isFallback = datafeed?.kind === "subgraph";
 
   return (
-    <div
-      ref={rootRef}
-      className={clsx(
-        "flex flex-col bg-primary-bg rounded-3 overflow-hidden",
-        fullscreen && "fixed inset-0 z-[100] rounded-0",
-        className,
-      )}
-    >
+    <div className={clsx("flex flex-col bg-primary-bg rounded-3 overflow-hidden", className)}>
       {/* Header */}
       <div className="flex flex-col gap-3 px-4 md:px-5 pt-4 pb-4">
         <div className="flex flex-wrap items-center gap-x-3 gap-y-2 min-w-0">
@@ -265,145 +206,27 @@ export default function TradingChart({
         )}
       </div>
 
-      {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 md:px-4 py-2 border-t border-secondary-border overflow-x-auto no-scrollbar">
-        <Segmented label={t("interval")}>
-          {RESOLUTIONS.map((r) => {
-            const available = !datafeed || datafeed.resolutions.includes(r.value);
-            return (
-              <SegmentButton
-                key={r.value}
-                active={activeResolution === r.value}
-                disabled={!available}
-                title={available ? undefined : t("interval_unavailable")}
-                onClick={() => setResolution(r.value)}
-              >
-                {r.label}
-              </SegmentButton>
-            );
-          })}
-        </Segmented>
-
-        <Segmented label={t("chart_type")}>
-          {CHART_TYPES.map((type) => (
-            <SegmentButton
-              key={type}
-              active={chartType === type}
-              onClick={() => setChartType(type)}
-              ariaLabel={t(type)}
-              title={t(type)}
-              icon
-            >
-              <ChartTypeIcon type={type} />
-            </SegmentButton>
-          ))}
-        </Segmented>
-
-        <IndicatorsMenu
-          indicators={indicators}
-          onChange={setIndicators}
-          showVolume={showVolume}
-          onShowVolume={setShowVolume}
+      {market.status === "ready" && datafeed && market.symbol ? (
+        <ProChart
+          className="border-t border-secondary-border"
+          datafeed={datafeed}
+          symbol={market.symbol}
+          label={`${base.symbol ?? ""}/${quote.symbol ?? ""}`}
+          sourceShort={isFallback ? t("source_subgraph") : "Dex223"}
+          sourceLong={isFallback ? t("source_subgraph_long") : t("source_onchain")}
+          volumeUnit={base.symbol ?? ""}
+          intervals={intervals}
+          interval={activeResolution}
+          onInterval={(value) => setResolution(value as Resolution)}
+          resolution={activeResolution}
+          heightClassName={heightClassName}
+          myTrades={myTrades}
+          onLastBar={setLastBar}
+          onTrades={onTrades}
         />
-
-        <div className="ml-auto flex items-center gap-0.5 shrink-0">
-          <ToolButton label={t("reset_view")} onClick={() => canvasRef.current?.resetView()}>
-            <Svg iconName="reset" size={18} />
-          </ToolButton>
-          <ToolButton label={t("save_image")} onClick={saveImage}>
-            <Svg iconName="download" size={18} />
-          </ToolButton>
-          <ToolButton
-            label={fullscreen ? t("exit_fullscreen") : t("fullscreen")}
-            onClick={toggleFullscreen}
-          >
-            <FullscreenIcon exit={fullscreen} />
-          </ToolButton>
-        </div>
-      </div>
-
-      {/* Plot */}
-      <div
-        className={clsx(
-          "flex border-t border-secondary-border",
-          fullscreen ? "flex-1 min-h-0" : heightClassName,
-        )}
-      >
-        {market.status === "ready" && (
-          <div className="hidden sm:flex">
-            <DrawingToolbar
-              tool={tool}
-              onTool={setTool}
-              magnet={magnet}
-              onMagnet={setMagnet}
-              hasSelection={!!selectedDrawing}
-              onDeleteSelected={() => canvasRef.current?.deleteSelected()}
-              drawingCount={drawings.length}
-              onClearAll={() => {
-                onDrawingsChange([]);
-                setSelectedDrawing(null);
-              }}
-            />
-          </div>
-        )}
-        <div className="relative flex-1 min-w-0">
-          {market.status === "ready" && datafeed && market.symbol && (
-            <ChartCanvas
-              key={reloadKey}
-              ref={canvasRef}
-              datafeed={datafeed}
-              symbol={market.symbol}
-              resolution={activeResolution}
-              chartType={chartType}
-              showVolume={showVolume}
-              theme={theme}
-              myTrades={myTrades}
-              watermark={`${base.symbol ?? ""}/${quote.symbol ?? ""}`}
-              indicators={indicators}
-              scaleMode={scaleMode}
-              tool={tool}
-              magnet={magnet}
-              drawings={drawings}
-              onDrawingsChange={onDrawingsChange}
-              onToolDone={() => setTool("cursor")}
-              onSelectDrawing={setSelectedDrawing}
-              onLayout={setPaneLayout}
-              onHover={(bar, values) => setHovered(bar ? { bar, values } : null)}
-              onLastBar={(bar, values) => setLast(bar ? { bar, values } : null)}
-              onState={setLoadState}
-              onTrades={onTrades}
-            />
-          )}
-
-          {market.status === "ready" && loadState === "ready" && legend && (
-            <>
-              <PriceLegend
-                title={`${base.symbol}/${quote.symbol} · ${intervalLabel} · ${isFallback ? t("source_subgraph") : "Dex223"}`}
-                bar={legend.bar}
-                indicators={indicators}
-                indicatorValues={legend.values}
-                volumeLabel={t("volume")}
-                volumeUnit={base.symbol ?? ""}
-                removeLabel={t("remove")}
-                onRemove={removeIndicator}
-              />
-              <PaneLabels
-                layout={paneLayout}
-                indicators={indicators}
-                indicatorValues={legend.values}
-                bar={legend.bar}
-                volumeLabel={t("volume")}
-                volumeUnit={base.symbol ?? ""}
-                removeLabel={t("remove")}
-                onRemove={removeIndicator}
-              />
-            </>
-          )}
-
-          {(market.status === "loading" ||
-            market.status === "idle" ||
-            (market.status === "ready" && loadState === "loading")) && <ChartSkeleton />}
-          {market.status === "no-pool" && (
+      ) : (
+        <div className={clsx("relative border-t border-secondary-border", heightClassName)}>
+          {market.status === "no-pool" ? (
             <EmptyState
               icon="pool"
               title={t("no_pool_title")}
@@ -420,42 +243,13 @@ export default function TradingChart({
                 </Link>
               }
             />
-          )}
-          {market.status === "ready" && loadState === "empty" && (
-            <EmptyState
-              icon="candle"
-              title={t("empty_title")}
-              description={t("empty_description")}
-            />
-          )}
-          {market.status === "ready" && loadState === "error" && (
-            <EmptyState
-              icon="warning"
-              title={t("error_title")}
-              description={t("error_description")}
-              action={
-                <button
-                  type="button"
-                  onClick={() => setReloadKey((k) => k + 1)}
-                  className="mt-1 px-4 h-9 rounded-2 bg-tertiary-bg text-primary-text text-14 hocus:bg-quaternary-bg duration-200"
-                >
-                  {t("retry")}
-                </button>
-              }
-            />
+          ) : (
+            <ChartSkeleton />
           )}
         </div>
-      </div>
+      )}
 
-      <ChartFooter
-        source={isFallback ? t("source_subgraph_long") : t("source_onchain")}
-        lastBar={lastBar}
-        seconds={resolutionSeconds(activeResolution)}
-        scaleMode={scaleMode}
-        onScaleMode={setScaleMode}
-      />
-
-      {showTrades && !fullscreen && market.status === "ready" && datafeed?.supportsTrades && (
+      {showTrades && market.status === "ready" && datafeed?.supportsTrades && (
         <MarketTrades market={market} liveTrades={liveTrades} />
       )}
     </div>
@@ -532,202 +326,6 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className="flex flex-col gap-0.5 px-3 border-l border-secondary-border first:border-l-0">
       <dt className="text-tertiary-text whitespace-nowrap">{label}</dt>
       <dd className="text-14 text-primary-text tabular-nums whitespace-nowrap">{value}</dd>
-    </div>
-  );
-}
-
-function Segmented({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div
-      role="radiogroup"
-      aria-label={label}
-      className="inline-flex items-center gap-0.5 p-0.5 rounded-2 bg-secondary-bg shrink-0"
-    >
-      {children}
-    </div>
-  );
-}
-
-function SegmentButton({
-  active,
-  disabled,
-  title,
-  ariaLabel,
-  icon,
-  onClick,
-  children,
-}: {
-  active: boolean;
-  disabled?: boolean;
-  title?: string;
-  ariaLabel?: string;
-  icon?: boolean;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      role="radio"
-      aria-checked={active}
-      aria-label={ariaLabel}
-      title={title}
-      disabled={disabled}
-      onClick={onClick}
-      className={clsx(
-        "h-7 inline-flex items-center justify-center rounded-[6px] text-12 font-medium duration-200 shrink-0",
-        icon ? "w-8" : "px-2.5",
-        active
-          ? "bg-tertiary-bg text-primary-text shadow-[0_1px_2px_rgba(0,0,0,0.4)]"
-          : "text-tertiary-text hocus:text-primary-text disabled:opacity-30 disabled:hover:text-tertiary-text",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ToolButton({
-  label,
-  onClick,
-  children,
-}: {
-  label: string;
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={label}
-      className="w-8 h-8 inline-flex items-center justify-center rounded-2 text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg duration-200 shrink-0"
-    >
-      {children}
-    </button>
-  );
-}
-
-function ChartTypeIcon({ type }: { type: ChartType }) {
-  const stroke = {
-    stroke: "currentColor",
-    strokeWidth: 1.5,
-    strokeLinecap: "round" as const,
-    strokeLinejoin: "round" as const,
-  };
-  return (
-    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-      {type === "candles" && (
-        <>
-          <path d="M5 2.5v2.5M5 13v2.5M13 4v2M13 12.5V16" {...stroke} />
-          <rect x="3" y="5" width="4" height="8" rx="1" {...stroke} />
-          <rect x="11" y="6" width="4" height="6.5" rx="1" fill="currentColor" {...stroke} />
-        </>
-      )}
-      {type === "line" && <path d="M2 13.5l4-4.5 3.5 3L16 4.5" {...stroke} />}
-      {type === "area" && (
-        <>
-          <path d="M2 13l4-4.5 3.5 3L16 4v11.5H2V13z" fill="currentColor" opacity="0.3" />
-          <path d="M2 13l4-4.5 3.5 3L16 4" {...stroke} />
-        </>
-      )}
-    </svg>
-  );
-}
-
-function FullscreenIcon({ exit }: { exit: boolean }) {
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-      {exit ? (
-        <path
-          d="M6 1v5H1M10 1v5h5M6 15v-5H1M10 15v-5h5"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ) : (
-        <path
-          d="M1 6V1h5M15 6V1h-5M1 10v5h5M15 10v5h-5"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      )}
-    </svg>
-  );
-}
-
-function ChartSkeleton() {
-  // Faint candles rising and falling, so the loading state already reads as a chart.
-  const heights = [38, 52, 44, 61, 57, 70, 63, 49, 58, 72, 66, 80, 74, 69, 83, 77, 88, 81];
-  return (
-    <div
-      className="absolute inset-0 flex items-end gap-[3%] px-6 pb-10 pt-12 overflow-hidden"
-      aria-busy
-    >
-      {heights.map((h, i) => (
-        <div
-          key={i}
-          className="flex-1 rounded-1 bg-tertiary-bg animate-pulse"
-          style={{ height: `${h}%`, animationDelay: `${i * 60}ms` }}
-        />
-      ))}
-    </div>
-  );
-}
-
-const EMPTY_ICONS: Record<"chart" | "candle" | "pool" | "warning", React.ReactNode> = {
-  chart: <path d="M4 17l5-5 4 3 7-8M4 21h16" />,
-  candle: (
-    <>
-      <path d="M8 3v3M8 16v5M16 5v4M16 16v3" />
-      <rect x="5.5" y="6" width="5" height="10" rx="1" />
-      <rect x="13.5" y="9" width="5" height="7" rx="1" />
-    </>
-  ),
-  pool: (
-    <>
-      <circle cx="9" cy="12" r="5" />
-      <circle cx="15" cy="12" r="5" />
-    </>
-  ),
-  warning: <path d="M12 4l9 16H3l9-16zM12 10v4M12 17.5v.01" />,
-};
-
-function EmptyState({
-  icon,
-  title,
-  description,
-  action,
-}: {
-  icon: keyof typeof EMPTY_ICONS;
-  title: string;
-  description?: string;
-  action?: React.ReactNode;
-}) {
-  return (
-    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 px-6 text-center">
-      <span className="w-12 h-12 rounded-full bg-tertiary-bg flex items-center justify-center text-tertiary-text">
-        <svg
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden
-        >
-          {EMPTY_ICONS[icon]}
-        </svg>
-      </span>
-      <p className="text-16 text-primary-text font-medium">{title}</p>
-      {description && <p className="text-14 text-tertiary-text max-w-[380px]">{description}</p>}
-      {action}
     </div>
   );
 }

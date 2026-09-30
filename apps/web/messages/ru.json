@@ -1565,7 +1565,9 @@
     "indicator_pane": "Панель",
     "indicator_overlay": "Наложение",
     "active_indicators": "Активные",
-    "remove": "Удалить"
+    "remove": "Удалить",
+    "tool_alert": "Ценовое оповещение",
+    "alert_triggered": "{pair} пересёк {price}"
   },
   "Markets": {
     "title": "Рынки",

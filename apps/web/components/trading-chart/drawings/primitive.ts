@@ -15,7 +15,7 @@ import {
 import { Bar } from "../datafeed/types";
 import { formatPercent, formatPrice } from "../format";
 
-export type DrawingType = "trend" | "hline" | "vline" | "rect" | "fib" | "measure";
+export type DrawingType = "trend" | "hline" | "vline" | "rect" | "fib" | "measure" | "alert";
 export type DrawingTool = "cursor" | DrawingType;
 
 export interface Point {
@@ -27,6 +27,8 @@ export interface Drawing {
   id: string;
   type: DrawingType;
   points: Point[];
+  /** Alerts only: set once the price has crossed the line. */
+  triggered?: boolean;
 }
 
 /** How many clicks each tool takes. */
@@ -37,7 +39,11 @@ export const TOOL_POINTS: Record<DrawingType, 1 | 2> = {
   rect: 2,
   fib: 2,
   measure: 2,
+  alert: 1,
 };
+
+const ALERT_COLOR = "#E7A36A";
+const ALERT_DONE_COLOR = "#858D8C";
 
 export const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 
@@ -199,6 +205,7 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
       case "trend":
         return b ? distanceToSegment(p, a, b) : Infinity;
       case "hline":
+      case "alert":
         return Math.abs(y - a.y);
       case "vline":
         return Math.abs(x - a.x);
@@ -237,7 +244,9 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
     for (let i = 0; i < d.points.length; i++) {
       const p = this.toXY(d.points[i]);
       if (!p) continue;
-      if (d.type === "hline" && Math.abs(y - p.y) <= HIT_TOLERANCE) return null;
+      if ((d.type === "hline" || d.type === "alert") && Math.abs(y - p.y) <= HIT_TOLERANCE) {
+        return null;
+      }
       if (Math.hypot(p.x - x, p.y - y) <= HANDLE_RADIUS + 4) return i;
     }
     return null;
@@ -311,6 +320,25 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
         ctx.stroke();
         this.priceTag(ctx, formatPrice(d.points[0].price), width, a.y, color, pal);
         break;
+      case "alert": {
+        const alertColor = d.triggered ? ALERT_DONE_COLOR : ALERT_COLOR;
+        ctx.strokeStyle = alertColor;
+        ctx.setLineDash([6, 4]);
+        ctx.beginPath();
+        ctx.moveTo(0, a.y);
+        ctx.lineTo(width, a.y);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        this.priceTag(
+          ctx,
+          `${d.triggered ? "\u2713" : "\u23F0"} ${formatPrice(d.points[0].price)}`,
+          width,
+          a.y,
+          alertColor,
+          pal,
+        );
+        break;
+      }
       case "vline":
         ctx.beginPath();
         ctx.moveTo(a.x, 0);
@@ -345,7 +373,7 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
 
     if (active && d.type !== "measure") {
       for (const p of pts as XY[]) {
-        if (d.type === "hline" || d.type === "vline") continue;
+        if (d.type === "hline" || d.type === "vline" || d.type === "alert") continue;
         ctx.beginPath();
         ctx.arc(p.x, p.y, HANDLE_RADIUS, 0, Math.PI * 2);
         ctx.fillStyle = pal.handleFill;

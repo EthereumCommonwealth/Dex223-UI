@@ -1565,7 +1565,9 @@
     "indicator_pane": "Panneau",
     "indicator_overlay": "Superposé",
     "active_indicators": "Actifs",
-    "remove": "Retirer"
+    "remove": "Retirer",
+    "tool_alert": "Alerte de prix",
+    "alert_triggered": "{pair} a franchi {price}"
   },
   "Markets": {
     "title": "Marchés",

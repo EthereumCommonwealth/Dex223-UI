@@ -1565,7 +1565,9 @@
     "indicator_pane": "패널",
     "indicator_overlay": "오버레이",
     "active_indicators": "활성",
-    "remove": "제거"
+    "remove": "제거",
+    "tool_alert": "가격 알림",
+    "alert_triggered": "{pair} 가격이 {price}을(를) 통과했습니다"
   },
   "Markets": {
     "title": "마켓",

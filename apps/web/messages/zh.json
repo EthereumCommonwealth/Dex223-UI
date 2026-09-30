@@ -1565,7 +1565,9 @@
     "indicator_pane": "副图",
     "indicator_overlay": "主图叠加",
     "active_indicators": "已启用",
-    "remove": "移除"
+    "remove": "移除",
+    "tool_alert": "价格提醒",
+    "alert_triggered": "{pair} 已穿越 {price}"
   },
   "Markets": {
     "title": "行情",
