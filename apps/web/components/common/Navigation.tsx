@@ -207,6 +207,7 @@ function NavigationMoreDropdown() {
       pathname.includes("/create-token") ||
       pathname.includes("/blog") ||
       pathname.includes("/statistics") ||
+      pathname.includes("/markets") ||
       pathname.includes("/guidelines")
     );
   }, [pathname]);
@@ -310,6 +311,13 @@ function NavigationMoreDropdown() {
               href="/statistics"
               iconName="statistics"
               title={t("token_statistics")}
+              handleClose={() => setSubmenuOpened(false)}
+            />
+            <MobileLink
+              isActive={pathname.startsWith("/markets")}
+              href="/markets"
+              iconName="price-change"
+              title={t("markets")}
               handleClose={() => setSubmenuOpened(false)}
             />
             <MobileLink

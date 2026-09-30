@@ -262,6 +262,7 @@ export default function TradeForm({
   isChartVisible?: boolean;
 }) {
   const t = useTranslations("Swap");
+  const tChart = useTranslations("TradingChart");
 
   useMarginTradeComputation();
 
@@ -639,6 +640,8 @@ export default function TradeForm({
               buttonSize={IconButtonSize.LARGE}
               active={isChartVisible}
               iconName="toggle-trading-view"
+              aria-label={isChartVisible ? tChart("hide_chart") : tChart("show_chart")}
+              aria-pressed={isChartVisible}
               onClick={() => setIsChartVisible(!isChartVisible)}
               colorScheme={ThemeColors.PURPLE}
             />

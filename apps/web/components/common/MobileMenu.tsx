@@ -410,6 +410,13 @@ export default function MobileMenu() {
                     handleClose={() => setMobileMenuOpened(false)}
                   />
                   <MobileLink
+                    isActive={pathname.startsWith("/markets")}
+                    href="/markets"
+                    iconName="price-change"
+                    title={t("markets")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
                     isActive={pathname === "/guidelines"}
                     href="/guidelines"
                     iconName="guidelines"
