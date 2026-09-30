@@ -95,6 +95,30 @@ export default function ExplorePoolPage({
   const renderBalance = (balance: PoolTokenBalance | undefined) =>
     balance ? formatNumberKilos(balance.formatted) : "\u2014";
 
+  // An address the subgraph doesn't know (a typo, another network, a pool that was never
+  // created) used to render the page anyway and crash on pool.feeTier.
+  if (!loading && !pool) {
+    return (
+      <Container>
+        <div className="w-full md:w-[800px] md:mx-auto md:mt-[40px] mb-5 bg-primary-bg px-4 lg:px-10 pb-8 rounded-5">
+          <div className="flex justify-between items-center py-1.5 -mx-3">
+            <IconButton
+              variant={IconButtonVariant.BACK}
+              iconSize={IconSize.REGULAR}
+              buttonSize={IconButtonSize.LARGE}
+              onClick={() => router.push("/pools")}
+            />
+            <h2 className="text-18 lg:text-20 font-bold">{t("stats_title")}</h2>
+            <div className="w-12"></div>
+          </div>
+          <div className="bg-tertiary-bg rounded-3 px-5 py-8 text-center text-secondary-text">
+            {t("pool_not_found")}
+          </div>
+        </div>
+      </Container>
+    );
+  }
+
   return (
     <Container>
       <SkeletonTheme

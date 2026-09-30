@@ -377,6 +377,7 @@
     "must_be_at_least": "Must be at least {val}",
     "token_starting_price": "Starting {symbol} price",
     "pools_not_found": "Pools not found",
+    "pool_not_found": "Pool not found. Check the address and the selected network.",
     "pools_load_error": "We couldn't load pools. Check your connection and try again.",
     "amount_title": "Amount",
     "enter_correct_values": "Enter correct values",

@@ -496,6 +496,7 @@
     "must_be_at_least": "Deve ser pelo menos {val}",
     "token_starting_price": "Preço inicial de {symbol}",
     "pools_not_found": "Não foram encontrados pools",
+    "pool_not_found": "Pool não encontrado. Verifique o endereço e a rede selecionada.",
     "pools_load_error": "Não foi possível carregar os pools. Verifique sua conexão e tente novamente.",
     "amount_title": "Quantidade",
     "enter_correct_values": "Introduza valores corretos",
