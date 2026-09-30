@@ -1539,7 +1539,12 @@
     "no_trades": "Ainda não há negociações",
     "connect_wallet_trades": "Conecte uma carteira para ver suas negociações",
     "show_chart": "Mostrar gráfico",
-    "hide_chart": "Ocultar gráfico"
+    "hide_chart": "Ocultar gráfico",
+    "moving_averages": "Médias móveis (7 e 25 períodos)",
+    "source_subgraph": "Subgraph",
+    "source_subgraph_long": "Dados por hora do subgraph da Dex223 enquanto os dados de mercado ao vivo estão indisponíveis",
+    "source_onchain": "Dados do pool da Dex223, lidos diretamente da blockchain",
+    "charts_by": "Gráficos por TradingView"
   },
   "Markets": {
     "title": "Mercados",

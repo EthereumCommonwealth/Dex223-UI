@@ -12,7 +12,7 @@ import { Link } from "@/i18n/routing";
 import { useColorScheme } from "@/lib/color-scheme";
 import { Currency } from "@/sdk_bi/entities/currency";
 
-import ChartCanvas, { ChartCanvasHandle, LoadState } from "./ChartCanvas";
+import ChartCanvas, { ChartCanvasHandle, LoadState, MovingAverages } from "./ChartCanvas";
 import { Bar, RESOLUTIONS, Trade } from "./datafeed/types";
 import { compact, formatPercent, formatPrice } from "./format";
 import { useChartMarket } from "./hooks/useChartMarket";
@@ -50,16 +50,25 @@ export default function TradingChart({
   const queryClient = useQueryClient();
 
   const market = useChartMarket({ tokenA, tokenB, routedFee });
-  const { resolution, chartType, showVolume, setResolution, setChartType, setShowVolume } =
-    useTradingChartStore();
+  const {
+    resolution,
+    chartType,
+    showVolume,
+    showMA,
+    setResolution,
+    setChartType,
+    setShowVolume,
+    setShowMA,
+  } = useTradingChartStore();
 
   const { data: stats } = usePairStats(market);
   const { data: myTrades } = useMarketTrades(market, { origin: address ?? "", limit: 200 });
 
   const canvasRef = useRef<ChartCanvasHandle>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<Bar | null>(null);
-  const [lastBar, setLastBar] = useState<Bar | null>(null);
+  const [hovered, setHovered] = useState<{ bar: Bar; ma?: MovingAverages } | null>(null);
+  const [last, setLast] = useState<{ bar: Bar; ma?: MovingAverages } | null>(null);
+  const lastBar = last?.bar ?? null;
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [liveTrades, setLiveTrades] = useState<Trade[]>([]);
   const [fullscreen, setFullscreen] = useState(false);
@@ -124,7 +133,10 @@ export default function TradingChart({
     );
   }
 
-  const legendBar = hovered ?? lastBar;
+  const legend = hovered ?? last;
+  const base = market.base ?? tokenB;
+  const quote = market.quote ?? tokenA;
+  const intervalLabel = RESOLUTIONS.find((r) => r.value === activeResolution)?.label ?? "";
   const isFallback = datafeed?.kind === "subgraph";
 
   return (
@@ -137,150 +149,143 @@ export default function TradingChart({
       )}
     >
       {/* Header */}
-      <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-4 md:px-5 pt-4 pb-3">
-        <div className="flex items-center gap-3 min-w-0">
+      <div className="flex flex-col gap-3 px-4 md:px-5 pt-4 pb-4">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 min-w-0">
           <div className="flex items-center shrink-0">
             <TokenLogo
-              src={(market.base ?? tokenB).logoURI}
-              alt={(market.base ?? tokenB).symbol ?? ""}
+              src={base.logoURI}
+              alt={base.symbol ?? ""}
               size={32}
-              className="rounded-full w-8 h-8 relative z-10 border-2 border-primary-bg"
+              className="rounded-full w-8 h-8 relative z-10 ring-2 ring-primary-bg"
             />
             <TokenLogo
-              src={(market.quote ?? tokenA).logoURI}
-              alt={(market.quote ?? tokenA).symbol ?? ""}
+              src={quote.logoURI}
+              alt={quote.symbol ?? ""}
               size={32}
-              className="rounded-full w-8 h-8 -ml-3"
+              className="rounded-full w-8 h-8 -ml-2.5"
             />
           </div>
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-16 md:text-18 font-medium text-primary-text truncate">
-                {(market.base ?? tokenB).symbol}
-                <span className="text-tertiary-text"> / {(market.quote ?? tokenA).symbol}</span>
-              </span>
-              <button
-                type="button"
-                onClick={market.flip}
-                disabled={market.status !== "ready"}
-                aria-label={t("flip")}
-                title={t("flip")}
-                className="p-1 rounded-2 text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg duration-200 disabled:opacity-40"
+          <div className="flex items-center gap-1 min-w-0">
+            <h2 className="text-18 font-medium text-primary-text truncate">
+              {base.symbol}
+              <span className="text-tertiary-text font-normal"> / {quote.symbol}</span>
+            </h2>
+            <button
+              type="button"
+              onClick={market.flip}
+              disabled={market.status !== "ready"}
+              aria-label={t("flip")}
+              title={t("flip")}
+              className="w-7 h-7 inline-flex items-center justify-center rounded-2 text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg duration-200 disabled:opacity-40"
+            >
+              <Svg iconName="swap" size={18} />
+            </button>
+          </div>
+          <div className="flex items-center gap-1.5 ml-auto shrink-0">
+            <FeeTierSelect market={market} />
+            {market.status === "ready" && (
+              <span
+                className={clsx(
+                  "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-12",
+                  isFallback ? "bg-orange-bg text-orange" : "bg-green-bg text-green",
+                )}
+                title={isFallback ? t("interval_unavailable") : undefined}
               >
-                <Svg iconName="swap" size={18} />
-              </button>
-            </div>
-            <div className="flex items-center gap-2 text-12 text-tertiary-text">
-              <FeeTierSelect market={market} />
-              {market.status === "ready" && (
-                <span className="flex items-center gap-1">
+                <span className="relative flex w-1.5 h-1.5">
+                  {!isFallback && (
+                    <span className="absolute inline-flex h-full w-full rounded-full bg-green opacity-60 animate-ping" />
+                  )}
                   <span
                     className={clsx(
-                      "w-1.5 h-1.5 rounded-full",
-                      isFallback ? "bg-orange" : "bg-green animate-pulse",
+                      "relative inline-flex w-1.5 h-1.5 rounded-full",
+                      isFallback ? "bg-orange" : "bg-green",
                     )}
                   />
-                  {isFallback ? t("hourly_data") : t("live")}
                 </span>
-              )}
-            </div>
+                {isFallback ? t("hourly_data") : t("live")}
+              </span>
+            )}
           </div>
         </div>
 
         {market.status !== "no-pool" && (
-          <div className="flex items-baseline gap-2">
-            <span
-              className={clsx(
-                "text-24 md:text-[28px] font-medium tabular-nums duration-500",
-                flash === "up"
-                  ? "text-green"
-                  : flash === "down"
-                    ? "text-red-light"
-                    : "text-primary-text",
-              )}
-            >
-              {formatPrice(price)}
-            </span>
-            <ChangePill value={change} />
+          <div className="flex flex-wrap items-end gap-x-8 gap-y-3">
+            <div className="flex items-baseline gap-2.5">
+              <span
+                className={clsx(
+                  "text-[28px] md:text-[32px] leading-none font-medium tabular-nums tracking-tight duration-500",
+                  flash === "up"
+                    ? "text-green"
+                    : flash === "down"
+                      ? "text-red-light"
+                      : "text-primary-text",
+                )}
+              >
+                {formatPrice(price)}
+              </span>
+              <ChangePill value={change} />
+            </div>
+            <dl className="flex flex-wrap gap-y-2 text-12 -mx-3 md:ml-auto">
+              <Stat label={t("high_24h")} value={formatPrice(stats?.high_24h)} />
+              <Stat label={t("low_24h")} value={formatPrice(stats?.low_24h)} />
+              <Stat
+                label={t("volume_24h")}
+                value={stats ? `${compact(stats.volume1_24h)} ${quote.symbol ?? ""}` : "–"}
+              />
+              <Stat label={t("trades_24h")} value={stats ? String(stats.trades_24h) : "–"} />
+            </dl>
           </div>
-        )}
-
-        {market.status !== "no-pool" && (
-          <dl className="flex flex-wrap gap-x-5 gap-y-1 text-12 md:ml-auto">
-            <Stat label={t("high_24h")} value={formatPrice(stats?.high_24h)} />
-            <Stat label={t("low_24h")} value={formatPrice(stats?.low_24h)} />
-            <Stat
-              label={t("volume_24h")}
-              value={
-                stats
-                  ? `${compact(stats.volume1_24h)} ${(market.quote ?? tokenA).symbol ?? ""}`
-                  : "–"
-              }
-            />
-            <Stat label={t("trades_24h")} value={stats ? String(stats.trades_24h) : "–"} />
-          </dl>
         )}
       </div>
 
       {/* Toolbar */}
-      <div className="flex items-center gap-1 px-2 md:px-3 py-1.5 border-y border-secondary-border overflow-x-auto no-scrollbar">
-        <div className="flex items-center" role="radiogroup" aria-label={t("interval")}>
+      <div className="flex items-center gap-2 px-3 md:px-4 py-2 border-t border-secondary-border overflow-x-auto no-scrollbar">
+        <Segmented label={t("interval")}>
           {RESOLUTIONS.map((r) => {
             const available = !datafeed || datafeed.resolutions.includes(r.value);
-            const active = activeResolution === r.value;
             return (
-              <button
+              <SegmentButton
                 key={r.value}
-                type="button"
-                role="radio"
-                aria-checked={active}
+                active={activeResolution === r.value}
                 disabled={!available}
                 title={available ? undefined : t("interval_unavailable")}
                 onClick={() => setResolution(r.value)}
-                className={clsx(
-                  "px-2.5 h-7 rounded-2 text-12 font-medium duration-200 shrink-0",
-                  active
-                    ? "bg-tertiary-bg text-primary-text"
-                    : "text-tertiary-text hocus:text-primary-text disabled:opacity-30 disabled:hover:text-tertiary-text",
-                )}
               >
                 {r.label}
-              </button>
+              </SegmentButton>
             );
           })}
-        </div>
+        </Segmented>
 
-        <Divider />
-
-        <div className="flex items-center" role="radiogroup" aria-label={t("chart_type")}>
+        <Segmented label={t("chart_type")}>
           {CHART_TYPES.map((type) => (
-            <ToolButton
+            <SegmentButton
               key={type}
-              label={t(type)}
               active={chartType === type}
               onClick={() => setChartType(type)}
-              role="radio"
+              ariaLabel={t(type)}
+              title={t(type)}
+              icon
             >
               <ChartTypeIcon type={type} />
-            </ToolButton>
+            </SegmentButton>
           ))}
+        </Segmented>
+
+        <div className="flex items-center gap-1 shrink-0">
+          <ToggleChip active={showVolume} onClick={() => setShowVolume(!showVolume)}>
+            {t("volume")}
+          </ToggleChip>
+          <ToggleChip
+            active={showMA}
+            onClick={() => setShowMA(!showMA)}
+            title={t("moving_averages")}
+          >
+            MA
+          </ToggleChip>
         </div>
 
-        <Divider />
-
-        <button
-          type="button"
-          onClick={() => setShowVolume(!showVolume)}
-          aria-pressed={showVolume}
-          className={clsx(
-            "px-2.5 h-7 rounded-2 text-12 font-medium duration-200 shrink-0",
-            showVolume ? "text-primary-text" : "text-tertiary-text hocus:text-primary-text",
-          )}
-        >
-          {t("volume")}
-        </button>
-
-        <div className="ml-auto flex items-center">
+        <div className="ml-auto flex items-center gap-0.5 shrink-0">
           <ToolButton label={t("reset_view")} onClick={() => canvasRef.current?.resetView()}>
             <Svg iconName="reset" size={18} />
           </ToolButton>
@@ -297,7 +302,12 @@ export default function TradingChart({
       </div>
 
       {/* Plot */}
-      <div className={clsx("relative", fullscreen ? "flex-1" : heightClassName)}>
+      <div
+        className={clsx(
+          "relative border-t border-secondary-border",
+          fullscreen ? "flex-1" : heightClassName,
+        )}
+      >
         {market.status === "ready" && datafeed && market.symbol && (
           <ChartCanvas
             key={reloadKey}
@@ -309,18 +319,23 @@ export default function TradingChart({
             showVolume={showVolume}
             theme={theme}
             myTrades={myTrades}
-            onHover={setHovered}
-            onLastBar={setLastBar}
+            watermark={`${base.symbol ?? ""}/${quote.symbol ?? ""}`}
+            showMA={showMA}
+            onHover={(bar, ma) => setHovered(bar ? { bar, ma } : null)}
+            onLastBar={(bar, ma) => setLast(bar ? { bar, ma } : null)}
             onState={setLoadState}
             onTrades={onTrades}
           />
         )}
 
-        {market.status === "ready" && loadState === "ready" && legendBar && (
+        {market.status === "ready" && loadState === "ready" && legend && (
           <Legend
-            bar={legendBar}
+            title={`${base.symbol}/${quote.symbol} · ${intervalLabel} · ${isFallback ? t("source_subgraph") : "Dex223"}`}
+            bar={legend.bar}
+            ma={showMA ? legend.ma : undefined}
             volumeLabel={t("volume")}
-            volumeUnit={(market.base ?? tokenB).symbol ?? ""}
+            volumeUnit={base.symbol ?? ""}
+            theme={theme}
           />
         )}
 
@@ -366,6 +381,20 @@ export default function TradingChart({
         )}
       </div>
 
+      <div className="flex items-center justify-between gap-3 px-4 md:px-5 h-8 border-t border-secondary-border text-12 text-tertiary-text">
+        <span className="truncate">
+          {isFallback ? t("source_subgraph_long") : t("source_onchain")}
+        </span>
+        <a
+          href="https://www.tradingview.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="shrink-0 hocus:text-secondary-text duration-200"
+        >
+          {t("charts_by")}
+        </a>
+      </div>
+
       {showTrades && !fullscreen && market.status === "ready" && datafeed?.supportsTrades && (
         <MarketTrades market={market} liveTrades={liveTrades} />
       )}
@@ -391,16 +420,18 @@ function FeeTierSelect({ market }: { market: ReturnType<typeof useChartMarket> }
   const t = useTranslations("TradingChart");
   if (!market.pool) return null;
   const label = (fee: number) => t("fee_tier", { fee: fee / 10_000 });
+  const chip =
+    "inline-flex items-center h-6 px-2 rounded-full bg-tertiary-bg text-12 text-secondary-text";
   if (market.pools.length < 2) {
-    return <span className="text-secondary-text">{label(market.pool.fee)}</span>;
+    return <span className={chip}>{label(market.pool.fee)}</span>;
   }
   return (
-    <label className="relative inline-flex items-center">
+    <label className={clsx(chip, "relative pr-6 hocus:text-primary-text")}>
       <span className="sr-only">{t("pool")}</span>
       <select
         value={market.pool.fee}
         onChange={(e) => market.selectFee(Number(e.target.value))}
-        className="appearance-none bg-transparent text-secondary-text pr-4 cursor-pointer hocus:text-primary-text focus:outline-none"
+        className="appearance-none bg-transparent cursor-pointer focus:outline-none"
       >
         {market.pools.map((p) => (
           <option key={p.address} value={p.fee} className="bg-primary-bg">
@@ -411,7 +442,7 @@ function FeeTierSelect({ market }: { market: ReturnType<typeof useChartMarket> }
       <Svg
         iconName="small-expand-arrow"
         size={14}
-        className="absolute right-0 pointer-events-none"
+        className="absolute right-1.5 pointer-events-none"
       />
     </label>
   );
@@ -423,87 +454,129 @@ function ChangePill({ value }: { value: number | null }) {
   return (
     <span
       className={clsx(
-        "px-1.5 py-0.5 rounded-1 text-12 font-medium tabular-nums",
+        "inline-flex items-center gap-0.5 px-2 h-6 rounded-2 text-12 font-medium tabular-nums self-center",
         up ? "bg-green-bg text-green" : "bg-red-bg text-red-light",
       )}
     >
-      {formatPercent(value)}
+      <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden className={up ? "" : "rotate-180"}>
+        <path d="M4 1l3.5 5h-7z" fill="currentColor" />
+      </svg>
+      {formatPercent(Math.abs(value)).replace("+", "")}
+      <span className="opacity-60 font-normal ml-0.5">24h</span>
     </span>
   );
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex flex-col">
-      <dt className="text-tertiary-text">{label}</dt>
-      <dd className="text-primary-text tabular-nums">{value}</dd>
+    <div className="flex flex-col gap-0.5 px-3 border-l border-secondary-border first:border-l-0">
+      <dt className="text-tertiary-text whitespace-nowrap">{label}</dt>
+      <dd className="text-14 text-primary-text tabular-nums whitespace-nowrap">{value}</dd>
     </div>
   );
 }
 
 function Legend({
+  title,
   bar,
+  ma,
   volumeLabel,
   volumeUnit,
+  theme,
 }: {
+  title: string;
   bar: Bar;
+  ma?: MovingAverages;
   volumeLabel: string;
   volumeUnit: string;
+  theme: ReturnType<typeof chartTheme>;
 }) {
   const up = bar.close >= bar.open;
   const change = bar.open ? ((bar.close - bar.open) / bar.open) * 100 : 0;
-  const tone = up ? "text-green" : "text-red-light";
+  const tone =
+    bar.trades === 0 && bar.high === bar.low
+      ? "text-secondary-text"
+      : up
+        ? "text-green"
+        : "text-red-light";
   return (
-    <div className="absolute left-3 top-2 z-10 flex flex-wrap gap-x-3 gap-y-0.5 text-12 tabular-nums pointer-events-none pr-16">
-      {(
-        [
-          ["O", bar.open],
-          ["H", bar.high],
-          ["L", bar.low],
-          ["C", bar.close],
-        ] as const
-      ).map(([k, v]) => (
-        <span key={k} className="text-tertiary-text">
-          {k} <span className={tone}>{formatPrice(v)}</span>
+    <div className="absolute left-3 top-2.5 z-10 flex flex-col gap-1 text-12 tabular-nums pointer-events-none max-w-[calc(100%-6rem)]">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
+        <span className="hidden sm:inline text-secondary-text font-medium">{title}</span>
+        {(
+          [
+            ["O", bar.open],
+            ["H", bar.high],
+            ["L", bar.low],
+            ["C", bar.close],
+          ] as const
+        ).map(([k, v]) => (
+          <span key={k} className="text-tertiary-text">
+            {k} <span className={tone}>{formatPrice(v)}</span>
+          </span>
+        ))}
+        <span className={tone}>{formatPercent(change)}</span>
+        <span className="text-tertiary-text">
+          {volumeLabel}{" "}
+          <span className="text-secondary-text">
+            {compact(bar.volume)} {volumeUnit}
+          </span>
         </span>
-      ))}
-      <span className={tone}>{formatPercent(change)}</span>
-      <span className="text-tertiary-text">
-        {volumeLabel}{" "}
-        <span className="text-secondary-text">
-          {compact(bar.volume)} {volumeUnit}
-        </span>
-      </span>
+      </div>
+      {ma && (
+        <div className="flex items-center gap-x-3">
+          <span style={{ color: theme.ma1 }}>MA 7 {formatPrice(ma.ma7)}</span>
+          <span style={{ color: theme.ma2 }}>MA 25 {formatPrice(ma.ma25)}</span>
+        </div>
+      )}
     </div>
   );
 }
 
-function ToolButton({
-  label,
+function Segmented({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="inline-flex items-center gap-0.5 p-0.5 rounded-2 bg-secondary-bg shrink-0"
+    >
+      {children}
+    </div>
+  );
+}
+
+function SegmentButton({
   active,
+  disabled,
+  title,
+  ariaLabel,
+  icon,
   onClick,
   children,
-  role,
 }: {
-  label: string;
-  active?: boolean;
+  active: boolean;
+  disabled?: boolean;
+  title?: string;
+  ariaLabel?: string;
+  icon?: boolean;
   onClick: () => void;
   children: React.ReactNode;
-  role?: "radio";
 }) {
   return (
     <button
       type="button"
+      role="radio"
+      aria-checked={active}
+      aria-label={ariaLabel}
+      title={title}
+      disabled={disabled}
       onClick={onClick}
-      aria-label={label}
-      title={label}
-      role={role}
-      aria-checked={role === "radio" ? !!active : undefined}
       className={clsx(
-        "w-8 h-7 inline-flex items-center justify-center rounded-2 duration-200 shrink-0",
+        "h-7 inline-flex items-center justify-center rounded-[6px] text-12 font-medium duration-200 shrink-0",
+        icon ? "w-8" : "px-2.5",
         active
-          ? "bg-tertiary-bg text-primary-text"
-          : "text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg",
+          ? "bg-tertiary-bg text-primary-text shadow-[0_1px_2px_rgba(0,0,0,0.4)]"
+          : "text-tertiary-text hocus:text-primary-text disabled:opacity-30 disabled:hover:text-tertiary-text",
       )}
     >
       {children}
@@ -511,8 +584,55 @@ function ToolButton({
   );
 }
 
-function Divider() {
-  return <span className="w-px h-4 bg-secondary-border mx-1 shrink-0" aria-hidden />;
+function ToggleChip({
+  active,
+  onClick,
+  title,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  title?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={active}
+      title={title}
+      onClick={onClick}
+      className={clsx(
+        "h-7 px-2.5 rounded-2 text-12 font-medium border duration-200 shrink-0",
+        active
+          ? "border-primary-border text-primary-text bg-tertiary-bg"
+          : "border-secondary-border text-tertiary-text hocus:text-primary-text",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+function ToolButton({
+  label,
+  onClick,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="w-8 h-8 inline-flex items-center justify-center rounded-2 text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg duration-200 shrink-0"
+    >
+      {children}
+    </button>
+  );
 }
 
 function ChartTypeIcon({ type }: { type: ChartType }) {

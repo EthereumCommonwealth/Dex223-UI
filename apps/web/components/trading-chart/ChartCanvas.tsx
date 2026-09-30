@@ -2,15 +2,19 @@
 
 import {
   AreaSeries,
+  AutoscaleInfo,
   CandlestickSeries,
   ColorType,
   createChart,
   createSeriesMarkers,
+  createTextWatermark,
   CrosshairMode,
   HistogramSeries,
   IChartApi,
   ISeriesApi,
   ISeriesMarkersPluginApi,
+  ITextWatermarkPluginApi,
+  LastPriceAnimationMode,
   LineSeries,
   LineStyle,
   LogicalRange,
@@ -51,8 +55,12 @@ interface Props {
   pageSize?: number;
   /** Bars in view after the first load; Infinity shows everything loaded. */
   initialVisible?: number;
-  onHover?: (bar: Bar | null) => void;
-  onLastBar?: (bar: Bar | null) => void;
+  /** Faint text behind the plot, e.g. the pair. */
+  watermark?: string;
+  /** Draw 7 and 25 period simple moving averages. */
+  showMA?: boolean;
+  onHover?: (bar: Bar | null, ma?: MovingAverages) => void;
+  onLastBar?: (bar: Bar | null, ma?: MovingAverages) => void;
   onState?: (state: LoadState) => void;
   onTrades?: (trades: Trade[]) => void;
 }
@@ -82,15 +90,42 @@ function tickMark(time: Time, type: TickMarkType): string {
   }
 }
 
-function mainData(bars: Bar[], type: ChartType) {
+export interface MovingAverages {
+  ma7: number | null;
+  ma25: number | null;
+}
+
+export const MA_PERIODS = [7, 25] as const;
+
+/** Simple moving average of closes; null until a full window exists. */
+function sma(bars: Bar[], period: number): (number | null)[] {
+  const out: (number | null)[] = new Array(bars.length).fill(null);
+  let sum = 0;
+  for (let i = 0; i < bars.length; i++) {
+    sum += bars[i].close;
+    if (i >= period) sum -= bars[i - period].close;
+    if (i >= period - 1) out[i] = sum / period;
+  }
+  return out;
+}
+
+function mainData(bars: Bar[], type: ChartType, theme: ChartTheme) {
   if (type === "candles") {
-    return bars.map((b) => ({
-      time: t(b.time),
-      open: b.open,
-      high: b.high,
-      low: b.low,
-      close: b.close,
-    }));
+    // A period with no trades is the pool holding its price. Drawn as a muted tick it
+    // keeps time continuous without competing with the candles that carry information.
+    return bars.map((b) =>
+      b.trades === 0 && b.high === b.low
+        ? {
+            time: t(b.time),
+            open: b.open,
+            high: b.high,
+            low: b.low,
+            close: b.close,
+            color: theme.flat,
+            wickColor: theme.flat,
+          }
+        : { time: t(b.time), open: b.open, high: b.high, low: b.low, close: b.close },
+    );
   }
   return bars.map((b) => ({ time: t(b.time), value: b.close }));
 }
@@ -118,6 +153,8 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     onTrades,
     pageSize = PAGE,
     initialVisible = INITIAL_VISIBLE,
+    watermark,
+    showMA = false,
   },
   ref,
 ) {
@@ -126,6 +163,9 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
   const mainRef = useRef<ISeriesApi<SeriesType> | null>(null);
   const volumeRef = useRef<ISeriesApi<"Histogram"> | null>(null);
   const markersRef = useRef<ISeriesMarkersPluginApi<Time> | null>(null);
+  const watermarkRef = useRef<ITextWatermarkPluginApi<Time> | null>(null);
+  const maRefs = useRef<ISeriesApi<"Line">[]>([]);
+  const maByTimeRef = useRef<Map<number, MovingAverages>>(new Map());
   const barsRef = useRef<Bar[]>([]);
   const byTimeRef = useRef<Map<number, Bar>>(new Map());
 
@@ -165,11 +205,17 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         textColor: theme.text,
         fontFamily,
         fontSize: 11,
-        // Lightweight Charts' Apache-2.0 notice asks for this attribution link.
-        attributionLogo: true,
+        // The Apache-2.0 attribution is shown as a link under the chart instead of a
+        // logo stamped over the plot (see TradingChart).
+        attributionLogo: false,
+        panes: {
+          separatorColor: theme.separator,
+          separatorHoverColor: theme.separatorHover,
+          enableResize: true,
+        },
       },
       grid: {
-        vertLines: { color: theme.grid },
+        vertLines: { visible: false },
         horzLines: { color: theme.grid },
       },
       crosshair: {
@@ -185,14 +231,19 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
           labelBackgroundColor: theme.crosshairLabel,
         },
       },
-      rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.12, bottom: 0.22 } },
+      rightPriceScale: {
+        borderVisible: false,
+        scaleMargins: { top: 0.1, bottom: 0.08 },
+        entireTextOnly: true,
+      },
       timeScale: {
         borderVisible: false,
         timeVisible: true,
         secondsVisible: false,
-        rightOffset: 6,
-        barSpacing: 8,
+        rightOffset: 8,
+        barSpacing: 9,
         minBarSpacing: 1.5,
+        shiftVisibleRangeOnNewBar: true,
         tickMarkFormatter: tickMark,
       },
       localization: {
@@ -210,11 +261,14 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         props.current.onHover?.(null);
         return;
       }
-      props.current.onHover?.(byTimeRef.current.get(param.time as number) ?? null);
+      const time = param.time as number;
+      props.current.onHover?.(byTimeRef.current.get(time) ?? null, maByTimeRef.current.get(time));
     });
 
     return () => {
       markersRef.current = null;
+      watermarkRef.current = null;
+      maRefs.current = [];
       mainRef.current = null;
       volumeRef.current = null;
       chartRef.current = null;
@@ -227,8 +281,11 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
   // ---------------------------------------------------------------- theme
   useEffect(() => {
     chartRef.current?.applyOptions({
-      layout: { textColor: theme.text },
-      grid: { vertLines: { color: theme.grid }, horzLines: { color: theme.grid } },
+      layout: {
+        textColor: theme.text,
+        panes: { separatorColor: theme.separator, separatorHoverColor: theme.separatorHover },
+      },
+      grid: { horzLines: { color: theme.grid } },
     });
   }, [theme]);
 
@@ -236,11 +293,21 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
   useEffect(() => {
     const chart = chartRef.current;
     if (!chart) return;
-    if (mainRef.current) {
-      markersRef.current?.detach();
-      markersRef.current = null;
-      chart.removeSeries(mainRef.current);
-    }
+    // The old series goes only after the new one exists: lightweight-charts drops a
+    // pane the moment it has no series, and the volume pane would then slide up into
+    // pane 0 and receive the new price series.
+    const previous = mainRef.current;
+    // A quiet market can move by a hair over the visible bars; left alone, the scale zooms
+    // until 0.998502 and 0.998504 are separate ticks. Keep at least 0.4% of height.
+    const autoscaleInfoProvider = (original: () => AutoscaleInfo | null) => {
+      const info = original();
+      if (!info?.priceRange) return info;
+      const { minValue, maxValue } = info.priceRange;
+      const mid = (minValue + maxValue) / 2;
+      const span = Math.abs(mid) * 0.004;
+      if (maxValue - minValue >= span) return info;
+      return { ...info, priceRange: { minValue: mid - span / 2, maxValue: mid + span / 2 } };
+    };
     const priceFormat = {
       type: "custom" as const,
       formatter: formatPrice,
@@ -255,14 +322,20 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         wickUpColor: theme.up,
         wickDownColor: theme.down,
         borderVisible: false,
+        priceLineStyle: LineStyle.Dashed,
+        autoscaleInfoProvider,
         priceFormat,
       });
     } else if (chartType === "line") {
       series = chart.addSeries(LineSeries, {
         color: theme.accent,
         lineWidth: 2,
+        priceLineStyle: LineStyle.Dashed,
+        autoscaleInfoProvider,
+        lastPriceAnimation: LastPriceAnimationMode.OnDataUpdate,
         priceFormat,
         crosshairMarkerRadius: 4,
+        crosshairMarkerBorderColor: theme.accent,
       });
     } else {
       series = chart.addSeries(AreaSeries, {
@@ -270,11 +343,20 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         topColor: theme.areaTop,
         bottomColor: theme.areaBottom,
         lineWidth: 2,
+        priceLineStyle: LineStyle.Dashed,
+        autoscaleInfoProvider,
+        lastPriceAnimation: LastPriceAnimationMode.OnDataUpdate,
         priceFormat,
         crosshairMarkerRadius: 4,
+        crosshairMarkerBorderColor: theme.accent,
       });
     }
-    series.setData(mainData(barsRef.current, chartType));
+    if (previous) {
+      markersRef.current?.detach();
+      markersRef.current = null;
+      chart.removeSeries(previous);
+    }
+    series.setData(mainData(barsRef.current, chartType, theme));
     mainRef.current = series;
     markersRef.current = createSeriesMarkers(series, []);
     applyMarkers();
@@ -286,24 +368,81 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     const chart = chartRef.current;
     if (!chart) return;
     if (showVolume && !volumeRef.current) {
-      const volume = chart.addSeries(HistogramSeries, {
-        priceFormat: { type: "volume" },
-        priceScaleId: "volume",
-        lastValueVisible: false,
-        priceLineVisible: false,
-      });
-      chart.priceScale("volume").applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
+      // Volume gets its own pane under the price: the price scale keeps its full height
+      // and the bars never sit on top of the candles.
+      const volume = chart.addSeries(
+        HistogramSeries,
+        {
+          priceFormat: { type: "volume" },
+          lastValueVisible: false,
+          priceLineVisible: false,
+        },
+        1,
+      );
+      volume.priceScale().applyOptions({ scaleMargins: { top: 0.15, bottom: 0 } });
+      const [pricePane, volumePane] = chart.panes();
+      pricePane?.setStretchFactor(4);
+      volumePane?.setStretchFactor(1);
       volume.setData(volumeData(barsRef.current, props.current.theme));
       volumeRef.current = volume;
     } else if (!showVolume && volumeRef.current) {
       chart.removeSeries(volumeRef.current);
       volumeRef.current = null;
+      if (chart.panes().length > 1) chart.removePane(1);
     }
-    // Give the price the band volume used when volume is hidden.
-    chart
-      .priceScale("right")
-      .applyOptions({ scaleMargins: { top: 0.12, bottom: showVolume ? 0.22 : 0.08 } });
   }, [showVolume]);
+
+  // ---------------------------------------------------------------- watermark
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    const options = {
+      visible: !!watermark,
+      horzAlign: "center" as const,
+      vertAlign: "center" as const,
+      lines: [{ text: watermark ?? "", color: theme.watermark, fontSize: 44, fontStyle: "600" }],
+    };
+    if (watermarkRef.current) watermarkRef.current.applyOptions(options);
+    else watermarkRef.current = createTextWatermark(chart.panes()[0], options);
+  }, [watermark, theme]);
+
+  // ---------------------------------------------------------------- moving averages
+  function applyMA() {
+    const bars = barsRef.current;
+    const series = maRefs.current;
+    const lines = MA_PERIODS.map((period) => sma(bars, period));
+    const byTime = new Map<number, MovingAverages>();
+    bars.forEach((b, i) => byTime.set(b.time, { ma7: lines[0][i], ma25: lines[1][i] }));
+    maByTimeRef.current = byTime;
+    series.forEach((line, k) =>
+      line.setData(
+        bars.map((b, i) =>
+          lines[k][i] === null ? { time: t(b.time) } : { time: t(b.time), value: lines[k][i]! },
+        ),
+      ),
+    );
+  }
+
+  useEffect(() => {
+    const chart = chartRef.current;
+    if (!chart) return;
+    maRefs.current.forEach((line) => chart.removeSeries(line));
+    maRefs.current = [];
+    if (showMA) {
+      maRefs.current = [theme.ma1, theme.ma2].map((color) =>
+        chart.addSeries(LineSeries, {
+          color,
+          lineWidth: 1,
+          priceLineVisible: false,
+          lastValueVisible: false,
+          crosshairMarkerVisible: false,
+          priceFormat: { type: "custom", formatter: formatPrice },
+        }),
+      );
+    }
+    applyMA();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showMA, theme]);
 
   // ---------------------------------------------------------------- markers
   const myTradesRef = useRef(myTrades);
@@ -346,8 +485,9 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     const setAll = (bars: Bar[]) => {
       barsRef.current = bars;
       byTimeRef.current = new Map(bars.map((b) => [b.time, b]));
-      mainRef.current?.setData(mainData(bars, props.current.chartType));
+      mainRef.current?.setData(mainData(bars, props.current.chartType, props.current.theme));
       volumeRef.current?.setData(volumeData(bars, props.current.theme));
+      applyMA();
       const last = bars[bars.length - 1] ?? null;
       mainRef.current?.applyOptions({
         priceFormat: {
@@ -357,7 +497,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
           minMove: minMoveFor(last?.close),
         },
       });
-      props.current.onLastBar?.(last);
+      props.current.onLastBar?.(last, last ? maByTimeRef.current.get(last.time) : undefined);
       applyMarkers();
     };
 
@@ -375,7 +515,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         if (bars.length) {
           chart.timeScale().setVisibleLogicalRange({
             from: Math.max(0, bars.length - initialVisible),
-            to: bars.length + 4,
+            to: bars.length + 8,
           });
         }
       })
@@ -447,12 +587,13 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
           if (last && b.time === last.time) bars[bars.length - 1] = b;
           else bars.push(b);
           byTimeRef.current.set(b.time, b);
-          const [main] = mainData([b], props.current.chartType);
+          const [main] = mainData([b], props.current.chartType, props.current.theme);
           mainRef.current?.update(main);
           const [vol] = volumeData([b], props.current.theme);
           volumeRef.current?.update(vol);
         }
-        props.current.onLastBar?.(bar);
+        if (maRefs.current.length) applyMA();
+        props.current.onLastBar?.(bar, maByTimeRef.current.get(bar.time));
         if (bars.length === 1) props.current.onState?.("ready");
       },
       onTrades: (trades) => {

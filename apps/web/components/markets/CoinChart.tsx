@@ -26,9 +26,12 @@ const RANGES: { key: string; resolution: Resolution; bars: number }[] = [
 
 export default function CoinChart({
   symbol,
+  label,
   onLastBar,
 }: {
   symbol: string;
+  /** Shown faintly behind the plot, e.g. "ETH/USD". */
+  label?: string;
   onLastBar?: (bar: Bar | null) => void;
 }) {
   const t = useTranslations("TradingChart");
@@ -92,8 +95,9 @@ export default function CoinChart({
           theme={theme}
           pageSize={Number.isFinite(range.bars) ? Math.max(300, range.bars + 10) : 1000}
           initialVisible={range.bars}
-          onHover={setHovered}
-          onLastBar={onLastBar}
+          watermark={label}
+          onHover={(bar) => setHovered(bar)}
+          onLastBar={(bar) => onLastBar?.(bar)}
           onState={setState}
         />
         {hovered && (
@@ -114,6 +118,16 @@ export default function CoinChart({
             {state === "empty" ? t("empty_title") : t("error_title")}
           </div>
         )}
+      </div>
+      <div className="flex justify-end px-4 h-8 items-center border-t border-secondary-border text-12 text-tertiary-text">
+        <a
+          href="https://www.tradingview.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hocus:text-secondary-text duration-200"
+        >
+          {t("charts_by")}
+        </a>
       </div>
     </div>
   );

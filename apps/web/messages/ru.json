@@ -1539,7 +1539,12 @@
     "no_trades": "Сделок пока нет",
     "connect_wallet_trades": "Подключите кошелёк, чтобы увидеть свои сделки",
     "show_chart": "Показать график",
-    "hide_chart": "Скрыть график"
+    "hide_chart": "Скрыть график",
+    "moving_averages": "Скользящие средние (7 и 25 периодов)",
+    "source_subgraph": "Subgraph",
+    "source_subgraph_long": "Часовые данные из subgraph Dex223, пока рыночные данные в реальном времени недоступны",
+    "source_onchain": "Данные пула Dex223, прочитанные напрямую из блокчейна",
+    "charts_by": "Графики TradingView"
   },
   "Markets": {
     "title": "Рынки",

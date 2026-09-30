@@ -11,6 +11,8 @@ interface TradingChartStore {
   resolution: Resolution;
   chartType: ChartType;
   showVolume: boolean;
+  /** MA 7 and MA 25 overlays. */
+  showMA: boolean;
   /** Pair key (sorted token addresses) -> user-chosen orientation, overriding the default. */
   flipped: Record<string, boolean>;
   /** Pair key -> fee tier the user picked, overriding the most active pool. */
@@ -19,6 +21,7 @@ interface TradingChartStore {
   setResolution: (resolution: Resolution) => void;
   setChartType: (chartType: ChartType) => void;
   setShowVolume: (show: boolean) => void;
+  setShowMA: (show: boolean) => void;
   toggleFlipped: (pairKey: string, current: boolean) => void;
   pinFee: (pairKey: string, fee: number | null) => void;
 }
@@ -30,12 +33,14 @@ export const useTradingChartStore = create<TradingChartStore>()(
       resolution: "60",
       chartType: "candles",
       showVolume: true,
+      showMA: false,
       flipped: {},
       pinnedFee: {},
       setVisible: (visible) => set({ visible }),
       setResolution: (resolution) => set({ resolution }),
       setChartType: (chartType) => set({ chartType }),
       setShowVolume: (showVolume) => set({ showVolume }),
+      setShowMA: (showMA) => set({ showMA }),
       toggleFlipped: (pairKey, current) =>
         set((state) => ({ flipped: { ...state.flipped, [pairKey]: !current } })),
       pinFee: (pairKey, fee) =>

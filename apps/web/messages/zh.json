@@ -1539,7 +1539,12 @@
     "no_trades": "暂无交易",
     "connect_wallet_trades": "连接钱包以查看你的交易",
     "show_chart": "显示图表",
-    "hide_chart": "隐藏图表"
+    "hide_chart": "隐藏图表",
+    "moving_averages": "移动平均线（7 和 25 周期）",
+    "source_subgraph": "Subgraph",
+    "source_subgraph_long": "实时行情暂不可用，显示 Dex223 subgraph 的小时数据",
+    "source_onchain": "Dex223 资金池数据，直接读取自链上",
+    "charts_by": "图表由 TradingView 提供"
   },
   "Markets": {
     "title": "行情",

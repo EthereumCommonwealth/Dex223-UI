@@ -1541,7 +1541,12 @@
     "no_trades": "No trades yet",
     "connect_wallet_trades": "Connect a wallet to see your trades",
     "show_chart": "Show chart",
-    "hide_chart": "Hide chart"
+    "hide_chart": "Hide chart",
+    "moving_averages": "Moving averages (7 and 25 periods)",
+    "source_subgraph": "Subgraph",
+    "source_subgraph_long": "Hourly data from the Dex223 subgraph while live market data is unavailable",
+    "source_onchain": "Dex223 pool data, read directly from the chain",
+    "charts_by": "Charts by TradingView"
   },
   "Markets": {
     "title": "Markets",

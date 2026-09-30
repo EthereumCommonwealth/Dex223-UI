@@ -1539,7 +1539,12 @@
     "no_trades": "아직 거래가 없습니다",
     "connect_wallet_trades": "거래 내역을 보려면 지갑을 연결하세요",
     "show_chart": "차트 보기",
-    "hide_chart": "차트 숨기기"
+    "hide_chart": "차트 숨기기",
+    "moving_averages": "이동평균선 (7, 25 기간)",
+    "source_subgraph": "Subgraph",
+    "source_subgraph_long": "실시간 시장 데이터를 사용할 수 없어 Dex223 subgraph의 시간별 데이터를 표시합니다",
+    "source_onchain": "체인에서 직접 읽은 Dex223 풀 데이터",
+    "charts_by": "TradingView 차트"
   },
   "Markets": {
     "title": "마켓",
