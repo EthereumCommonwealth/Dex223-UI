@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -11,7 +12,7 @@ import { useUnknownNetworkWarningStore } from "@/components/dialogs/stores/useUn
 import { networks } from "@/config/networks";
 import { useConfirmInWalletDialogStore } from "@/stores/useConfirmInWalletDialogStore";
 
-export default function NetworkPicker() {
+export default function NetworkPicker({ compact = false }: { compact?: boolean }) {
   const [isOpened, setIsOpened] = useState(false);
   const { chainToConnect, setChainToConnect } = useConnectWalletStore();
   const { chainId } = useAccount();
@@ -47,9 +48,11 @@ export default function NetworkPicker() {
             onClick={() => setIsOpened(!isOpened)}
           >
             {currentNetwork ? (
-              <span className="flex items-center gap-2 xl:min-w-[110px]">
+              <span className={clsx("flex items-center gap-2", !compact && "xl:min-w-[110px]")}>
                 <Image src={`${currentNetwork?.logo}`} alt="Ethereum" width={24} height={24} />
-                <span className="hidden xl:inline">{currentNetwork?.name}</span>
+                <span className={compact ? "sr-only" : "hidden xl:inline"}>
+                  {currentNetwork?.name}
+                </span>
               </span>
             ) : (
               "Unknown network"
