@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { useLayoutEffect, useRef, useState } from "react";
 
 import Container from "@/components/atoms/Container";
 import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
@@ -15,17 +16,58 @@ import { useMintTestTokensDialogStore } from "@/components/dialogs/stores/useMin
 import { useRecentTransactionTracking } from "@/hooks/useRecentTransactionTracking";
 import { Link } from "@/i18n/routing";
 
+/**
+ * True when the header's contents are wider than the header, so the widest controls
+ * (token lists, network name) can drop to icons. It un-compacts once the header is back
+ * to the width the full labels needed, and re-measures from scratch on a language
+ * change, because French or Russian labels need far more room than English ones.
+ */
+function useCompactWhenCrowded(ref: React.RefObject<HTMLDivElement | null>, locale: string) {
+  const [compact, setCompact] = useState(false);
+  const fullWidth = useRef(0);
+
+  useLayoutEffect(() => {
+    setCompact(false);
+    fullWidth.current = 0;
+  }, [locale]);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const check = () => {
+      if (!compact) {
+        fullWidth.current = el.scrollWidth;
+        if (el.scrollWidth > el.clientWidth + 1) setCompact(true);
+      } else if (el.clientWidth >= fullWidth.current) {
+        setCompact(false);
+      }
+    };
+    check();
+    const observer = new ResizeObserver(check);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [compact, ref]);
+
+  return compact;
+}
+
 export default function Header() {
   useRecentTransactionTracking();
   const t = useTranslations("MintTest");
 
   const { handleOpen } = useMintTestTokensDialogStore();
+  const rowRef = useRef<HTMLDivElement>(null);
+  const compact = useCompactWhenCrowded(rowRef, useLocale());
   return (
     <div>
       <header className="xl:before:hidden before:h-[1px] before:bg-gradient-to-r before:from-secondary-border/20 before:via-50% before:via-secondary-border before:to-secondary-border/20 before:w-full before:absolute relative before:bottom-0 before:left-0">
         <Container gutter={false} className="pl-4 pr-1 md:px-5 max-w-[1920px]">
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-5">
+          <div
+            ref={rowRef}
+            data-compact={compact || undefined}
+            className="group/header flex justify-between items-center"
+          >
+            <div className="flex items-center gap-5 group-data-[compact]/header:gap-3">
               {/* The padding gives the logo a 44px touch target on phones without moving it. */}
               <Link
                 className="relative block p-2 -m-2 xl:p-0 xl:m-0"
@@ -38,12 +80,12 @@ export default function Header() {
               </Link>
               <Navigation />
             </div>
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-2 md:gap-3 group-data-[compact]/header:gap-2">
               <LocaleSwitcher />
               <div className="fixed w-[calc(50%-20px)] bottom-3 left-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
-                <TokenListsSettings />
+                <TokenListsSettings compact={compact} />
               </div>
-              <NetworkPicker />
+              <NetworkPicker compact={compact} />
 
               <div className="fixed w-[calc(50%-20px)] bottom-3 right-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
                 <AccountDialog />
