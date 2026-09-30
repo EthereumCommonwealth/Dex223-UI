@@ -1,18 +1,26 @@
 import { ThemeColors } from "@/config/theme/colors";
 
-// Values from packages/tailwind-config/tailwind-presets.js. The chart draws on canvas, so
-// it needs literal colors rather than Tailwind classes.
+// The chart draws on canvas, so it needs literal colors rather than Tailwind classes.
+// Neutrals follow packages/tailwind-config/tailwind-presets.js; the up/down pair is a
+// touch brighter than the brand green and red so candles read clearly on the dark panel.
 const BASE = {
   text: "#858D8C", // tertiary-text
   textStrong: "#D1DEDF", // primary-text
-  grid: "rgba(56, 60, 58, 0.45)", // secondary-border
-  crosshair: "#575A58", // primary-border
+  grid: "rgba(56, 60, 58, 0.35)", // secondary-border, softened
+  crosshair: "rgba(209, 222, 223, 0.35)",
   crosshairLabel: "#2E2F2F", // quaternary-bg
+  separator: "#272727", // tertiary-bg
+  separatorHover: "rgba(209, 222, 223, 0.12)",
   // Candles keep market semantics on every page: up is green, down is red.
-  up: "#70C59E",
-  down: "#D24B4B",
-  upVolume: "rgba(112, 197, 158, 0.28)",
-  downVolume: "rgba(210, 75, 75, 0.28)",
+  up: "#3FCF8E",
+  down: "#EF5F67",
+  upVolume: "rgba(63, 207, 142, 0.45)",
+  downVolume: "rgba(239, 95, 103, 0.45)",
+  // A period with no trades: the pool price simply held.
+  flat: "rgba(133, 141, 140, 0.45)",
+  watermark: "rgba(209, 222, 223, 0.045)",
+  ma1: "#E7C46A", // MA 7
+  ma2: "#8FA6F2", // MA 25
 };
 
 export interface ChartTheme {
@@ -21,11 +29,17 @@ export interface ChartTheme {
   grid: string;
   crosshair: string;
   crosshairLabel: string;
+  separator: string;
+  separatorHover: string;
   up: string;
   down: string;
   upVolume: string;
   downVolume: string;
-  /** Line and area series, markers for the viewer's own trades. */
+  flat: string;
+  watermark: string;
+  ma1: string;
+  ma2: string;
+  /** Line and area series. */
   accent: string;
   areaTop: string;
   areaBottom: string;
@@ -36,14 +50,40 @@ export function chartTheme(scheme: ThemeColors): ChartTheme {
     return {
       ...BASE,
       accent: "#A5AEE7", // purple-hover
-      areaTop: "rgba(128, 137, 189, 0.35)",
-      areaBottom: "rgba(128, 137, 189, 0.02)",
+      areaTop: "rgba(128, 137, 189, 0.32)",
+      areaBottom: "rgba(128, 137, 189, 0)",
     };
   }
   return {
     ...BASE,
-    accent: "#7DA491", // green
-    areaTop: "rgba(125, 164, 145, 0.35)",
-    areaBottom: "rgba(125, 164, 145, 0.02)",
+    accent: "#5FD3A0",
+    areaTop: "rgba(63, 207, 142, 0.28)",
+    areaBottom: "rgba(63, 207, 142, 0)",
   };
+}
+
+/** Tailwind classes for UI accents, following the page's color scheme (literal for JIT). */
+export interface AccentClasses {
+  /** Active chip or tool: tinted background and accent text. */
+  soft: string;
+  /** Small solid marks: dots, underlines, switch tracks. */
+  solid: string;
+  text: string;
+  focusBorder: string;
+}
+
+export function accentClasses(scheme: ThemeColors): AccentClasses {
+  return scheme === ThemeColors.PURPLE
+    ? {
+        soft: "bg-purple-bg text-purple-hover",
+        solid: "bg-purple",
+        text: "text-purple-hover",
+        focusBorder: "focus:border-purple",
+      }
+    : {
+        soft: "bg-green-bg text-green",
+        solid: "bg-green",
+        text: "text-green",
+        focusBorder: "focus:border-green",
+      };
 }

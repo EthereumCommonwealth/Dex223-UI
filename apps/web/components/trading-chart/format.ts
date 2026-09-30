@@ -129,11 +129,19 @@ export function formatBarTime(time: number, intraday: boolean): string {
       );
 }
 
-export function formatTradeTime(time: number): string {
-  return formatter("clock", {
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hourCycle: "h23",
-  }).format(new Date(time * 1000));
+const relative = new Map<string, Intl.RelativeTimeFormat>();
+
+/** "12s ago", "5 min. ago", "3 days ago": how fresh a trade is, in the viewer's locale. */
+export function formatAgo(time: number, locale: string, now = Date.now() / 1000): string {
+  let rtf = relative.get(locale);
+  if (!rtf) {
+    rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" });
+    relative.set(locale, rtf);
+  }
+  const diff = Math.round(time - now);
+  const abs = Math.abs(diff);
+  if (abs < 60) return rtf.format(diff, "second");
+  if (abs < 3600) return rtf.format(Math.round(diff / 60), "minute");
+  if (abs < 86400) return rtf.format(Math.round(diff / 3600), "hour");
+  return rtf.format(Math.round(diff / 86400), "day");
 }

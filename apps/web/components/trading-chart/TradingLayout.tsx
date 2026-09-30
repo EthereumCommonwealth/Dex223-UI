@@ -31,16 +31,18 @@ export default function TradingLayout({
   useChartPreferences();
 
   // Literal class names: Tailwind only generates classes it can find verbatim.
+  // With the chart open the page widens and the form narrows, so the chart gets the
+  // room a trading screen needs: about 700px at 1280 and 1100px at 1920.
   const grid = showChart
     ? showRecent
-      ? "grid-areas-[form,chart,recent] xl:grid-areas-[chart_form,recent_form] xl:grid-cols-[minmax(0,1fr)_600px]"
-      : "grid-areas-[form,chart] xl:grid-areas-[chart_form] xl:grid-cols-[minmax(0,1fr)_600px]"
+      ? "grid-areas-[form,chart,recent] xl:grid-areas-[chart_form,recent_form] xl:grid-cols-[minmax(0,1fr)_480px] 2xl:grid-cols-[minmax(0,1fr)_540px]"
+      : "grid-areas-[form,chart] xl:grid-areas-[chart_form] xl:grid-cols-[minmax(0,1fr)_480px] 2xl:grid-cols-[minmax(0,1fr)_540px]"
     : showRecent
       ? "grid-areas-[form,recent] xl:grid-areas-[recent_form] xl:grid-cols-[580px_600px] xl:max-w-[1200px]"
       : "grid-areas-[form] xl:grid-cols-[600px] xl:max-w-[600px]";
 
   return (
-    <Container>
+    <Container className={showChart ? "max-w-[1760px]" : undefined}>
       <div
         className={clsx(
           "grid grid-cols-1 items-start gap-4 xl:gap-6 py-4 lg:py-[40px] mx-auto",
