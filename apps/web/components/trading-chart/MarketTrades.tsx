@@ -11,12 +11,13 @@ import { useColorScheme } from "@/lib/color-scheme";
 import { DexChainId } from "@/sdk_bi/chains";
 
 import { Trade } from "./datafeed/types";
+import PoolDepth from "./depth/PoolDepth";
 import { compact, formatAgo, formatBarTime, formatPrice } from "./format";
 import { ChartMarket } from "./hooks/useChartMarket";
 import { useMarketTrades } from "./hooks/useMarketData";
 import { accentClasses } from "./theme";
 
-type Tab = "market" | "mine";
+type Tab = "market" | "mine" | "depth";
 
 function order(id: string): [number, number] {
   const [block, log] = id.split("-").map(Number);
@@ -70,7 +71,7 @@ export default function MarketTrades({
   return (
     <div className="border-t border-secondary-border">
       <div className="flex items-center gap-1 px-3 md:px-4 pt-3" role="tablist">
-        {(["market", "mine"] as const).map((key) => (
+        {(["market", "mine", "depth"] as const).map((key) => (
           <button
             key={key}
             type="button"
@@ -82,7 +83,11 @@ export default function MarketTrades({
               tab === key ? "text-primary-text" : "text-tertiary-text hocus:text-primary-text",
             )}
           >
-            {key === "market" ? t("trades_market") : t("trades_mine")}
+            {key === "market"
+              ? t("trades_market")
+              : key === "mine"
+                ? t("trades_mine")
+                : t("depth_tab")}
             {tab === key && (
               <span
                 className={clsx(
@@ -96,88 +101,96 @@ export default function MarketTrades({
       </div>
 
       <div className="px-3 md:px-4 pb-3">
-        <div
-          className={clsx(
-            cols,
-            "px-2 py-2 border-b border-secondary-border text-[11px] uppercase tracking-wide text-tertiary-text",
-          )}
-        >
-          <span>
-            {t("price")} <span className="hidden sm:inline normal-case">({quote})</span>
-          </span>
-          <span className="text-right">
-            {t("amount")} <span className="hidden sm:inline normal-case">({base})</span>
-          </span>
-          <span className="text-right">
-            {t("value")} <span className="hidden sm:inline normal-case">({quote})</span>
-          </span>
-          <span className="text-right">{t("time")}</span>
-        </div>
+        {tab === "depth" ? (
+          <PoolDepth market={market} />
+        ) : (
+          <>
+            <div
+              className={clsx(
+                cols,
+                "px-2 py-2 border-b border-secondary-border text-[11px] uppercase tracking-wide text-tertiary-text",
+              )}
+            >
+              <span>
+                {t("price")} <span className="hidden sm:inline normal-case">({quote})</span>
+              </span>
+              <span className="text-right">
+                {t("amount")} <span className="hidden sm:inline normal-case">({base})</span>
+              </span>
+              <span className="text-right">
+                {t("value")} <span className="hidden sm:inline normal-case">({quote})</span>
+              </span>
+              <span className="text-right">{t("time")}</span>
+            </div>
 
-        <div className="max-h-[264px] overflow-y-auto pt-1">
-          {tab === "mine" && !address ? (
-            <p className="py-8 text-center text-14 text-tertiary-text">
-              {t("connect_wallet_trades")}
-            </p>
-          ) : !rows.length ? (
-            <p className="py-8 text-center text-14 text-tertiary-text">
-              {isLoading ? t("loading") : t("no_trades")}
-            </p>
-          ) : (
-            <ul>
-              {rows.map((trade) => {
-                const buy = trade.side === "buy";
-                return (
-                  <li key={trade.id}>
-                    <a
-                      href={getExplorerLink(
-                        ExplorerLinkType.TRANSACTION,
-                        trade.tx,
-                        market.chainId as DexChainId,
-                      )}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={formatBarTime(trade.time, true)}
-                      className={clsx(
-                        cols,
-                        "group px-2 h-9 items-center rounded-2 text-12 tabular-nums hocus:bg-tertiary-bg duration-200",
-                        liveIds.has(trade.id) && "animate-appear",
-                      )}
-                    >
-                      <span
-                        className={clsx(
-                          "flex items-center gap-2 font-medium",
-                          buy ? "text-green" : "text-red-light",
-                        )}
-                      >
-                        <span
-                          className={clsx(
-                            "w-1 h-4 rounded-full shrink-0",
-                            buy ? "bg-green" : "bg-red-light",
+            <div className="max-h-[264px] overflow-y-auto pt-1">
+              {tab === "mine" && !address ? (
+                <p className="py-8 text-center text-14 text-tertiary-text">
+                  {t("connect_wallet_trades")}
+                </p>
+              ) : !rows.length ? (
+                <p className="py-8 text-center text-14 text-tertiary-text">
+                  {isLoading ? t("loading") : t("no_trades")}
+                </p>
+              ) : (
+                <ul>
+                  {rows.map((trade) => {
+                    const buy = trade.side === "buy";
+                    return (
+                      <li key={trade.id}>
+                        <a
+                          href={getExplorerLink(
+                            ExplorerLinkType.TRANSACTION,
+                            trade.tx,
+                            market.chainId as DexChainId,
                           )}
-                          aria-hidden
-                        />
-                        {formatPrice(trade.price)}
-                      </span>
-                      <span className="text-right text-primary-text">{compact(trade.amount0)}</span>
-                      <span className="text-right text-secondary-text">
-                        {compact(trade.amount1)}
-                      </span>
-                      <span className="flex items-center justify-end gap-1 whitespace-nowrap text-tertiary-text">
-                        {formatAgo(trade.time, locale)}
-                        <Svg
-                          iconName="forward"
-                          size={14}
-                          className="opacity-0 -mr-1 group-hover:opacity-100 duration-200"
-                        />
-                      </span>
-                    </a>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title={formatBarTime(trade.time, true)}
+                          className={clsx(
+                            cols,
+                            "group px-2 h-9 items-center rounded-2 text-12 tabular-nums hocus:bg-tertiary-bg duration-200",
+                            liveIds.has(trade.id) && "animate-appear",
+                          )}
+                        >
+                          <span
+                            className={clsx(
+                              "flex items-center gap-2 font-medium",
+                              buy ? "text-green" : "text-red-light",
+                            )}
+                          >
+                            <span
+                              className={clsx(
+                                "w-1 h-4 rounded-full shrink-0",
+                                buy ? "bg-green" : "bg-red-light",
+                              )}
+                              aria-hidden
+                            />
+                            {formatPrice(trade.price)}
+                          </span>
+                          <span className="text-right text-primary-text">
+                            {compact(trade.amount0)}
+                          </span>
+                          <span className="text-right text-secondary-text">
+                            {compact(trade.amount1)}
+                          </span>
+                          <span className="flex items-center justify-end gap-1 whitespace-nowrap text-tertiary-text">
+                            {formatAgo(trade.time, locale)}
+                            <Svg
+                              iconName="forward"
+                              size={14}
+                              className="opacity-0 -mr-1 group-hover:opacity-100 duration-200"
+                            />
+                          </span>
+                        </a>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
