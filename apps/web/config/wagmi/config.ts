@@ -72,6 +72,10 @@ export const config = createConfig({
   connectors: [
     walletConnect({
       projectId: "0af4613ea1c747c660416c4a7a114616",
+      // Stops the SDK batching usage and error events to pulse.walletconnect.org. The app
+      // never reads them, and a failed batch shows up as a console error. (2.17 still sends
+      // one INIT ping on load.)
+      telemetryEnabled: false,
     }),
     coinbaseWallet({
       appName: "DEX223",
