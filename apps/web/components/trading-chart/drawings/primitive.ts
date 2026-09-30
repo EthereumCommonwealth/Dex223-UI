@@ -48,6 +48,8 @@ const ALERT_DONE_COLOR = "#858D8C";
 export const FIB_LEVELS = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 
 export interface DrawingPalette {
+  /** The app's font, so labels on the canvas match the page. */
+  font: string;
   line: string;
   selected: string;
   handleFill: string;
@@ -418,7 +420,7 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
       ctx.moveTo(x0, y);
       ctx.lineTo(x1, y);
       ctx.stroke();
-      ctx.font = "11px sans-serif";
+      ctx.font = `11px ${this.ctx.palette().font}`;
       ctx.fillStyle = levelColors[i];
       ctx.textBaseline = "bottom";
       ctx.fillText(`${lvl} (${formatPrice(price)})`, x0 + 4, y - 2);
@@ -461,7 +463,7 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
       `${change >= 0 ? "+" : ""}${formatPrice(change)} (${formatPercent(pct)})`,
       `${bars} bars, ${durationLabel(p1.time - p0.time)}`,
     ];
-    ctx.font = "600 11px sans-serif";
+    ctx.font = `600 11px ${this.ctx.palette().font}`;
     const tw = Math.max(...lines.map((l) => ctx.measureText(l).width)) + 16;
     const th = 36;
     const cx = x0 + w / 2 - tw / 2;
@@ -484,7 +486,7 @@ export class DrawingsPrimitive implements ISeriesPrimitive<Time> {
     color: string,
     pal: DrawingPalette,
   ) {
-    ctx.font = "600 11px sans-serif";
+    ctx.font = `600 11px ${this.ctx.palette().font}`;
     const tw = ctx.measureText(text).width + 12;
     ctx.fillStyle = color;
     ctx.beginPath();

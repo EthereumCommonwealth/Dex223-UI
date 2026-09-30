@@ -61,3 +61,29 @@ export function chartTheme(scheme: ThemeColors): ChartTheme {
     areaBottom: "rgba(63, 207, 142, 0)",
   };
 }
+
+/** Tailwind classes for UI accents, following the page's color scheme (literal for JIT). */
+export interface AccentClasses {
+  /** Active chip or tool: tinted background and accent text. */
+  soft: string;
+  /** Small solid marks: dots, underlines, switch tracks. */
+  solid: string;
+  text: string;
+  focusBorder: string;
+}
+
+export function accentClasses(scheme: ThemeColors): AccentClasses {
+  return scheme === ThemeColors.PURPLE
+    ? {
+        soft: "bg-purple-bg text-purple-hover",
+        solid: "bg-purple",
+        text: "text-purple-hover",
+        focusBorder: "focus:border-purple",
+      }
+    : {
+        soft: "bg-green-bg text-green",
+        solid: "bg-green",
+        text: "text-green",
+        focusBorder: "focus:border-green",
+      };
+}

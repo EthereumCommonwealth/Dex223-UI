@@ -132,8 +132,7 @@ export function formatBarTime(time: number, intraday: boolean): string {
 const relative = new Map<string, Intl.RelativeTimeFormat>();
 
 /** "12s ago", "5 min. ago", "3 days ago": how fresh a trade is, in the viewer's locale. */
-export function formatAgo(time: number, now = Date.now() / 1000): string {
-  const locale = typeof navigator === "undefined" ? "en" : navigator.language;
+export function formatAgo(time: number, locale: string, now = Date.now() / 1000): string {
   let rtf = relative.get(locale);
   if (!rtf) {
     rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto", style: "short" });

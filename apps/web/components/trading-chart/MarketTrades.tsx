@@ -1,18 +1,20 @@
 "use client";
 
 import clsx from "clsx";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 
 import Svg from "@/components/atoms/Svg";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { useColorScheme } from "@/lib/color-scheme";
 import { DexChainId } from "@/sdk_bi/chains";
 
 import { Trade } from "./datafeed/types";
 import { compact, formatAgo, formatBarTime, formatPrice } from "./format";
 import { ChartMarket } from "./hooks/useChartMarket";
 import { useMarketTrades } from "./hooks/useMarketData";
+import { accentClasses } from "./theme";
 
 type Tab = "market" | "mine";
 
@@ -36,6 +38,8 @@ export default function MarketTrades({
   liveTrades: Trade[];
 }) {
   const t = useTranslations("TradingChart");
+  const locale = useLocale();
+  const accent = accentClasses(useColorScheme());
   const { address } = useAccount();
   const [tab, setTab] = useState<Tab>("market");
 
@@ -80,7 +84,12 @@ export default function MarketTrades({
           >
             {key === "market" ? t("trades_market") : t("trades_mine")}
             {tab === key && (
-              <span className="absolute left-2 right-2 -bottom-px h-0.5 rounded-full bg-green" />
+              <span
+                className={clsx(
+                  "absolute left-2 right-2 -bottom-px h-0.5 rounded-full",
+                  accent.solid,
+                )}
+              />
             )}
           </button>
         ))}
@@ -155,7 +164,7 @@ export default function MarketTrades({
                         {compact(trade.amount1)}
                       </span>
                       <span className="flex items-center justify-end gap-1 whitespace-nowrap text-tertiary-text">
-                        {formatAgo(trade.time)}
+                        {formatAgo(trade.time, locale)}
                         <Svg
                           iconName="forward"
                           size={14}

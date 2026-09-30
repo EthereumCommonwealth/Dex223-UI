@@ -27,7 +27,7 @@ import {
   useChartPreferencesReady,
   useTradingChartStore,
 } from "./store";
-import { chartTheme } from "./theme";
+import { accentClasses, chartTheme } from "./theme";
 import {
   ChartSkeleton,
   ChartTypeIcon,
@@ -98,6 +98,7 @@ export default function ProChart({
   const t = useTranslations("TradingChart");
   const scheme = useColorScheme();
   const theme = useMemo(() => chartTheme(scheme), [scheme]);
+  const accent = useMemo(() => accentClasses(scheme), [scheme]);
   const {
     chartType,
     showVolume,
@@ -129,6 +130,19 @@ export default function ProChart({
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [fullscreen, setFullscreen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  // Narrow charts (the form column on a laptop, tablets, phones) get a compact toolbar.
+  const [width, setWidth] = useState(1000);
+  const compact = width < 760;
+  // Phones: the toolbar wraps onto a second row rather than hiding controls off-screen.
+  const tiny = width < 480;
+
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(([entry]) => setWidth(entry.contentRect.width));
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const drawings = useMemo(() => allDrawings[symbol] ?? [], [allDrawings, symbol]);
   const drawingsRef = useRef(drawings);
@@ -223,7 +237,12 @@ export default function ProChart({
       )}
     >
       {/* Toolbar */}
-      <div className="flex items-center gap-2 px-3 md:px-4 py-2 overflow-x-auto no-scrollbar">
+      <div
+        className={clsx(
+          "flex items-center gap-2 px-3 md:px-4 py-2",
+          tiny ? "flex-wrap" : "overflow-x-auto no-scrollbar",
+        )}
+      >
         <Segmented label={t("interval")}>
           {intervals.map((option) => (
             <SegmentButton
@@ -238,26 +257,39 @@ export default function ProChart({
           ))}
         </Segmented>
 
-        <Segmented label={t("chart_type")}>
-          {CHART_TYPES.map((type) => (
-            <SegmentButton
-              key={type}
-              active={chartType === type}
-              onClick={() => setChartType(type)}
-              ariaLabel={t(type)}
-              title={t(type)}
-              icon
-            >
-              <ChartTypeIcon type={type} />
-            </SegmentButton>
-          ))}
-        </Segmented>
+        {compact ? (
+          <ToolButton
+            label={`${t("chart_type")}: ${t(chartType)}`}
+            onClick={() =>
+              setChartType(CHART_TYPES[(CHART_TYPES.indexOf(chartType) + 1) % CHART_TYPES.length])
+            }
+          >
+            <ChartTypeIcon type={chartType} />
+          </ToolButton>
+        ) : (
+          <Segmented label={t("chart_type")}>
+            {CHART_TYPES.map((type) => (
+              <SegmentButton
+                key={type}
+                active={chartType === type}
+                onClick={() => setChartType(type)}
+                ariaLabel={t(type)}
+                title={t(type)}
+                icon
+              >
+                <ChartTypeIcon type={type} />
+              </SegmentButton>
+            ))}
+          </Segmented>
+        )}
 
         <IndicatorsMenu
           indicators={indicators}
           onChange={setIndicators}
           showVolume={showVolume}
           onShowVolume={setShowVolume}
+          accent={accent}
+          compact={compact}
         />
 
         <div className="ml-auto flex items-center gap-0.5 shrink-0">
@@ -296,6 +328,7 @@ export default function ProChart({
               onDrawingsChange([]);
               setSelectedDrawing(null);
             }}
+            accent={accent}
           />
         )}
         <div className="relative flex-1 min-w-0">
@@ -387,6 +420,9 @@ export default function ProChart({
 
       <ChartFooter
         source={sourceLong}
+        sourceShort={sourceShort}
+        compact={compact}
+        accent={accent}
         lastBar={lastBar}
         seconds={resolutionSeconds(resolution)}
         scaleMode={scaleMode}

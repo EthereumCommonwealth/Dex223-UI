@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Bar } from "./datafeed/types";
+import { AccentClasses } from "./theme";
 
 type ScaleMode = "normal" | "log" | "percent";
 
@@ -29,12 +30,19 @@ function zoneLabel(): string {
 
 export default function ChartFooter({
   source,
+  sourceShort,
+  compact,
+  accent,
   lastBar,
   seconds,
   scaleMode,
   onScaleMode,
 }: {
   source: string;
+  sourceShort: string;
+  /** Narrow chart: the short source, with the full line on hover. */
+  compact?: boolean;
+  accent: AccentClasses;
   lastBar: Bar | null;
   seconds: number;
   scaleMode: ScaleMode;
@@ -54,7 +62,9 @@ export default function ChartFooter({
 
   return (
     <div className="flex items-center gap-3 px-3 md:px-4 h-8 border-t border-secondary-border text-12 text-tertiary-text">
-      <span className="truncate min-w-0">{source}</span>
+      <span className="truncate min-w-0" title={source}>
+        {compact ? sourceShort : source}
+      </span>
       <div className="ml-auto flex items-center gap-3 shrink-0">
         {remaining && (
           <span className="hidden sm:inline tabular-nums" title={t("bar_closes_in")}>
@@ -79,9 +89,7 @@ export default function ChartFooter({
               onClick={() => onScaleMode(scaleMode === mode && mode !== "normal" ? "normal" : mode)}
               className={clsx(
                 "px-1.5 h-6 rounded-1 duration-200",
-                scaleMode === mode
-                  ? "text-green bg-green-bg"
-                  : "text-tertiary-text hocus:text-primary-text",
+                scaleMode === mode ? accent.soft : "text-tertiary-text hocus:text-primary-text",
               )}
             >
               {label}

@@ -9,6 +9,7 @@ import { useAccount } from "wagmi";
 import Svg from "@/components/atoms/Svg";
 import TokenLogo from "@/components/atoms/TokenLogo";
 import { Link } from "@/i18n/routing";
+import { useColorScheme } from "@/lib/color-scheme";
 import { Currency } from "@/sdk_bi/entities/currency";
 
 import { Bar, Resolution, RESOLUTIONS, Trade } from "./datafeed/types";
@@ -18,6 +19,7 @@ import { useMarketTrades, usePairStats } from "./hooks/useMarketData";
 import MarketTrades from "./MarketTrades";
 import ProChart from "./ProChart";
 import { useTradingChartStore } from "./store";
+import { accentClasses } from "./theme";
 import { ChartSkeleton, EmptyState } from "./ui";
 
 interface Props {
@@ -42,6 +44,7 @@ export default function TradingChart({
   className,
 }: Props) {
   const t = useTranslations("TradingChart");
+  const accent = accentClasses(useColorScheme());
   const { address } = useAccount();
   const queryClient = useQueryClient();
 
@@ -155,18 +158,23 @@ export default function TradingChart({
               <span
                 className={clsx(
                   "inline-flex items-center gap-1.5 h-6 px-2 rounded-full text-12",
-                  isFallback ? "bg-orange-bg text-orange" : "bg-green-bg text-green",
+                  isFallback ? "bg-orange-bg text-orange" : accent.soft,
                 )}
                 title={isFallback ? t("interval_unavailable") : undefined}
               >
                 <span className="relative flex w-1.5 h-1.5">
                   {!isFallback && (
-                    <span className="absolute inline-flex h-full w-full rounded-full bg-green opacity-60 animate-ping" />
+                    <span
+                      className={clsx(
+                        "absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping",
+                        accent.solid,
+                      )}
+                    />
                   )}
                   <span
                     className={clsx(
                       "relative inline-flex w-1.5 h-1.5 rounded-full",
-                      isFallback ? "bg-orange" : "bg-green",
+                      isFallback ? "bg-orange" : accent.solid,
                     )}
                   />
                 </span>

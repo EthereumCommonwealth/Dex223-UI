@@ -11,6 +11,7 @@ import {
   INDICATORS,
   indicatorTitle,
 } from "./indicators/registry";
+import { AccentClasses } from "./theme";
 
 /** At most this many indicators at once: beyond it the panes get too thin to read. */
 const MAX_INDICATORS = 6;
@@ -20,11 +21,16 @@ export default function IndicatorsMenu({
   onChange,
   showVolume,
   onShowVolume,
+  accent,
+  compact,
 }: {
   indicators: IndicatorConfig[];
   onChange: (next: IndicatorConfig[]) => void;
   showVolume: boolean;
   onShowVolume: (show: boolean) => void;
+  accent: AccentClasses;
+  /** Icon and count only, for narrow charts. */
+  compact?: boolean;
 }) {
   const t = useTranslations("TradingChart");
   const [open, setOpen] = useState(false);
@@ -98,9 +104,14 @@ export default function IndicatorsMenu({
             strokeLinejoin="round"
           />
         </svg>
-        {t("indicators")}
+        <span className={compact ? "sr-only" : undefined}>{t("indicators")}</span>
         {indicators.length > 0 && (
-          <span className="min-w-4 h-4 px-1 rounded-full bg-green-bg text-green text-[10px] leading-4 text-center">
+          <span
+            className={clsx(
+              "min-w-4 h-4 px-1 rounded-full text-[10px] leading-4 text-center",
+              accent.soft,
+            )}
+          >
             {indicators.length}
           </span>
         )}
@@ -125,7 +136,7 @@ export default function IndicatorsMenu({
               aria-hidden
               className={clsx(
                 "relative w-8 h-[18px] rounded-full duration-200",
-                showVolume ? "bg-green" : "bg-tertiary-bg border border-secondary-border",
+                showVolume ? accent.solid : "bg-tertiary-bg border border-secondary-border",
               )}
             >
               <span
@@ -198,7 +209,7 @@ export default function IndicatorsMenu({
                                   update(config.id, i, v);
                                 }
                               }}
-                              className="w-14 h-7 px-1.5 rounded-[6px] bg-secondary-bg border border-secondary-border text-12 text-primary-text tabular-nums focus:outline-none focus:border-green"
+                              className={`w-14 h-7 px-1.5 rounded-[6px] bg-secondary-bg border border-secondary-border text-12 text-primary-text tabular-nums focus:outline-none ${accent.focusBorder}`}
                             />
                           </label>
                         ))}

@@ -258,6 +258,10 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
       bars: () => barsRef.current,
       seconds: () => resolutionSeconds(resolutionRef.current),
       palette: (): DrawingPalette => ({
+        font:
+          typeof document === "undefined"
+            ? "sans-serif"
+            : getComputedStyle(document.body).fontFamily || "sans-serif",
         line: "#6FB6D9",
         selected: "#A5D8F0",
         handleFill: "#0F0F0F",
@@ -1032,7 +1036,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     <div
       ref={containerRef}
       tabIndex={0}
-      className="absolute inset-0 focus:outline-none"
+      className="absolute inset-0 focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary-border"
       aria-label="Price chart"
     />
   );
