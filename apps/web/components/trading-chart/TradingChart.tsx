@@ -12,11 +12,21 @@ import { Link } from "@/i18n/routing";
 import { useColorScheme } from "@/lib/color-scheme";
 import { Currency } from "@/sdk_bi/entities/currency";
 
-import ChartCanvas, { ChartCanvasHandle, LoadState, MovingAverages } from "./ChartCanvas";
-import { Bar, RESOLUTIONS, Trade } from "./datafeed/types";
+import ChartCanvas, {
+  ChartCanvasHandle,
+  IndicatorValues,
+  LoadState,
+  PaneLayout,
+} from "./ChartCanvas";
+import ChartFooter from "./ChartFooter";
+import { PaneLabels, PriceLegend } from "./ChartLegend";
+import { Bar, RESOLUTIONS, resolutionSeconds, Trade } from "./datafeed/types";
+import { Drawing, DrawingTool } from "./drawings/primitive";
+import DrawingToolbar from "./DrawingToolbar";
 import { compact, formatPercent, formatPrice } from "./format";
 import { useChartMarket } from "./hooks/useChartMarket";
 import { useMarketTrades, usePairStats } from "./hooks/useMarketData";
+import IndicatorsMenu from "./IndicatorsMenu";
 import MarketTrades from "./MarketTrades";
 import { ChartType, useTradingChartStore } from "./store";
 import { chartTheme } from "./theme";
@@ -54,11 +64,17 @@ export default function TradingChart({
     resolution,
     chartType,
     showVolume,
-    showMA,
+    indicators,
+    drawings: allDrawings,
+    magnet,
+    scaleMode,
     setResolution,
     setChartType,
     setShowVolume,
-    setShowMA,
+    setIndicators,
+    setDrawings,
+    setMagnet,
+    setScaleMode,
   } = useTradingChartStore();
 
   const { data: stats } = usePairStats(market);
@@ -66,8 +82,11 @@ export default function TradingChart({
 
   const canvasRef = useRef<ChartCanvasHandle>(null);
   const rootRef = useRef<HTMLDivElement>(null);
-  const [hovered, setHovered] = useState<{ bar: Bar; ma?: MovingAverages } | null>(null);
-  const [last, setLast] = useState<{ bar: Bar; ma?: MovingAverages } | null>(null);
+  const [hovered, setHovered] = useState<{ bar: Bar; values?: IndicatorValues } | null>(null);
+  const [last, setLast] = useState<{ bar: Bar; values?: IndicatorValues } | null>(null);
+  const [tool, setTool] = useState<DrawingTool>("cursor");
+  const [selectedDrawing, setSelectedDrawing] = useState<string | null>(null);
+  const [paneLayout, setPaneLayout] = useState<PaneLayout[]>([]);
   const lastBar = last?.bar ?? null;
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [liveTrades, setLiveTrades] = useState<Trade[]>([]);
@@ -80,6 +99,14 @@ export default function TradingChart({
     datafeed && !datafeed.resolutions.includes(resolution) ? datafeed.resolutions[0] : resolution;
 
   useEffect(() => setLiveTrades([]), [market.symbol]);
+
+  const symbolKey = market.symbol ?? "";
+  const drawings = useMemo(() => allDrawings[symbolKey] ?? [], [allDrawings, symbolKey]);
+  const onDrawingsChange = useCallback(
+    (next: Drawing[]) => symbolKey && setDrawings(symbolKey, next),
+    [setDrawings, symbolKey],
+  );
+  const removeIndicator = (id: string) => setIndicators(indicators.filter((c) => c.id !== id));
 
   const onTrades = useCallback(
     (trades: Trade[]) => {
@@ -272,18 +299,12 @@ export default function TradingChart({
           ))}
         </Segmented>
 
-        <div className="flex items-center gap-1 shrink-0">
-          <ToggleChip active={showVolume} onClick={() => setShowVolume(!showVolume)}>
-            {t("volume")}
-          </ToggleChip>
-          <ToggleChip
-            active={showMA}
-            onClick={() => setShowMA(!showMA)}
-            title={t("moving_averages")}
-          >
-            MA
-          </ToggleChip>
-        </div>
+        <IndicatorsMenu
+          indicators={indicators}
+          onChange={setIndicators}
+          showVolume={showVolume}
+          onShowVolume={setShowVolume}
+        />
 
         <div className="ml-auto flex items-center gap-0.5 shrink-0">
           <ToolButton label={t("reset_view")} onClick={() => canvasRef.current?.resetView()}>
@@ -304,96 +325,135 @@ export default function TradingChart({
       {/* Plot */}
       <div
         className={clsx(
-          "relative border-t border-secondary-border",
-          fullscreen ? "flex-1" : heightClassName,
+          "flex border-t border-secondary-border",
+          fullscreen ? "flex-1 min-h-0" : heightClassName,
         )}
       >
-        {market.status === "ready" && datafeed && market.symbol && (
-          <ChartCanvas
-            key={reloadKey}
-            ref={canvasRef}
-            datafeed={datafeed}
-            symbol={market.symbol}
-            resolution={activeResolution}
-            chartType={chartType}
-            showVolume={showVolume}
-            theme={theme}
-            myTrades={myTrades}
-            watermark={`${base.symbol ?? ""}/${quote.symbol ?? ""}`}
-            showMA={showMA}
-            onHover={(bar, ma) => setHovered(bar ? { bar, ma } : null)}
-            onLastBar={(bar, ma) => setLast(bar ? { bar, ma } : null)}
-            onState={setLoadState}
-            onTrades={onTrades}
-          />
+        {market.status === "ready" && (
+          <div className="hidden sm:flex">
+            <DrawingToolbar
+              tool={tool}
+              onTool={setTool}
+              magnet={magnet}
+              onMagnet={setMagnet}
+              hasSelection={!!selectedDrawing}
+              onDeleteSelected={() => canvasRef.current?.deleteSelected()}
+              drawingCount={drawings.length}
+              onClearAll={() => {
+                onDrawingsChange([]);
+                setSelectedDrawing(null);
+              }}
+            />
+          </div>
         )}
+        <div className="relative flex-1 min-w-0">
+          {market.status === "ready" && datafeed && market.symbol && (
+            <ChartCanvas
+              key={reloadKey}
+              ref={canvasRef}
+              datafeed={datafeed}
+              symbol={market.symbol}
+              resolution={activeResolution}
+              chartType={chartType}
+              showVolume={showVolume}
+              theme={theme}
+              myTrades={myTrades}
+              watermark={`${base.symbol ?? ""}/${quote.symbol ?? ""}`}
+              indicators={indicators}
+              scaleMode={scaleMode}
+              tool={tool}
+              magnet={magnet}
+              drawings={drawings}
+              onDrawingsChange={onDrawingsChange}
+              onToolDone={() => setTool("cursor")}
+              onSelectDrawing={setSelectedDrawing}
+              onLayout={setPaneLayout}
+              onHover={(bar, values) => setHovered(bar ? { bar, values } : null)}
+              onLastBar={(bar, values) => setLast(bar ? { bar, values } : null)}
+              onState={setLoadState}
+              onTrades={onTrades}
+            />
+          )}
 
-        {market.status === "ready" && loadState === "ready" && legend && (
-          <Legend
-            title={`${base.symbol}/${quote.symbol} · ${intervalLabel} · ${isFallback ? t("source_subgraph") : "Dex223"}`}
-            bar={legend.bar}
-            ma={showMA ? legend.ma : undefined}
-            volumeLabel={t("volume")}
-            volumeUnit={base.symbol ?? ""}
-            theme={theme}
-          />
-        )}
+          {market.status === "ready" && loadState === "ready" && legend && (
+            <>
+              <PriceLegend
+                title={`${base.symbol}/${quote.symbol} · ${intervalLabel} · ${isFallback ? t("source_subgraph") : "Dex223"}`}
+                bar={legend.bar}
+                indicators={indicators}
+                indicatorValues={legend.values}
+                volumeLabel={t("volume")}
+                volumeUnit={base.symbol ?? ""}
+                removeLabel={t("remove")}
+                onRemove={removeIndicator}
+              />
+              <PaneLabels
+                layout={paneLayout}
+                indicators={indicators}
+                indicatorValues={legend.values}
+                bar={legend.bar}
+                volumeLabel={t("volume")}
+                volumeUnit={base.symbol ?? ""}
+                removeLabel={t("remove")}
+                onRemove={removeIndicator}
+              />
+            </>
+          )}
 
-        {(market.status === "loading" ||
-          market.status === "idle" ||
-          (market.status === "ready" && loadState === "loading")) && <ChartSkeleton />}
-        {market.status === "no-pool" && (
-          <EmptyState
-            icon="pool"
-            title={t("no_pool_title")}
-            description={t("no_pool_description", {
-              base: tokenB.symbol ?? "",
-              quote: tokenA.symbol ?? "",
-            })}
-            action={
-              <Link
-                href="/add"
-                className="mt-1 px-4 h-9 inline-flex items-center rounded-2 bg-green-bg text-primary-text text-14 hocus:bg-green-bg-hover duration-200"
-              >
-                {t("create_pool")}
-              </Link>
-            }
-          />
-        )}
-        {market.status === "ready" && loadState === "empty" && (
-          <EmptyState icon="candle" title={t("empty_title")} description={t("empty_description")} />
-        )}
-        {market.status === "ready" && loadState === "error" && (
-          <EmptyState
-            icon="warning"
-            title={t("error_title")}
-            description={t("error_description")}
-            action={
-              <button
-                type="button"
-                onClick={() => setReloadKey((k) => k + 1)}
-                className="mt-1 px-4 h-9 rounded-2 bg-tertiary-bg text-primary-text text-14 hocus:bg-quaternary-bg duration-200"
-              >
-                {t("retry")}
-              </button>
-            }
-          />
-        )}
+          {(market.status === "loading" ||
+            market.status === "idle" ||
+            (market.status === "ready" && loadState === "loading")) && <ChartSkeleton />}
+          {market.status === "no-pool" && (
+            <EmptyState
+              icon="pool"
+              title={t("no_pool_title")}
+              description={t("no_pool_description", {
+                base: tokenB.symbol ?? "",
+                quote: tokenA.symbol ?? "",
+              })}
+              action={
+                <Link
+                  href="/add"
+                  className="mt-1 px-4 h-9 inline-flex items-center rounded-2 bg-green-bg text-primary-text text-14 hocus:bg-green-bg-hover duration-200"
+                >
+                  {t("create_pool")}
+                </Link>
+              }
+            />
+          )}
+          {market.status === "ready" && loadState === "empty" && (
+            <EmptyState
+              icon="candle"
+              title={t("empty_title")}
+              description={t("empty_description")}
+            />
+          )}
+          {market.status === "ready" && loadState === "error" && (
+            <EmptyState
+              icon="warning"
+              title={t("error_title")}
+              description={t("error_description")}
+              action={
+                <button
+                  type="button"
+                  onClick={() => setReloadKey((k) => k + 1)}
+                  className="mt-1 px-4 h-9 rounded-2 bg-tertiary-bg text-primary-text text-14 hocus:bg-quaternary-bg duration-200"
+                >
+                  {t("retry")}
+                </button>
+              }
+            />
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center justify-between gap-3 px-4 md:px-5 h-8 border-t border-secondary-border text-12 text-tertiary-text">
-        <span className="truncate">
-          {isFallback ? t("source_subgraph_long") : t("source_onchain")}
-        </span>
-        <a
-          href="https://www.tradingview.com/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="shrink-0 hocus:text-secondary-text duration-200"
-        >
-          {t("charts_by")}
-        </a>
-      </div>
+      <ChartFooter
+        source={isFallback ? t("source_subgraph_long") : t("source_onchain")}
+        lastBar={lastBar}
+        seconds={resolutionSeconds(activeResolution)}
+        scaleMode={scaleMode}
+        onScaleMode={setScaleMode}
+      />
 
       {showTrades && !fullscreen && market.status === "ready" && datafeed?.supportsTrades && (
         <MarketTrades market={market} liveTrades={liveTrades} />
@@ -476,63 +536,6 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function Legend({
-  title,
-  bar,
-  ma,
-  volumeLabel,
-  volumeUnit,
-  theme,
-}: {
-  title: string;
-  bar: Bar;
-  ma?: MovingAverages;
-  volumeLabel: string;
-  volumeUnit: string;
-  theme: ReturnType<typeof chartTheme>;
-}) {
-  const up = bar.close >= bar.open;
-  const change = bar.open ? ((bar.close - bar.open) / bar.open) * 100 : 0;
-  const tone =
-    bar.trades === 0 && bar.high === bar.low
-      ? "text-secondary-text"
-      : up
-        ? "text-green"
-        : "text-red-light";
-  return (
-    <div className="absolute left-3 top-2.5 z-10 flex flex-col gap-1 text-12 tabular-nums pointer-events-none max-w-[calc(100%-6rem)]">
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5">
-        <span className="hidden sm:inline text-secondary-text font-medium">{title}</span>
-        {(
-          [
-            ["O", bar.open],
-            ["H", bar.high],
-            ["L", bar.low],
-            ["C", bar.close],
-          ] as const
-        ).map(([k, v]) => (
-          <span key={k} className="text-tertiary-text">
-            {k} <span className={tone}>{formatPrice(v)}</span>
-          </span>
-        ))}
-        <span className={tone}>{formatPercent(change)}</span>
-        <span className="text-tertiary-text">
-          {volumeLabel}{" "}
-          <span className="text-secondary-text">
-            {compact(bar.volume)} {volumeUnit}
-          </span>
-        </span>
-      </div>
-      {ma && (
-        <div className="flex items-center gap-x-3">
-          <span style={{ color: theme.ma1 }}>MA 7 {formatPrice(ma.ma7)}</span>
-          <span style={{ color: theme.ma2 }}>MA 25 {formatPrice(ma.ma25)}</span>
-        </div>
-      )}
-    </div>
-  );
-}
-
 function Segmented({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div
@@ -577,35 +580,6 @@ function SegmentButton({
         active
           ? "bg-tertiary-bg text-primary-text shadow-[0_1px_2px_rgba(0,0,0,0.4)]"
           : "text-tertiary-text hocus:text-primary-text disabled:opacity-30 disabled:hover:text-tertiary-text",
-      )}
-    >
-      {children}
-    </button>
-  );
-}
-
-function ToggleChip({
-  active,
-  onClick,
-  title,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  title?: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      aria-pressed={active}
-      title={title}
-      onClick={onClick}
-      className={clsx(
-        "h-7 px-2.5 rounded-2 text-12 font-medium border duration-200 shrink-0",
-        active
-          ? "border-primary-border text-primary-text bg-tertiary-bg"
-          : "border-secondary-border text-tertiary-text hocus:text-primary-text",
       )}
     >
       {children}
