@@ -150,14 +150,17 @@ export function useAutoListingUpdater() {
         addressesToActualize.add(FREE_AUTO_LISTING_ADDRESS[chainId].toLowerCase());
       }
 
-      const lastUpdatedResult = await checkLastUpdated({
-        variables: {
-          addresses: allAutoListingContracts,
-          first: allAutoListingContracts.length,
-        },
-      });
+      // Nothing stored yet (first visit): skip the check, the subgraph rejects `first: 0`.
+      const lastUpdatedResult = allAutoListingContracts.length
+        ? await checkLastUpdated({
+            variables: {
+              addresses: allAutoListingContracts,
+              first: allAutoListingContracts.length,
+            },
+          })
+        : undefined;
 
-      lastUpdatedResult.data?.autoListings?.forEach((autoListingInfo: any) => {
+      lastUpdatedResult?.data?.autoListings?.forEach((autoListingInfo: any) => {
         const currentListing = allAutoListings.find(
           (listing) =>
             listing.autoListingContract?.toLowerCase() === autoListingInfo.id.toLowerCase(),
