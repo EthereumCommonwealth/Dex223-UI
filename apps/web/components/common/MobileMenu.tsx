@@ -455,7 +455,7 @@ export default function MobileMenu() {
                         text: t("useful_front_page"),
                       },
                       {
-                        href: "https://github.com/Dalcor/dex-exchange",
+                        href: "https://github.com/EthereumCommonwealth/Dex223-UI",
                         text: t("useful_page_source_codes"),
                       },
                     ]}
