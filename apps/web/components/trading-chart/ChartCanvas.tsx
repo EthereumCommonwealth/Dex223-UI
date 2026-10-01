@@ -28,6 +28,7 @@ import {
 } from "lightweight-charts";
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 
+import { MarketApiDatafeed } from "./datafeed/marketApi";
 import { Bar, bucketTime, Datafeed, Resolution, resolutionSeconds, Trade } from "./datafeed/types";
 import {
   Drawing,
@@ -58,6 +59,29 @@ export interface PaneLayout {
   top: number;
 }
 
+/** Another symbol drawn over the price pane, read in % change against the main one. */
+export interface CompareSeries {
+  symbol: string;
+  label: string;
+  color: string;
+}
+
+/** Key under which hover and last-bar values carry each compared symbol's close. */
+export const COMPARE_VALUES = "__compare";
+
+interface CompareRef {
+  spec: CompareSeries;
+  series: ISeriesApi<"Line">;
+  bars: Bar[];
+  byTime: Map<number, Bar>;
+  hasMore: boolean;
+  unsubscribe: () => void;
+}
+
+// Compared symbols are coins and pools from the market API whatever feeds the main
+// series, so a pool on the subgraph fallback can still be compared with ETH.
+const compareFeed = new MarketApiDatafeed();
+
 export interface ChartCanvasHandle {
   resetView: () => void;
   screenshot: () => HTMLCanvasElement | null;
@@ -81,6 +105,8 @@ interface Props {
   watermark?: string;
   indicators?: IndicatorConfig[];
   scaleMode?: "normal" | "log" | "percent";
+  /** Symbols overlaid on the price pane; the price scale shows % change while any are. */
+  compare?: CompareSeries[];
   /** Drawing tool in use; "cursor" selects and drags existing drawings. */
   tool?: DrawingTool;
   magnet?: boolean;
@@ -192,6 +218,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     watermark,
     indicators = [],
     scaleMode = "normal",
+    compare,
     tool = "cursor",
     magnet = false,
     drawings,
@@ -216,6 +243,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
   const valuesByTimeRef = useRef<Map<number, IndicatorValues>>(new Map());
   const barsRef = useRef<Bar[]>([]);
   const byTimeRef = useRef<Map<number, Bar>>(new Map());
+  const compareRefs = useRef<CompareRef[]>([]);
 
   const resolutionRef = useRef(resolution);
   resolutionRef.current = resolution;
@@ -325,6 +353,72 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     deleteSelected,
   }));
 
+  // ---------------------------------------------------------------- compared symbols
+  /** Indicator values plus each compared symbol's close at `time` (or its latest). */
+  const withCompare = (time: number, values?: IndicatorValues): IndicatorValues | undefined => {
+    if (!compareRefs.current.length) return values;
+    const closes: Record<string, number | null> = {};
+    for (const ref of compareRefs.current) {
+      const last = ref.bars[ref.bars.length - 1];
+      closes[ref.spec.symbol] =
+        ref.byTime.get(time)?.close ?? (last && time >= last.time ? last.close : null);
+    }
+    return { ...values, [COMPARE_VALUES]: closes };
+  };
+
+  const emitLast = () => {
+    const last = barsRef.current[barsRef.current.length - 1];
+    if (last)
+      props.current.onLastBar?.(
+        last,
+        withCompare(last.time, valuesByTimeRef.current.get(last.time)),
+      );
+  };
+
+  /**
+   * Only at the main series' own bar times (plus anything newer): a thinly traded pool has
+   * gaps a busy market does not, and extra time slots would stretch its candles apart.
+   */
+  const renderCompare = (ref: CompareRef) => {
+    const main = barsRef.current;
+    if (!main.length) {
+      ref.series.setData([]);
+      return;
+    }
+    const lastMain = main[main.length - 1].time;
+    ref.series.setData(
+      ref.bars
+        .filter((b) => byTimeRef.current.has(b.time) || b.time > lastMain)
+        .map((b) => ({ time: t(b.time), value: b.close })),
+    );
+  };
+
+  const extendCompares = (before: number) => {
+    for (const ref of compareRefs.current) {
+      const first = ref.bars[0]?.time;
+      if (!ref.hasMore || first === undefined || first <= before) continue;
+      compareFeed
+        .getBars({
+          symbol: ref.spec.symbol,
+          resolution: resolutionRef.current,
+          to: first - 1,
+          countback: pageSize,
+        })
+        .then((older) => {
+          if (!compareRefs.current.includes(ref)) return;
+          const fresh = older.filter((b) => b.time < first);
+          if (!fresh.length) {
+            ref.hasMore = false;
+            return;
+          }
+          ref.bars = [...fresh, ...ref.bars];
+          for (const b of fresh) ref.byTime.set(b.time, b);
+          renderCompare(ref);
+        })
+        .catch(() => {});
+    }
+  };
+
   // ---------------------------------------------------------------- pane layout report
   const reportLayout = () => {
     const chart = chartRef.current;
@@ -428,7 +522,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
       const time = param.time as number;
       props.current.onHover?.(
         byTimeRef.current.get(time) ?? null,
-        valuesByTimeRef.current.get(time),
+        withCompare(time, valuesByTimeRef.current.get(time)),
       );
     });
 
@@ -616,8 +710,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     volumeRef.current?.setData(volumeData(barsRef.current, props.current.theme));
     applyIndicators();
     // New indicators need their latest values in the legend before the next live bar.
-    const last = barsRef.current[barsRef.current.length - 1];
-    if (last) props.current.onLastBar?.(last, valuesByTimeRef.current.get(last.time));
+    emitLast();
     requestAnimationFrame(reportLayout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showVolume, indicatorsKey]);
@@ -918,7 +1011,9 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
         },
       });
       primitive.update();
-      props.current.onLastBar?.(last, last ? valuesByTimeRef.current.get(last.time) : undefined);
+      for (const ref of compareRefs.current) renderCompare(ref);
+      if (last) emitLast();
+      else props.current.onLastBar?.(null);
       applyMarkers();
     };
 
@@ -963,6 +1058,7 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
           }
           const visible = chart.timeScale().getVisibleLogicalRange();
           setAll([...fresh, ...barsRef.current]);
+          extendCompares(fresh[0].time);
           // Keep the viewport where the user was instead of jumping by the prepended count.
           if (visible) {
             chart.timeScale().setVisibleLogicalRange({
@@ -1015,7 +1111,10 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
           volumeRef.current?.update(vol);
         }
         if (indicatorRefs.current.length) applyIndicators();
-        props.current.onLastBar?.(bar, valuesByTimeRef.current.get(bar.time));
+        props.current.onLastBar?.(
+          bar,
+          withCompare(bar.time, valuesByTimeRef.current.get(bar.time)),
+        );
         if (bars.length === 1) props.current.onState?.("ready");
       },
       onTrades: (trades) => {
@@ -1031,6 +1130,85 @@ const ChartCanvas = forwardRef<ChartCanvasHandle, Props>(function ChartCanvas(
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [datafeed, symbol, resolution, pageSize, initialVisible]);
+
+  // ---------------------------------------------------------------- compare series
+  const compareKey = (compare ?? []).map((c) => `${c.symbol}|${c.color}`).join(",");
+  useEffect(() => {
+    const chart = chartRef.current;
+    const specs = compare ?? [];
+    if (!chart || !specs.length) return;
+
+    let cancelled = false;
+    const controller = new AbortController();
+    const sec = resolutionSeconds(resolution);
+    const refs: CompareRef[] = specs.map((spec) => ({
+      spec,
+      series: chart.addSeries(
+        LineSeries,
+        {
+          color: spec.color,
+          lineWidth: 2,
+          priceLineVisible: false,
+          lastValueVisible: true,
+          crosshairMarkerRadius: 3,
+          priceFormat: { type: "custom", formatter: formatPrice, minMove: 1e-12 },
+        },
+        0,
+      ),
+      bars: [],
+      byTime: new Map(),
+      hasMore: true,
+      unsubscribe: () => {},
+    }));
+    compareRefs.current = refs;
+
+    const now = Math.floor(Date.now() / 1000);
+    for (const ref of refs) {
+      compareFeed
+        .getBars(
+          {
+            symbol: ref.spec.symbol,
+            resolution,
+            to: now,
+            countback: Math.max(pageSize, barsRef.current.length),
+          },
+          controller.signal,
+        )
+        .then((bars) => {
+          if (cancelled) return;
+          ref.bars = bars;
+          ref.byTime = new Map(bars.map((b) => [b.time, b]));
+          renderCompare(ref);
+          emitLast();
+        })
+        .catch(() => {});
+      ref.unsubscribe = compareFeed.subscribe(ref.spec.symbol, resolution, {
+        onBar: (incoming) => {
+          if (cancelled) return;
+          const bar = { ...incoming, time: bucketTime(incoming.time, sec) };
+          const last = ref.bars[ref.bars.length - 1];
+          if (last && bar.time < last.time) return;
+          if (last && bar.time === last.time) ref.bars[ref.bars.length - 1] = bar;
+          else ref.bars.push(bar);
+          ref.byTime.set(bar.time, bar);
+          renderCompare(ref);
+        },
+      });
+    }
+
+    return () => {
+      cancelled = true;
+      controller.abort();
+      compareRefs.current = [];
+      for (const ref of refs) {
+        ref.unsubscribe();
+        // On unmount the chart is already gone.
+        if (chartRef.current) chart.removeSeries(ref.series);
+      }
+      emitLast();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compareKey, resolution, symbol, pageSize]);
 
   return (
     <div
