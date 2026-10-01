@@ -215,9 +215,16 @@ const gasOptionTitle: Record<GasOption, any> = {
   [GasOption.FAST]: "fast",
   [GasOption.CUSTOM]: "custom",
 };
-export default function TradeForm() {
+export default function TradeForm({
+  setIsChartVisible,
+  isChartVisible,
+}: {
+  setIsChartVisible?: (isVisible: boolean) => void;
+  isChartVisible?: boolean;
+}) {
   const t = useTranslations("Swap");
   const tA11y = useTranslations("A11y");
+  const tChart = useTranslations("TradingChart");
   const { address } = useAccount();
   const canReceiveERC223 = useCanReceiveERC223(address);
   useTradeComputation();
@@ -491,6 +498,16 @@ export default function TradeForm() {
       <div className="flex justify-between items-center mb-2.5">
         <h3 className="font-bold text-20">{t("swap")}</h3>
         <div className="flex items-center relative left-3">
+          {setIsChartVisible && tokenA && tokenB && (
+            <IconButton
+              buttonSize={IconButtonSize.LARGE}
+              active={isChartVisible}
+              iconName="toggle-trading-view"
+              aria-label={isChartVisible ? tChart("hide_chart") : tChart("show_chart")}
+              aria-pressed={isChartVisible}
+              onClick={() => setIsChartVisible(!isChartVisible)}
+            />
+          )}
           <IconButton
             buttonSize={IconButtonSize.LARGE}
             active={showRecentTransactions}

@@ -30,7 +30,20 @@ const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
     "https://api.studio.thegraph.com/query/1760635/dex-223-v-1-sepolia/version/latest",
   // [DexChainId.CALLISTO]: "",
   [DexChainId.BSC_TESTNET]: "https://api.studio.thegraph.com/query/56540/dex223-v1-chapel/1.0.82",
-  [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-eosevm",
+  [DexChainId.EOS]: "",
+  [DexChainId.BASE]: "",
+  [DexChainId.BSC]: "",
+  [DexChainId.ARBITRUM]: "",
+  [DexChainId.POLYGON]: "",
+  [DexChainId.AVALANCHE]: "",
+  [DexChainId.OPTIMISM]: "",
+  [DexChainId.MONAD]: "",
+  [DexChainId.UNICHAIN]: "",
+  [DexChainId.PLASMA]: "",
+  [DexChainId.SONIC]: "",
+  [DexChainId.LINEA]: "",
+  [DexChainId.INK]: "",
+  [DexChainId.MANTLE]: "",
 };
 
 const httpLink = new HttpLink({ uri: CHAIN_SUBGRAPH_URL[DexChainId.MAINNET] });
@@ -106,6 +119,58 @@ export const chainToApolloClient: Record<DexChainId, ApolloClient<NormalizedCach
   [DexChainId.EOS]: new ApolloClient({
     cache: new InMemoryCache(),
     uri: CHAIN_SUBGRAPH_URL[DexChainId.EOS],
+  }),
+  [DexChainId.BASE]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.BASE],
+  }),
+  [DexChainId.BSC]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.BSC],
+  }),
+  [DexChainId.ARBITRUM]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.ARBITRUM],
+  }),
+  [DexChainId.POLYGON]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.POLYGON],
+  }),
+  [DexChainId.AVALANCHE]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.AVALANCHE],
+  }),
+  [DexChainId.OPTIMISM]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.OPTIMISM],
+  }),
+  [DexChainId.MONAD]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.MONAD],
+  }),
+  [DexChainId.UNICHAIN]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.UNICHAIN],
+  }),
+  [DexChainId.PLASMA]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.PLASMA],
+  }),
+  [DexChainId.SONIC]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.SONIC],
+  }),
+  [DexChainId.LINEA]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.LINEA],
+  }),
+  [DexChainId.INK]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.INK],
+  }),
+  [DexChainId.MANTLE]: new ApolloClient({
+    cache: new InMemoryCache(),
+    uri: CHAIN_SUBGRAPH_URL[DexChainId.MANTLE],
   }),
   // [DexChainId.CALLISTO]: new ApolloClient({
   //   cache: new InMemoryCache(),

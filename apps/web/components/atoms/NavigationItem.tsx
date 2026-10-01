@@ -6,7 +6,7 @@ import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
 import Badge from "@/components/badges/Badge";
 import IconButton from "@/components/buttons/IconButton";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 
 interface Props {
@@ -22,15 +22,14 @@ interface Props {
 }
 export default function NavigationItem({ href, title, active, id, plain = false }: Props) {
   const t = useTranslations("Navigation");
-  const isMarginAvailable = useIsMarginAvailable();
-  const isComingSoon = id === "borrow_lend" && !isMarginAvailable;
+  const isComingSoon = id === "borrow_lend" && isBorrowLendComingSoon();
 
   if (isComingSoon) {
     return (
       <span className="relative">
         <span
           aria-disabled="true"
-          className="px-3 py-5 inline-flex text-secondary-text opacity-50 cursor-default"
+          className="px-3 group-data-[compact]/header:px-2 py-5 inline-flex whitespace-nowrap text-secondary-text opacity-50 cursor-default"
         >
           {title}
         </span>
@@ -47,7 +46,7 @@ export default function NavigationItem({ href, title, active, id, plain = false 
     <span className="relative">
       <LinkComponent
         className={clsx(
-          "px-3 py-5 duration-200 inline-flex",
+          "px-3 group-data-[compact]/header:px-2 py-5 duration-200 inline-flex whitespace-nowrap",
           active
             ? "bg-navigation-active text-green shadow-green/60 text-shadow"
             : "hocus:bg-navigation-hover hocus:text-green hocus:shadow-green/60 hocus:text-shadow text-secondary-text",
@@ -84,7 +83,7 @@ export function NavigationItemWithSubmenu({
         <button
           onClick={() => setSubmenuOpened(!isSubmenuOpened)}
           className={clsx(
-            "px-3 py-5 inline-flex items-center gap-1 duration-200 group",
+            "px-3 group-data-[compact]/header:px-2 py-5 inline-flex items-center gap-1 whitespace-nowrap duration-200 group",
             isSubmenuOpened || active
               ? "bg-navigation-active text-green shadow-green/60 text-shadow"
               : "hocus:bg-navigation-hover hocus:text-green hocus:shadow-green/60 hocus:text-shadow text-secondary-text",

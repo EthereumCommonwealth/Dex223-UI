@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
@@ -5,16 +6,13 @@ import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import Popover from "@/components/atoms/Popover";
 import SelectButton from "@/components/atoms/SelectButton";
 import SelectOption from "@/components/atoms/SelectOption";
-import Svg from "@/components/atoms/Svg";
 import ClientOnly from "@/components/common/ClientOnly";
 import { useConnectWalletStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { useUnknownNetworkWarningStore } from "@/components/dialogs/stores/useUnknownNetworkWarningStore";
 import { networks } from "@/config/networks";
-import { formatFloat } from "@/functions/formatFloat";
-import { addNotification } from "@/other/notification";
 import { useConfirmInWalletDialogStore } from "@/stores/useConfirmInWalletDialogStore";
 
-export default function NetworkPicker() {
+export default function NetworkPicker({ compact = false }: { compact?: boolean }) {
   const [isOpened, setIsOpened] = useState(false);
   const { chainToConnect, setChainToConnect } = useConnectWalletStore();
   const { chainId } = useAccount();
@@ -50,9 +48,11 @@ export default function NetworkPicker() {
             onClick={() => setIsOpened(!isOpened)}
           >
             {currentNetwork ? (
-              <span className="flex items-center gap-2 xl:min-w-[110px]">
+              <span className={clsx("flex items-center gap-2", !compact && "xl:min-w-[110px]")}>
                 <Image src={`${currentNetwork?.logo}`} alt="Ethereum" width={24} height={24} />
-                <span className="hidden xl:inline">{currentNetwork?.name}</span>
+                <span className={compact ? "sr-only" : "hidden xl:inline"}>
+                  {currentNetwork?.name}
+                </span>
               </span>
             ) : (
               "Unknown network"

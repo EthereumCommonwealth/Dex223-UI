@@ -18,7 +18,7 @@ import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import useIsMarginAvailable from "@/hooks/useIsMarginAvailable";
+import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -278,7 +278,7 @@ export default function MobileMenu() {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
   const pathname = usePathname();
-  const isMarginAvailable = useIsMarginAvailable();
+  const borrowLendComingSoon = isBorrowLendComingSoon();
   const { setIsOpen: setOpenFeedbackDialog } = useFeedbackDialogStore();
   const {
     setIsOpen: setManageTokensOpen,
@@ -322,9 +322,9 @@ export default function MobileMenu() {
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}
                     isActive={pathname.includes(href)}
-                    disabled={marginOnly && !isMarginAvailable}
-                    comingSoon={marginOnly && !isMarginAvailable}
-                    className={marginOnly && !isMarginAvailable ? "justify-between pr-4" : ""}
+                    disabled={marginOnly && borrowLendComingSoon}
+                    comingSoon={marginOnly && borrowLendComingSoon}
+                    className={marginOnly && borrowLendComingSoon ? "justify-between pr-4" : ""}
                   />
                 );
               }),
@@ -407,6 +407,13 @@ export default function MobileMenu() {
                     href="/statistics"
                     iconName="statistics"
                     title={t("token_statistics")}
+                    handleClose={() => setMobileMenuOpened(false)}
+                  />
+                  <MobileLink
+                    isActive={pathname.startsWith("/markets")}
+                    href="/markets"
+                    iconName="price-change"
+                    title={t("markets")}
                     handleClose={() => setMobileMenuOpened(false)}
                   />
                   <MobileLink

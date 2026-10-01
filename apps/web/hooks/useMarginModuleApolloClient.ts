@@ -12,7 +12,20 @@ const marginModuleUrlMap: Record<DexChainId, string> = {
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-sepolia/version/latest",
   [DexChainId.BSC_TESTNET]:
     "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
-  [DexChainId.EOS]: "https://graph.dex223.io/subgraphs/name/dex223-auto-listing-eosevm/",
+  [DexChainId.EOS]: "",
+  [DexChainId.BASE]: "",
+  [DexChainId.BSC]: "",
+  [DexChainId.ARBITRUM]: "",
+  [DexChainId.POLYGON]: "",
+  [DexChainId.AVALANCHE]: "",
+  [DexChainId.OPTIMISM]: "",
+  [DexChainId.MONAD]: "",
+  [DexChainId.UNICHAIN]: "",
+  [DexChainId.PLASMA]: "",
+  [DexChainId.SONIC]: "",
+  [DexChainId.LINEA]: "",
+  [DexChainId.INK]: "",
+  [DexChainId.MANTLE]: "",
 };
 
 const authLink = setContext((_, { headers }) => {

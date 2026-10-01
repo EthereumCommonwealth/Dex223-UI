@@ -1,14 +1,11 @@
-import { useApolloClient, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import gql from "graphql-tag";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 
-import { IIFE } from "@/functions/iife";
 import { apolloClient } from "@/graphql/thegraph/apollo";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
-
-type FetchPriceFn = (token: string) => Promise<number>;
 
 const queryPrice = gql(`
   query USDPrice($address: String!) {

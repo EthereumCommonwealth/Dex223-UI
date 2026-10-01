@@ -14,6 +14,7 @@ import { useAutoListingContractStore } from "@/app/[locale]/token-listing/add/st
 import { useConfirmListTokenDialogStore } from "@/app/[locale]/token-listing/add/stores/useConfirmListTokenDialogOpened";
 import {
   ListTokenStatus,
+  useListTokenErrorReasonStore,
   useListTokenStatusStore,
 } from "@/app/[locale]/token-listing/add/stores/useListTokenStatusStore";
 import { usePaymentTokenStore } from "@/app/[locale]/token-listing/add/stores/usePaymentTokenStore";
@@ -202,6 +203,7 @@ export default function ConfirmListingDialog() {
   const { autoListing } = useAutoListing();
   const { isOpen, setIsOpen } = useConfirmListTokenDialogStore();
   const { status, setStatus } = useListTokenStatusStore();
+  const { reason: listErrorReason } = useListTokenErrorReasonStore();
 
   const { handleList } = useListToken();
   const isInitialStatus = useMemo(() => status === ListTokenStatus.INITIAL, [status]);
@@ -438,6 +440,12 @@ export default function ConfirmListingDialog() {
                   {status === ListTokenStatus.ERROR_APPROVE && tRevenue("approve_failed")}
                 </span>
               </div>
+
+              {status === ListTokenStatus.ERROR_LIST_TOKEN && listErrorReason && (
+                <p className="text-14 text-secondary-text text-center break-words">
+                  {listErrorReason}
+                </p>
+              )}
 
               <div className="h-px w-full bg-secondary-border mb-4 mt-5" />
             </div>

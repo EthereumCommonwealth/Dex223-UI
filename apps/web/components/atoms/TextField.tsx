@@ -18,6 +18,7 @@ type Props = InputHTMLAttributes<HTMLInputElement> & {
   inputSize?: InputSize;
   noMargin?: boolean;
   colorScheme?: ThemeColors;
+  rightIcon?: ReactNode;
 } & (
     | {
         error?: boolean | string;
@@ -96,6 +97,7 @@ export default function TextField({
   isError = false,
   isWarning = false,
   inputSize = InputSize.LARGE,
+  rightIcon,
   ...props
 }: Props) {
   return (
@@ -117,6 +119,11 @@ export default function TextField({
                     inputSize={inputSize}
                     {...rest}
                   />
+                  {rightIcon && (
+                    <div className="absolute right-5 text-tertiary-text top-1/2 -translate-y-1/2">
+                      {rightIcon}
+                    </div>
+                  )}
                 </>
               );
             })()

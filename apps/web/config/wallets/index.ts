@@ -23,6 +23,10 @@ export const wallets = {
     name: "Coinbase",
     image: "/images/wallets/coinbase.svg",
   },
+  safePal: {
+    name: "SafePal",
+    image: "/images/wallets/safepal-logo.svg",
+  },
   unknown: {
     name: "Unknown",
     image: "/images/wallets/default.svg",

@@ -28,9 +28,75 @@ const nativeCurrenciesMap: Record<DexChainId, { symbol: string; name: string; lo
     logoURI: "/images/coins/BNB.svg",
   },
   [DexChainId.EOS]: {
-    symbol: "EOS",
-    name: "EOS",
+    // Gas token switched from EOS to A (Vaulta) on 2025-10-01.
+    symbol: "A",
+    name: "Vaulta",
     logoURI: "/images/coins/EOS.svg",
+  },
+  [DexChainId.BASE]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.BSC]: {
+    symbol: "BNB",
+    name: "BNB",
+    logoURI: "/images/coins/BNB.svg",
+  },
+  [DexChainId.ARBITRUM]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.POLYGON]: {
+    symbol: "POL",
+    name: "POL",
+    logoURI: "/images/tokens/placeholder.svg",
+  },
+  [DexChainId.AVALANCHE]: {
+    symbol: "AVAX",
+    name: "Avalanche",
+    logoURI: "/images/tokens/placeholder.svg",
+  },
+  [DexChainId.OPTIMISM]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.MONAD]: {
+    symbol: "MON",
+    name: "Monad",
+    logoURI: "/images/tokens/placeholder.svg",
+  },
+  [DexChainId.UNICHAIN]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.PLASMA]: {
+    symbol: "XPL",
+    name: "Plasma",
+    logoURI: "/images/tokens/placeholder.svg",
+  },
+  [DexChainId.SONIC]: {
+    symbol: "S",
+    name: "Sonic",
+    logoURI: "/images/tokens/placeholder.svg",
+  },
+  [DexChainId.LINEA]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.INK]: {
+    symbol: "ETH",
+    name: "Ethereum",
+    logoURI: "/images/coins/ETH.svg",
+  },
+  [DexChainId.MANTLE]: {
+    symbol: "MNT",
+    name: "Mantle",
+    logoURI: "/images/tokens/placeholder.svg",
   },
 };
 
