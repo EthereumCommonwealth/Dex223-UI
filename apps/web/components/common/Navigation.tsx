@@ -358,7 +358,7 @@ function NavigationMoreDropdown() {
               text={t("useful_front_page")}
             />
             <MoreExternalRow
-              href="https://github.com/Dalcor/dex-exchange"
+              href="https://github.com/EthereumCommonwealth/Dex223-UI"
               text={t("useful_page_source_codes")}
             />
             <div className="mt-3 pt-3 border-t border-secondary-border">
