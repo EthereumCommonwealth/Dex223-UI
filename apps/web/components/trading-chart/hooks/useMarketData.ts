@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { fetchPool, fetchTrades } from "../datafeed/marketApi";
+import { fetchChainPools, fetchPool, fetchTrades } from "../datafeed/marketApi";
 import { Bar, PoolStats, Trade } from "../datafeed/types";
 import { ChartMarket } from "./useChartMarket";
 
@@ -21,6 +21,62 @@ function statsFromBars(bars: Bar[]): PoolStats {
     trades_24h: window.reduce((sum, b) => sum + b.trades, 0),
     trades_total: 0,
   };
+}
+
+// Dollar stablecoins, priced at $1. EURC and other non-USD stables are left out.
+const USD_STABLES = new Set([
+  "USDT",
+  "USDC",
+  "DAI",
+  "USDS",
+  "USDE",
+  "FDUSD",
+  "PYUSD",
+  "TUSD",
+  "BUSD",
+]);
+
+/**
+ * Dollars per one unit of the chart's quote token, or null when unknown.
+ *
+ * A pair quoted in WETH (D223/WETH) shows its price in ETH, which reads as a wrong price
+ * to anyone thinking in dollars. The quote token's USD price comes from its most traded
+ * pool against a dollar stablecoin on the same chain, so it tracks the DEX's own market.
+ */
+export function useQuoteUsdPrice(market: ChartMarket): number | null {
+  const symbol = market.quote?.symbol?.toUpperCase();
+  const isStable = !!symbol && USD_STABLES.has(symbol);
+  const address = market.quote?.wrapped.address0.toLowerCase();
+
+  const { data } = useQuery({
+    queryKey: ["chart-quote-usd", market.chainId, address],
+    enabled:
+      !isStable && !!address && market.status === "ready" && market.datafeed?.kind === "market-api",
+    staleTime: 60_000,
+    refetchInterval: 60_000,
+    queryFn: async ({ signal }): Promise<number | null> => {
+      const { pools } = await fetchChainPools(market.chainId, signal);
+      let best: { usd: number; trades: number } | null = null;
+      for (const pool of pools) {
+        // Stored prices are token1 per token0.
+        const price = pool.stats?.price;
+        if (!price || !Number.isFinite(price)) continue;
+        const token0 = pool.token0.address.toLowerCase();
+        const token1 = pool.token1.address.toLowerCase();
+        let usd: number | null = null;
+        if (token0 === address && USD_STABLES.has(pool.token1.symbol.toUpperCase())) usd = price;
+        else if (token1 === address && USD_STABLES.has(pool.token0.symbol.toUpperCase()))
+          usd = 1 / price;
+        if (usd === null) continue;
+        const trades = pool.stats.trades_24h ?? 0;
+        if (!best || trades > best.trades) best = { usd, trades };
+      }
+      return best?.usd ?? null;
+    },
+  });
+
+  if (isStable) return 1;
+  return data ?? null;
 }
 
 export function usePairStats(market: ChartMarket) {
