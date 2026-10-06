@@ -529,7 +529,7 @@ export function Revenue() {
         )}
 
         <div className="mt-6 md:mt-8 xl:mt-10 flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 overflow-x-hidden">
-          <h1 className="text-20 md:text-24 xl:text-32 font-medium">{t("claim_title")}</h1>
+          <h2 className="text-20 md:text-24 xl:text-32 font-medium">{t("claim_title")}</h2>
           <div className="flex flex-col md:flex-row xl:flex-row gap-3 w-full xl:w-auto overflow-x-hidden">
             <div className="w-full xl:w-auto min-w-0">
               <TokenListDropdown

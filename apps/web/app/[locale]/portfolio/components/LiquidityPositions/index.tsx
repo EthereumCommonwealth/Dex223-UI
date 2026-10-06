@@ -126,7 +126,7 @@ export const LiquidityPositions = ({
         </div>
       ) : (
         <div className="mt-10 flex flex-col lg:flex-row w-full justify-between gap-2 lg:gap-0">
-          <h1 className="text-18 lg:text-32 font-medium">{t("liquidity_title")}</h1>
+          <h2 className="text-18 lg:text-32 font-medium">{t("liquidity_title")}</h2>
           <div className="flex flex-col lg:flex-row gap-3">
             <Link href="/pools/positions" className="w-full lg:w-auto">
               <Button fullWidth mobileSize={ButtonSize.MEDIUM}>

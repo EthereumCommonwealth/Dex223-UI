@@ -132,7 +132,7 @@ export const Deposited = ({
       </div>
 
       <div className="mt-10 flex flex-col lg:flex-row w-full justify-between gap-2 lg:gap-0">
-        <h1 className="text-18 lg:text-32 font-medium">{t("deposited_title")}</h1>
+        <h2 className="text-18 lg:text-32 font-medium">{t("deposited_title")}</h2>
         {(currentTableData.length > 0 || searchValue.length > 0) && (
           <div className="flex flex-col lg:flex-row gap-3">
             <SearchInput

@@ -252,9 +252,9 @@ export default function DecreaseLiquidityPage({
                 variant={IconButtonVariant.BACK}
                 iconSize={IconSize.REGULAR}
               />
-              <h2 className="text-18 lg:text-20 font-bold flex justify-center items-center text-nowrap">
+              <h1 className="text-18 lg:text-20 font-bold flex justify-center items-center text-nowrap">
                 {t("remove_liquidity_title")}
-              </h2>
+              </h1>
               <div className="flex items-center gap-2 justify-end">
                 <IconButton
                   onClick={() => setShowRecentTransactions(!showRecentTransactions)}
