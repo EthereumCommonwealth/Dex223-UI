@@ -1607,5 +1607,99 @@
     "atl": "历史最低",
     "from_ath": "较最高价 {percent}",
     "chart_source": "图表：{source}"
+  },
+  "Seo": {
+    "default": {
+      "title": "DEX223：交易 ERC-20 与 ERC-223 代币",
+      "description": "专为 ERC-223 和 ERC-20 打造的去中心化交易所。支持兑换、集中流动性、借贷、杠杆交易和无需许可的代币上架。"
+    },
+    "swap": {
+      "title": "兑换 ERC-20 与 ERC-223 代币",
+      "description": "在 DEX223 兑换任意代币，两侧均可选择 ERC-20 或 ERC-223。集中流动性、费用透明，防止代币因转账失败而丢失。"
+    },
+    "margin_swap": {
+      "title": "杠杆兑换：使用杠杆交易",
+      "description": "在 DEX223 的杠杆仓位内交易。从链上借贷订单借入资金进行杠杆交易，资产始终由你自己掌控。"
+    },
+    "margin_trading": {
+      "title": "在 DEX223 出借与借入",
+      "description": "按自己的条件出借代币，或抵押借款开立杠杆仓位。链上订单可自定义利率、期限与清算规则。"
+    },
+    "pools": {
+      "title": "流动性池：TVL、交易量与费用",
+      "description": "按 TVL 和交易量浏览 DEX223 流动性池。以 ERC-20 或 ERC-223 提供集中流动性，每笔交易都能赚取手续费。"
+    },
+    "pool": {
+      "title": "流动性池详情",
+      "description": "DEX223 流动性池的余额、TVL、24 小时交易量和手续费。一键兑换该交易对或添加流动性。"
+    },
+    "positions": {
+      "title": "我的流动性仓位",
+      "description": "管理你在 DEX223 的流动性仓位：领取手续费、追加或撤出流动性。"
+    },
+    "add": {
+      "title": "添加流动性，赚取交易手续费",
+      "description": "在 DEX223 开立集中流动性仓位或创建新池。选择费率档位和价格区间，用任一标准存入，从每笔交易中获益。"
+    },
+    "converter": {
+      "title": "ERC-20 与 ERC-223 代币转换器",
+      "description": "以固定 1:1 比例在 ERC-20 与 ERC-223 之间转换任意代币，无协议费用。ERC-223 代币不会因发送到无法接收的合约而丢失。"
+    },
+    "create_token": {
+      "title": "无需代码创建 ERC-223 代币",
+      "description": "几分钟内发行你自己的 ERC-223 代币。设置名称、符号和总量，可选创建 ERC-20 版本，然后建池并在 DEX223 上架。"
+    },
+    "buy_crypto": {
+      "title": "用银行卡或转账购买加密货币",
+      "description": "通过 Onramp 用法币充值，直接在钱包中收到 ETH、USDC、USDT 或 D223，然后在 DEX223 兑换或赚取手续费。"
+    },
+    "token_listing": {
+      "title": "在 DEX223 上架你的代币",
+      "description": "通过免费或付费的自动上架合约、默认代币列表或现有列表在 DEX223 上架代币。任何拥有流动性池的代币都可以交易。"
+    },
+    "token_listing_contracts": {
+      "title": "自动上架合约",
+      "description": "比较 DEX223 自动上架合约的上架价格和可用支付代币，无需许可即可在链上上架任意代币。"
+    },
+    "token_listing_add": {
+      "title": "自动上架代币",
+      "description": "几次点击即可将代币及其交易对登记到 DEX223 自动上架合约。选择合约，如有费用则支付，代币即可上线。"
+    },
+    "statistics": {
+      "title": "DEX223 数据：TVL、交易量与池",
+      "description": "DEX223 协议实时数据：总锁仓价值、交易量、流动性池数量、交易笔数以及按 TVL 排名的热门池。"
+    },
+    "guidelines": {
+      "title": "DEX223 入门",
+      "description": "快速前往兑换、转换、购买加密货币、上架或创建代币，并了解 DEX223 与 ERC-223 的工作原理。"
+    },
+    "portfolio": {
+      "title": "资产组合",
+      "description": "追踪你在 DEX223 的余额、流动性、借贷订单和杠杆仓位。"
+    },
+    "revenue": {
+      "title": "收益分成：质押赚取手续费",
+      "description": "质押 DEX223 质押代币，获得协议所收手续费的分成。奖励可随时领取。"
+    },
+    "markets": {
+      "title": "加密市场：价格与图表",
+      "description": "主流加密货币的实时价格、市值和图表，并可一键前往 DEX223 交易。"
+    },
+    "governance": {
+      "title": "DEX223 治理",
+      "description": "DEX223 治理与链上费用投票将如何运作，以及下一阶段的内容。"
+    },
+    "multisig": {
+      "title": "多签",
+      "description": "发起、批准并执行多签交易。"
+    },
+    "send": {
+      "title": "安全发送",
+      "description": "将代币发送到任意钱包或合约，不会因对方地址无法接收而丢失。"
+    },
+    "pay": {
+      "title": "支付",
+      "description": "使用加密货币向商家付款，并附带订单信息。"
+    }
   }
 }

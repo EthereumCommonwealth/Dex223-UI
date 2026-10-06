@@ -1609,5 +1609,99 @@
     "atl": "All-time low",
     "from_ath": "{percent} from high",
     "chart_source": "Chart: {source}"
+  },
+  "Seo": {
+    "default": {
+      "title": "DEX223: Trade ERC-20 and ERC-223 Tokens",
+      "description": "The decentralized exchange built for ERC-223 and ERC-20. Swap, provide concentrated liquidity, lend, borrow and trade on margin with permissionless token listing."
+    },
+    "swap": {
+      "title": "Swap ERC-20 and ERC-223 Tokens",
+      "description": "Swap any token on DEX223 and pick ERC-20 or ERC-223 on each side. Concentrated liquidity, clear fees and protection from tokens lost in failed transfers."
+    },
+    "margin_swap": {
+      "title": "Margin Swap: Trade With Leverage",
+      "description": "Trade inside your margin position on DEX223. Borrow from on-chain lending orders and swap with leverage while keeping full custody of your funds."
+    },
+    "margin_trading": {
+      "title": "Borrow and Lend on DEX223",
+      "description": "Lend tokens on your own terms or borrow against collateral to open leveraged positions. On-chain orders with custom interest, duration and liquidation rules."
+    },
+    "pools": {
+      "title": "Liquidity Pools: TVL, Volume and Fees",
+      "description": "Explore DEX223 liquidity pools by TVL and volume. Provide concentrated liquidity in ERC-20 or ERC-223 and earn fees on every trade."
+    },
+    "pool": {
+      "title": "Pool Details",
+      "description": "Pool balances, TVL, 24h volume and fees on DEX223. Swap the pair or add liquidity in one click."
+    },
+    "positions": {
+      "title": "Your Liquidity Positions",
+      "description": "Manage your DEX223 liquidity positions: collect fees, add liquidity or withdraw."
+    },
+    "add": {
+      "title": "Add Liquidity and Earn Trading Fees",
+      "description": "Open a concentrated liquidity position or create a new pool on DEX223. Choose a fee tier and price range, deposit in either standard and earn from every trade."
+    },
+    "converter": {
+      "title": "ERC-20 to ERC-223 Token Converter",
+      "description": "Convert any token between ERC-20 and ERC-223 at a fixed 1:1 rate with zero protocol fees. ERC-223 tokens are never lost in contracts that cannot receive them."
+    },
+    "create_token": {
+      "title": "Create an ERC-223 Token, No Code",
+      "description": "Launch your own ERC-223 token in minutes. Set name, symbol and supply, add an optional ERC-20 version, then create a pool and list it on DEX223."
+    },
+    "buy_crypto": {
+      "title": "Buy Crypto With Card or Bank Transfer",
+      "description": "Fund your wallet with fiat through Onramp and receive ETH, USDC, USDT or D223 straight to your wallet. Then swap or earn fees on DEX223."
+    },
+    "token_listing": {
+      "title": "List Your Token on DEX223",
+      "description": "Get your token listed on DEX223 through free or paid auto-listing contracts, the default token list, or an existing token list. Any token with a pool can trade."
+    },
+    "token_listing_contracts": {
+      "title": "Auto-Listing Contracts",
+      "description": "Compare DEX223 auto-listing contracts, their listing prices and accepted payment tokens, and list any token on-chain without permission."
+    },
+    "token_listing_add": {
+      "title": "List a Token Automatically",
+      "description": "List a token and its pair in a DEX223 auto-listing contract in a few clicks. Pick the contract, pay the listing fee if any, and your token is live."
+    },
+    "statistics": {
+      "title": "DEX223 Statistics: TVL, Volume, Pools",
+      "description": "Live DEX223 protocol statistics: total value locked, trading volume, pools, transactions and the top pools by TVL."
+    },
+    "guidelines": {
+      "title": "Get Started With DEX223",
+      "description": "Quick links to swap, convert, buy crypto, list or create tokens, and learn how DEX223 and the ERC-223 standard work."
+    },
+    "portfolio": {
+      "title": "Portfolio",
+      "description": "Track wallet balances, liquidity, lending orders and margin positions across DEX223."
+    },
+    "revenue": {
+      "title": "Revenue Sharing: Stake and Earn Fees",
+      "description": "Stake the DEX223 staking token to earn a share of collected protocol fees. Claim rewards whenever you like."
+    },
+    "markets": {
+      "title": "Crypto Markets: Prices and Charts",
+      "description": "Live prices, market caps and charts for the top cryptocurrencies, with a one-click path to trade them on DEX223."
+    },
+    "governance": {
+      "title": "DEX223 Governance",
+      "description": "How DEX223 governance and on-chain fee voting will work, and what the next phase covers."
+    },
+    "multisig": {
+      "title": "Multisig",
+      "description": "Propose, approve and execute multisig transactions."
+    },
+    "send": {
+      "title": "Safe Send",
+      "description": "Send tokens to any wallet or contract without losing them to an address that cannot receive them."
+    },
+    "pay": {
+      "title": "Pay",
+      "description": "Pay a merchant in crypto with the order details attached."
+    }
   }
 }

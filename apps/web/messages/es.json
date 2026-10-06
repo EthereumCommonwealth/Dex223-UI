@@ -1607,5 +1607,99 @@
     "atl": "Mínimo histórico",
     "from_ath": "{percent} desde el máximo",
     "chart_source": "Gráfico: {source}"
+  },
+  "Seo": {
+    "default": {
+      "title": "DEX223: opera tokens ERC-20 y ERC-223",
+      "description": "El exchange descentralizado creado para ERC-223 y ERC-20. Intercambia, aporta liquidez concentrada, presta, pide prestado y opera con margen con listado de tokens sin permisos."
+    },
+    "swap": {
+      "title": "Intercambia tokens ERC-20 y ERC-223",
+      "description": "Intercambia cualquier token en DEX223 y elige ERC-20 o ERC-223 en cada lado. Liquidez concentrada, comisiones claras y protección contra tokens perdidos."
+    },
+    "margin_swap": {
+      "title": "Swap con margen: opera con apalancamiento",
+      "description": "Opera dentro de tu posición de margen en DEX223. Pide prestado de órdenes on-chain y opera con apalancamiento sin ceder la custodia de tus fondos."
+    },
+    "margin_trading": {
+      "title": "Presta y pide prestado en DEX223",
+      "description": "Presta tokens con tus propias condiciones o pide prestado con garantía para abrir posiciones apalancadas. Órdenes on-chain con interés, plazo y liquidación a medida."
+    },
+    "pools": {
+      "title": "Pools de liquidez: TVL, volumen y comisiones",
+      "description": "Explora los pools de liquidez de DEX223 por TVL y volumen. Aporta liquidez concentrada en ERC-20 o ERC-223 y gana comisiones en cada operación."
+    },
+    "pool": {
+      "title": "Detalles del pool",
+      "description": "Saldos, TVL, volumen y comisiones de 24 h del pool en DEX223. Intercambia el par o añade liquidez con un clic."
+    },
+    "positions": {
+      "title": "Tus posiciones de liquidez",
+      "description": "Gestiona tus posiciones de liquidez en DEX223: cobra comisiones, añade liquidez o retira."
+    },
+    "add": {
+      "title": "Añade liquidez y gana comisiones",
+      "description": "Abre una posición de liquidez concentrada o crea un pool en DEX223. Elige nivel de comisión y rango de precio, deposita en cualquier estándar y gana con cada operación."
+    },
+    "converter": {
+      "title": "Convertidor de tokens ERC-20 a ERC-223",
+      "description": "Convierte cualquier token entre ERC-20 y ERC-223 a un tipo fijo 1:1 sin comisiones del protocolo. Los tokens ERC-223 nunca se pierden en contratos que no pueden recibirlos."
+    },
+    "create_token": {
+      "title": "Crea un token ERC-223 sin código",
+      "description": "Lanza tu propio token ERC-223 en minutos. Define nombre, símbolo y suministro, añade una versión ERC-20 opcional, crea un pool y lístalo en DEX223."
+    },
+    "buy_crypto": {
+      "title": "Compra cripto con tarjeta o transferencia",
+      "description": "Recarga tu billetera con fiat a través de Onramp y recibe ETH, USDC, USDT o D223 directamente. Luego intercambia o gana comisiones en DEX223."
+    },
+    "token_listing": {
+      "title": "Lista tu token en DEX223",
+      "description": "Lista tu token en DEX223 con contratos de auto-listado gratuitos o de pago, la lista por defecto o una lista existente. Cualquier token con pool puede operarse."
+    },
+    "token_listing_contracts": {
+      "title": "Contratos de auto-listado",
+      "description": "Compara los contratos de auto-listado de DEX223, sus precios y tokens de pago aceptados, y lista cualquier token on-chain sin permisos."
+    },
+    "token_listing_add": {
+      "title": "Lista un token automáticamente",
+      "description": "Lista un token y su par en un contrato de auto-listado de DEX223 en pocos clics. Elige el contrato, paga la tarifa si existe y tu token queda activo."
+    },
+    "statistics": {
+      "title": "Estadísticas de DEX223: TVL, volumen, pools",
+      "description": "Estadísticas en vivo del protocolo DEX223: valor total bloqueado, volumen, pools, transacciones y los pools principales por TVL."
+    },
+    "guidelines": {
+      "title": "Primeros pasos con DEX223",
+      "description": "Accesos rápidos para intercambiar, convertir, comprar cripto, listar o crear tokens y aprender cómo funcionan DEX223 y ERC-223."
+    },
+    "portfolio": {
+      "title": "Portafolio",
+      "description": "Sigue saldos, liquidez, órdenes de préstamo y posiciones de margen en DEX223."
+    },
+    "revenue": {
+      "title": "Reparto de ingresos: stake y gana",
+      "description": "Haz stake del token de staking de DEX223 para recibir parte de las comisiones del protocolo. Reclama recompensas cuando quieras."
+    },
+    "markets": {
+      "title": "Mercados cripto: precios y gráficos",
+      "description": "Precios, capitalización y gráficos en vivo de las principales criptomonedas, con acceso directo para operarlas en DEX223."
+    },
+    "governance": {
+      "title": "Gobernanza de DEX223",
+      "description": "Cómo funcionarán la gobernanza y la votación on-chain de comisiones en DEX223, y qué cubre la próxima fase."
+    },
+    "multisig": {
+      "title": "Multifirma",
+      "description": "Propón, aprueba y ejecuta transacciones multifirma."
+    },
+    "send": {
+      "title": "Envío seguro",
+      "description": "Envía tokens a cualquier billetera o contrato sin perderlos en una dirección que no puede recibirlos."
+    },
+    "pay": {
+      "title": "Pagar",
+      "description": "Paga a un comercio en cripto con los datos del pedido incluidos."
+    }
   }
 }
