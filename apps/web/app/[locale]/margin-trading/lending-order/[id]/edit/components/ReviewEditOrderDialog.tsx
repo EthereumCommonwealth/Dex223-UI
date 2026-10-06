@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 
@@ -106,6 +107,22 @@ function EditOrderActionButton({
   );
 }
 
+const fieldTooltipKeys = {
+  leverage: "leverage_order_tooltip",
+  "currency-limit": "currency_limit_order_tooltip",
+  "min-borrowing": "min_borrowing_tooltip",
+  "interest-rate": "interest_rate_tooltip",
+  deadline: "order_deadline_tooltip",
+  "position-duration": "position_duration_tooltip",
+  "allowed-collateral": "accepted_collateral_tooltip",
+  "allowed-for-trading": "tokens_allowed_tooltip",
+  "fee-for-liquidator": "fee_for_liquidator_tooltip",
+} as const;
+
+function tooltipKeyFor(id: string) {
+  return id in fieldTooltipKeys ? fieldTooltipKeys[id as keyof typeof fieldTooltipKeys] : undefined;
+}
+
 type FieldDiff<T> = {
   id: string;
   label: string;
@@ -130,6 +147,7 @@ export default function ReviewEditOrderDialog({
   setIsOpen: (isOpen: boolean) => void;
   order: LendingOrder;
 }) {
+  const t = useTranslations("Margin");
   const [isEditApproveActive, setEditApproveActive] = React.useState(false);
 
   const { status, setStatus } = useEditOrderStatusStore();
@@ -353,7 +371,10 @@ export default function ReviewEditOrderDialog({
                         {modifiedOrderProperty.newValue}
                       </span>
                     }
-                    tooltipText="Tooltip text"
+                    tooltipText={(() => {
+                      const tooltipKey = tooltipKeyFor(modifiedOrderProperty.id);
+                      return tooltipKey ? t(tooltipKey) : "";
+                    })()}
                   />
                 );
               })}

@@ -128,9 +128,6 @@ export function useAddLiquidityParams({
         deadline,
       };
 
-      console.log("MINT PARAMS (Pool Not Exists): ");
-      console.log(mintParams);
-
       const encodedCreateParams = encodeFunctionData({
         abi: NONFUNGIBLE_POSITION_MANAGER_ABI,
         functionName: "createAndInitializePoolIfNecessary",
@@ -214,9 +211,6 @@ export function useAddLiquidityParams({
         deadline,
       };
 
-      console.log("MINT PARAMS (Pool Exists): ");
-      console.log(mintParams);
-
       const params: {
         address: Address;
         account: Address;
@@ -276,12 +270,10 @@ export function useAddLiquidityEstimatedGas({
   useDeepEffect(() => {
     IIFE(async () => {
       if (!addLiquidityParams) {
-        console.log("No add liquidity params");
         return;
       }
 
       try {
-        console.log("Trying to estimate");
         // const estimated = await publicClient?.estimateContractGas(addLiquidityParams);
         // if (estimated) {
         //   setEstimatedGas({
@@ -294,7 +286,6 @@ export function useAddLiquidityEstimatedGas({
         } else {
           setEstimatedGas(BigInt(330000));
         }
-        // console.log(estimated);
       } catch (error) {
         console.error("useAddLiquidityEstimatedGas ~ error:", error);
         setEstimatedGas(BigInt(530000));
@@ -336,10 +327,6 @@ export const useAddLiquidity = ({
     enabled: !!tokenB && !tokenB.isNative && tokenBStandardRatio === 100,
   });
 
-  console.log("WRAPPERS EXISTING:");
-  console.log(tokenAWrapperExists);
-  console.log(tokenBWrapperExists);
-
   const { addLiquidityParams } = useAddLiquidityParams({
     position,
     increase,
@@ -359,15 +346,6 @@ export const useAddLiquidity = ({
         !chainId ||
         !addLiquidityParams
       ) {
-        console.log({
-          position,
-          publicClient,
-          walletClient,
-          accountAddress,
-          chainId,
-          addLiquidityParams,
-        });
-        console.log("handleAddLiquidity: SOMETHING UNDEFINED");
         return;
       }
 
@@ -380,10 +358,31 @@ export const useAddLiquidity = ({
           args: [tokenA?.wrapped.address1],
         } as const;
 
-        console.log("It should be here!");
-        const wrapperHash = await walletClient.writeContract(deployTokenParams);
+        let wrapperHash: `0x${string}`;
+        try {
+          wrapperHash = await walletClient.writeContract(deployTokenParams);
+        } catch (error) {
+          // Rejected or failed before broadcast: reset like the mint step does.
+          console.error("useAddLiquidity ~ createERC20Wrapper error:", error);
+          addToast((error as any).toString(), "error");
+          setLiquidityStatus(AddLiquidityStatus.MINT);
+          return;
+        }
+
         setLiquidityStatus(AddLiquidityStatus.MINT_LOADING);
-        await publicClient.waitForTransactionReceipt({ hash: wrapperHash });
+        try {
+          const wrapperReceipt = await publicClient.waitForTransactionReceipt({
+            hash: wrapperHash,
+          });
+          if (wrapperReceipt.status === "reverted") {
+            setLiquidityStatus(AddLiquidityStatus.MINT_ERROR);
+            return;
+          }
+        } catch (e) {
+          // Wrapper tx was broadcast; keep MINT_LOADING rather than reporting a failure.
+          console.error(e);
+          return;
+        }
       }
 
       if (tokenB && !tokenBWrapperExists) {
@@ -396,13 +395,35 @@ export const useAddLiquidity = ({
           args: [tokenB?.wrapped.address1],
         } as const;
 
-        const wrapperHash = await walletClient.writeContract(deployTokenParams);
+        let wrapperHash: `0x${string}`;
+        try {
+          wrapperHash = await walletClient.writeContract(deployTokenParams);
+        } catch (error) {
+          // Rejected or failed before broadcast: reset like the mint step does.
+          console.error("useAddLiquidity ~ createERC20Wrapper error:", error);
+          addToast((error as any).toString(), "error");
+          setLiquidityStatus(AddLiquidityStatus.MINT);
+          return;
+        }
 
         setLiquidityStatus(AddLiquidityStatus.MINT_LOADING);
-        await publicClient.waitForTransactionReceipt({ hash: wrapperHash });
+        try {
+          const wrapperReceipt = await publicClient.waitForTransactionReceipt({
+            hash: wrapperHash,
+          });
+          if (wrapperReceipt.status === "reverted") {
+            setLiquidityStatus(AddLiquidityStatus.MINT_ERROR);
+            return;
+          }
+        } catch (e) {
+          // Wrapper tx was broadcast; keep MINT_LOADING rather than reporting a failure.
+          console.error(e);
+          return;
+        }
       }
 
       setLiquidityStatus(AddLiquidityStatus.MINT_PENDING);
+      let hash: `0x${string}` | undefined;
       try {
         const estimatedGas = await publicClient.estimateContractGas(addLiquidityParams);
 
@@ -413,7 +434,7 @@ export const useAddLiquidity = ({
           ...gasSettings,
           gas: gasToUse,
         });
-        const hash = await walletClient.writeContract({
+        hash = await walletClient.writeContract({
           ...request,
           account: undefined,
         });
@@ -459,7 +480,15 @@ export const useAddLiquidity = ({
         );
         if (hash) {
           setLiquidityStatus(AddLiquidityStatus.MINT_LOADING);
-          const receipt = await publicClient.waitForTransactionReceipt({ hash }); //TODO: add try catch
+          let receipt;
+          try {
+            receipt = await publicClient.waitForTransactionReceipt({ hash });
+          } catch (e) {
+            // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
+            // mean it failed. Keep MINT_LOADING and let the recent-transaction tracker settle it.
+            console.error(e);
+            return;
+          }
           updateAllowance();
           if (receipt.status === "success") {
             setLiquidityStatus(AddLiquidityStatus.SUCCESS);
@@ -471,6 +500,11 @@ export const useAddLiquidity = ({
         }
       } catch (error) {
         console.error("useAddLiquidity ~ error:", error);
+        if (hash) {
+          // Already broadcast: don't report failure for a tx that may still succeed.
+          setLiquidityStatus(AddLiquidityStatus.MINT_LOADING);
+          return;
+        }
         addToast((error as any).toString(), "error");
         setLiquidityStatus(AddLiquidityStatus.MINT);
       }

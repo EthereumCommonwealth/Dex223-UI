@@ -146,7 +146,7 @@ export default function AddPoolPage() {
               }}
             />
           </div>
-          <h2 className="text-18 md:text-20 font-bold">{t("add_liquidity_title")}</h2>
+          <h1 className="text-18 md:text-20 font-bold">{t("add_liquidity_title")}</h1>
           <div className="w-[48px] md:w-[104px] flex items-center gap-2 justify-end">
             <IconButton
               buttonSize={IconButtonSize.LARGE}

@@ -130,7 +130,7 @@ export default function IncreaseLiquidityPage({
               variant={IconButtonVariant.BACK}
             />
           </div>
-          <h2 className="text-18 md:text-20 font-bold">{t("increase_liquidity")}</h2>
+          <h1 className="text-18 md:text-20 font-bold">{t("increase_liquidity")}</h1>
           <div className="w-[96px] md:w-[104px] flex items-center gap-0 lg:gap-2 justify-end">
             <IconButton
               buttonSize={IconButtonSize.REGULAR}

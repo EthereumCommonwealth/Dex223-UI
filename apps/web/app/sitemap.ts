@@ -23,7 +23,10 @@ const ROUTES: {
   { path: "buy-crypto", priority: 0.6, changeFrequency: "monthly" },
   { path: "converter", priority: 0.7, changeFrequency: "monthly" },
   { path: "statistics", priority: 0.7, changeFrequency: "daily" },
+  { path: "markets", priority: 0.6, changeFrequency: "hourly" },
+  { path: "revenue", priority: 0.6, changeFrequency: "weekly" },
   { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
+  { path: "governance", priority: 0.3, changeFrequency: "monthly" },
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {

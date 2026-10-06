@@ -16,6 +16,7 @@ import { useRevenueStore } from "@/app/[locale]/revenue/stores/useRevenueStore";
 import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { TokenListId } from "@/db/db";
 import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
 import { formatFloat } from "@/functions/formatFloat";
@@ -83,11 +84,13 @@ export function Revenue() {
   );
   const {
     openDialog,
+    reopenDialog: reopenStakeDialog,
     status: stakeStatus,
     isOpen: isStakeDialogOpen,
     dialogType,
   } = useStakeDialogStore();
   const { switchChain } = useSwitchChain();
+  const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
 
   const allAvailableTokens = useTokens();
   const usdPrices = useUSDPriceStore((state) => state.prices);
@@ -206,10 +209,18 @@ export function Revenue() {
 
   const handleStakeClick = () => {
     if (isStakeActionLocked) return;
+    if (!address) {
+      setWalletConnectOpened(true);
+      return;
+    }
     openDialog("stake", "", "ERC-20");
   };
 
   const handleUnstakeClick = () => {
+    if (!address) {
+      setWalletConnectOpened(true);
+      return;
+    }
     openDialog("unstake", "", "ERC-20");
   };
 
@@ -521,7 +532,7 @@ export function Revenue() {
             <Button
               size={ButtonSize.EXTRA_SMALL}
               colorScheme={ButtonColor.LIGHT_GREEN}
-              onClick={() => {}}
+              onClick={reopenStakeDialog}
             >
               {t("details")}
             </Button>
@@ -529,7 +540,7 @@ export function Revenue() {
         )}
 
         <div className="mt-6 md:mt-8 xl:mt-10 flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-4 xl:gap-0 overflow-x-hidden">
-          <h1 className="text-20 md:text-24 xl:text-32 font-medium">{t("claim_title")}</h1>
+          <h2 className="text-20 md:text-24 xl:text-32 font-medium">{t("claim_title")}</h2>
           <div className="flex flex-col md:flex-row xl:flex-row gap-3 w-full xl:w-auto overflow-x-hidden">
             <div className="w-full xl:w-auto min-w-0">
               <TokenListDropdown

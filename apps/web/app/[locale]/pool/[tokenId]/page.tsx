@@ -416,7 +416,7 @@ export default function PoolPage({
               // iconName="back"
               onClick={() => router.push("/pools/positions")}
             />
-            <h2 className="text-18 lg:text-20 font-bold">{t("liquidity_position")}</h2>
+            <h1 className="text-18 lg:text-20 font-bold">{t("liquidity_position")}</h1>
             <IconButton
               buttonSize={IconButtonSize.REGULAR}
               iconName="recent-transactions"

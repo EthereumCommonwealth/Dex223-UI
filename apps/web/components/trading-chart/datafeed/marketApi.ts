@@ -52,6 +52,11 @@ export interface ApiPool {
   stats: PoolStats;
 }
 
+/** Every indexed pool on a chain with its 24h stats; used to price a quote token in USD. */
+export function fetchChainPools(chainId: number, signal?: AbortSignal) {
+  return getJson<{ pools: ApiPool[] }>(`/v1/dex/${chainId}/pools`, signal);
+}
+
 export function fetchPairPools(
   chainId: number,
   tokenA: string,

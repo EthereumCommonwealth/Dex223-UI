@@ -1,4 +1,5 @@
 import Tooltip from "@repo/ui/tooltip";
+import { useTranslations } from "next-intl";
 import React, { ReactNode, useEffect, useMemo, useState } from "react";
 import SimpleBar from "simplebar-react";
 import { formatUnits } from "viem";
@@ -61,6 +62,8 @@ function PositionSelectItem({
   position: MarginPosition;
   isSelected: boolean;
 }) {
+  const t = useTranslations("Margin");
+
   return (
     <div className="p-5 rounded-3 bg-tertiary-bg">
       <div className="flex items-center mb-3 gap-3">
@@ -68,16 +71,20 @@ function PositionSelectItem({
           className="flex items-center gap-2 text-secondary-text"
           href={`/margin-trading/position/${position.id}`}
         >
-          View position details
+          {t("view_position_details")}
           <Svg iconName="next" />
         </Link>
         <div className="w-[178px]">
-          <PositionDetailCardDialog title="ID" value={position.id} tooltipText="Tooltip text" />
+          <PositionDetailCardDialog
+            title={t("order_id")}
+            value={position.id}
+            tooltipText={t("position_id_tooltip")}
+          />
         </div>
         <PositionDetailCardDialog
-          title="Deadline"
+          title={t("deadline")}
           value={new Date(position.deadline * 1000).toLocaleString("en-GB").split("/").join(".")}
-          tooltipText="Tooltip text"
+          tooltipText={t("margin_position_deadline_tooltip")}
         />
         <span className="text-green flex items-center gap-3 min-w-[92px]">
           {dangerIconsMap[DangerStatus.RISKY]}
@@ -86,7 +93,7 @@ function PositionSelectItem({
         <div className="w-[210px]">
           {isSelected ? (
             <div className="flex items-center gap-2 rounded-2 w-full border border-primary-border h-10 justify-center">
-              Position selected <Svg className="text-purple" iconName="check" />
+              {t("position_selected")} <Svg className="text-purple" iconName="check" />
             </div>
           ) : (
             <Button
@@ -96,7 +103,7 @@ function PositionSelectItem({
               className="flex-grow"
               onClick={() => handleSelectedPosition(position)}
             >
-              Select position
+              {t("select_position")}
             </Button>
           )}
         </div>
@@ -104,14 +111,17 @@ function PositionSelectItem({
 
       <div className="bg-primary-bg rounded-3 p-5 flex flex-wrap gap-2">
         <div className="flex items-center gap-1">
-          <Tooltip text="Tooltip text" /> Assets {position.assets.length}/
-          {position.order.currencyLimit}
+          <Tooltip text={t("assets_limit_tooltip")} />{" "}
+          {t("assets_count", {
+            current: position.assets.length,
+            limit: position.order.currencyLimit,
+          })}
         </div>
         {position.assetsWithBalances?.map(({ asset, balance }) => (
           <PositionAsset
             key={asset.wrapped.address0}
             amount={formatFloat(formatUnits(balance || BigInt(0), asset.decimals))}
-            symbol={asset.symbol || "Unknown"}
+            symbol={asset.symbol || t("unknown")}
           />
         ))}
       </div>
@@ -120,6 +130,7 @@ function PositionSelectItem({
 }
 
 export function SelectedPositionInfo() {
+  const t = useTranslations("Margin");
   const { marginSwapPositionId } = useMarginSwapPositionStore();
 
   const {
@@ -147,25 +158,32 @@ export function SelectedPositionInfo() {
           className="flex items-center gap-2 text-secondary-text"
           href={`/margin-trading/position/${marginSwapPositionId}`}
         >
-          View position details
+          {t("view_position_details")}
           <Svg iconName="next" />
         </Link>
       </div>
       <div className="grid gap-2.5">
-        <PositionDetailCard title="ID" value={marginSwapPosition.id} tooltipText="Tooltip text" />
         <PositionDetailCard
-          title="Deadline"
+          title={t("order_id")}
+          value={marginSwapPosition.id}
+          tooltipText={t("position_id_tooltip")}
+        />
+        <PositionDetailCard
+          title={t("deadline")}
           value={new Date(marginSwapPosition.deadline * 1000)
             .toLocaleString("en-GB")
             .split("/")
             .join(".")}
-          tooltipText="Tooltip text"
+          tooltipText={t("margin_position_deadline_tooltip")}
         />
         <div className="bg-tertiary-bg rounded-3 p-5">
           <div className="flex items-center gap-1 w-full text-tertiary-text mb-2">
-            <Tooltip text="Tooltip text" /> <span>Assets:</span>
-            <span className="text-secondary-text">
-              {marginSwapPosition.assets.length || 0} / {marginSwapPosition.order.currencyLimit}
+            <Tooltip text={t("assets_limit_tooltip")} />{" "}
+            <span>
+              {t("assets_count", {
+                current: marginSwapPosition.assets.length || 0,
+                limit: marginSwapPosition.order.currencyLimit,
+              })}
             </span>
           </div>
           <div className="grid grid-cols-2 gap-2">
@@ -173,7 +191,7 @@ export function SelectedPositionInfo() {
               <PositionAsset
                 key={asset.wrapped.address0}
                 amount={formatFloat(formatUnits(balance || BigInt(0), asset.decimals))}
-                symbol={asset.symbol || "Unknown"}
+                symbol={asset.symbol || t("unknown")}
               />
             ))}
           </div>
@@ -184,6 +202,7 @@ export function SelectedPositionInfo() {
 }
 
 export default function SelectPositionDialog() {
+  const t = useTranslations("Margin");
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
 
@@ -233,16 +252,16 @@ export default function SelectPositionDialog() {
   }, [openedPositions, searchValue]);
 
   if (loading || !openedPositions) {
-    return <div>Loading...</div>;
+    return <div>{t("loading")}</div>;
   }
 
   return (
     <>
       <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
-        <DialogHeader onClose={() => setIsOpen(false)} title="Select position" />
+        <DialogHeader onClose={() => setIsOpen(false)} title={t("select_position")} />
         <div className="w-[1200px] card-spacing-x card-spacing-b">
           <SearchInput
-            placeholder="Search position ID"
+            placeholder={t("search_position_id")}
             colorScheme={ThemeColors.PURPLE}
             value={searchValue}
             onChange={(e) => setSearchValue(e.target.value)}
@@ -261,7 +280,7 @@ export default function SelectPositionDialog() {
                 />
               ) : (
                 <div className="h-[112px] flex items-center justify-center bg-empty-not-found-lending-position-purple bg-[length:112px_112px] bg-right-top bg-no-repeat text-secondary-text">
-                  There are no matching positions
+                  {t("no_matching_positions")}
                 </div>
               )}
             </div>
@@ -271,10 +290,10 @@ export default function SelectPositionDialog() {
                 <SimpleBar style={{ maxHeight: 670, paddingRight: 20, marginRight: -20 }}>
                   <div>
                     <div className="mt-3 flex items-center gap-3">
-                      <h2 className="text-18 font-bold mr-2">Matching positions</h2>
+                      <h2 className="text-18 font-bold mr-2">{t("matching_positions")}</h2>
                       {!!tokenA && (
                         <div className="text-secondary-text pl-3 pr-2 py-1 flex items-center gap-1 rounded-2 bg-tertiary-bg">
-                          You pay: {tokenA.symbol}
+                          {t("you_pay_symbol", { symbol: tokenA.symbol ?? "" })}
                           <IconButton
                             variant={IconButtonVariant.CLOSE}
                             iconSize={IconSize.REGULAR}
@@ -285,7 +304,7 @@ export default function SelectPositionDialog() {
                       )}
                       {!!tokenB && (
                         <div className="text-secondary-text pl-3 pr-2 py-1 flex items-center gap-1 rounded-2 bg-tertiary-bg">
-                          You buy: {tokenB.symbol}
+                          {t("you_buy_symbol", { symbol: tokenB.symbol ?? "" })}
                           <IconButton
                             variant={IconButtonVariant.CLOSE}
                             iconSize={IconSize.REGULAR}
@@ -312,13 +331,13 @@ export default function SelectPositionDialog() {
                       </div>
                     ) : (
                       <div className="h-[112px] flex items-center justify-center bg-empty-not-found-lending-position-purple bg-[length:112px_112px] bg-right-top bg-no-repeat text-secondary-text">
-                        There are no matching positions
+                        {t("no_matching_positions")}
                       </div>
                     )}
                   </div>
                   <div>
                     <h2 className="text-18 font-bold mt-3 border-t border-primary-border py-3.5">
-                      Positions without selected tokens
+                      {t("positions_without_tokens")}
                     </h2>
                     {otherPositions?.length ? (
                       <div className="grid gap-5">
@@ -339,7 +358,7 @@ export default function SelectPositionDialog() {
                       </div>
                     ) : (
                       <div className="h-[112px] flex items-center justify-center bg-empty-no-position-purple bg-[length:112px_112px] bg-right-top bg-no-repeat text-secondary-text">
-                        There are no matching positions
+                        {t("no_matching_positions")}
                       </div>
                     )}
                   </div>
@@ -368,7 +387,7 @@ export default function SelectPositionDialog() {
       {!openedPositions?.length ? (
         <Link href="/margin-trading">
           <Button size={ButtonSize.MEDIUM} colorScheme={ButtonColor.PURPLE}>
-            Borrow now
+            {t("borrow_now")}
           </Button>
         </Link>
       ) : (
@@ -377,7 +396,7 @@ export default function SelectPositionDialog() {
           onClick={() => setIsOpen(true)}
           colorScheme={!marginSwapPositionId ? ButtonColor.PURPLE : ButtonColor.LIGHT_PURPLE}
         >
-          {marginSwapPositionId ? "Change position" : "Select position"}
+          {marginSwapPositionId ? t("change_position") : t("select_position")}
         </Button>
       )}
     </>

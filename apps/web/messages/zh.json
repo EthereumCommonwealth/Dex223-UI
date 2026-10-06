@@ -40,7 +40,8 @@
     "send": "发送",
     "revenue": "收益",
     "governance": "治理",
-    "rewards": "奖励"
+    "rewards": "奖励",
+    "multisig": "多签"
   },
   "Swap": {
     "high_price_impact_warning": "价格影响较高（{impact}%）。你收到的数量将明显低于当前市场价格。",
@@ -116,7 +117,10 @@
     "eip7702_title": "此钱包无法接收 ERC-223 版本",
     "eip7702_warning": "您的钱包账户是智能账户（EIP-7702），例如 MetaMask 智能账户。智能账户可以持有和发送 ERC-223 代币（包括您已有的代币），但无法接收新的 ERC-223 代币。没有发送任何内容，您的资金是安全的。",
     "eip7702_fix": "<receive>改为接收 ERC-20 版本</receive>，或将钱包切换回标准账户以接收 ERC-223。",
-    "swap_no_liquidity": "兑换不可用。其中一个代币缺少流动性。请稍后再试，或选择其他交易对。"
+    "swap_no_liquidity": "兑换不可用。其中一个代币缺少流动性。请稍后再试，或选择其他交易对。",
+    "deadline_empty": "请输入期限",
+    "deadline_min": "期限至少为 1 分钟",
+    "deadline_max": "期限不能超过 4000 分钟"
   },
   "Wallet": {
     "my_wallet": "我的钱包",
@@ -126,7 +130,7 @@
     "successfully_connected": "连接成功！",
     "user_rejected": "用户拒绝了该请求",
     "something_went_wrong": "错误：出现问题",
-    "install_metamask": "请安装 Metamask 扩展后继续",
+    "install_metamask": "请安装 MetaMask 扩展后继续",
     "install_trust": "请安装 Trust Wallet 后继续",
     "install_coinbase": "请安装 Coinbase 后继续",
     "unsupported_file_format": "不支持的文件格式",
@@ -237,7 +241,51 @@
     "double_tokens_subtitle": "{amount0} {symbol0} 和 {amount1} {symbol1}",
     "cancel": "取消",
     "speed_up": "加速",
-    "queue": "队列"
+    "queue": "队列",
+    "unwrap_success_notification": "已将 WETH 解包为 ETH",
+    "unwrap_revert_notification": "解包 WETH 失败",
+    "claim_success_notification": "领取成功",
+    "claim_revert_notification": "领取失败",
+    "open_lending_order_success_notification": "借贷订单已成功打开",
+    "open_lending_order_revert_notification": "打开借贷订单失败",
+    "close_lending_order_success_notification": "借贷订单已成功关闭",
+    "close_lending_order_revert_notification": "关闭借贷订单失败",
+    "create_lending_order_success_notification": "借贷订单已成功创建",
+    "close_margin_position_success_notification": "保证金仓位已成功关闭",
+    "deploy_token_success_notification": "代币创建成功",
+    "deploy_token_revert_notification": "创建代币失败",
+    "margin_swap_success_notification": "保证金兑换成功",
+    "margin_swap_revert_notification": "保证金兑换失败",
+    "edit_lending_order_success_notification": "借贷订单已成功编辑",
+    "edit_lending_order_revert_notification": "编辑借贷订单失败",
+    "create_lending_order_revert_notification": "创建借贷订单失败",
+    "create_margin_position_success_notification": "保证金仓位已成功创建",
+    "create_margin_position_revert_notification": "借入资金失败",
+    "liquidate_margin_position_success_notification": "保证金仓位已成功清算",
+    "liquidate_margin_position_revert_notification": "清算仓位失败",
+    "freeze_margin_position_success_notification": "保证金仓位已成功冻结",
+    "freeze_margin_position_revert_notification": "冻结仓位失败",
+    "withdraw_closed_position_success_notification": "资金已成功提取",
+    "withdraw_closed_position_revert_notification": "提取资金失败",
+    "close_margin_position_revert_notification": "关闭保证金仓位失败",
+    "msig_sent_success_notification": "交易已发送",
+    "msig_sent_revert_notification": "发送交易失败",
+    "msig_add_owner_success_notification": "已添加所有者",
+    "msig_add_owner_revert_notification": "添加所有者失败",
+    "msig_remove_owner_success_notification": "已移除所有者",
+    "msig_remove_owner_revert_notification": "移除所有者失败",
+    "msig_set_delay_success_notification": "延迟已更新",
+    "msig_set_delay_revert_notification": "设置延迟失败",
+    "msig_set_threshold_success_notification": "阈值已更新",
+    "msig_set_threshold_revert_notification": "设置阈值失败",
+    "msig_approve_success_notification": "交易已批准",
+    "msig_approve_revert_notification": "批准交易失败",
+    "msig_decline_success_notification": "交易已拒绝",
+    "msig_decline_revert_notification": "拒绝交易失败",
+    "transaction_link": "交易链接",
+    "list_single_subtitle": "“{list}”列表中的 {symbol}",
+    "list_double_subtitle": "“{list}”列表中的 {symbol0} 和 {symbol1}",
+    "create_margin_position_subtitle": "抵押 {amountCollateral} {symbolCollateral}，费用 {amountFee} {symbolFee}"
   },
   "Portfolio": {
     "approved_deposited": "已授权并存入",
@@ -302,10 +350,10 @@
     "lending_building": "借贷订单页面正在建设中",
     "margin_tooltip": "这个数值是你所有活跃保证金仓位中资产的总和。这些资产在保证金模块智能合约里，所属仓位关闭之前无法提取。",
     "wallet_assets_tooltip": "这个数值是你全部资产余额的美元总和。不包括保证金余额。",
-    "liquidity_tooltip": "这个数值是你在所有 Dex223 资金池合约中提供的流动性资产总和。",
+    "liquidity_tooltip": "这个数值是你在所有 DEX223 资金池合约中提供的流动性资产总和。",
     "lending_tooltip": "这个数值是你所有活跃借贷订单中资产的总和。这些资产在保证金模块智能合约里。你可以通过对应的借贷订单提取。",
-    "stuck_tooltip": "存放在 Dex223 智能合约中的资产总和。用来查看可以从系统合约提取的代币。",
-    "approvals_tooltip": "授予 Dex223 智能合约的授权数量。授权允许合约从你的钱包余额中转移代币。请撤销不需要的授权，以保护你的资金。",
+    "stuck_tooltip": "存放在 DEX223 智能合约中的资产总和。用来查看可以从系统合约提取的代币。",
+    "approvals_tooltip": "授予 DEX223 智能合约的授权数量。授权允许合约从你的钱包余额中转移代币。请撤销不需要的授权，以保护你的资金。",
     "approved": "已授权",
     "lending_orders_suffix": "个借贷订单",
     "wallets_count": "{count} 个钱包",
@@ -328,7 +376,7 @@
   },
   "Feedback": {
     "feedback": "反馈",
-    "feel_free_to_share": "欢迎在此留言，或在 <github>Github 上提交问题</github>",
+    "feel_free_to_share": "欢迎在此留言，或在 <github>GitHub 上提交问题</github>",
     "describe_your_issue": "描述您的问题",
     "email_wallet_address_or_nickname": "邮箱、钱包地址或昵称",
     "feedback_category": "反馈类别",
@@ -347,24 +395,24 @@
     "thank_you_for_the_feedback": "感谢您的反馈！我们会尽快与您联系。也欢迎通过 <telegram>Telegram</telegram> 或 <discord>Discord</discord> 联系我们。"
   },
   "Converter": {
-    "title": "Token converter",
-    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
-    "convert_button": "Convert",
-    "you_pay": "You pay",
-    "you_receive": "You receive",
-    "flip_direction": "Flip conversion direction",
-    "pick_token": "Select token",
-    "connect_wallet": "Connect wallet",
-    "insufficient_balance": "Insufficient balance",
-    "no_fees": "1:1 conversion. No protocol fees."
+    "title": "代币转换器",
+    "description": "以 1:1 的比例在 ERC-20 和 ERC-223 之间转换任意代币。无协议费用。",
+    "convert_button": "转换",
+    "you_pay": "支付",
+    "you_receive": "收到",
+    "flip_direction": "切换转换方向",
+    "pick_token": "选择代币",
+    "connect_wallet": "连接钱包",
+    "insufficient_balance": "余额不足",
+    "no_fees": "1:1 转换。无协议费用。"
   },
   "BuyCrypto": {
     "title": "用法币充值钱包",
-    "description": "通过 Onramp 用法币买入或卖出加密资产。充值后请在 Dex223 上兑换代币。",
+    "description": "通过 Onramp 用法币买入或卖出加密资产。充值后请在 DEX223 上兑换代币。",
     "powered_by_onramp": "法币入口",
     "step_buy": "使用银行转账、银行卡或本地支付",
     "step_receive": "加密资产将进入已连接的钱包",
-    "step_use": "在 Dex223 上兑换或创建资金池",
+    "step_use": "在 DEX223 上兑换或创建资金池",
     "flow_buy": "买入",
     "flow_sell": "卖出",
     "flow_swap": "兑换",
@@ -376,7 +424,7 @@
     "any_token": "代币",
     "any_token_short": "查看全部",
     "sell_hint": "通过 Onramp 将钱包中的加密资产卖成法币。在小组件中选择资产。",
-    "swap_hint": "在 Onramp 中兑换支持的加密资产，然后返回 Dex223 交易。",
+    "swap_hint": "在 Onramp 中兑换支持的加密资产，然后返回 DEX223 交易。",
     "receiving_wallet": "收款钱包",
     "cta_buy_asset": "用 Onramp 购买 {symbol}",
     "cta_buy_any": "用 Onramp 购买加密资产",
@@ -384,13 +432,13 @@
     "cta_swap": "用 Onramp 兑换",
     "wallet_destination_hint": "代币将发送到你已连接的钱包地址。",
     "success_title": "购买完成",
-    "success_body": "你的 {symbol} 正在路上。可在 Dex223 上交易或添加流动性。",
-    "cta_trade": "在 Dex223 兑换",
+    "success_body": "你的 {symbol} 正在路上。可在 DEX223 上交易或添加流动性。",
+    "cta_trade": "在 DEX223 兑换",
     "cta_pools": "浏览资金池",
     "cta_add_liquidity": "添加流动性",
     "after_title": "购买之后",
     "after_trade_body": "使用集中流动性兑换 ERC-20 与 ERC-223 代币。",
-    "after_pool_body": "创建仓位，从 Dex223 交易者处赚取手续费。",
+    "after_pool_body": "创建仓位，从 DEX223 交易者处赚取手续费。",
     "disclaimer": "法币支付、KYC 与结算由以下服务处理：",
     "missing_app_id": "未配置 Onramp。请设置 NEXT_PUBLIC_ONRAMP_APP_ID。",
     "tx_failed": "Onramp 交易失败。请重试或更换支付方式。",
@@ -455,14 +503,14 @@
     "already_imported": "该代币已导入",
     "import_symbol": "导入 {symbol}",
     "import_list_tooltip": "您可以在此通过 JSON 文件或 URL 导入代币列表。",
-    "import_token_tooltip": "您可以输入合约地址来导入代币。该代币将被添加到 Dex223 中您的“自定义代币列表”。",
+    "import_token_tooltip": "您可以输入合约地址来导入代币。该代币将被添加到 DEX223 中您的“自定义代币列表”。",
     "tokens_amount": "{amount} {amount, plural, other {个代币}}",
     "custom_tokens_amount": "{amount} {amount, plural, other {个自定义代币}}",
     "found_in": "在 {amount} {amount, plural, other {个代币列表}} 中找到：",
     "confirm_removing_list_text": "请确认您要移除 <bold>«<list></list>»</bold> 列表",
     "confirm_removing_token_text": "请确认您要移除 <bold>«<token></token>»</bold> 自定义代币。",
-    "adding_list_warning": " 大多数代币列表由第三方维护，因此 Dex223 团队无法保证这些列表中数据的正确性。请假定任何人都可以将任意代币添加到代币列表中。在进行任何资金交易之前，请自行核实代币合约地址并再次确认代币数据。",
-    "import_token_warning": " 导入代币时请谨慎，列表中可能包含现有代币的仿冒版本。请确认导入的代币与 Dex223 兼容。您可以随时通过公开的区块链浏览器核实代币数据，以避免可能的错误和诈骗。",
+    "adding_list_warning": "大多数代币列表由第三方维护，因此 DEX223 团队无法保证这些列表中数据的正确性。请假定任何人都可以将任意代币添加到代币列表中。在进行任何资金交易之前，请自行核实代币合约地址并再次确认代币数据。",
+    "import_token_warning": "导入代币时请谨慎，列表中可能包含现有代币的仿冒版本。请确认导入的代币与 DEX223 兼容。您可以随时通过公开的区块链浏览器核实代币数据，以避免可能的错误和诈骗。",
     "predicted_alert": "ERC-223 标准的该代币尚不存在。您看到的地址是由转换器合约预测得出的。",
     "add_new_list": "添加新列表",
     "list_not_found": "未找到列表",
@@ -660,7 +708,7 @@
   },
   "Guidelines": {
     "title": "指南",
-    "description": "快速开始使用 Dex223 的链接。",
+    "description": "快速开始使用 DEX223 的链接。",
     "getting_started_title": "入门",
     "getting_started_subtitle": "平台上的第一步",
     "tokens_title": "代币",
@@ -674,7 +722,7 @@
     "guides": {
       "swap": {
         "title": "如何兑换",
-        "description": "只需几步即可在 Dex223 上兑换代币。",
+        "description": "只需几步即可在 DEX223 上兑换代币。",
         "cta": "打开兑换",
         "sections": {
           "before": {
@@ -733,7 +781,7 @@
         "sections": {
           "why": {
             "heading": "为什么列表很重要",
-            "body": "Dex223 只显示您已启用的列表中的代币。如果在兑换或转换器中找不到某个代币，请先检查您的列表。"
+            "body": "DEX223 只显示您已启用的列表中的代币。如果在兑换或转换器中找不到某个代币，请先检查您的列表。"
           },
           "steps": {
             "heading": "步骤",
@@ -752,12 +800,12 @@
       },
       "token-listing": {
         "title": "上市代币",
-        "description": "将代币提交到自动上市合约，使其可以在 Dex223 上交易。",
+        "description": "将代币提交到自动上市合约，使其可以在 DEX223 上交易。",
         "cta": "打开代币上市",
         "sections": {
           "overview": {
             "heading": "概览",
-            "body": "代币上市会在 Dex223 自动上市合约中登记您的代币，以便流动性池和界面能够发现它。"
+            "body": "代币上市会在 DEX223 自动上市合约中登记您的代币，以便流动性池和界面能够发现它。"
           },
           "before": {
             "heading": "开始之前",
@@ -780,7 +828,7 @@
       },
       "fiat": {
         "title": "用法币购买加密资产",
-        "description": "无需离开 Dex223，即可通过 Onramp 为钱包充值。",
+        "description": "无需离开 DEX223，即可通过 Onramp 为钱包充值。",
         "cta": "打开法币",
         "sections": {
           "overview": {
@@ -800,7 +848,7 @@
             "heading": "注意事项",
             "items": {
               "s1": "可用性取决于您所在的地区以及 Onramp 支持的支付渠道。",
-              "s2": "Dex223 的兑换在 Dex223 上完成。加密资产之间的兑换请使用兑换页面。"
+              "s2": "DEX223 的兑换在 DEX223 上完成。加密资产之间的兑换请使用兑换页面。"
             }
           }
         }
@@ -825,7 +873,15 @@
     "decrease": "减少",
     "open_link": "打开链接",
     "increase_price": "提高价格",
-    "decrease_price": "降低价格"
+    "decrease_price": "降低价格",
+    "edit": "编辑",
+    "details": "详情",
+    "menu": "菜单",
+    "wallet": "钱包",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "listing_details": "上架详情",
+    "amount": "数量"
   },
   "PageError": {
     "title": "出了点问题",
@@ -849,7 +905,7 @@
     "testnet_note": "Sepolia 测试网演示。使用免费测试代币（HE、NE、AR），不涉及真实资金。",
     "why_title": "什么是安全发送，为什么需要它？",
     "why_problem": "<b>问题。</b>普通 ERC-20 代币不会检查接收方。如果将它们发送到无法处理它们的合约，转账仍会成功，代币将永远被锁在那里。已有价值数百万美元的代币因此丢失。",
-    "why_fix": "<b>解决方案。</b>安全发送使用 ERC-223，即 Dex223 所基于的代币标准。接收合约必须接受代币，如果无法接受，转账会被拒绝，代币会留在您的钱包中。",
+    "why_fix": "<b>解决方案。</b>安全发送使用 ERC-223，即 DEX223 所基于的代币标准。接收合约必须接受代币，如果无法接受，转账会被拒绝，代币会留在您的钱包中。",
     "why_erc20": "<b>只有 ERC-20？</b>请在下方选择 ERC-20。您只需批准确切金额（绝不无限授权），代币会在同一步中转换为 ERC-223 并发送。您也可以在<convert>转换器</convert>页面自行转换代币。",
     "why_modes": "<b>发送</b>可转账给任何钱包或合约。<b>支付</b>用于向商家付款并附上订单编号。<b>发票</b>供商家使用，可创建分享给客户的付款链接。",
     "tab_send": "发送",
@@ -884,7 +940,8 @@
     "max": "最大",
     "insufficient": "余额不足。",
     "cancelled": "交易已取消。",
-    "failed": "交易失败，请重试。"
+    "failed": "交易失败，请重试。",
+    "copy_failed": "无法复制链接，请手动复制。"
   },
   "Revenue": {
     "title": "收益",
@@ -1011,7 +1068,9 @@
     "duration_day": "{count} 天",
     "duration_hour": "{count} 小时",
     "duration_minute": "{count} 分钟",
-    "duration_second": "{count} 秒"
+    "duration_second": "{count} 秒",
+    "tx_insufficient_funds": "资金不足，无法支付此交易及其网络费用。",
+    "tx_reverted": "交易已回滚，没有任何变化。网络费用仍会收取。"
   },
   "Governance": {
     "title": "治理",
@@ -1039,7 +1098,7 @@
     "supply_required": "请填写总供应量",
     "supply_tooltip": "部署时将存在的代币数量。",
     "image_url": "图片链接（可选）",
-    "image_placeholder": "https:// ",
+    "image_placeholder": "https://",
     "image_invalid": "请输入 https:// 或 ipfs:// 格式的链接",
     "image_tooltip": "可选的 https:// 或 ipfs:// 代币图片链接。",
     "allow_mint": "允许所有者（你）增发新代币",
@@ -1075,14 +1134,14 @@
     "title": "代币上架",
     "intro": "在我们的平台上架代币很简单。您可以从以下方式中选择一种：",
     "default_heading": "默认列表",
-    "default_p1": "您可以将代币添加到 Dex223 默认代币列表。该列表在界面中默认启用，因此其中的代币会对用户显示。用户也可以在自己的界面中关闭该列表，从而不再看到这些代币。",
-    "default_p2": "要将新代币加入 Dex223 默认列表，请在我们的 GitHub 上提交 issue。Dex223 团队会审核申请，并在对应 issue 的评论中回复。",
+    "default_p1": "您可以将代币添加到 DEX223 默认代币列表。该列表在界面中默认启用，因此其中的代币会对用户显示。用户也可以在自己的界面中关闭该列表，从而不再看到这些代币。",
+    "default_p2": "要将新代币加入 DEX223 默认列表，请在我们的 GitHub 上提交 issue。DEX223 团队会审核申请，并在对应 issue 的评论中回复。",
     "autolisting_heading": "自动上架合约",
     "autolisting_p1": "您可以将代币上架到任何自动上架合约。用户可以随时在界面中启用或关闭这些合约。只要代币出现在用户当前启用的任一上架合约或代币列表中，就会显示。用户还能看到该代币出现在多少个列表中，因此出现在多个已启用列表中会提高信任。各合约的上架条件不同，有的收费，有的免费。",
-    "autolisting_p2": "上架到自动上架合约无需联系 Dex223 团队，流程是全自动的。",
+    "autolisting_p2": "上架到自动上架合约无需联系 DEX223 团队，流程是全自动的。",
     "existing_heading": "现有代币列表",
     "existing_p1": "Tokenlists 是 Uniswap Labs 的项目，详情见 <link>https://tokenlists.org/</link>。",
-    "existing_p2": "代币列表由 CoinMarketCap、CoinGecko 等可信机构维护。如果您的代币进入其中任一列表，Dex223 用户启用该列表后就能看到它。目前大多数列表仍只支持 ERC-20 代币。",
+    "existing_p2": "代币列表由 CoinMarketCap、CoinGecko 等可信机构维护。如果您的代币进入其中任一列表，DEX223 用户启用该列表后就能看到它。目前大多数列表仍只支持 ERC-20 代币。",
     "view_uniswap_lists": "查看 Uniswap 代币列表",
     "back": "返回代币上架",
     "search_name_or_contract": "搜索名称或粘贴合约",
@@ -1198,15 +1257,15 @@
     "duration": "期限",
     "limit": "上限",
     "min_borrowing": "最低借入",
-    "period_tooltip": "期限说明",
-    "leverage_tooltip": "最高杠杆说明",
-    "interest_tooltip": "每月最高利率说明",
-    "currency_limit_tooltip": "订单币种上限说明",
+    "period_tooltip": "仅显示符合此筛选条件的借贷订单。",
+    "leverage_tooltip": "按允许的最高杠杆筛选借贷订单。",
+    "interest_tooltip": "仅显示月利率不高于此值的借贷订单。",
+    "currency_limit_tooltip": "按一个仓位一次可持有的币种数量筛选借贷订单。",
     "from": "从",
     "to": "到",
     "interest_rate": "利率",
     "liquidation_price_source": "清算价格来源",
-    "liquidation_price_tooltip": "清算价格来源说明",
+    "liquidation_price_tooltip": "用于评估仓位价值并判断何时可以清算的价格来源。",
     "dex223_market": "DEX223 市场",
     "cancel": "取消",
     "apply": "应用",
@@ -1239,8 +1298,8 @@
     "borrowing_period": "借款期限",
     "borrowing_period_tooltip": "每位借款人在借入后可持有贷款的时长。",
     "minutes": "分钟",
-    "seconds": "秒",
-    "seconds_in_day": "1440 秒 = 1 天",
+    "seconds": "分钟",
+    "seconds_in_day": "1440 分钟 = 1 天",
     "borrower_countdown": "每位借款人的倒计时从其借入你的资产时开始，而不是从创建借贷订单时开始",
     "token_source_type": "代币来源类型",
     "source_tokens": "代币",
@@ -1266,7 +1325,7 @@
     "specified_addresses": "指定地址",
     "liquidation_address": "有权清算的地址",
     "liquidation_address_tooltip": "只有这些地址可以发起清算。",
-    "dex223_price_relay": "默认 Dex223 价格中继",
+    "dex223_price_relay": "默认 DEX223 价格中继",
     "insufficient_balance": "余额不足",
     "interest_per_month": "每月利率",
     "interest_entire_period": "整个期限的利率",
@@ -1498,7 +1557,47 @@
     "history_borrow": "借入 {amount} {symbol}",
     "history_deposit": "存入 {amount} {symbol}",
     "history_withdraw": "提取 {amount} {symbol}",
-    "history_swap": "{amount} {symbolIn} 以 1 {symbolIn} = {rate} {symbolOut} 的汇率兑换为 {symbolOut}"
+    "history_swap": "{amount} {symbolIn} 以 1 {symbolIn} = {rate} {symbolOut} 的汇率兑换为 {symbolOut}",
+    "balance": "余额",
+    "total_expected": "总计 / 预期",
+    "view_summary": "查看摘要",
+    "liquidated_by": "清算方：",
+    "borrowed_profit": "借入 / 利润",
+    "borrowed_profit_tooltip": "开设该仓位时借入的金额，以及关闭后的利润。",
+    "initial_collateral_earning": "初始抵押 / 收益",
+    "initial_collateral_earning_tooltip": "开设该仓位时提供的抵押，以及关闭后的收益。",
+    "freezing": "冻结",
+    "freezing_transaction": "冻结交易",
+    "freezing_tx_tooltip": "在清算前冻结该仓位的交易。",
+    "liquidation_transaction": "清算交易",
+    "liquidation_tx_tooltip": "清算该仓位的交易。",
+    "view_margin_position_details": "查看保证金仓位详情",
+    "status_completed": "已完成",
+    "assets_count": "资产：{current} / {limit}",
+    "assets_limit_tooltip": "该仓位持有的代币数，以及借贷订单币种上限规定的最大数量。",
+    "health_label": "健康度：",
+    "health_tooltip": "当前余额除以预期余额。等于或低于 1 时，该仓位可被清算。",
+    "view_lending_order_details": "查看借贷订单详情",
+    "available_total": "可用 / 总计",
+    "available_total_tooltip": "借款人仍可借入的资金，以及包含已借出金额在内的订单总余额。",
+    "fee_liquidator_lender": "清算人费用 / 出借人费用",
+    "fee_liquidator_lender_tooltip": "支付给清算该订单仓位者的费用，以及额外支付给出借人的费用。",
+    "percent_per_month": "每月 {rate}%",
+    "view_position_details": "查看仓位详情",
+    "position_id_tooltip": "该保证金仓位的唯一编号。",
+    "position_selected": "已选择仓位",
+    "select_position": "选择仓位",
+    "change_position": "更换仓位",
+    "search_position_id": "搜索仓位 ID",
+    "no_matching_positions": "没有匹配的仓位",
+    "matching_positions": "匹配的仓位",
+    "positions_without_tokens": "不含所选代币的仓位",
+    "you_pay_symbol": "支付：{symbol}",
+    "you_buy_symbol": "购买：{symbol}",
+    "borrow_now": "立即借入",
+    "min_order_balance_filter_tooltip": "仅显示可借金额不少于此数值的借贷订单。",
+    "min_loan_amount_filter_tooltip": "仅显示最低借款额不少于此数值的借贷订单。",
+    "duration_filter_tooltip": "仅显示仓位期限（天）在此范围内的借贷订单。"
   },
   "TradingChart": {
     "select_pair": "选择两个代币以查看图表",
@@ -1526,7 +1625,7 @@
     "empty_title": "暂无交易",
     "empty_description": "该资金池还没有兑换记录。图表将从第一笔交易开始。",
     "no_pool_title": "该交易对没有资金池",
-    "no_pool_description": "{base} 和 {quote} 还没有 Dex223 资金池。添加流动性即可创建。",
+    "no_pool_description": "{base} 和 {quote} 还没有 DEX223 资金池。添加流动性即可创建。",
     "create_pool": "创建资金池",
     "error_title": "图表数据不可用",
     "error_description": "无法加载价格历史。请检查网络连接后重试。",
@@ -1542,8 +1641,8 @@
     "show_chart": "显示图表",
     "hide_chart": "隐藏图表",
     "source_subgraph": "Subgraph",
-    "source_subgraph_long": "实时行情暂不可用，显示 Dex223 subgraph 的小时数据",
-    "source_onchain": "Dex223 资金池数据，直接读取自链上",
+    "source_subgraph_long": "实时行情暂不可用，显示 DEX223 subgraph 的小时数据",
+    "source_onchain": "DEX223 资金池数据，直接读取自链上",
     "charts_by": "图表由 TradingView 提供",
     "bar_closes_in": "K 线收盘倒计时",
     "price_scale": "价格刻度",
@@ -1607,5 +1706,99 @@
     "atl": "历史最低",
     "from_ath": "较最高价 {percent}",
     "chart_source": "图表：{source}"
+  },
+  "Seo": {
+    "default": {
+      "title": "DEX223：交易 ERC-20 与 ERC-223 代币",
+      "description": "专为 ERC-223 和 ERC-20 打造的去中心化交易所。支持兑换、集中流动性、借贷、杠杆交易和无需许可的代币上架。"
+    },
+    "swap": {
+      "title": "兑换 ERC-20 与 ERC-223 代币",
+      "description": "在 DEX223 兑换任意代币，两侧均可选择 ERC-20 或 ERC-223。集中流动性、费用透明，防止代币因转账失败而丢失。"
+    },
+    "margin_swap": {
+      "title": "杠杆兑换：使用杠杆交易",
+      "description": "在 DEX223 的杠杆仓位内交易。从链上借贷订单借入资金进行杠杆交易，资产始终由你自己掌控。"
+    },
+    "margin_trading": {
+      "title": "在 DEX223 出借与借入",
+      "description": "按自己的条件出借代币，或抵押借款开立杠杆仓位。链上订单可自定义利率、期限与清算规则。"
+    },
+    "pools": {
+      "title": "流动性池：TVL、交易量与费用",
+      "description": "按 TVL 和交易量浏览 DEX223 流动性池。以 ERC-20 或 ERC-223 提供集中流动性，每笔交易都能赚取手续费。"
+    },
+    "pool": {
+      "title": "流动性池详情",
+      "description": "DEX223 流动性池的余额、TVL、24 小时交易量和手续费。一键兑换该交易对或添加流动性。"
+    },
+    "positions": {
+      "title": "我的流动性仓位",
+      "description": "管理你在 DEX223 的流动性仓位：领取手续费、追加或撤出流动性。"
+    },
+    "add": {
+      "title": "添加流动性，赚取交易手续费",
+      "description": "在 DEX223 开立集中流动性仓位或创建新池。选择费率档位和价格区间，用任一标准存入，从每笔交易中获益。"
+    },
+    "converter": {
+      "title": "ERC-20 与 ERC-223 代币转换器",
+      "description": "以固定 1:1 比例在 ERC-20 与 ERC-223 之间转换任意代币，无协议费用。ERC-223 代币不会因发送到无法接收的合约而丢失。"
+    },
+    "create_token": {
+      "title": "无需代码创建 ERC-223 代币",
+      "description": "几分钟内发行你自己的 ERC-223 代币。设置名称、符号和总量，可选创建 ERC-20 版本，然后建池并在 DEX223 上架。"
+    },
+    "buy_crypto": {
+      "title": "用银行卡或转账购买加密货币",
+      "description": "通过 Onramp 用法币充值，直接在钱包中收到 ETH、USDC、USDT 或 D223，然后在 DEX223 兑换或赚取手续费。"
+    },
+    "token_listing": {
+      "title": "在 DEX223 上架你的代币",
+      "description": "通过免费或付费的自动上架合约、默认代币列表或现有列表在 DEX223 上架代币。任何拥有流动性池的代币都可以交易。"
+    },
+    "token_listing_contracts": {
+      "title": "自动上架合约",
+      "description": "比较 DEX223 自动上架合约的上架价格和可用支付代币，无需许可即可在链上上架任意代币。"
+    },
+    "token_listing_add": {
+      "title": "自动上架代币",
+      "description": "几次点击即可将代币及其交易对登记到 DEX223 自动上架合约。选择合约，如有费用则支付，代币即可上线。"
+    },
+    "statistics": {
+      "title": "DEX223 数据：TVL、交易量与池",
+      "description": "DEX223 协议实时数据：总锁仓价值、交易量、流动性池数量、交易笔数以及按 TVL 排名的热门池。"
+    },
+    "guidelines": {
+      "title": "DEX223 入门",
+      "description": "快速前往兑换、转换、购买加密货币、上架或创建代币，并了解 DEX223 与 ERC-223 的工作原理。"
+    },
+    "portfolio": {
+      "title": "资产组合",
+      "description": "追踪你在 DEX223 的余额、流动性、借贷订单和杠杆仓位。"
+    },
+    "revenue": {
+      "title": "收益分成：质押赚取手续费",
+      "description": "质押 DEX223 质押代币，获得协议所收手续费的分成。奖励可随时领取。"
+    },
+    "markets": {
+      "title": "加密市场：价格与图表",
+      "description": "主流加密货币的实时价格、市值和图表，并可一键前往 DEX223 交易。"
+    },
+    "governance": {
+      "title": "DEX223 治理",
+      "description": "DEX223 治理与链上费用投票将如何运作，以及下一阶段的内容。"
+    },
+    "multisig": {
+      "title": "多签",
+      "description": "发起、批准并执行多签交易。"
+    },
+    "send": {
+      "title": "安全发送",
+      "description": "将代币发送到任意钱包或合约，不会因对方地址无法接收而丢失。"
+    },
+    "pay": {
+      "title": "支付",
+      "description": "使用加密货币向商家付款，并附带订单信息。"
+    }
   }
 }

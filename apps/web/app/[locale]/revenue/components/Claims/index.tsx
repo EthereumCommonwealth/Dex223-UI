@@ -322,15 +322,16 @@ export const Claims = ({
                       <div className="flex items-center gap-2">
                         <a
                           target="_blank"
+                          rel="noopener noreferrer"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
-                            o.erc20Address,
+                            o.fullErc20Address || o.erc20Address,
                             o.chainId,
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
                           <span className="w-[80px] text-left">
-                            {truncateMiddle(o.erc20Address || "", {
+                            {truncateMiddle(o.fullErc20Address || o.erc20Address || "", {
                               charsFromStart: 3,
                               charsFromEnd: 3,
                             })}
@@ -346,15 +347,16 @@ export const Claims = ({
                       <div className="flex items-center gap-2">
                         <a
                           target="_blank"
+                          rel="noopener noreferrer"
                           href={getExplorerLink(
                             ExplorerLinkType.ADDRESS,
-                            o.erc223Address,
+                            o.fullErc223Address || o.erc223Address,
                             o.chainId,
                           )}
                           className="flex items-center gap-1 text-green hocus:text-green-hover duration-200"
                         >
                           <span className="w-[80px] text-left">
-                            {truncateMiddle(o.erc223Address || "", {
+                            {truncateMiddle(o.fullErc223Address || o.erc223Address || "", {
                               charsFromStart: 3,
                               charsFromEnd: 3,
                             })}
@@ -638,6 +640,7 @@ export const Claims = ({
                       <span className="text-tertiary-text text-13 flex-shrink-0">ERC-20</span>
                       <a
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={getExplorerLink(
                           ExplorerLinkType.ADDRESS,
                           o.fullErc20Address || o.erc20Address,
@@ -659,6 +662,7 @@ export const Claims = ({
                       <span className="text-tertiary-text text-13 flex-shrink-0">ERC-223</span>
                       <a
                         target="_blank"
+                        rel="noopener noreferrer"
                         href={getExplorerLink(
                           ExplorerLinkType.ADDRESS,
                           o.fullErc223Address || o.erc223Address,

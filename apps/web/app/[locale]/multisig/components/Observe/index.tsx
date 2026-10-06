@@ -8,7 +8,7 @@ import useMultisigContract from "../../hooks/useMultisigContract";
 import useMultisigTransactions, {
   TransactionDisplayData,
 } from "../../hooks/useMultisigTransactions";
-import { TransactionInfoCard } from "../shared";
+import { parseTxId, TransactionInfoCard } from "../shared";
 
 export default function Observe() {
   const [transactionId, setTransactionId] = useState("");
@@ -23,18 +23,18 @@ export default function Observe() {
 
   const loadTransactionData = useCallback(
     async (txId: string) => {
-      if (!txId) {
+      if (!txId || parseTxId(txId) === null) {
+        // Empty or non-numeric input: nothing to look up, so it renders as not found.
         setSelectedTransaction(null);
         return;
       }
       setIsLoading(true);
       try {
-        const tx = await loadTransaction(txId);
-        if (tx) {
-          setSelectedTransaction(tx);
-        }
+        const tx = await loadTransaction(txId.trim());
+        setSelectedTransaction(tx ?? null);
       } catch (err) {
         console.error(err);
+        setSelectedTransaction(null);
       } finally {
         setIsLoading(false);
       }
@@ -57,13 +57,15 @@ export default function Observe() {
   }, [refreshTransactions]);
 
   const generateApproveData = useCallback(() => {
-    if (!transactionId) return "";
-    return generateTransactionData("approveTx", [BigInt(transactionId)]);
+    const txId = parseTxId(transactionId);
+    if (txId === null) return "";
+    return generateTransactionData("approveTx", [txId]);
   }, [transactionId, generateTransactionData]);
 
   const generateDeclineData = useCallback(() => {
-    if (!transactionId) return "";
-    return generateTransactionData("declineTx", [BigInt(transactionId)]);
+    const txId = parseTxId(transactionId);
+    if (txId === null) return "";
+    return generateTransactionData("declineTx", [txId]);
   }, [transactionId, generateTransactionData]);
 
   return (

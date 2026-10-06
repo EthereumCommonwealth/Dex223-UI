@@ -9,6 +9,7 @@ import { useTranslations } from "next-intl";
 import React, { PropsWithChildren, useCallback, useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Address, formatUnits, parseUnits } from "viem";
+import { useAccount } from "wagmi";
 
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
@@ -20,6 +21,8 @@ import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import TokenStandardSelector from "@/components/common/TokenStandardSelector";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
+import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
+import { useTransactionSpeedUpDialogStore } from "@/components/dialogs/stores/useTransactionSpeedUpDialogStore";
 import { ThemeColors } from "@/config/theme/colors";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
@@ -31,7 +34,9 @@ import addToast from "@/other/toast";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 
+import useRecentTransactionByHash from "../hooks/useRecentTransactionByHash";
 import useRevenueContract from "../hooks/useRevenueContract";
+import { getTxErrorCategory } from "../lib/txError";
 import {
   useClaimGasLimitStore,
   useClaimGasModeStore,
@@ -73,6 +78,8 @@ function ApproveRow({
   const tSwap = useTranslations("Swap");
   const tLiq = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
+  const recentTransaction = useRecentTransactionByHash(hash);
+  const { handleSpeedUp } = useTransactionSpeedUpDialogStore();
 
   return (
     <div
@@ -159,9 +166,15 @@ function ApproveRow({
         )}
         {isLoading && (
           <>
-            <button className="px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap">
-              {tLiq("speed_up")}
-            </button>
+            {recentTransaction && (
+              <button
+                type="button"
+                onClick={() => handleSpeedUp(recentTransaction)}
+                className="relative z-20 px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap"
+              >
+                {tLiq("speed_up")}
+              </button>
+            )}
             <IconButton iconName="forward" buttonSize={IconButtonSize.EXTRA_SMALL} />
             <Preloader size={16} />
           </>
@@ -183,6 +196,7 @@ function ApproveRow({
         {hash && (
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
             className="absolute z-10"
             aria-label={t("view_transaction")}
@@ -216,6 +230,8 @@ function StakeRow({
   const tSwap = useTranslations("Swap");
   const tLiq = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
+  const recentTransaction = useRecentTransactionByHash(hash);
+  const { handleSpeedUp } = useTransactionSpeedUpDialogStore();
 
   return (
     <div className="relative grid grid-cols-[32px_1fr_auto] gap-2 md:gap-3 min-h-10">
@@ -270,9 +286,15 @@ function StakeRow({
         )}
         {isLoading && (
           <>
-            <button className="px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap">
-              {tLiq("speed_up")}
-            </button>
+            {recentTransaction && (
+              <button
+                type="button"
+                onClick={() => handleSpeedUp(recentTransaction)}
+                className="relative z-20 px-2 md:px-3 py-1 md:py-1.5 bg-tertiary-bg text-secondary-text text-10 md:text-12 rounded-2 hover:bg-quaternary-bg transition-colors font-normal whitespace-nowrap"
+              >
+                {tLiq("speed_up")}
+              </button>
+            )}
             <IconButton iconName="forward" buttonSize={IconButtonSize.EXTRA_SMALL} />
             <Preloader size={16} />
           </>
@@ -294,6 +316,7 @@ function StakeRow({
         {hash && (
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={getExplorerLink(ExplorerLinkType.TRANSACTION, hash, chainId)}
             className="absolute inset-0 z-10"
             aria-label={t("view_transaction")}
@@ -329,6 +352,29 @@ const StakeDialog = () => {
     errorMessage,
     errorType,
   } = useStakeDialogStore();
+
+  const tWallet = useTranslations("Wallet");
+  const { address: connectedAddress } = useAccount();
+  const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
+
+  // Maps a failed transaction to the error type and the message the dialog shows.
+  const describeTxError = useCallback(
+    (error: any, fallback: string): { type: StakeError; message: string } => {
+      switch (getTxErrorCategory(error)) {
+        case "rejected":
+          return { type: StakeError.UNKNOWN, message: tWallet("user_rejected") };
+        case "insufficient_funds":
+          return { type: StakeError.UNKNOWN, message: t("tx_insufficient_funds") };
+        case "out_of_gas":
+          return { type: StakeError.OUT_OF_GAS, message: t("gas_too_low") };
+        case "reverted":
+          return { type: StakeError.UNKNOWN, message: t("tx_reverted") };
+        default:
+          return { type: StakeError.UNKNOWN, message: error?.shortMessage || fallback };
+      }
+    },
+    [t, tWallet],
+  );
 
   const [amount, setAmount] = useState("");
   const [selectedStandard, setSelectedStandard] = useState<Standard>(Standard.ERC20);
@@ -508,6 +554,11 @@ const StakeDialog = () => {
         return;
       }
 
+      if (!connectedAddress) {
+        setWalletConnectOpened(true);
+        return;
+      }
+
       if (!isCorrectNetwork) {
         setStatus(StakeStatus.ERROR);
         setErrorType(StakeError.UNKNOWN);
@@ -539,22 +590,26 @@ const StakeDialog = () => {
         if (selectedStandard === Standard.ERC20) {
           setStatus(StakeStatus.PENDING_APPROVE);
           try {
-            const approveResult = await approve(amountToApproveBigInt, gasPriceSettings, gasToUse);
+            // The hash arrives before the receipt, so the loading row (and speed up) shows
+            // while the approval is being mined.
+            const approveResult = await approve(
+              amountToApproveBigInt,
+              gasPriceSettings,
+              gasToUse,
+              (hash) => {
+                setApproveHash(hash);
+                setStatus(StakeStatus.LOADING_APPROVE);
+              },
+            );
             if (approveResult?.hash) {
               setApproveHash(approveResult.hash);
-              setStatus(StakeStatus.LOADING_APPROVE);
-
-              // Wait for receipt
-              if (approveResult.receipt) {
-                // Approval successful, proceed to stake
-                setStatus(StakeStatus.PENDING);
-              }
             }
           } catch (error: any) {
             console.error("Approval error:", error);
+            const { type, message } = describeTxError(error, t("approval_failed"));
             setStatus(StakeStatus.APPROVE_ERROR);
-            setErrorType(StakeError.UNKNOWN);
-            setErrorMessage(error.message || t("approval_failed"));
+            setErrorType(type);
+            setErrorMessage(message);
             return;
           }
         }
@@ -562,18 +617,21 @@ const StakeDialog = () => {
         // Execute stake
         setStatus(selectedStandard === Standard.ERC223 ? StakeStatus.PENDING : StakeStatus.PENDING);
         try {
+          const onStakeHash = (hash: Address) => {
+            setStakeHash(hash);
+            setStatus(StakeStatus.LOADING);
+          };
           let stakeResult;
           if (selectedStandard === Standard.ERC20) {
-            stakeResult = await stake(amountBigInt, gasPriceSettings, gasToUse);
+            stakeResult = await stake(amountBigInt, gasPriceSettings, gasToUse, onStakeHash);
           } else {
-            stakeResult = await stakeERC223(amountBigInt, gasPriceSettings, gasToUse);
+            stakeResult = await stakeERC223(amountBigInt, gasPriceSettings, gasToUse, onStakeHash);
           }
 
           if (stakeResult?.hash) {
             setStakeHash(stakeResult.hash);
-            setStatus(StakeStatus.LOADING);
 
-            // Wait for receipt
+            // executeTransaction resolves only after a successful receipt
             if (stakeResult.receipt) {
               setStatus(StakeStatus.SUCCESS);
               await refetchUserData();
@@ -582,9 +640,10 @@ const StakeDialog = () => {
           }
         } catch (error: any) {
           console.error("Stake error:", error);
+          const { type, message } = describeTxError(error, t("stake_failed"));
           setStatus(StakeStatus.ERROR);
-          setErrorType(StakeError.UNKNOWN);
-          setErrorMessage(error.message || t("stake_failed"));
+          setErrorType(type);
+          setErrorMessage(message);
         }
       } else {
         // Unstaking logic
@@ -627,12 +686,15 @@ const StakeDialog = () => {
             gasPriceSettings,
             gasToUse,
             selectedStandard,
+            (hash) => {
+              setStakeHash(hash);
+              setStatus(StakeStatus.LOADING);
+            },
           );
           if (unstakeResult?.hash) {
             setStakeHash(unstakeResult.hash);
-            setStatus(StakeStatus.LOADING);
 
-            // Wait for receipt
+            // executeTransaction resolves only after a successful receipt
             if (unstakeResult.receipt) {
               setStatus(StakeStatus.SUCCESS);
               await refetchUserData();
@@ -641,9 +703,10 @@ const StakeDialog = () => {
           }
         } catch (error: any) {
           console.error("Unstake error:", error);
+          const { type, message } = describeTxError(error, t("unstake_failed"));
           setStatus(StakeStatus.ERROR);
-          setErrorType(StakeError.UNKNOWN);
-          setErrorMessage(error.message || t("unstake_failed"));
+          setErrorType(type);
+          setErrorMessage(message);
         }
       }
     } catch (error: any) {
@@ -679,6 +742,9 @@ const StakeDialog = () => {
     setStakeHash,
     gasPriceSettings,
     gasToUse,
+    connectedAddress,
+    setWalletConnectOpened,
+    describeTxError,
   ]);
 
   useEffect(() => {
@@ -735,11 +801,17 @@ const StakeDialog = () => {
           </Rows>
           <div className="flex flex-col gap-4 mt-4 md:mt-5">
             <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4">
-              <p className="text-12 md:text-14 text-secondary-text">
-                {t("gas_too_low")}{" "}
-                <a href="#" className="text-secondary-text underline">
-                  {tLiq("common_errors")}
-                </a>
+              <p className="text-12 md:text-14 text-secondary-text break-words">
+                {errorType === StakeError.OUT_OF_GAS || !errorMessage ? (
+                  <>
+                    {t("gas_too_low")}{" "}
+                    <a href="#" className="text-secondary-text underline">
+                      {tLiq("common_errors")}
+                    </a>
+                  </>
+                ) : (
+                  errorMessage
+                )}
               </p>
             </div>
             <Button
@@ -803,10 +875,13 @@ const StakeDialog = () => {
             <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4 overflow-hidden">
               <p className="text-12 md:text-14 text-secondary-text break-words overflow-wrap break-all">
                 {errorMessage || t("gas_too_low")}
-                {!errorMessage && (
-                  <a href="#" className="text-secondary-text underline">
-                    {tLiq("common_errors")}
-                  </a>
+                {(!errorMessage || errorType === StakeError.OUT_OF_GAS) && (
+                  <>
+                    {" "}
+                    <a href="#" className="text-secondary-text underline">
+                      {tLiq("common_errors")}
+                    </a>
+                  </>
                 )}
               </p>
             </div>

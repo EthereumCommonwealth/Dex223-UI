@@ -62,6 +62,7 @@ export default function TokenInput({
   allowedErc223?: boolean;
 }) {
   const t = useTranslations("Swap");
+  const tA11y = useTranslations("A11y");
 
   const { price, isLoading } = useUSDPrice(token?.wrapped.address0);
 
@@ -96,6 +97,11 @@ export default function TokenInput({
               readOnly && "pointer-events-none",
             )}
             type="text"
+            // Name the field by its visible label ("You pay" / "You receive").
+            aria-label={label || tA11y("amount")}
+            // The computed output is not editable and is skipped in the tab order.
+            readOnly={readOnly}
+            tabIndex={readOnly ? -1 : undefined}
             value={value}
             onValueChange={(values) => {
               onInputChange(values.value);

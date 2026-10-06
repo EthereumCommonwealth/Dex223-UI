@@ -79,35 +79,54 @@ export function NotificationSubTitle({ title }: { title: IRecentTransactionTitle
       );
     case RecentTransactionTitleTemplate.LIST_SINGLE:
       return (
-        <NotificationSubtitleText>{`${title.symbol} in "${title.autoListing}" list`}</NotificationSubtitleText>
+        <NotificationSubtitleText>
+          {t("list_single_subtitle", { symbol: title.symbol, list: title.autoListing })}
+        </NotificationSubtitleText>
       );
     case RecentTransactionTitleTemplate.LIST_DOUBLE:
       return (
-        <NotificationSubtitleText>{`${title.symbol0} and ${title.symbol1} in "${title.autoListing}" list`}</NotificationSubtitleText>
+        <NotificationSubtitleText>
+          {t("list_double_subtitle", {
+            symbol0: title.symbol0,
+            symbol1: title.symbol1,
+            list: title.autoListing,
+          })}
+        </NotificationSubtitleText>
       );
     case RecentTransactionTitleTemplate.CLOSE_LENDING_ORDER:
     case RecentTransactionTitleTemplate.OPEN_LENDING_ORDER:
     case RecentTransactionTitleTemplate.EDIT_LENDING_ORDER:
       return (
-        <NotificationSubtitleText>{`${title.symbol} (ID: ${title.orderId})`}</NotificationSubtitleText>
+        <NotificationSubtitleText>
+          {t("id_subtitle", { symbol: title.symbol, id: title.orderId })}
+        </NotificationSubtitleText>
       );
     case RecentTransactionTitleTemplate.CREATE_LENDING_ORDER:
       return <NotificationSubtitleText>{title.symbol}</NotificationSubtitleText>;
     case RecentTransactionTitleTemplate.CREATE_MARGIN_POSITION:
       return (
-        <NotificationSubtitleText>{`${title.amountCollateral} ${title.symbolCollateral} collateral and ${title.amountFee} ${title.symbolFee} fee`}</NotificationSubtitleText>
+        <NotificationSubtitleText>
+          {t("create_margin_position_subtitle", {
+            amountCollateral: title.amountCollateral,
+            symbolCollateral: title.symbolCollateral,
+            amountFee: title.amountFee,
+            symbolFee: title.symbolFee,
+          })}
+        </NotificationSubtitleText>
       );
     case RecentTransactionTitleTemplate.LIQUIDATE_MARGIN_POSITION:
     case RecentTransactionTitleTemplate.WITHDRAW_FROM_CLOSED_POSITION:
     case RecentTransactionTitleTemplate.CLOSE_MARGIN_POSITION:
       return (
-        <NotificationSubtitleText>{`${title.symbol} (ID: ${title.positionId})`}</NotificationSubtitleText>
+        <NotificationSubtitleText>
+          {t("id_subtitle", { symbol: title.symbol, id: title.positionId })}
+        </NotificationSubtitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_TRANSACTION_CONFIRMED:
       return (
         <ExternalTextLink
           href={getExplorerLink(ExplorerLinkType.TRANSACTION, title.hash, title.chainId)}
-          text={"Transaction Link"}
+          text={t("transaction_link")}
         />
       );
   }
@@ -175,8 +194,8 @@ function NotificationTitle({
         <div className="flex items-center gap-1">
           <NotificationTitleText>
             {status === RecentTransactionStatus.SUCCESS
-              ? "Token successfully created"
-              : "Failed to create token"}
+              ? t("deploy_token_success_notification")
+              : t("deploy_token_revert_notification")}
           </NotificationTitleText>
         </div>
       );
@@ -185,15 +204,17 @@ function NotificationTitle({
         <div className="flex items-center gap-1">
           <NotificationTitleText>
             {status === RecentTransactionStatus.SUCCESS
-              ? "Successfully unwrapped"
-              : "Unwrapping WETH9 failed"}
+              ? t("unwrap_success_notification")
+              : t("unwrap_revert_notification")}
           </NotificationTitleText>
         </div>
       );
     case RecentTransactionTitleTemplate.CLAIM:
       return (
         <NotificationTitleText>
-          {status === RecentTransactionStatus.SUCCESS ? "Successfully claimed" : "Claim failed"}
+          {status === RecentTransactionStatus.SUCCESS
+            ? t("claim_success_notification")
+            : t("claim_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.SWAP:
@@ -211,8 +232,8 @@ function NotificationTitle({
         <div className="flex items-center gap-1">
           <NotificationTitleText>
             {status === RecentTransactionStatus.SUCCESS
-              ? "Margin swap successful"
-              : "Failed to margin swap"}
+              ? t("margin_swap_success_notification")
+              : t("margin_swap_revert_notification")}
           </NotificationTitleText>
         </div>
       );
@@ -260,128 +281,128 @@ function NotificationTitle({
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Lending order opened successfully"
-            : "Failed to open lending order"}
+            ? t("open_lending_order_success_notification")
+            : t("open_lending_order_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.CLOSE_LENDING_ORDER:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Lending order closed successfully"
-            : "Failed to close lending order"}
+            ? t("close_lending_order_success_notification")
+            : t("close_lending_order_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.EDIT_LENDING_ORDER:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Lending order edited successfully"
-            : "Failed to edit lending order"}
+            ? t("edit_lending_order_success_notification")
+            : t("edit_lending_order_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.CREATE_LENDING_ORDER:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Lending order created successfully"
-            : "Failed to create lending order"}
+            ? t("create_lending_order_success_notification")
+            : t("create_lending_order_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.CREATE_MARGIN_POSITION:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Margin position created successfully"
-            : "Failed to borrow funds"}
+            ? t("create_margin_position_success_notification")
+            : t("create_margin_position_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.LIQUIDATE_MARGIN_POSITION:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Margin position liquidated successfully"
-            : "Failed to borrow funds"}
+            ? t("liquidate_margin_position_success_notification")
+            : t("liquidate_margin_position_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.FREEZE_MARGIN_POSITION:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Margin position freezed successfully"
-            : "Failed to freeze position"}
+            ? t("freeze_margin_position_success_notification")
+            : t("freeze_margin_position_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.WITHDRAW_FROM_CLOSED_POSITION:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Funds withdrawn successfully"
-            : "Failed to withdraw funds"}
+            ? t("withdraw_closed_position_success_notification")
+            : t("withdraw_closed_position_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.CLOSE_MARGIN_POSITION:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Margin position closed successfully"
-            : "Failed to close margin position"}
+            ? t("close_margin_position_success_notification")
+            : t("close_margin_position_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_TRANSACTION_CONFIRMED:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully sent"
-            : "Failed to send transaction"}
+            ? t("msig_sent_success_notification")
+            : t("msig_sent_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_ADD_OWNER:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully added owner"
-            : "Failed to add owner"}
+            ? t("msig_add_owner_success_notification")
+            : t("msig_add_owner_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_REMOVE_OWNER:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully removed owner"
-            : "Failed to remove owner"}
+            ? t("msig_remove_owner_success_notification")
+            : t("msig_remove_owner_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_SET_DELAY:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully set delay"
-            : "Failed to set delay"}
+            ? t("msig_set_delay_success_notification")
+            : t("msig_set_delay_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_SET_THRESHOLD:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully set threshold"
-            : "Failed to set threshold"}
+            ? t("msig_set_threshold_success_notification")
+            : t("msig_set_threshold_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_APPROVE:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully approved transaction"
-            : "Failed to approve transaction"}
+            ? t("msig_approve_success_notification")
+            : t("msig_approve_revert_notification")}
         </NotificationTitleText>
       );
     case RecentTransactionTitleTemplate.MSIG_DECLINE:
       return (
         <NotificationTitleText>
           {status === RecentTransactionStatus.SUCCESS
-            ? "Successfully declined transaction"
-            : "Failed to decline transaction"}
+            ? t("msig_decline_success_notification")
+            : t("msig_decline_revert_notification")}
         </NotificationTitleText>
       );
   }

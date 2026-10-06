@@ -27,6 +27,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
           "/*/send",
           "/*/pay",
           "/*/dev",
+          "/*/multisig",
           "/*/requests",
           "/*/remove/",
           "/*/increase/",

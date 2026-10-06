@@ -43,6 +43,7 @@ export default function ExplorePoolPage({
 }) {
   const { chainId, poolAddress } = use(params);
   const router = useRouter();
+  const tSeo = useTranslations("Seo");
   const t = useTranslations("Liquidity");
   const tn = useTranslations("Navigation");
   const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
@@ -121,6 +122,7 @@ export default function ExplorePoolPage({
 
   return (
     <Container>
+      <h1 className="sr-only">{tSeo("pool.title")}</h1>
       <SkeletonTheme
         baseColor="#1D1E1E"
         highlightColor="#272727"

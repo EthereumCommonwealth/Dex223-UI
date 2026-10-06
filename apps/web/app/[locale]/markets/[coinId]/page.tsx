@@ -168,7 +168,9 @@ export default function CoinPage({ params }: { params: Promise<{ coinId: string 
               />
               <StatRow
                 label={t("max_supply")}
-                value={coin?.max_supply ? `${compact(coin.max_supply)} ${coin.symbol}` : "∞"}
+                value={
+                  !coin ? "–" : coin.max_supply ? `${compact(coin.max_supply)} ${coin.symbol}` : "∞"
+                }
               />
             </div>
             <div className="bg-primary-bg rounded-5 p-5 flex flex-col gap-3 text-14">
