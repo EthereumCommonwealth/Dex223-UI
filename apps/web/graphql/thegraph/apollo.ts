@@ -10,7 +10,7 @@ import { setContext } from "@apollo/client/link/context";
 
 import { DexChainId } from "@/sdk_bi/chains";
 
-const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
+export const CHAIN_SUBGRAPH_URL: Record<DexChainId, string> = {
   // [ChainId.MAINNET]: "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v3?source=uniswap",
   // [ChainId.ARBITRUM_ONE]:
   //   "https://api.thegraph.com/subgraphs/name/ianlapham/uniswap-arbitrum-one?source=uniswap",
