@@ -13,6 +13,9 @@ import {
 } from "@/stores/useRecentTransactionsStore";
 
 const trackingTransactions: Address[] = [];
+// viem can fire onReplaced several times for one replacement (and again on each retry of
+// waitForTransactionReceipt), so remember the last replacement hash applied per transaction id.
+const appliedReplacements = new Map<string, Address>();
 export function useRecentTransactionTracking() {
   const {
     transactions,
@@ -45,13 +48,15 @@ export function useRecentTransactionTracking() {
         timeout: 1000 * 60 * 60,
         hash,
         onReplaced: (replacement) => {
-          if (replacement.reason === "repriced") {
-            updateTransactionHash(id, replacement.transaction.hash, address, "repriced");
+          if (replacement.reason !== "repriced" && replacement.reason !== "cancelled") {
+            return;
           }
-          if (replacement.reason === "cancelled") {
-            updateTransactionHash(id, replacement.transaction.hash, address, "cancelled");
-          } //TODO: make something with closure, this callback fired mutliple times even if function failed with error
-          console.log(replacement);
+          const newHash = replacement.transaction.hash;
+          if (appliedReplacements.get(id) === newHash) {
+            return;
+          }
+          appliedReplacements.set(id, newHash);
+          updateTransactionHash(id, newHash, address, replacement.reason);
         },
       });
       if (transaction.status === "success") {

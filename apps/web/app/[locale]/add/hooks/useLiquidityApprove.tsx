@@ -220,9 +220,14 @@ export const useLiquidityApprove = (parsedAmounts: {
           openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
           setApprove1Status(AddLiquidityApproveStatus.PENDING);
+          // A throw (e.g. wallet rejection) is treated like a failed result below:
+          // set this step to ERROR and close the confirm-in-wallet alert.
           const result = await approveB({
             customAmount: customAmountB,
             customGasSettings: gasSettings,
+          }).catch((e) => {
+            console.error(e);
+            return undefined;
           });
 
           if (!result?.success) {
@@ -234,9 +239,16 @@ export const useLiquidityApprove = (parsedAmounts: {
             setApprove1Status(AddLiquidityApproveStatus.LOADING);
             closeConfirmInWalletAlert();
 
-            const approveReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            let approveReceipt;
+            try {
+              approveReceipt = await publicClient.waitForTransactionReceipt({
+                hash: result.hash,
+              });
+            } catch (e) {
+              // Broadcast already; keep LOADING rather than reporting a failure that may not be real.
+              console.error(e);
+              return;
+            }
 
             if (approveReceipt.status === "reverted") {
               setApprove1Status(AddLiquidityApproveStatus.ERROR);
@@ -253,9 +265,14 @@ export const useLiquidityApprove = (parsedAmounts: {
           openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
           setDeposite1Status(AddLiquidityApproveStatus.PENDING);
+          // A throw (e.g. wallet rejection) is treated like a failed result below:
+          // set this step to ERROR and close the confirm-in-wallet alert.
           const result = await depositB({
             customAmount: customAmountB,
             customGasSettings: gasSettings,
+          }).catch((e) => {
+            console.error(e);
+            return undefined;
           });
           if (!result?.success) {
             setDeposite1Status(AddLiquidityApproveStatus.ERROR);
@@ -265,9 +282,16 @@ export const useLiquidityApprove = (parsedAmounts: {
             setDeposite1Status(AddLiquidityApproveStatus.LOADING);
             closeConfirmInWalletAlert();
 
-            const depositeReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            let depositeReceipt;
+            try {
+              depositeReceipt = await publicClient.waitForTransactionReceipt({
+                hash: result.hash,
+              });
+            } catch (e) {
+              // Broadcast already; keep LOADING rather than reporting a failure that may not be real.
+              console.error(e);
+              return;
+            }
 
             if (depositeReceipt.status === "reverted") {
               setDeposite1Status(AddLiquidityApproveStatus.ERROR);
@@ -322,9 +346,14 @@ export const useLiquidityApprove = (parsedAmounts: {
           openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
           setApprove0Status(AddLiquidityApproveStatus.PENDING);
+          // A throw (e.g. wallet rejection) is treated like a failed result below:
+          // set this step to ERROR and close the confirm-in-wallet alert.
           const result = await approveA({
             customAmount: customAmountA,
             customGasSettings: gasSettings,
+          }).catch((e) => {
+            console.error(e);
+            return undefined;
           });
 
           if (!result?.success) {
@@ -335,9 +364,16 @@ export const useLiquidityApprove = (parsedAmounts: {
             setApprove0Status(AddLiquidityApproveStatus.LOADING);
             closeConfirmInWalletAlert();
 
-            const approveReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            let approveReceipt;
+            try {
+              approveReceipt = await publicClient.waitForTransactionReceipt({
+                hash: result.hash,
+              });
+            } catch (e) {
+              // Broadcast already; keep LOADING rather than reporting a failure that may not be real.
+              console.error(e);
+              return;
+            }
 
             if (approveReceipt.status === "reverted") {
               setApprove0Status(AddLiquidityApproveStatus.ERROR);
@@ -353,9 +389,14 @@ export const useLiquidityApprove = (parsedAmounts: {
           openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
           setDeposite0Status(AddLiquidityApproveStatus.PENDING);
+          // A throw (e.g. wallet rejection) is treated like a failed result below:
+          // set this step to ERROR and close the confirm-in-wallet alert.
           const result = await depositA({
             customAmount: customAmountA,
             customGasSettings: gasSettings,
+          }).catch((e) => {
+            console.error(e);
+            return undefined;
           });
           if (!result?.success) {
             setDeposite0Status(AddLiquidityApproveStatus.ERROR);
@@ -365,9 +406,16 @@ export const useLiquidityApprove = (parsedAmounts: {
             setDeposite0Status(AddLiquidityApproveStatus.LOADING);
             closeConfirmInWalletAlert();
 
-            const depositeReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            let depositeReceipt;
+            try {
+              depositeReceipt = await publicClient.waitForTransactionReceipt({
+                hash: result.hash,
+              });
+            } catch (e) {
+              // Broadcast already; keep LOADING rather than reporting a failure that may not be real.
+              console.error(e);
+              return;
+            }
 
             if (depositeReceipt.status === "reverted") {
               setDeposite0Status(AddLiquidityApproveStatus.ERROR);
