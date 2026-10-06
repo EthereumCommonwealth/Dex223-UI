@@ -120,7 +120,17 @@
     "swap_no_liquidity": "Échange indisponible. L'un des jetons n'a pas de liquidité. Réessayez plus tard ou choisissez une autre paire.",
     "deadline_empty": "Saisissez un délai",
     "deadline_min": "Le délai doit être d’au moins 1 minute",
-    "deadline_max": "Le délai ne peut pas dépasser 4000 minutes"
+    "deadline_max": "Le délai ne peut pas dépasser 4000 minutes",
+    "tracker_swapping": "Échange de {amountIn} {symbolA} contre {symbolB}",
+    "tracker_swapped": "{amountIn} {symbolA} échangés contre {amountOut} {symbolB}",
+    "tracker_received": "Reçu dans votre portefeuille · {seconds} s",
+    "tracker_eta": "Prend généralement ~15 s",
+    "tracker_approve_step": "Approuver {symbol}",
+    "tracker_swap_step": "Confirmer l'échange",
+    "tracker_hide": "Masquer",
+    "tracker_reopen": "Ouvrir les détails de l'échange",
+    "tracker_failed_details": "Voir ce qui n'a pas fonctionné",
+    "tracker_explorer": "Voir dans l'explorateur"
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",

@@ -120,7 +120,17 @@
     "swap_no_liquidity": "兑换不可用。其中一个代币缺少流动性。请稍后再试，或选择其他交易对。",
     "deadline_empty": "请输入期限",
     "deadline_min": "期限至少为 1 分钟",
-    "deadline_max": "期限不能超过 4000 分钟"
+    "deadline_max": "期限不能超过 4000 分钟",
+    "tracker_swapping": "正在将 {amountIn} {symbolA} 兑换为 {symbolB}",
+    "tracker_swapped": "已将 {amountIn} {symbolA} 兑换为 {amountOut} {symbolB}",
+    "tracker_received": "已到账钱包 · {seconds} 秒",
+    "tracker_eta": "通常约需 15 秒",
+    "tracker_approve_step": "授权 {symbol}",
+    "tracker_swap_step": "确认兑换",
+    "tracker_hide": "隐藏",
+    "tracker_reopen": "打开兑换详情",
+    "tracker_failed_details": "查看失败原因",
+    "tracker_explorer": "在浏览器中查看"
   },
   "Wallet": {
     "my_wallet": "我的钱包",

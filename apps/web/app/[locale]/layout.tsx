@@ -3,6 +3,7 @@ import { getMessages } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
 import { Providers } from "@/app/[locale]/providers";
+import SwapTracker from "@/app/[locale]/swap/components/SwapTracker";
 import Footer from "@/components/common/Footer";
 import Header from "@/components/common/Header";
 import { SITE_NAME } from "@/config/seo";
@@ -82,6 +83,7 @@ export default async function RootLayout({ children, params }: PropsWithChildren
           <div>{children}</div>
           <Footer />
         </div>
+        <SwapTracker />
       </Providers>
     </>
   );

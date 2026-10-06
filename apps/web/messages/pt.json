@@ -120,7 +120,17 @@
     "swap_no_liquidity": "Troca indisponível. Um dos tokens não tem liquidez. Tente mais tarde ou escolha outro par.",
     "deadline_empty": "Introduza um prazo",
     "deadline_min": "O prazo deve ser de pelo menos 1 minuto",
-    "deadline_max": "O prazo não pode exceder 4000 minutos"
+    "deadline_max": "O prazo não pode exceder 4000 minutos",
+    "tracker_swapping": "Trocando {amountIn} {symbolA} por {symbolB}",
+    "tracker_swapped": "Trocou {amountIn} {symbolA} por {amountOut} {symbolB}",
+    "tracker_received": "Recebido na sua carteira · {seconds} s",
+    "tracker_eta": "Costuma levar ~15 s",
+    "tracker_approve_step": "Aprovar {symbol}",
+    "tracker_swap_step": "Confirmar troca",
+    "tracker_hide": "Ocultar",
+    "tracker_reopen": "Abrir detalhes da troca",
+    "tracker_failed_details": "Ver o que deu errado",
+    "tracker_explorer": "Ver no explorador"
   },
   "Wallet": {
     "my_wallet": "A minha carteira",

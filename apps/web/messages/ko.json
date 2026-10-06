@@ -120,7 +120,17 @@
     "swap_no_liquidity": "스왑을 사용할 수 없습니다. 토큰 중 하나에 유동성이 없습니다. 나중에 다시 시도하거나 다른 페어를 선택하세요.",
     "deadline_empty": "마감 시간을 입력하세요",
     "deadline_min": "마감 시간은 1분 이상이어야 합니다",
-    "deadline_max": "마감 시간은 4000분을 넘을 수 없습니다"
+    "deadline_max": "마감 시간은 4000분을 넘을 수 없습니다",
+    "tracker_swapping": "{amountIn} {symbolA}을(를) {symbolB}(으)로 스왑 중",
+    "tracker_swapped": "{amountIn} {symbolA}을(를) {amountOut} {symbolB}(으)로 스왑 완료",
+    "tracker_received": "지갑으로 수령됨 · {seconds}초",
+    "tracker_eta": "보통 약 15초 소요",
+    "tracker_approve_step": "{symbol} 승인",
+    "tracker_swap_step": "스왑 확인",
+    "tracker_hide": "숨기기",
+    "tracker_reopen": "스왑 세부 정보 열기",
+    "tracker_failed_details": "실패 원인 보기",
+    "tracker_explorer": "익스플로러에서 보기"
   },
   "Wallet": {
     "my_wallet": "내 지갑",
