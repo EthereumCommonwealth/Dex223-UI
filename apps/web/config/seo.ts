@@ -66,7 +66,8 @@ export async function pageMetadata(
   const url = `/${locale}/${path}`;
 
   return {
-    title,
+    // Titles that already name the brand skip the "| DEX223" suffix from the root template.
+    title: title.includes(SITE_NAME) ? { absolute: title } : title,
     description,
     alternates: {
       canonical: url,
