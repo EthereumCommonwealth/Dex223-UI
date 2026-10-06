@@ -558,7 +558,21 @@
     "volume_7d": "7 day volume",
     "view_pool": "View pool",
     "missing_tokens": "Token A or token B is missing",
-    "pools": "Pools"
+    "pools": "Pools",
+    "fee_apr": "Fee APR",
+    "fee_apr_tooltip": "The last 24 hours of trading fees, annualized and divided by the pool's TVL. It reflects past fees, not a promised return, and moves with volume and price.",
+    "last_7_days": "Last 7 days",
+    "volume_7d_short": "7d volume",
+    "filters_label": "Filter pools",
+    "filter_all": "All",
+    "filter_stable": "Stable",
+    "filter_eth_pairs": "ETH pairs",
+    "filter_erc223_native": "ERC-223 native",
+    "filter_my_pools": "My pools",
+    "swap_action": "Swap",
+    "add_action": "Add liquidity",
+    "sort_by_tvl": "Sort by TVL",
+    "tvl_trend_label": "{pair} TVL over the last 7 days"
   },
   "Footer": {
     "gas": "Gas:",
@@ -1801,6 +1815,125 @@
     "pay": {
       "title": "Pay",
       "description": "Pay a merchant in crypto with the order details attached."
+    },
+    "home": {
+      "title": "DEX223: Decentralized Exchange for ERC-20 and ERC-223 Tokens",
+      "description": "Swap, earn fees, lend, borrow and trade on margin with ERC-20 and ERC-223 tokens. Convert between standards 1:1 and list any token without permission."
+    }
+  },
+  "Landing": {
+    "hero": {
+      "eyebrow": "Built for ERC-223 and ERC-20",
+      "title": "Trade every token. Lose none of them.",
+      "subtitle": "DEX223 is the decentralized exchange for ERC-20 and ERC-223. Swap, earn fees, lend and borrow, with transfers that cannot vanish into the wrong contract.",
+      "trust": {
+        "audited": "Audited contracts",
+        "non_custodial": "Non-custodial",
+        "open_source": "Open source"
+      }
+    },
+    "cta": {
+      "launch": "Launch app",
+      "guide": "Read the guide"
+    },
+    "preview": {
+      "title": "Swap",
+      "pay": "You pay",
+      "receive": "You receive",
+      "button": "Start swapping",
+      "aria": "Open the swap page"
+    },
+    "stats": {
+      "label": "Protocol statistics",
+      "tvl": "Total value locked",
+      "volume": "All-time volume",
+      "pools": "Pools",
+      "transactions": "Transactions"
+    },
+    "features": {
+      "title": "Everything a serious trader needs, on-chain",
+      "swap": {
+        "title": "Swap in either standard",
+        "body": "Pick ERC-20 or ERC-223 on each side of a trade. Concentrated liquidity keeps prices tight.",
+        "link": "Start swapping"
+      },
+      "convert": {
+        "title": "Convert 1:1, no fees",
+        "body": "Move any token between ERC-20 and ERC-223 at a fixed rate with zero protocol fees.",
+        "link": "Open converter"
+      },
+      "earn": {
+        "title": "Earn on your liquidity",
+        "body": "Choose a fee tier and price range and collect fees from every trade.",
+        "link": "Add liquidity"
+      },
+      "margin": {
+        "title": "Margin from real lenders",
+        "body": "Borrow from on-chain lending orders with custom leverage, interest and terms.",
+        "link": "Explore margin"
+      },
+      "list": {
+        "title": "List any token, permissionlessly",
+        "body": "Auto-listing contracts make your token tradable as soon as it has a pool.",
+        "link": "List a token"
+      },
+      "launch": {
+        "title": "Launch a token in minutes",
+        "body": "Create an ERC-223 token, add an ERC-20 version, then pool and list it.",
+        "link": "Create token"
+      }
+    },
+    "why": {
+      "eyebrow": "Why ERC-223",
+      "title": "Millions of dollars in ERC-20 tokens are stuck in contracts that could not receive them.",
+      "body": "ERC-223 asks the receiver first and reverts if it cannot accept the tokens. DEX223 is built around that safety, and still trades every ERC-20.",
+      "calculator": "See the ERC-20 losses calculator",
+      "table_caption": "ERC-20 compared with ERC-223",
+      "feature": "Feature",
+      "rows": {
+        "lost": {
+          "label": "Lost on a wrong transfer",
+          "erc20": "Yes",
+          "erc223": "No"
+        },
+        "approval": {
+          "label": "Separate approval step",
+          "erc20": "Needed",
+          "erc223": "Not needed"
+        },
+        "deposit": {
+          "label": "Deposit in one transaction",
+          "erc20": "No",
+          "erc223": "Yes"
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "what": {
+        "q": "What is DEX223?",
+        "a": "A decentralized exchange where you can swap, provide liquidity, lend, borrow and trade on margin with ERC-20 and ERC-223 tokens."
+      },
+      "need_erc223": {
+        "q": "Do I need ERC-223 tokens to use it?",
+        "a": "No. Every pool accepts both standards. You choose ERC-20 or ERC-223 for each side of a trade, and the built-in converter moves tokens between the two at 1:1."
+      },
+      "list": {
+        "q": "How do I list my token?",
+        "a": "Open Token listing, pick an auto-listing contract and confirm. Listing is permissionless: no application or approval from the team is needed."
+      },
+      "custodial": {
+        "q": "Is DEX223 custodial?",
+        "a": "No. You trade from your own wallet and sign every transaction yourself. DEX223 never holds your keys."
+      },
+      "fees": {
+        "q": "What does it cost?",
+        "a": "Traders pay the pool's fee tier, which goes to its liquidity providers, plus network gas. Converting between ERC-20 and ERC-223 has no protocol fee."
+      }
+    },
+    "final": {
+      "title": "Start trading in under a minute",
+      "body": "Connect a wallet, pick a pair, swap. No sign-up."
     }
   }
 }
