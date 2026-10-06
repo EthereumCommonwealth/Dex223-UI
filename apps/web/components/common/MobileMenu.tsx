@@ -23,6 +23,17 @@ import { Link, usePathname } from "@/i18n/routing";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
+
+/** Exact-or-prefix route match: "/pools" matches "/pools" and "/pools/x", not "/statistics/pools". */
+export function isRouteActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(href + "/");
+}
+
+// The Rewards app is served on this domain only when next.config.js rewrites /rewards to
+// REWARDS_ORIGIN. Without that rewrite the link 404s, so it is rendered only when the build
+// sets NEXT_PUBLIC_REWARDS_ENABLED="true" (set it together with REWARDS_ORIGIN).
+export const IS_REWARDS_ENABLED = process.env.NEXT_PUBLIC_REWARDS_ENABLED === "true";
+
 export function MobileLink({
   href,
   iconName,
@@ -224,12 +235,17 @@ const mobileLinks: {
     title: "token_listing",
   },
   // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
-  {
-    href: "/rewards",
-    iconName: "star",
-    title: "rewards",
-    plain: true,
-  },
+  // Only listed when NEXT_PUBLIC_REWARDS_ENABLED === "true"; see IS_REWARDS_ENABLED.
+  ...(IS_REWARDS_ENABLED
+    ? [
+        {
+          href: "/rewards",
+          iconName: "star" as IconName,
+          title: "rewards",
+          plain: true,
+        },
+      ]
+    : []),
 ];
 
 type SocialLink = {
@@ -274,6 +290,7 @@ export default function MobileMenu() {
   const t = useTranslations("Navigation");
   const locale = useLocale();
   const tFeedback = useTranslations("Feedback");
+  const tA11y = useTranslations("A11y");
 
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const [moreOpened, setMoreOpened] = useState(false);
@@ -321,7 +338,7 @@ export default function MobileMenu() {
                     iconName={iconName}
                     title={t(title)}
                     handleClose={() => setMobileMenuOpened(false)}
-                    isActive={pathname.includes(href)}
+                    isActive={isRouteActive(pathname, href)}
                     disabled={marginOnly && borrowLendComingSoon}
                     comingSoon={marginOnly && borrowLendComingSoon}
                     className={marginOnly && borrowLendComingSoon ? "justify-between pr-4" : ""}
@@ -559,6 +576,9 @@ export default function MobileMenu() {
       <IconButton
         buttonSize={IconButtonSize.LARGE}
         iconName="menu"
+        aria-label={tA11y("menu")}
+        aria-expanded={mobileMenuOpened}
+        aria-haspopup="dialog"
         onClick={() => setMobileMenuOpened(true)}
       />
     </div>

@@ -75,10 +75,26 @@ export function SearchInput(props: Props) {
   return (
     <div className="relative w-full">
       <Input
-        className={clsxMerge("pr-12", props.className)}
+        // type="search" exposes the search role; the native WebKit clear button is hidden
+        // because the custom clear button below already handles it.
+        type="search"
+        // Fall back to the placeholder so the field always has an accessible name.
+        aria-label={
+          props["aria-label"] ??
+          (props["aria-labelledby"]
+            ? undefined
+            : typeof props.placeholder === "string"
+              ? props.placeholder
+              : undefined)
+        }
+        {...props}
+        // Same result as before (a passed className replaces "pr-12"), plus the WebKit resets.
+        className={clsxMerge(
+          "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none",
+          props.className !== undefined ? props.className : "pr-12",
+        )}
         style={props.style ? props.style : { paddingRight: "2.5rem" }}
         ref={ref}
-        {...props}
       />
       <span
         className={clsx(
