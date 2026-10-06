@@ -6,6 +6,15 @@ import { type Locale, locales } from "@/i18n/routing";
 export const SITE_NAME = "DEX223";
 export const X_HANDLE = "@Dex_223";
 
+// app/opengraph-image.tsx. Listed explicitly because a route-level openGraph object
+// replaces the file-based image instead of merging with it.
+const SHARE_IMAGE = {
+  url: "/opengraph-image",
+  width: 1200,
+  height: 630,
+  alt: "DEX223: the decentralized exchange for ERC-20 and ERC-223 tokens",
+};
+
 const OG_LOCALE: Record<Locale, string> = {
   en: "en_US",
   es: "es_ES",
@@ -44,7 +53,6 @@ export type SeoPage =
 /**
  * Localized title, description, canonical, hreflang alternates, Open Graph and
  * Twitter card for one route. `path` is the route without the locale prefix.
- * The share image comes from app/opengraph-image.tsx, which Next applies to every route.
  */
 export async function pageMetadata(
   locale: Locale,
@@ -75,12 +83,14 @@ export async function pageMetadata(
       url,
       locale: OG_LOCALE[locale],
       alternateLocale: locales.filter((l) => l !== locale).map((l) => OG_LOCALE[l]),
+      images: [SHARE_IMAGE],
     },
     twitter: {
       card: "summary_large_image",
       site: X_HANDLE,
       title,
       description,
+      images: [SHARE_IMAGE.url],
     },
     ...(noindex ? { robots: { index: false, follow: false } } : {}),
   };
