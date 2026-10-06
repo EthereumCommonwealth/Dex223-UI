@@ -61,7 +61,12 @@ function useListParams() {
   );
 
   const pool = useMemo(() => {
-    return pools.find((pool) => pool[0] !== PoolState.NOT_EXISTS && pool[0] !== PoolState.INVALID);
+    return pools.find(
+      (pool) =>
+        pool[0] !== PoolState.NOT_EXISTS &&
+        pool[0] !== PoolState.INVALID &&
+        pool[0] !== PoolState.IDLE,
+    );
   }, [pools]);
 
   const { poolAddress } = useComputePoolAddressDex({
@@ -189,7 +194,12 @@ export default function useListToken() {
   );
 
   const pool = useMemo(() => {
-    return pools.find((pool) => pool[0] !== PoolState.NOT_EXISTS && pool[0] !== PoolState.INVALID);
+    return pools.find(
+      (pool) =>
+        pool[0] !== PoolState.NOT_EXISTS &&
+        pool[0] !== PoolState.INVALID &&
+        pool[0] !== PoolState.IDLE,
+    );
   }, [pools]);
 
   const { poolAddress } = useComputePoolAddressDex({

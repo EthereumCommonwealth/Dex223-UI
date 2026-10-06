@@ -30,6 +30,12 @@ function filterPools(poolStates: PoolsResult): Pool[] {
     .map(([, pool]) => pool); // Extract the Pool objects
 }
 
+// "No pools" only once every fee tier is known not to exist. While a lookup is loading or
+// has failed (e.g. the subgraph is rate-limited) the answer is unknown, not "missing".
+function allPoolsMissing(poolStates: PoolsResult): boolean {
+  return poolStates.every(([state]) => state === PoolState.NOT_EXISTS);
+}
+
 export function useTrade() {
   return useSwapTradeStore((state) => ({
     trade: state.trade,
@@ -76,10 +82,9 @@ export function useTradeComputation() {
       // no valid pair yet
       return;
     }
-    console.log("Poasdsd:", pools);
     const valid = filterPools(pools);
     if (valid.length === 0) {
-      setError(TradeError.NO_POOLS);
+      setError(allPoolsMissing(pools) ? TradeError.NO_POOLS : null);
       setTrade(null);
       setLoading(false);
     } else {
@@ -249,7 +254,7 @@ export function useMarginTradeComputation() {
     }
     const valid = filterPools(pools);
     if (valid.length === 0) {
-      setError(TradeError.NO_POOLS);
+      setError(allPoolsMissing(pools) ? TradeError.NO_POOLS : null);
       setTrade(null);
       setLoading(false);
     } else {
