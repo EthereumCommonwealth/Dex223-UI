@@ -196,7 +196,12 @@ export default function ListTokenPage() {
   );
 
   const pool = useMemo(() => {
-    return pools.find((pool) => pool[0] !== PoolState.NOT_EXISTS && pool[0] !== PoolState.INVALID);
+    return pools.find(
+      (pool) =>
+        pool[0] !== PoolState.NOT_EXISTS &&
+        pool[0] !== PoolState.INVALID &&
+        pool[0] !== PoolState.IDLE,
+    );
   }, [pools]);
 
   // const pool = usePool({ currencyA: tokenA, currencyB: tokenB, tier: FeeAmount.MEDIUM });
