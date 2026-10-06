@@ -108,19 +108,27 @@ export default function BorrowMarketFilter({
             return (
               <form onSubmit={handleSubmit}>
                 <div className="mb-4">
-                  <InputLabel label={t("min_order_balance")} tooltipText={t("period_tooltip")} />
+                  <InputLabel
+                    label={t("min_order_balance")}
+                    tooltipText={t("min_order_balance_filter_tooltip")}
+                  />
                   <Input
                     value={values.minOrderBalance}
                     onChange={(e) => setFieldValue("minOrderBalance", e.target.value)}
                     placeholder={t("min_order_balance")}
+                    aria-label={t("min_order_balance")}
                   />
                 </div>
                 <div className="mb-4">
-                  <InputLabel label={t("min_loan_amount")} tooltipText={t("period_tooltip")} />
+                  <InputLabel
+                    label={t("min_loan_amount")}
+                    tooltipText={t("min_loan_amount_filter_tooltip")}
+                  />
                   <Input
                     value={values.minLoanAmount}
                     onChange={(e) => setFieldValue("minLoanAmount", e.target.value)}
                     placeholder={t("min_loan_amount")}
+                    aria-label={t("min_loan_amount")}
                   />
                 </div>
                 <div className="mb-6">
@@ -130,21 +138,27 @@ export default function BorrowMarketFilter({
                     onChange={(e) => setFieldValue("leverage", e.target.value)}
                     className="mb-3"
                     placeholder={t("max_leverage_short")}
+                    aria-label={t("max_leverage_short")}
                   />
                 </div>
                 <div className="mb-4">
-                  <InputLabel label={t("duration_days_label")} tooltipText={t("period_tooltip")} />
+                  <InputLabel
+                    label={t("duration_days_label")}
+                    tooltipText={t("duration_filter_tooltip")}
+                  />
                   <div className="grid grid-cols-[1fr_12px_1fr] gap-2">
                     <Input
                       value={values.minPositionDuration}
                       onChange={(e) => setFieldValue("minPositionDuration", e.target.value)}
                       placeholder={t("from")}
+                      aria-label={`${t("duration_days_label")}: ${t("from")}`}
                     />
                     <div className="h-full flex items-center">—</div>
                     <Input
                       value={values.maxPositionDuration}
                       onChange={(e) => setFieldValue("maxPositionDuration", e.target.value)}
                       placeholder={t("to")}
+                      aria-label={`${t("duration_days_label")}: ${t("to")}`}
                     />
                   </div>
                 </div>
@@ -157,6 +171,7 @@ export default function BorrowMarketFilter({
                     value={values.maxInterestRatePerMonth}
                     onChange={(e) => setFieldValue("maxInterestRatePerMonth", e.target.value)}
                     placeholder={t("interest_rate")}
+                    aria-label={t("max_interest_per_month")}
                   />
                 </div>
                 <div className="mb-4">
@@ -168,6 +183,7 @@ export default function BorrowMarketFilter({
                     value={values.orderCurrencyLimit}
                     onChange={(e) => setFieldValue("orderCurrencyLimit", e.target.value)}
                     placeholder={t("order_currency_limit")}
+                    aria-label={t("order_currency_limit")}
                   />
                 </div>
 

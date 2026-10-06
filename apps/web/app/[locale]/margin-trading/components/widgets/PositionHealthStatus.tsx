@@ -1,5 +1,6 @@
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { ReactNode, useMemo } from "react";
 
 import Svg from "@/components/atoms/Svg";
@@ -30,6 +31,7 @@ const dangerIconsMap: Record<DangerStatus, ReactNode> = {
 };
 
 export default function PositionHealthStatus({ health }: { health: number }) {
+  const t = useTranslations("Margin");
   const dangerStatus = useMemo(() => {
     if (health <= 1) {
       return DangerStatus.DANGEROUS;
@@ -50,11 +52,11 @@ export default function PositionHealthStatus({ health }: { health: number }) {
       )}
     >
       <span className={balanceCardTextColorMap[dangerStatus]}>{dangerIconsMap[dangerStatus]}</span>
-      Health:{" "}
+      {t("health_label")}{" "}
       <span className={clsx("font-medium", balanceCardTextColorMap[dangerStatus])}>
         {formatFloat(health)}
       </span>
-      <Tooltip text="Tooltip text" iconSize={20} />
+      <Tooltip text={t("health_tooltip")} iconSize={20} />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { formatEther, formatUnits } from "viem";
 
@@ -15,13 +16,21 @@ import Button, { ButtonColor } from "@/components/buttons/Button";
 import { formatFloat } from "@/functions/formatFloat";
 import { Link } from "@/i18n/routing";
 
-function LendingOrderInfoCard({ label, value }: { label: string; value: string }) {
+function LendingOrderInfoCard({
+  label,
+  value,
+  tooltipText,
+}: {
+  label: string;
+  value: string;
+  tooltipText: string;
+}) {
   return (
     <div className="flex flex-col justify-center px-5 bg-tertiary-bg rounded-3 py-2.5">
       <div className="flex items-center gap-1">
         <span className="text-14 flex items-center gap-1 text-tertiary-text">
           {label}
-          <Tooltip text="Tooltip text" />
+          <Tooltip text={tooltipText} />
         </span>
       </div>
       <div className="text-16 font-medium text-secondary-text whitespace-nowrap">{value}</div>
@@ -31,11 +40,13 @@ function LendingOrderInfoCard({ label, value }: { label: string; value: string }
 
 function LiquidationInfo({
   label,
+  tooltipText,
   feeForLiquidator,
   feeForLender,
   symbol,
 }: {
   label: string;
+  tooltipText: string;
   feeForLiquidator: string;
   feeForLender: string;
   symbol: string;
@@ -43,7 +54,7 @@ function LiquidationInfo({
   return (
     <div className="border-l-4 border-tertiary-bg rounded-1 pl-4 min-w-[185px]">
       <div className="flex items-center gap-2 whitespace-nowrap">
-        {label} <Tooltip text="Tooltip text" />
+        {label} <Tooltip text={tooltipText} />
       </div>
       <p className="relative -top-1 flex gap-1 whitespace-nowrap items-center font-medium">
         <span className="text-secondary-text">{feeForLiquidator}</span>
@@ -66,6 +77,8 @@ export default function LendingOrderCard({
   setOrderToClose: (order: LendingOrder) => void;
   setOrderToOpen: (order: LendingOrder) => void;
 }) {
+  const t = useTranslations("Margin");
+
   return (
     <>
       <div className="border-4 border-green-bg rounded-5 pt-3 px-5 pb-5 bg-primary-bg">
@@ -74,20 +87,20 @@ export default function LendingOrderCard({
             className="flex items-center gap-2"
             href={`/margin-trading/lending-order/${order.id}`}
           >
-            View lending order details
+            {t("view_lending_order_details")}
             <Svg iconName="next" />
           </Link>
           {order.alive ? (
             <span className="text-green flex items-center gap-3 ">
               <div className="min-w-[115px] text-green flex items-center gap-2 justify-end">
-                Active
+                {t("status_active")}
                 <span className="block w-2 h-2 rounded-2 bg-green" />
               </div>
             </span>
           ) : (
             <span className="text-tertiary-text flex items-center gap-3 ">
               <div className="min-w-[115px] flex items-center gap-2 justify-end">
-                Closed
+                {t("status_closed")}
                 <Svg iconName="closed" />
               </div>
             </span>
@@ -108,10 +121,10 @@ export default function LendingOrderCard({
                 }}
                 className="p-5 rounded-3 bg-right-top bg-no-repeat relative"
               >
-                <p className="text-20 font-medium">Balance</p>
+                <p className="text-20 font-medium">{t("balance")}</p>
                 <span className="text-14 flex items-center gap-1 text-secondary-text">
-                  Available / Total
-                  <Tooltip text="Tooltip text" />
+                  {t("available_total")}
+                  <Tooltip text={t("available_total_tooltip")} />
                 </span>
                 <p className="text-20">
                   {formatFloat(formatUnits(order.balance, order.baseAsset.decimals))} /{" "}
@@ -124,7 +137,8 @@ export default function LendingOrderCard({
             </div>
             <div className="flex flex-col gap-3">
               <LendingOrderInfoCard
-                label="Deadline"
+                label={t("deadline")}
+                tooltipText={t("order_deadline_tooltip")}
                 value={`${new Date(order.deadline * 1000)
                   .toLocaleDateString("en-GB")
                   .split("/")
@@ -138,8 +152,8 @@ export default function LendingOrderCard({
 
               <InfoBlockWithBorder
                 value={`${order.liquidationRewardAmount.formatted} / ${0} ${order.liquidationRewardAsset.symbol}`}
-                title="Fee for liquidator / for lender"
-                tooltipText={"Tooltip text"}
+                title={t("fee_liquidator_lender")}
+                tooltipText={t("fee_liquidator_lender_tooltip")}
               />
             </div>
           </div>
@@ -147,13 +161,19 @@ export default function LendingOrderCard({
           <div className="flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-3">
               <LendingOrderInfoCard
-                label={"Duration"}
-                value={`${order.positionDuration / 24 / 60 / 60} days`}
+                label={t("duration")}
+                tooltipText={t("position_duration_tooltip")}
+                value={t("duration_days", { count: order.positionDuration / 24 / 60 / 60 })}
               />
-              <LendingOrderInfoCard label="Max leverage" value={`${order.leverage}x`} />
               <LendingOrderInfoCard
-                label="Interest rate"
-                value={`${order.interestRate / 100}% per month`}
+                label={t("max_leverage")}
+                tooltipText={t("leverage_order_tooltip")}
+                value={`${order.leverage}x`}
+              />
+              <LendingOrderInfoCard
+                label={t("interest_rate")}
+                tooltipText={t("interest_rate_tooltip")}
+                value={t("percent_per_month", { rate: order.interestRate / 100 })}
               />
             </div>
             <div className="grid grid-cols-4 gap-3">
@@ -162,11 +182,11 @@ export default function LendingOrderCard({
                   onClick={() => setOrderToClose(order)}
                   colorScheme={ButtonColor.LIGHT_GREEN}
                 >
-                  Close
+                  {t("close")}
                 </Button>
               ) : (
                 <Button onClick={() => setOrderToOpen(order)} colorScheme={ButtonColor.LIGHT_GREEN}>
-                  Open
+                  {t("open")}
                 </Button>
               )}
 
@@ -174,20 +194,20 @@ export default function LendingOrderCard({
                 onClick={() => setOrderToDeposit(order)}
                 colorScheme={ButtonColor.LIGHT_GREEN}
               >
-                Deposit
+                {t("deposit")}
               </Button>
               <Button
                 onClick={() => setOrderToWithdraw(order)}
                 colorScheme={ButtonColor.LIGHT_GREEN}
               >
-                Withdraw
+                {t("withdraw")}
               </Button>
               <Link
                 className="w-full block"
                 href={`/margin-trading/lending-order/${order.id}/edit`}
               >
                 <Button fullWidth colorScheme={ButtonColor.LIGHT_GREEN}>
-                  Edit
+                  {t("edit")}
                 </Button>
               </Link>
             </div>

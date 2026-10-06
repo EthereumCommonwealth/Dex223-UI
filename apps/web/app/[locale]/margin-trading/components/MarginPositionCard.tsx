@@ -2,6 +2,7 @@ import ExternalTextLink from "@repo/ui/external-text-link";
 import GradientCard, { CardGradient } from "@repo/ui/gradient-card";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
@@ -51,27 +52,29 @@ function MarginPositionBalanceCard({
   totalBalance,
   expectedBalance,
   balanceStatus,
-  symbol = "Unknown",
+  symbol,
 }: {
   totalBalance: string;
   expectedBalance: string;
   balanceStatus: DangerStatus;
   symbol?: string;
 }) {
+  const t = useTranslations("Margin");
+
   return (
     <GradientCard className="pt-1.5 pb-0.5 px-5" gradient={balanceCardBackgroundMap[balanceStatus]}>
       <div className="flex items-center gap-1 relative">
-        <span className="text-16">Balance</span>{" "}
+        <span className="text-16">{t("balance")}</span>{" "}
         <span className="text-14 flex items-center gap-1 text-secondary-text">
-          Total / Expected
-          <Tooltip text="Tooltip text" />
+          {t("total_expected")}
+          <Tooltip text={t("total_expected_balance_tooltip")} />
         </span>
       </div>
       <div className="relative -top-1 text-20 flex gap-1 font-medium">
         <span className={balanceCardTextColorMap[balanceStatus]}>{totalBalance}</span>
         {"/"}
         <span className={balanceCardTextColorMap[balanceStatus]}>{expectedBalance}</span>
-        {symbol}
+        {symbol || t("unknown")}
       </div>
     </GradientCard>
   );
@@ -85,11 +88,13 @@ const liquidationInfoTextColorMap: Record<DangerStatus, string> = {
 
 function LiquidationInfo({
   label,
+  tooltipText,
   value,
   liquidationFeeStatus,
   symbol,
 }: {
   label: string;
+  tooltipText: string;
   value: string;
   liquidationFeeStatus: DangerStatus;
   symbol: string;
@@ -97,7 +102,7 @@ function LiquidationInfo({
   return (
     <div className="border-l-4 border-tertiary-bg rounded-1 pl-4 min-w-[185px]">
       <div className="flex items-center gap-2">
-        {label} <Tooltip text="Tooltip text" />
+        {label} <Tooltip text={tooltipText} />
       </div>
       <p className="relative -top-1 flex gap-1 items-center text-20 font-medium">
         <span className={liquidationInfoTextColorMap[liquidationFeeStatus]}>{value}</span>
@@ -131,6 +136,7 @@ const marginPositionCardBorderMap: Record<DangerStatus, string> = {
 };
 
 export function InactiveMarginPositionCard({ position }: Props) {
+  const t = useTranslations("Margin");
   const [isWithdrawDialogOpened, setIsWithdrawDialogOpened] = useState(false);
 
   const chainId = useCurrentChainId();
@@ -148,12 +154,12 @@ export function InactiveMarginPositionCard({ position }: Props) {
           className={"flex items-center gap-2 hocus:text-green duration-200 text-secondary-text"}
           href={`/margin-trading/position/${position.id}`}
         >
-          View summary <Svg iconName="next" />
+          {t("view_summary")} <Svg iconName="next" />
         </Link>
         <div className="flex items-center">
           {position.isLiquidated && (
             <span className="flex gap-1 items-center text-tertiary-text">
-              Liquidated by:{" "}
+              {t("liquidated_by")}{" "}
               <ExternalTextLink
                 text={truncateMiddle(position.liquidator)}
                 href={getExplorerLink(ExplorerLinkType.ADDRESS, position.liquidator, chainId)}
@@ -164,12 +170,12 @@ export function InactiveMarginPositionCard({ position }: Props) {
         <div className="flex items-center gap-2 text-tertiary-text justify-end">
           {position.isClosed ? (
             <>
-              Executed
+              {t("executed")}
               <Svg iconName="done" />
             </>
           ) : (
             <>
-              Liquidated
+              {t("liquidated")}
               <Svg iconName="liquidated" />
             </>
           )}
@@ -180,33 +186,33 @@ export function InactiveMarginPositionCard({ position }: Props) {
         {position.isClosed ? (
           <>
             <SimpleInfoBlock
-              title={"Borrowed / Profit"}
-              tooltipText={"Tooltip text"}
+              title={t("borrowed_profit")}
+              tooltipText={t("borrowed_profit_tooltip")}
               value={`${formatFloat(formatUnits(position.loanAmount, position.loanAsset.decimals))} ${position.loanAsset.symbol} / -`}
             />
             <SimpleInfoBlock
-              title={"Initial collateral / Earning"}
-              tooltipText={"Tooltip text"}
+              title={t("initial_collateral_earning")}
+              tooltipText={t("initial_collateral_earning_tooltip")}
               value={`${formatFloat(formatUnits(position.collateralAmount, position.collateralAsset.decimals))} ${position.collateralAsset.symbol} / -`}
             />
           </>
         ) : (
           <>
             <SimpleInfoBlock
-              title={"Borrowed"}
-              tooltipText={"Tooltip text"}
+              title={t("borrowed")}
+              tooltipText={t("borrowed_tooltip")}
               value={`${formatFloat(formatUnits(position.loanAmount, position.loanAsset.decimals))} ${position.loanAsset.symbol}`}
             />
             <SimpleInfoBlock
-              title={"Initial collateral"}
-              tooltipText={"Tooltip text"}
+              title={t("initial_collateral")}
+              tooltipText={t("initial_collateral_tooltip")}
               value={`${formatFloat(formatUnits(position.collateralAmount, position.collateralAsset.decimals))} ${position.collateralAsset.symbol}`}
             />
           </>
         )}
         <SimpleInfoBlock
-          title={"Initial leverage"}
-          tooltipText={"Tooltip text"}
+          title={t("initial_leverage")}
+          tooltipText={t("initial_leverage_tooltip")}
           value={`${formatFloat(position.initialLeverage, { trimZero: true })}x`}
         />
       </div>
@@ -215,19 +221,19 @@ export function InactiveMarginPositionCard({ position }: Props) {
         {position.isClosed ? (
           <>
             <InfoBlockWithBorder
-              title={"Closing date"}
+              title={t("closing_date")}
               value={timestampToDateString(position.closedAt)}
-              tooltipText={"Tooltip text"}
+              tooltipText={t("closing_date_tooltip")}
             />
             <InfoBlockWithBorder
-              title={"Closing"}
+              title={t("closing")}
               value={
                 <ExternalTextLink
-                  text="Closing transaction"
+                  text={t("closing_transaction")}
                   href={getExplorerLink(ExplorerLinkType.TRANSACTION, position.txClosed, chainId)}
                 />
               }
-              tooltipText={"Tooltip text"}
+              tooltipText={t("closing_tx_tooltip")}
             />
 
             {isTokensToWithdraw && (
@@ -236,7 +242,7 @@ export function InactiveMarginPositionCard({ position }: Props) {
                   colorScheme={ButtonColor.LIGHT_GREEN}
                   onClick={() => setIsWithdrawDialogOpened(true)}
                 >
-                  Withdraw
+                  {t("withdraw")}
                 </Button>
 
                 <ClosedPositionWithdrawDialog
@@ -250,25 +256,25 @@ export function InactiveMarginPositionCard({ position }: Props) {
         ) : (
           <>
             <InfoBlockWithBorder
-              title={"Liquidation date"}
+              title={t("liquidation_date")}
               value={timestampToDateString(position.liquidatedAt)}
-              tooltipText={"Tooltip text"}
+              tooltipText={t("liquidation_date_tooltip")}
             />
             <InfoBlockWithBorder
-              title={"Freezing"}
+              title={t("freezing")}
               value={
                 <ExternalTextLink
-                  text="Freezing transaction"
+                  text={t("freezing_transaction")}
                   href={getExplorerLink(ExplorerLinkType.TRANSACTION, position.txFrozen, chainId)}
                 />
               }
-              tooltipText={"Tooltip text"}
+              tooltipText={t("freezing_tx_tooltip")}
             />
             <InfoBlockWithBorder
-              title={"Liquidation"}
+              title={t("liquidation")}
               value={
                 <ExternalTextLink
-                  text="Liquidation transaction"
+                  text={t("liquidation_transaction")}
                   href={getExplorerLink(
                     ExplorerLinkType.TRANSACTION,
                     position.txLiquidated,
@@ -276,7 +282,7 @@ export function InactiveMarginPositionCard({ position }: Props) {
                   )}
                 />
               }
-              tooltipText={"Tooltip text"}
+              tooltipText={t("liquidation_tx_tooltip")}
             />
           </>
         )}
@@ -340,6 +346,7 @@ export function calcLeverageFormattedFromBigints({
 }
 
 export function LendingPositionCard({ position }: Props) {
+  const t = useTranslations("Margin");
   const { expectedBalance, actualBalance } = usePositionStatus(position);
   const [positionToClose, setPositionToClose] = useState<MarginPosition | undefined>();
 
@@ -425,15 +432,17 @@ export function LendingPositionCard({ position }: Props) {
       <>
         <LiquidationInfo
           liquidationFeeStatus={liquidationFeeStatus}
-          label="Liquidation fee"
+          label={t("liquidation_fee")}
+          tooltipText={t("liquidation_fee_position_tooltip")}
           value={formatFloat(position.order.liquidationRewardAmount.formatted)}
-          symbol={position.order.liquidationRewardAsset.symbol || "Unknown"}
+          symbol={position.order.liquidationRewardAsset.symbol || t("unknown")}
         />
         <LiquidationInfo
           liquidationFeeStatus={liquidationFeeStatus}
-          label="Liqudation cost"
+          label={t("liquidation_cost")}
+          tooltipText={t("liquidation_cost_tooltip")}
           value={formatted}
-          symbol={nativeCurrency.symbol || "Unknown"}
+          symbol={nativeCurrency.symbol || t("unknown")}
         />
       </>
     );
@@ -443,6 +452,7 @@ export function LendingPositionCard({ position }: Props) {
     nativeCurrency.symbol,
     position.order.liquidationRewardAmount.formatted,
     position.order.liquidationRewardAsset.symbol,
+    t,
   ]);
 
   return (
@@ -457,7 +467,7 @@ export function LendingPositionCard({ position }: Props) {
           className="col-start-1 col-end-3 flex items-center gap-2 text-secondary-text hocus:ui-text-green duration-200"
           href={`/margin-trading/position/${position.id}`}
         >
-          View margin position details
+          {t("view_margin_position_details")}
           <Svg iconName="next" />
         </Link>
         <span />
@@ -475,8 +485,8 @@ export function LendingPositionCard({ position }: Props) {
 
           <div className="min-w-[115px] text-green flex items-center gap-2 justify-end">
             {isCompleted && address?.toLowerCase() === position.order.owner.toLowerCase()
-              ? "Completed"
-              : "Active"}
+              ? t("status_completed")
+              : t("status_active")}
             <span className="block w-2 h-2 rounded-2 bg-green" />
           </div>
         </div>
@@ -489,29 +499,29 @@ export function LendingPositionCard({ position }: Props) {
             totalBalance={
               actualBalance != null
                 ? formatFloat(formatUnits(actualBalance, position.loanAsset.decimals))
-                : "Loading..."
+                : t("loading")
             }
             expectedBalance={
               expectedBalance != null
                 ? formatFloat(formatUnits(expectedBalance, position.loanAsset.decimals))
-                : "Loading..."
+                : t("loading")
             }
             symbol={position.loanAsset.symbol}
           />
         </div>
         <SimpleInfoBlock
-          title="Borrowed"
-          tooltipText="Tooltip text"
+          title={t("borrowed")}
+          tooltipText={t("borrowed_tooltip")}
           value={`${formatFloat(formatUnits(position.loanAmount, position.loanAsset.decimals))} ${position.loanAsset.symbol}`}
         />
         <SimpleInfoBlock
-          title="Initial collateral"
-          tooltipText="Tooltip text"
+          title={t("initial_collateral")}
+          tooltipText={t("initial_collateral_tooltip")}
           value={`${formatFloat(formatUnits(position.collateralAmount, position.collateralAsset.decimals))} ${position.collateralAsset.symbol}`}
         />
         <SimpleInfoBlock
-          title="Initial leverage"
-          tooltipText="Tooltip text"
+          title={t("initial_leverage")}
+          tooltipText={t("initial_leverage_tooltip")}
           value={`${formatFloat(position.initialLeverage, { trimZero: true })}x`}
         />
       </div>
@@ -519,11 +529,14 @@ export function LendingPositionCard({ position }: Props) {
       <div className="px-5 pb-5 bg-tertiary-bg rounded-3 mb-5">
         <div className="flex justify-between">
           <span className="text-tertiary-text flex items-center gap-2">
-            Assets: {position.assets.length} / {position.order.currencyLimit}
-            <Tooltip text="Tooltip text" />
+            {t("assets_count", {
+              current: position.assets.length,
+              limit: position.order.currencyLimit,
+            })}
+            <Tooltip text={t("assets_limit_tooltip")} />
           </span>
           <span className="flex items-center gap-2 py-2 text-secondary-text">
-            Transactions history
+            {t("transactions_history")}
             <Svg iconName="history" />
           </span>
         </div>
@@ -533,7 +546,7 @@ export function LendingPositionCard({ position }: Props) {
             <PositionAsset
               key={asset.wrapped.address0}
               amount={formatFloat(formatUnits(balance || BigInt(0), asset.decimals))}
-              symbol={asset.symbol || "Unknown"}
+              symbol={asset.symbol || t("unknown")}
             />
           ))}
         </div>
@@ -547,7 +560,7 @@ export function LendingPositionCard({ position }: Props) {
               {position.order.owner === address?.toLowerCase() &&
                 +position.deadline < Date.now() / 100 && (
                   <Button fullWidth size={ButtonSize.LARGE}>
-                    Close
+                    {t("close")}
                   </Button>
                 )}
             </div>
@@ -562,7 +575,7 @@ export function LendingPositionCard({ position }: Props) {
                 fullWidth
                 colorScheme={ButtonColor.RED}
               >
-                Liquidate
+                {t("liquidate")}
               </Button>
             </Link>
           </div>
@@ -577,33 +590,33 @@ export function LendingPositionCard({ position }: Props) {
               href={"/margin-swap"}
             >
               <Button disabled={subjectToLiquidation} fullWidth colorScheme={buttonsColor}>
-                Trade
+                {t("trade")}
               </Button>
             </Link>
             <Link href={`/margin-trading/position/${position.id}/deposit`}>
               <Button fullWidth colorScheme={buttonsColor}>
-                Deposit
+                {t("deposit")}
               </Button>
             </Link>
             {subjectToLiquidation ? (
               <div className="col-start-3 col-end-5">
                 <Link href={`/margin-trading/position/${position.id}/liquidate`}>
                   <Button fullWidth colorScheme={ButtonColor.RED}>
-                    Liquidate
+                    {t("liquidate")}
                   </Button>
                 </Link>
               </div>
             ) : (
               <>
                 <Button disabled fullWidth colorScheme={buttonsColor}>
-                  Withdraw
+                  {t("withdraw")}
                 </Button>
                 <Button
                   onClick={() => setPositionToClose(position)}
                   fullWidth
                   colorScheme={buttonsColor}
                 >
-                  Close
+                  {t("close")}
                 </Button>
               </>
             )}

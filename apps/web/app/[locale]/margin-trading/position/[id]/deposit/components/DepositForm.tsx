@@ -92,12 +92,6 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
               }}
             />
           </div>
-
-          {/*<TextField*/}
-          {/*  label="Leverage"*/}
-          {/*  tooltipText="Tooltip text"*/}
-          {/*  helperText={`Max leverage: ${position.order.leverage}x`}*/}
-          {/*/>*/}
         </div>
 
         <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
