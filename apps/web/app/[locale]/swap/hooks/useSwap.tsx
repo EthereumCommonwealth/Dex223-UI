@@ -298,7 +298,6 @@ export function useSwapEstimatedGas({ trade }: { trade: Trade<any, any, any> | n
     IIFE(async () => {
       if (!swapParams || !address || (!isAllowedA && tokenAStandard === Standard.ERC20)) {
         setEstimatedGas(BigInt(195000));
-        console.log("Can't estimate gas");
         return;
       }
 
@@ -313,9 +312,7 @@ export function useSwapEstimatedGas({ trade }: { trade: Trade<any, any, any> | n
         } else {
           setEstimatedGas(BigInt(195000));
         }
-        // console.log(estimated);
       } catch (e) {
-        console.log(e);
         setEstimatedGas(BigInt(195000));
       }
     });
@@ -415,9 +412,16 @@ export default function useSwap() {
           setSwapStatus(SwapStatus.LOADING_APPROVE);
           closeConfirmInWalletAlert();
 
-          const approveReceipt = await publicClient.waitForTransactionReceipt({
-            hash: result.hash,
-          });
+          let approveReceipt;
+          try {
+            approveReceipt = await publicClient.waitForTransactionReceipt({
+              hash: result.hash,
+            });
+          } catch (e) {
+            // Approve was broadcast; keep LOADING_APPROVE rather than reporting a failure.
+            console.error(e);
+            return;
+          }
 
           if (approveReceipt.status === "reverted") {
             setSwapStatus(SwapStatus.APPROVE_ERROR);
@@ -436,17 +440,6 @@ export default function useSwap() {
         typeof output == null
         // !estimatedGas
       ) {
-        console.log({
-          walletClient,
-          address,
-          tokenA,
-          tokenB,
-          trade,
-          output,
-          publicClient,
-          chainId,
-          swapParams,
-        });
         return;
       }
 
@@ -465,13 +458,12 @@ export default function useSwap() {
 
         let _request;
         try {
-          const { request, result } = await publicClient.simulateContract({
+          const { request } = await publicClient.simulateContract({
             ...swapParams,
             account: address,
             ...gasSettings,
             gas: gasToUse,
           } as any);
-          console.log("Swap simulation result:", result);
           _request = request;
         } catch (e) {
           _request = {
@@ -537,7 +529,15 @@ export default function useSwap() {
               address,
             );
 
-            const receipt = await publicClient.waitForTransactionReceipt({ hash }); //TODO: add try catch
+            let receipt;
+            try {
+              receipt = await publicClient.waitForTransactionReceipt({ hash });
+            } catch (e) {
+              // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
+              // mean it failed. Keep LOADING and let the recent-transaction tracker settle it.
+              console.error(e);
+              return;
+            }
             updateAllowance();
             if (receipt.status === "success") {
               setSwapStatus(SwapStatus.SUCCESS);
@@ -559,7 +559,11 @@ export default function useSwap() {
           setSwapStatus(SwapStatus.INITIAL);
         }
       } catch (e) {
-        console.log(e);
+        console.error(e);
+        if (hash) {
+          // Already broadcast: don't report failure for a tx that may still succeed.
+          return;
+        }
         addToast("Error while executing contract", "error");
         closeConfirmInWalletAlert();
         setSwapStatus(SwapStatus.INITIAL);

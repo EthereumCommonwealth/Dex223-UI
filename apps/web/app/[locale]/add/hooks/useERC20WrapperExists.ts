@@ -27,8 +27,6 @@ export default function useERC20WrapperExists({
     },
   });
 
-  console.log(isWrapper, address);
-
   const otherAddressFunctionName = useMemo(() => {
     if (isWrapper == null) {
       return null;
@@ -41,8 +39,6 @@ export default function useERC20WrapperExists({
     return "predictWrapperAddress";
   }, [isWrapper]);
 
-  console.log(otherAddressFunctionName);
-
   const otherAddressCheckFunctionName = useMemo(() => {
     if (otherAddressFunctionName !== "predictWrapperAddress") {
       return null;
@@ -50,8 +46,6 @@ export default function useERC20WrapperExists({
 
     return "getERC20WrapperFor";
   }, [otherAddressFunctionName]);
-
-  console.log(otherAddressCheckFunctionName);
 
   const { data: otherAddress, isLoading: isLoadingOtherAddress } = useReadContract({
     abi: TOKEN_CONVERTER_ABI,
@@ -63,8 +57,6 @@ export default function useERC20WrapperExists({
       enabled: !!address && isAddress(address) && Boolean(otherAddressCheckFunctionName),
     },
   });
-
-  console.log("OTHER ADDRESS", address);
 
   return useMemo(() => {
     if (!enabled || !otherAddressCheckFunctionName) {

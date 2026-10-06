@@ -126,6 +126,7 @@ export default function useCreateToken(createTokenSettings: {
 
     setStatus(CreateTokenStatus.PENDING_CREATE_TOKEN);
 
+    let hash: `0x${string}` | undefined;
     try {
       const deployTokenParams = {
         abi: ERC223_TOKEN_DEPLOYER_ABI,
@@ -148,13 +149,14 @@ export default function useCreateToken(createTokenSettings: {
 
       const gasToUse = customGasLimit ? customGasLimit : estimatedGas + BigInt(30000); // set custom gas here if user changed it
 
-      const hash = await walletClient.writeContract({
+      hash = await walletClient.writeContract({
         ...deployTokenParams,
         ...gasSettings,
         gas: gasToUse,
       });
 
       setCreateTokenHash(hash);
+      setStatus(CreateTokenStatus.LOADING_CREATE_TOKEN);
 
       const factoryNonce = await publicClient.getTransactionCount({
         address: ERC223_TOKEN_DEPLOYER_ADDRESS[chainId],
@@ -205,8 +207,15 @@ export default function useCreateToken(createTokenSettings: {
       );
 
       if (hash) {
-        setStatus(CreateTokenStatus.LOADING_CREATE_TOKEN);
-        const deployReceipt = await publicClient.waitForTransactionReceipt({ hash }); //TODO: add try catch
+        let deployReceipt;
+        try {
+          deployReceipt = await publicClient.waitForTransactionReceipt({ hash });
+        } catch (e) {
+          // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
+          // mean it failed. Keep LOADING_CREATE_TOKEN and let the recent-transaction tracker settle it.
+          console.error(e);
+          return;
+        }
 
         const parsedEventLog = parseEventLogs({
           abi: ERC223_TOKEN_DEPLOYER_ABI,
@@ -234,6 +243,7 @@ export default function useCreateToken(createTokenSettings: {
               setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
             }
           } else {
+            let wrapperHash: `0x${string}` | undefined;
             try {
               setStatus(CreateTokenStatus.PENDING_CREATE_WRAPPER);
 
@@ -244,7 +254,7 @@ export default function useCreateToken(createTokenSettings: {
                 args: [deployTokenLog.args.token],
               } as const;
 
-              const wrapperHash = await walletClient.writeContract({
+              wrapperHash = await walletClient.writeContract({
                 ...deployTokenParams,
                 ...gasSettings,
               });
@@ -262,12 +272,22 @@ export default function useCreateToken(createTokenSettings: {
                 setStatus(CreateTokenStatus.ERROR_CREATE_WRAPPER);
               }
             } catch (error) {
+              if (wrapperHash) {
+                // Wrapper tx was broadcast; keep LOADING_CREATE_WRAPPER rather than reporting a failure.
+                console.error(error);
+                return;
+              }
               setStatus(CreateTokenStatus.ERROR_CREATE_WRAPPER);
             }
           }
         }
       }
     } catch (e) {
+      if (hash) {
+        // Already broadcast: don't report failure for a tx that may still succeed.
+        console.error(e);
+        return;
+      }
       setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
     }
   }, [

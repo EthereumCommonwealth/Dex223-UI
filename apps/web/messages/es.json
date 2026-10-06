@@ -40,7 +40,8 @@
     "send": "Enviar",
     "revenue": "Ingresos",
     "governance": "Gobernanza",
-    "rewards": "Recompensas"
+    "rewards": "Recompensas",
+    "multisig": "Multifirma"
   },
   "Swap": {
     "high_price_impact_warning": "Impacto en el precio alto ({impact}%). Recibirás bastante menos que el precio actual de mercado.",
@@ -116,7 +117,10 @@
     "eip7702_title": "Esta billetera no puede recibir la versión ERC-223",
     "eip7702_warning": "Tu cuenta es una cuenta inteligente (EIP-7702), por ejemplo una cuenta inteligente de MetaMask. Las cuentas inteligentes pueden guardar y enviar tokens ERC-223, incluidos los que ya tienes, pero no pueden recibir nuevos. No se ha enviado nada y tus fondos están seguros.",
     "eip7702_fix": "<receive>Recibe la versión ERC-20</receive>, o vuelve a cambiar tu billetera a una cuenta estándar para recibir ERC-223.",
-    "swap_no_liquidity": "Intercambio no disponible. Uno de los tokens no tiene liquidez. Inténtalo más tarde o elige otro par."
+    "swap_no_liquidity": "Intercambio no disponible. Uno de los tokens no tiene liquidez. Inténtalo más tarde o elige otro par.",
+    "deadline_empty": "Introduce un plazo",
+    "deadline_min": "El plazo debe ser de al menos 1 minuto",
+    "deadline_max": "El plazo no puede superar los 4000 minutos"
   },
   "Wallet": {
     "my_wallet": "Mi monedero",
@@ -126,7 +130,7 @@
     "successfully_connected": "¡Conectado correctamente!",
     "user_rejected": "El usuario rechazó la solicitud",
     "something_went_wrong": "Error: algo salió mal",
-    "install_metamask": "Instala la extensión Metamask para continuar",
+    "install_metamask": "Instala la extensión MetaMask para continuar",
     "install_trust": "Instala Trust Wallet para continuar",
     "install_coinbase": "Instala Coinbase para continuar",
     "unsupported_file_format": "Formato de archivo no compatible",
@@ -147,7 +151,7 @@
   },
   "Footer": {
     "gas": "Gas:",
-    "most_recent_block": "El número del bloque más reciente en esta red. ",
+    "most_recent_block": "El número del bloque más reciente en esta red.",
     "prices_update_on_every_block": "Los precios se actualizan en cada bloque.",
     "discussions": "Discusiones",
     "announcements": "Anuncios",
@@ -237,7 +241,51 @@
     "double_tokens_subtitle": "{amount0} {symbol0} y {amount1} {symbol1}",
     "cancel": "Cancelar",
     "speed_up": "Acelerar",
-    "queue": "Cola"
+    "queue": "Cola",
+    "unwrap_success_notification": "WETH convertido en ETH",
+    "unwrap_revert_notification": "No se pudo convertir WETH",
+    "claim_success_notification": "Reclamado correctamente",
+    "claim_revert_notification": "El reclamo falló",
+    "open_lending_order_success_notification": "Orden de préstamo abierta correctamente",
+    "open_lending_order_revert_notification": "No se pudo abrir la orden de préstamo",
+    "close_lending_order_success_notification": "Orden de préstamo cerrada correctamente",
+    "close_lending_order_revert_notification": "No se pudo cerrar la orden de préstamo",
+    "create_lending_order_success_notification": "Orden de préstamo creada correctamente",
+    "close_margin_position_success_notification": "Posición de margen cerrada correctamente",
+    "deploy_token_success_notification": "Token creado correctamente",
+    "deploy_token_revert_notification": "No se pudo crear el token",
+    "margin_swap_success_notification": "Intercambio de margen realizado",
+    "margin_swap_revert_notification": "El intercambio de margen ha fallado",
+    "edit_lending_order_success_notification": "Orden de préstamo editada correctamente",
+    "edit_lending_order_revert_notification": "No se pudo editar la orden de préstamo",
+    "create_lending_order_revert_notification": "No se pudo crear la orden de préstamo",
+    "create_margin_position_success_notification": "Posición de margen creada correctamente",
+    "create_margin_position_revert_notification": "No se pudieron pedir prestados los fondos",
+    "liquidate_margin_position_success_notification": "Posición de margen liquidada correctamente",
+    "liquidate_margin_position_revert_notification": "No se pudo liquidar la posición",
+    "freeze_margin_position_success_notification": "Posición de margen congelada correctamente",
+    "freeze_margin_position_revert_notification": "No se pudo congelar la posición",
+    "withdraw_closed_position_success_notification": "Fondos retirados correctamente",
+    "withdraw_closed_position_revert_notification": "No se pudieron retirar los fondos",
+    "close_margin_position_revert_notification": "No se pudo cerrar la posición de margen",
+    "msig_sent_success_notification": "Transacción enviada",
+    "msig_sent_revert_notification": "No se pudo enviar la transacción",
+    "msig_add_owner_success_notification": "Propietario añadido",
+    "msig_add_owner_revert_notification": "No se pudo añadir el propietario",
+    "msig_remove_owner_success_notification": "Propietario eliminado",
+    "msig_remove_owner_revert_notification": "No se pudo eliminar el propietario",
+    "msig_set_delay_success_notification": "Retraso actualizado",
+    "msig_set_delay_revert_notification": "No se pudo establecer el retraso",
+    "msig_set_threshold_success_notification": "Umbral actualizado",
+    "msig_set_threshold_revert_notification": "No se pudo establecer el umbral",
+    "msig_approve_success_notification": "Transacción aprobada",
+    "msig_approve_revert_notification": "No se pudo aprobar la transacción",
+    "msig_decline_success_notification": "Transacción rechazada",
+    "msig_decline_revert_notification": "No se pudo rechazar la transacción",
+    "transaction_link": "Enlace de la transacción",
+    "list_single_subtitle": "{symbol} en la lista «{list}»",
+    "list_double_subtitle": "{symbol0} y {symbol1} en la lista «{list}»",
+    "create_margin_position_subtitle": "{amountCollateral} {symbolCollateral} de garantía y {amountFee} {symbolFee} de comisión"
   },
   "Portfolio": {
     "approved_deposited": "Aprobados y depositados",
@@ -302,10 +350,10 @@
     "lending_building": "La página de órdenes de préstamo está en construcción",
     "margin_tooltip": "Esta cifra es la suma de los activos de tus posiciones de margen activas. Esos activos están en el contrato del módulo de margen y no se pueden retirar hasta que se cierre la posición a la que pertenecen.",
     "wallet_assets_tooltip": "Esta cifra es la suma de tus saldos de activos, en USD. No incluye los saldos de margen.",
-    "liquidity_tooltip": "Esta cifra es la suma de los activos que aportaste como liquidez en todos los contratos de pool de Dex223.",
+    "liquidity_tooltip": "Esta cifra es la suma de los activos que aportaste como liquidez en todos los contratos de pool de DEX223.",
     "lending_tooltip": "Esta cifra es la suma de los activos de tus órdenes de préstamo activas. Esos activos están en el contrato del módulo de margen. Puedes retirarlos interactuando con la orden correspondiente.",
-    "stuck_tooltip": "Suma de los activos guardados en los contratos de Dex223. Sirve para ver los tokens que puedes retirar de los contratos del sistema.",
-    "approvals_tooltip": "Cantidad de aprobaciones dadas a los contratos de Dex223. Una aprobación permite al contrato mover tokens desde el saldo de tu monedero. Revoca las que no necesites para proteger tus fondos.",
+    "stuck_tooltip": "Suma de los activos guardados en los contratos de DEX223. Sirve para ver los tokens que puedes retirar de los contratos del sistema.",
+    "approvals_tooltip": "Cantidad de aprobaciones dadas a los contratos de DEX223. Una aprobación permite al contrato mover tokens desde el saldo de tu monedero. Revoca las que no necesites para proteger tus fondos.",
     "approved": "Aprobado",
     "lending_orders_suffix": "órdenes de préstamo",
     "wallets_count": "{count, plural, one {# monedero} other {# monederos}}",
@@ -328,7 +376,7 @@
   },
   "Feedback": {
     "feedback": "Comentarios",
-    "feel_free_to_share": "Comparte tus impresiones dejando un comentario aquí o abriendo una <github>incidencia en Github</github>",
+    "feel_free_to_share": "Comparte tus impresiones dejando un comentario aquí o abriendo una <github>incidencia en GitHub</github>",
     "describe_your_issue": "Describe tu problema",
     "email_wallet_address_or_nickname": "Correo, dirección de monedero o apodo",
     "feedback_category": "Categoría",
@@ -347,24 +395,24 @@
     "thank_you_for_the_feedback": "¡Gracias por tus comentarios! Nos pondremos en contacto pronto. Puedes escribirnos por <telegram>Telegram</telegram> o <discord>Discord</discord>."
   },
   "Converter": {
-    "title": "Token converter",
-    "description": "Convert any token between ERC-20 and ERC-223 at a 1:1 rate. No protocol fees.",
-    "convert_button": "Convert",
-    "you_pay": "You pay",
-    "you_receive": "You receive",
-    "flip_direction": "Flip conversion direction",
-    "pick_token": "Select token",
-    "connect_wallet": "Connect wallet",
-    "insufficient_balance": "Insufficient balance",
-    "no_fees": "1:1 conversion. No protocol fees."
+    "title": "Convertidor de tokens",
+    "description": "Convierte cualquier token entre ERC-20 y ERC-223 a una tasa de 1:1. Sin comisiones del protocolo.",
+    "convert_button": "Convertir",
+    "you_pay": "Pagas",
+    "you_receive": "Recibes",
+    "flip_direction": "Invertir la dirección de conversión",
+    "pick_token": "Seleccionar token",
+    "connect_wallet": "Conectar monedero",
+    "insufficient_balance": "Saldo insuficiente",
+    "no_fees": "Conversión 1:1. Sin comisiones del protocolo."
   },
   "BuyCrypto": {
     "title": "Fondea tu billetera con fiat",
-    "description": "Compra o vende cripto con fiat vía Onramp. Intercambia tokens en Dex223 tras fondear tu billetera.",
+    "description": "Compra o vende cripto con fiat vía Onramp. Intercambia tokens en DEX223 tras fondear tu billetera.",
     "powered_by_onramp": "Onramp fiat",
     "step_buy": "Paga con transferencia, tarjeta o métodos locales",
     "step_receive": "La cripto llega a tu billetera conectada",
-    "step_use": "Intercambia o crea pools en Dex223",
+    "step_use": "Intercambia o crea pools en DEX223",
     "flow_buy": "Comprar",
     "flow_sell": "Vender",
     "flow_swap": "Intercambiar",
@@ -376,7 +424,7 @@
     "any_token": "token",
     "any_token_short": "Ver todos",
     "sell_hint": "Vende cripto de tu billetera por fiat a través de Onramp. Elige el activo en el widget.",
-    "swap_hint": "Intercambia criptomonedas compatibles en Onramp y vuelve aquí para operar en Dex223.",
+    "swap_hint": "Intercambia criptomonedas compatibles en Onramp y vuelve aquí para operar en DEX223.",
     "receiving_wallet": "Billetera receptora",
     "cta_buy_asset": "Comprar {symbol} con Onramp",
     "cta_buy_any": "Comprar cripto con Onramp",
@@ -384,13 +432,13 @@
     "cta_swap": "Intercambiar con Onramp",
     "wallet_destination_hint": "Los tokens se envían a tu billetera conectada.",
     "success_title": "Compra completada",
-    "success_body": "Tu {symbol} está en camino. Úsalo para operar o aportar liquidez en Dex223.",
-    "cta_trade": "Intercambiar en Dex223",
+    "success_body": "Tu {symbol} está en camino. Úsalo para operar o aportar liquidez en DEX223.",
+    "cta_trade": "Intercambiar en DEX223",
     "cta_pools": "Ver pools",
     "cta_add_liquidity": "Añadir liquidez",
     "after_title": "Después de comprar",
     "after_trade_body": "Intercambia tokens ERC-20 y ERC-223 con liquidez concentrada.",
-    "after_pool_body": "Crea una posición y gana comisiones de los traders en Dex223.",
+    "after_pool_body": "Crea una posición y gana comisiones de los traders en DEX223.",
     "disclaimer": "Los pagos fiat, KYC y liquidación los gestiona",
     "missing_app_id": "Onramp no está configurado. Define NEXT_PUBLIC_ONRAMP_APP_ID.",
     "tx_failed": "La transacción de Onramp falló. Inténtalo de nuevo u otro método de pago.",
@@ -455,14 +503,14 @@
     "already_imported": "El token ya está importado",
     "import_symbol": "Importar {symbol}",
     "import_list_tooltip": "Aquí puedes importar una lista de tokens como archivo JSON o mediante URL.",
-    "import_token_tooltip": "Puedes importar un token introduciendo su dirección de contrato. El token se añadirá a tu «lista de tokens personalizados» en Dex223.",
+    "import_token_tooltip": "Puedes importar un token introduciendo su dirección de contrato. El token se añadirá a tu «lista de tokens personalizados» en DEX223.",
     "tokens_amount": "{amount} {amount, plural, one {token} other {tokens}}",
     "custom_tokens_amount": "{amount} {amount, plural, one {token personalizado} other {tokens personalizados}}",
     "found_in": "Encontrado en {amount} {amount, plural, one {lista de tokens} other {listas de tokens}}:",
     "confirm_removing_list_text": "Confirma que quieres eliminar la lista <bold>«<list></list>»</bold>",
     "confirm_removing_token_text": "Confirma que quieres eliminar el token personalizado <bold>«<token></token>»</bold>.",
-    "adding_list_warning": " La mayoría de las listas de tokens están gestionadas por terceros, por lo que el equipo de Dex223 no puede garantizar la exactitud de los datos que contienen. Da por hecho que cualquiera puede añadir cualquier token arbitrario a una lista. Verifica tú mismo las direcciones de los contratos y comprueba dos veces los datos de cualquier token antes de realizar una transacción financiera.",
-    "import_token_warning": " Importa tokens con precaución, ya que es posible incluir versiones falsas de tokens existentes. Asegúrate de que el token importado es compatible con Dex223. Siempre puedes verificar los datos del token mediante exploradores públicos de blockchain para evitar errores y estafas.",
+    "adding_list_warning": "La mayoría de las listas de tokens están gestionadas por terceros, por lo que el equipo de DEX223 no puede garantizar la exactitud de los datos que contienen. Da por hecho que cualquiera puede añadir cualquier token arbitrario a una lista. Verifica tú mismo las direcciones de los contratos y comprueba dos veces los datos de cualquier token antes de realizar una transacción financiera.",
+    "import_token_warning": "Importa tokens con precaución, ya que es posible incluir versiones falsas de tokens existentes. Asegúrate de que el token importado es compatible con DEX223. Siempre puedes verificar los datos del token mediante exploradores públicos de blockchain para evitar errores y estafas.",
     "predicted_alert": "El token con el estándar ERC-223 todavía no existe. Los contratos del conversor predicen la dirección que ves.",
     "add_new_list": "Añadir nueva lista",
     "list_not_found": "Lista no encontrada",
@@ -660,7 +708,7 @@
   },
   "Guidelines": {
     "title": "Guías",
-    "description": "Enlaces rápidos para empezar en Dex223.",
+    "description": "Enlaces rápidos para empezar en DEX223.",
     "getting_started_title": "Primeros pasos",
     "getting_started_subtitle": "Tus primeros pasos en la plataforma",
     "tokens_title": "Tokens",
@@ -674,7 +722,7 @@
     "guides": {
       "swap": {
         "title": "Cómo hacer un intercambio",
-        "description": "Intercambia tokens en Dex223 en pocos pasos.",
+        "description": "Intercambia tokens en DEX223 en pocos pasos.",
         "cta": "Abrir Intercambio",
         "sections": {
           "before": {
@@ -733,7 +781,7 @@
         "sections": {
           "why": {
             "heading": "Por qué importan las listas",
-            "body": "Dex223 solo muestra tokens de las listas que activas. Si falta un token en Intercambio o en el conversor, revisa primero tus listas."
+            "body": "DEX223 solo muestra tokens de las listas que activas. Si falta un token en Intercambio o en el conversor, revisa primero tus listas."
           },
           "steps": {
             "heading": "Pasos",
@@ -752,12 +800,12 @@
       },
       "token-listing": {
         "title": "Listar un token",
-        "description": "Envía un token a un contrato de autolistado para que pueda negociarse en Dex223.",
+        "description": "Envía un token a un contrato de autolistado para que pueda negociarse en DEX223.",
         "cta": "Abrir Listado de tokens",
         "sections": {
           "overview": {
             "heading": "Resumen",
-            "body": "El listado de tokens registra tu token en un contrato de autolistado de Dex223 para que los pools y la interfaz puedan encontrarlo."
+            "body": "El listado de tokens registra tu token en un contrato de autolistado de DEX223 para que los pools y la interfaz puedan encontrarlo."
           },
           "before": {
             "heading": "Antes de empezar",
@@ -780,7 +828,7 @@
       },
       "fiat": {
         "title": "Comprar cripto con fiat",
-        "description": "Fondea tu monedero a través de Onramp sin salir de Dex223.",
+        "description": "Fondea tu monedero a través de Onramp sin salir de DEX223.",
         "cta": "Abrir Fiat",
         "sections": {
           "overview": {
@@ -800,7 +848,7 @@
             "heading": "Notas",
             "items": {
               "s1": "La disponibilidad depende de tu región y de los métodos de pago que admite Onramp.",
-              "s2": "Los intercambios de Dex223 se hacen en Dex223. Usa la página Intercambio para operar de cripto a cripto."
+              "s2": "Los intercambios de DEX223 se hacen en DEX223. Usa la página Intercambio para operar de cripto a cripto."
             }
           }
         }
@@ -825,7 +873,15 @@
     "decrease": "Reducir",
     "open_link": "Abrir enlace",
     "increase_price": "Subir precio",
-    "decrease_price": "Bajar precio"
+    "decrease_price": "Bajar precio",
+    "edit": "Editar",
+    "details": "Detalles",
+    "menu": "Menú",
+    "wallet": "Billetera",
+    "pin": "Fijar",
+    "unpin": "Desfijar",
+    "listing_details": "Detalles del listado",
+    "amount": "Cantidad"
   },
   "PageError": {
     "title": "Algo salió mal",
@@ -849,7 +905,7 @@
     "testnet_note": "Demo en la red de prueba Sepolia. Usa tokens de prueba gratuitos (HE, NE, AR), no dinero real.",
     "why_title": "¿Qué es Envío seguro y por qué existe?",
     "why_problem": "<b>El problema.</b> Los tokens ERC-20 comunes no comprueban a dónde van. Si los envías a un contrato que no puede manejarlos, la transferencia se completa igual y los tokens quedan bloqueados para siempre. Se han perdido millones de dólares en tokens de esta forma.",
-    "why_fix": "<b>La solución.</b> Envío seguro usa ERC-223, el estándar de tokens sobre el que se construye Dex223. El contrato receptor tiene que aceptar los tokens. Si no puede, la transferencia se rechaza y tus tokens se quedan en tu billetera.",
+    "why_fix": "<b>La solución.</b> Envío seguro usa ERC-223, el estándar de tokens sobre el que se construye DEX223. El contrato receptor tiene que aceptar los tokens. Si no puede, la transferencia se rechaza y tus tokens se quedan en tu billetera.",
     "why_erc20": "<b>¿Solo tienes ERC-20?</b> Elige ERC-20 abajo. Apruebas el importe exacto (nunca ilimitado) y los tokens se convierten a ERC-223 y se envían en el mismo paso. También puedes convertir tokens tú mismo en la página <convert>Conversor</convert>.",
     "why_modes": "<b>Enviar</b> paga a cualquier billetera o contrato. <b>Pagar</b> paga a un comercio y adjunta tu id de pedido. <b>Factura</b> es para comercios: crea un enlace de pago para compartir con un cliente.",
     "tab_send": "Enviar",
@@ -884,7 +940,8 @@
     "max": "Máx.",
     "insufficient": "Saldo insuficiente.",
     "cancelled": "Transacción cancelada.",
-    "failed": "La transacción ha fallado. Inténtalo de nuevo."
+    "failed": "La transacción ha fallado. Inténtalo de nuevo.",
+    "copy_failed": "No se pudo copiar el enlace. Cópialo manualmente."
   },
   "Revenue": {
     "title": "Ingresos",
@@ -1011,7 +1068,9 @@
     "duration_day": "{count, plural, one {# día} other {# días}}",
     "duration_hour": "{count, plural, one {# hora} other {# horas}}",
     "duration_minute": "{count, plural, one {# minuto} other {# minutos}}",
-    "duration_second": "{count, plural, one {# segundo} other {# segundos}}"
+    "duration_second": "{count, plural, one {# segundo} other {# segundos}}",
+    "tx_insufficient_funds": "No tienes fondos suficientes para pagar esta transacción y su comisión de red.",
+    "tx_reverted": "La transacción se revirtió, así que no cambió nada. La comisión de red se cobra igualmente."
   },
   "Governance": {
     "title": "Gobernanza",
@@ -1039,7 +1098,7 @@
     "supply_required": "Indica el suministro total",
     "supply_tooltip": "Cuántos tokens existirán al desplegar.",
     "image_url": "URL de la imagen (opcional)",
-    "image_placeholder": "https:// ",
+    "image_placeholder": "https://",
     "image_invalid": "Introduce un enlace con el formato https:// o ipfs://",
     "image_tooltip": "Enlace opcional https:// o ipfs:// a la imagen del token.",
     "allow_mint": "Permitir que el propietario (tú) emita tokens nuevos",
@@ -1075,14 +1134,14 @@
     "title": "Listado de tokens",
     "intro": "Listar tu token en nuestra plataforma es sencillo. Puedes elegir uno de estos métodos para que tu token aparezca:",
     "default_heading": "Listado predeterminado",
-    "default_p1": "Puedes añadir tu token a la lista predeterminada de Dex223. Esta lista está activada por defecto en la interfaz, así que todos sus tokens se muestran al usuario. Cualquier usuario puede desactivar esta lista y dejar de ver esos tokens.",
-    "default_p2": "Para añadir un token a la lista predeterminada de Dex223, abre una incidencia en nuestro GitHub. El equipo de Dex223 revisará la solicitud y responderá en el hilo de comentarios de esa incidencia.",
+    "default_p1": "Puedes añadir tu token a la lista predeterminada de DEX223. Esta lista está activada por defecto en la interfaz, así que todos sus tokens se muestran al usuario. Cualquier usuario puede desactivar esta lista y dejar de ver esos tokens.",
+    "default_p2": "Para añadir un token a la lista predeterminada de DEX223, abre una incidencia en nuestro GitHub. El equipo de DEX223 revisará la solicitud y responderá en el hilo de comentarios de esa incidencia.",
     "autolisting_heading": "Contratos de auto-listado",
     "autolisting_p1": "Puedes listar un token en cualquier contrato de auto-listado. Los usuarios pueden activar o desactivar esos contratos en su interfaz en cualquier momento. Tu token se mostrará si está en al menos uno de los contratos o listas activados. El usuario también verá en cuántas listas está tu token, así que si aparece en varias listas activas ganará más confianza. Los contratos pueden tener criterios distintos: algunos cobran y otros son gratuitos.",
-    "autolisting_p2": "Puedes listar un token en un contrato de auto-listado sin hablar con el equipo de Dex223. El proceso está automatizado.",
+    "autolisting_p2": "Puedes listar un token en un contrato de auto-listado sin hablar con el equipo de DEX223. El proceso está automatizado.",
     "existing_heading": "Lista de tokens existente",
     "existing_p1": "Tokenlists es un proyecto de Uniswap Labs. Visita <link>https://tokenlists.org/</link> para más información.",
-    "existing_p2": "Las tokenlists las mantienen entidades de confianza como CoinMarketCap o CoinGecko. Si consigues que listen tu token, los usuarios de Dex223 podrán verlo al activar esa lista. La mayoría de listas aún solo admiten tokens ERC-20.",
+    "existing_p2": "Las tokenlists las mantienen entidades de confianza como CoinMarketCap o CoinGecko. Si consigues que listen tu token, los usuarios de DEX223 podrán verlo al activar esa lista. La mayoría de listas aún solo admiten tokens ERC-20.",
     "view_uniswap_lists": "Ver las listas de Uniswap",
     "back": "Volver al listado de tokens",
     "search_name_or_contract": "Buscar nombre o pegar contrato",
@@ -1198,15 +1257,15 @@
     "duration": "Duración",
     "limit": "Límite",
     "min_borrowing": "Préstamo mínimo",
-    "period_tooltip": "Información del periodo",
-    "leverage_tooltip": "Información del apalancamiento máximo",
-    "interest_tooltip": "Información del tipo de interés máximo al mes",
-    "currency_limit_tooltip": "Información del límite de divisa de la orden",
+    "period_tooltip": "Muestra solo las órdenes de préstamo que cumplen este filtro.",
+    "leverage_tooltip": "Filtra las órdenes de préstamo por el apalancamiento máximo que permiten.",
+    "interest_tooltip": "Muestra solo las órdenes de préstamo con un tipo de interés mensual igual o inferior a este.",
+    "currency_limit_tooltip": "Filtra las órdenes de préstamo por el número de divisas que una posición puede tener a la vez.",
     "from": "Desde",
     "to": "Hasta",
     "interest_rate": "Tipo de interés",
     "liquidation_price_source": "Fuente del precio de liquidación",
-    "liquidation_price_tooltip": "Información de la fuente del precio de liquidación",
+    "liquidation_price_tooltip": "Fuente de precios usada para valorar las posiciones y decidir cuándo se pueden liquidar.",
     "dex223_market": "Mercado DEX223",
     "cancel": "Cancelar",
     "apply": "Aplicar",
@@ -1239,8 +1298,8 @@
     "borrowing_period": "Periodo de préstamo",
     "borrowing_period_tooltip": "Durante cuánto tiempo cada prestatario puede mantener el préstamo después de tomarlo.",
     "minutes": "Minutos",
-    "seconds": "segundos",
-    "seconds_in_day": "1440 segundos = 1 día",
+    "seconds": "minutos",
+    "seconds_in_day": "1440 minutos = 1 día",
     "borrower_countdown": "La cuenta atrás de cada prestatario empieza cuando toma tus activos, no cuando se crea la orden de préstamo",
     "token_source_type": "Tipo de origen de tokens",
     "source_tokens": "Tokens",
@@ -1266,7 +1325,7 @@
     "specified_addresses": "Direcciones especificadas",
     "liquidation_address": "Dirección apta para liquidar",
     "liquidation_address_tooltip": "Solo estas direcciones pueden iniciar una liquidación.",
-    "dex223_price_relay": "Relé de precios Dex223 predeterminado",
+    "dex223_price_relay": "Relé de precios DEX223 predeterminado",
     "insufficient_balance": "Saldo insuficiente",
     "interest_per_month": "Tipo de interés al mes",
     "interest_entire_period": "Tipo de interés para todo el periodo",
@@ -1498,7 +1557,47 @@
     "history_borrow": "Préstamo de {amount} {symbol}",
     "history_deposit": "Depósito de {amount} {symbol}",
     "history_withdraw": "Retiro de {amount} {symbol}",
-    "history_swap": "{amount} {symbolIn} se cambió por {symbolOut} a un tipo 1 {symbolIn} = {rate} {symbolOut}"
+    "history_swap": "{amount} {symbolIn} se cambió por {symbolOut} a un tipo 1 {symbolIn} = {rate} {symbolOut}",
+    "balance": "Saldo",
+    "total_expected": "Total / Esperado",
+    "view_summary": "Ver resumen",
+    "liquidated_by": "Liquidada por:",
+    "borrowed_profit": "Prestado / Beneficio",
+    "borrowed_profit_tooltip": "Importe prestado al abrir esta posición y el beneficio tras cerrarla.",
+    "initial_collateral_earning": "Garantía inicial / Ganancia",
+    "initial_collateral_earning_tooltip": "Garantía aportada al abrir esta posición y lo que generó tras cerrarla.",
+    "freezing": "Congelación",
+    "freezing_transaction": "Transacción de congelación",
+    "freezing_tx_tooltip": "Transacción que congeló esta posición antes de liquidarla.",
+    "liquidation_transaction": "Transacción de liquidación",
+    "liquidation_tx_tooltip": "Transacción que liquidó esta posición.",
+    "view_margin_position_details": "Ver detalles de la posición de margen",
+    "status_completed": "Completada",
+    "assets_count": "Activos: {current} / {limit}",
+    "assets_limit_tooltip": "Tokens que tiene esta posición, sobre el máximo fijado por el límite de divisas de la orden de préstamo.",
+    "health_label": "Salud:",
+    "health_tooltip": "Saldo actual dividido entre el saldo esperado. Con 1 o menos, la posición se puede liquidar.",
+    "view_lending_order_details": "Ver detalles de la orden de préstamo",
+    "available_total": "Disponible / Total",
+    "available_total_tooltip": "Fondos aún disponibles para los prestatarios, sobre el saldo total de la orden, incluidos los importes ya prestados.",
+    "fee_liquidator_lender": "Comisión para el liquidador / para el prestamista",
+    "fee_liquidator_lender_tooltip": "Comisión pagada a quien liquida una posición de esta orden y la comisión adicional pagada al prestamista.",
+    "percent_per_month": "{rate}% al mes",
+    "view_position_details": "Ver detalles de la posición",
+    "position_id_tooltip": "Número único de esta posición de margen.",
+    "position_selected": "Posición seleccionada",
+    "select_position": "Seleccionar posición",
+    "change_position": "Cambiar posición",
+    "search_position_id": "Buscar ID de posición",
+    "no_matching_positions": "No hay posiciones que coincidan",
+    "matching_positions": "Posiciones que coinciden",
+    "positions_without_tokens": "Posiciones sin los tokens seleccionados",
+    "you_pay_symbol": "Pagas: {symbol}",
+    "you_buy_symbol": "Compras: {symbol}",
+    "borrow_now": "Pedir prestado ahora",
+    "min_order_balance_filter_tooltip": "Muestra solo las órdenes de préstamo con al menos este importe disponible para pedir prestado.",
+    "min_loan_amount_filter_tooltip": "Muestra solo las órdenes de préstamo cuyo préstamo mínimo es igual o superior a este importe.",
+    "duration_filter_tooltip": "Muestra solo las órdenes de préstamo cuya duración de posición, en días, está dentro de este rango."
   },
   "TradingChart": {
     "select_pair": "Selecciona dos tokens para ver su gráfico",
@@ -1526,7 +1625,7 @@
     "empty_title": "Aún no hay operaciones",
     "empty_description": "Este pool todavía no tiene intercambios. El gráfico empieza con la primera operación.",
     "no_pool_title": "No hay pool para este par",
-    "no_pool_description": "Aún no existe un pool de Dex223 para {base} y {quote}. Añade liquidez para crearlo.",
+    "no_pool_description": "Aún no existe un pool de DEX223 para {base} y {quote}. Añade liquidez para crearlo.",
     "create_pool": "Crear un pool",
     "error_title": "Los datos del gráfico no están disponibles",
     "error_description": "No se pudo cargar el historial de precios. Revisa tu conexión e inténtalo de nuevo.",
@@ -1542,8 +1641,8 @@
     "show_chart": "Mostrar gráfico",
     "hide_chart": "Ocultar gráfico",
     "source_subgraph": "Subgraph",
-    "source_subgraph_long": "Datos por hora del subgraph de Dex223 mientras los datos de mercado en vivo no están disponibles",
-    "source_onchain": "Datos del pool de Dex223, leídos directamente de la cadena",
+    "source_subgraph_long": "Datos por hora del subgraph de DEX223 mientras los datos de mercado en vivo no están disponibles",
+    "source_onchain": "Datos del pool de DEX223, leídos directamente de la cadena",
     "charts_by": "Gráficos de TradingView",
     "bar_closes_in": "La vela cierra en",
     "price_scale": "Escala de precio",
@@ -1626,5 +1725,99 @@
     "atl": "Mínimo histórico",
     "from_ath": "{percent} desde el máximo",
     "chart_source": "Gráfico: {source}"
+  },
+  "Seo": {
+    "default": {
+      "title": "DEX223: opera tokens ERC-20 y ERC-223",
+      "description": "El exchange descentralizado creado para ERC-223 y ERC-20. Intercambia, aporta liquidez concentrada, presta, pide prestado y opera con margen con listado de tokens sin permisos."
+    },
+    "swap": {
+      "title": "Intercambia tokens ERC-20 y ERC-223",
+      "description": "Intercambia cualquier token en DEX223 y elige ERC-20 o ERC-223 en cada lado. Liquidez concentrada, comisiones claras y protección contra tokens perdidos."
+    },
+    "margin_swap": {
+      "title": "Swap con margen: opera con apalancamiento",
+      "description": "Opera dentro de tu posición de margen en DEX223. Pide prestado de órdenes on-chain y opera con apalancamiento sin ceder la custodia de tus fondos."
+    },
+    "margin_trading": {
+      "title": "Presta y pide prestado en DEX223",
+      "description": "Presta tokens con tus propias condiciones o pide prestado con garantía para abrir posiciones apalancadas. Órdenes on-chain con interés, plazo y liquidación a medida."
+    },
+    "pools": {
+      "title": "Pools de liquidez: TVL, volumen y comisiones",
+      "description": "Explora los pools de liquidez de DEX223 por TVL y volumen. Aporta liquidez concentrada en ERC-20 o ERC-223 y gana comisiones en cada operación."
+    },
+    "pool": {
+      "title": "Detalles del pool",
+      "description": "Saldos, TVL, volumen y comisiones de 24 h del pool en DEX223. Intercambia el par o añade liquidez con un clic."
+    },
+    "positions": {
+      "title": "Tus posiciones de liquidez",
+      "description": "Gestiona tus posiciones de liquidez en DEX223: cobra comisiones, añade liquidez o retira."
+    },
+    "add": {
+      "title": "Añade liquidez y gana comisiones",
+      "description": "Abre una posición de liquidez concentrada o crea un pool en DEX223. Elige nivel de comisión y rango de precio, deposita en cualquier estándar y gana con cada operación."
+    },
+    "converter": {
+      "title": "Convertidor de tokens ERC-20 a ERC-223",
+      "description": "Convierte cualquier token entre ERC-20 y ERC-223 a un tipo fijo 1:1 sin comisiones del protocolo. Los tokens ERC-223 nunca se pierden en contratos que no pueden recibirlos."
+    },
+    "create_token": {
+      "title": "Crea un token ERC-223 sin código",
+      "description": "Lanza tu propio token ERC-223 en minutos. Define nombre, símbolo y suministro, añade una versión ERC-20 opcional, crea un pool y lístalo en DEX223."
+    },
+    "buy_crypto": {
+      "title": "Compra cripto con tarjeta o transferencia",
+      "description": "Recarga tu billetera con fiat a través de Onramp y recibe ETH, USDC, USDT o D223 directamente. Luego intercambia o gana comisiones en DEX223."
+    },
+    "token_listing": {
+      "title": "Lista tu token en DEX223",
+      "description": "Lista tu token en DEX223 con contratos de auto-listado gratuitos o de pago, la lista por defecto o una lista existente. Cualquier token con pool puede operarse."
+    },
+    "token_listing_contracts": {
+      "title": "Contratos de auto-listado",
+      "description": "Compara los contratos de auto-listado de DEX223, sus precios y tokens de pago aceptados, y lista cualquier token on-chain sin permisos."
+    },
+    "token_listing_add": {
+      "title": "Lista un token automáticamente",
+      "description": "Lista un token y su par en un contrato de auto-listado de DEX223 en pocos clics. Elige el contrato, paga la tarifa si existe y tu token queda activo."
+    },
+    "statistics": {
+      "title": "Estadísticas de DEX223: TVL, volumen, pools",
+      "description": "Estadísticas en vivo del protocolo DEX223: valor total bloqueado, volumen, pools, transacciones y los pools principales por TVL."
+    },
+    "guidelines": {
+      "title": "Primeros pasos con DEX223",
+      "description": "Accesos rápidos para intercambiar, convertir, comprar cripto, listar o crear tokens y aprender cómo funcionan DEX223 y ERC-223."
+    },
+    "portfolio": {
+      "title": "Portafolio",
+      "description": "Sigue saldos, liquidez, órdenes de préstamo y posiciones de margen en DEX223."
+    },
+    "revenue": {
+      "title": "Reparto de ingresos: stake y gana",
+      "description": "Haz stake del token de staking de DEX223 para recibir parte de las comisiones del protocolo. Reclama recompensas cuando quieras."
+    },
+    "markets": {
+      "title": "Mercados cripto: precios y gráficos",
+      "description": "Precios, capitalización y gráficos en vivo de las principales criptomonedas, con acceso directo para operarlas en DEX223."
+    },
+    "governance": {
+      "title": "Gobernanza de DEX223",
+      "description": "Cómo funcionarán la gobernanza y la votación on-chain de comisiones en DEX223, y qué cubre la próxima fase."
+    },
+    "multisig": {
+      "title": "Multifirma",
+      "description": "Propón, aprueba y ejecuta transacciones multifirma."
+    },
+    "send": {
+      "title": "Envío seguro",
+      "description": "Envía tokens a cualquier billetera o contrato sin perderlos en una dirección que no puede recibirlos."
+    },
+    "pay": {
+      "title": "Pagar",
+      "description": "Paga a un comercio en cripto con los datos del pedido incluidos."
+    }
   }
 }

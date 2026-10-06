@@ -89,7 +89,16 @@ type IconLabelKey =
   | "reset"
   | "add"
   | "decrease"
-  | "open_link";
+  | "open_link"
+  | "back"
+  | "close"
+  | "edit"
+  | "details"
+  | "menu"
+  | "wallet"
+  | "pin"
+  | "unpin"
+  | "listing_details";
 const iconLabelKeys: Partial<Record<IconName, IconLabelKey>> = {
   "recent-transactions": "recent_transactions",
   "gas-edit": "network_fee_settings",
@@ -100,6 +109,15 @@ const iconLabelKeys: Partial<Record<IconName, IconLabelKey>> = {
   add: "add",
   minus: "decrease",
   forward: "open_link",
+  back: "back",
+  close: "close",
+  edit: "edit",
+  details: "details",
+  menu: "menu",
+  wallet: "wallet",
+  pin: "pin",
+  "pin-fill": "unpin",
+  "listing-details": "listing_details",
 };
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> &

@@ -61,7 +61,7 @@ export const MarginPositions = () => {
       </div>
 
       <div className="mt-10 flex flex-col lg:flex-row w-full justify-between gap-2 lg:gap-0">
-        <h1 className="text-18 lg:text-32 font-medium">{t("margin_title")}</h1>
+        <h2 className="text-18 lg:text-32 font-medium">{t("margin_title")}</h2>
         <div className="flex flex-col lg:flex-row gap-3">
           <Button onClick={() => handleButton()} mobileSize={ButtonSize.MEDIUM}>
             <span className="flex items-center gap-2 w-max">

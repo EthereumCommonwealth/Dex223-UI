@@ -348,7 +348,7 @@ export default function AutoListingContractDetails({
           {!listingContract.isFree && (
             <>
               <div className="mb-2 xl:mb-5">
-                <h1 className="text-18 xl:text-32 font-medium">{t("listing_price")}</h1>
+                <h2 className="text-18 xl:text-32 font-medium">{t("listing_price")}</h2>
               </div>
               <div className="px-5 pb-5 pt-3 bg-primary-bg rounded-5 mb-10">
                 <div className="flex items-center gap-1 mb-3">
@@ -389,7 +389,7 @@ export default function AutoListingContractDetails({
           <div>
             <div>
               <div className="flex justify-between  flex-col xl:flex-row">
-                <h1 className="text-18 xl:text-32 font-medium mb-2 xl:mb-0">{t("tokens")}</h1>
+                <h2 className="text-18 xl:text-32 font-medium mb-2 xl:mb-0">{t("tokens")}</h2>
                 {!!listingContract.tokens.length && (
                   <div className="w-full md:w-[480px] mb-4 xl:mb-5">
                     <SearchInput

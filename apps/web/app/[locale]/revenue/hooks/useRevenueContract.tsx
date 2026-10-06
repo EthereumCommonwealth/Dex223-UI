@@ -511,6 +511,11 @@ export default function useRevenueContract({
         const receipt = await publicClient.waitForTransactionReceipt({ hash });
         onReceiptReceive?.(receipt);
 
+        // A mined but reverted transaction is a failure, not a success.
+        if (receipt.status === "reverted") {
+          throw new Error(`Transaction reverted: ${receipt.transactionHash}`);
+        }
+
         setIsTransactionPending(false);
         return { hash, receipt };
       } catch (error: any) {
@@ -523,7 +528,12 @@ export default function useRevenueContract({
   );
 
   const approve = useCallback(
-    async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+    async (
+      amount: bigint,
+      gasSettings?: CustomGasSettings,
+      customGasLimit?: bigint,
+      onHashReceive?: (hash: Hash) => void,
+    ) => {
       if (!revenueAddress || !hasStakingToken) {
         throw new Error("Revenue is not deployed on this network");
       }
@@ -535,6 +545,7 @@ export default function useRevenueContract({
         address: stakingTokenERC20,
         gasSettings,
         customGasLimit,
+        onHashReceive,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.APPROVE,
           symbol: stakingTokenSymbol,
@@ -547,7 +558,12 @@ export default function useRevenueContract({
   );
 
   const stake = useCallback(
-    async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+    async (
+      amount: bigint,
+      gasSettings?: CustomGasSettings,
+      customGasLimit?: bigint,
+      onHashReceive?: (hash: Hash) => void,
+    ) => {
       if (!hasStakingToken) {
         throw new Error("Revenue is not deployed on this network");
       }
@@ -557,6 +573,7 @@ export default function useRevenueContract({
         args: [stakingTokenERC20, amount],
         gasSettings,
         customGasLimit,
+        onHashReceive,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.DEPOSIT,
           symbol: stakingTokenSymbol,
@@ -571,7 +588,12 @@ export default function useRevenueContract({
   // ERC-223 staking is two steps: the transfer credits `erc223deposit` through
   // tokenReceived, then stake() consumes that deposit instead of pulling an allowance.
   const stakeERC223 = useCallback(
-    async (amount: bigint, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
+    async (
+      amount: bigint,
+      gasSettings?: CustomGasSettings,
+      customGasLimit?: bigint,
+      onHashReceive?: (hash: Hash) => void,
+    ) => {
       if (!revenueAddress || stakingTokenERC223 === zeroAddress) {
         throw new Error("Revenue is not deployed on this network");
       }
@@ -609,6 +631,7 @@ export default function useRevenueContract({
         functionName: "stake",
         args: [stakingTokenERC223, amount],
         gasSettings,
+        onHashReceive,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.DEPOSIT,
           symbol: stakingTokenSymbol,
@@ -634,12 +657,14 @@ export default function useRevenueContract({
       gasSettings?: CustomGasSettings,
       customGasLimit?: bigint,
       standard: Standard = Standard.ERC20,
+      onHashReceive?: (hash: Hash) => void,
     ) => {
       return executeTransaction({
         functionName: "withdraw",
         args: [tokenAddress, amount],
         gasSettings,
         customGasLimit,
+        onHashReceive,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.WITHDRAW,
           standard,
@@ -658,12 +683,14 @@ export default function useRevenueContract({
       gasSettings?: CustomGasSettings,
       customGasLimit?: bigint,
       standard: Standard = Standard.ERC20,
+      onHashReceive?: (hash: Hash) => void,
     ) => {
       return executeTransaction({
         functionName: "claim",
         args: [tokenAddresses],
         gasSettings,
         customGasLimit,
+        onHashReceive,
         transactionTitle: {
           template: RecentTransactionTitleTemplate.WITHDRAW,
           standard,

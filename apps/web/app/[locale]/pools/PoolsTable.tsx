@@ -19,7 +19,6 @@ import IconButton, {
 } from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
-import { formatFloat } from "@/functions/formatFloat";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import { computePoolTVL } from "@/functions/poolTvl";
 import truncateMiddle from "@/functions/truncateMiddle";
@@ -68,8 +67,37 @@ const PAGE_SIZE = 10;
 // Anything past this keeps the subgraph's own figure; DEX223 is nowhere near the limit.
 const MAX_ONCHAIN_BALANCE_POOLS = 200;
 
+const MISSING_VALUE = "\u2013";
+
 const renderTVL = (tvlUSD: number | undefined) =>
-  tvlUSD === undefined ? "\u2014" : `$${formatNumberKilos(tvlUSD)}`;
+  tvlUSD === undefined ? MISSING_VALUE : `$${formatNumberKilos(tvlUSD)}`;
+
+type PoolDayVolume = { volumeUSD?: string | number; date?: number | string };
+
+const DAY_SECONDS = 86400;
+
+// Most recent day bucket's volume. The query orders poolDayData by date desc.
+const renderVolume1d = (poolDayData: PoolDayVolume[] | undefined) => {
+  if (!Array.isArray(poolDayData)) return MISSING_VALUE;
+  const value = parseFloat(String(poolDayData[0]?.volumeUSD ?? 0));
+  return Number.isFinite(value) ? `$${formatNumberKilos(value)}` : MISSING_VALUE;
+};
+
+// Sum of the day buckets that fall inside the last 7 calendar days (UTC, the subgraph's
+// day boundary). Days without swaps have no bucket, so an empty window is a real $0.
+const renderVolume7d = (poolDayData: PoolDayVolume[] | undefined) => {
+  if (!Array.isArray(poolDayData)) return MISSING_VALUE;
+  const todayStart = Math.floor(Date.now() / 1000 / DAY_SECONDS) * DAY_SECONDS;
+  const windowStart = todayStart - 6 * DAY_SECONDS;
+  let total = 0;
+  for (const day of poolDayData.slice(0, 7)) {
+    if (Number(day?.date) < windowStart) continue;
+    const value = parseFloat(String(day?.volumeUSD ?? 0));
+    if (!Number.isFinite(value)) return MISSING_VALUE;
+    total += value;
+  }
+  return `$${formatNumberKilos(total)}`;
+};
 
 const PoolsTableDesktop = ({
   tableData,
@@ -203,12 +231,12 @@ const PoolsTableDesktop = ({
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
                 >
-                  ${formatNumberKilos(parseFloat(o.poolDayData?.[0]?.volumeUSD) || 0)}
+                  {renderVolume1d(o.poolDayData)}
                 </div>
                 <div
                   className={`h-[56px] cursor-pointer flex justify-end items-center pr-4 rounded-r-4 text-secondary-text group-hocus:bg-tertiary-bg`}
                 >
-                  {/* TODO still no way to get 7 day value */}${formatFloat(0)}
+                  {renderVolume7d(o.poolDayData)}
                 </div>
               </Link>
             );
@@ -273,11 +301,15 @@ const PoolsTableItemMobile = ({
           <div className="flex justify-between gap-x-2 pb-1">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">{t("volume_1d")}</span>
-              <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
+              <span className="text-14 text-secondary-text">
+                {renderVolume1d(pool.poolDayData)}
+              </span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">{t("volume_7d")}</span>
-              <span className="text-14 text-secondary-text">{`$${formatNumberKilos(pool.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
+              <span className="text-14 text-secondary-text">
+                {renderVolume7d(pool.poolDayData)}
+              </span>
             </div>
           </div>
         </div>

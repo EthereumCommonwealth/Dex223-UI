@@ -1,9 +1,9 @@
-import { Metadata } from "next";
 import { PropsWithChildren } from "react";
 
-export const metadata: Metadata = {
-  title: "Swap",
-};
+import { seoFor } from "@/config/seo";
+
+export const generateMetadata = seoFor("swap", "swap");
+
 export default function Layout({ children }: PropsWithChildren) {
   return <>{children}</>;
 }

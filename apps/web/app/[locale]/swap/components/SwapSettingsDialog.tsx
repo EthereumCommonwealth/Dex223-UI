@@ -257,15 +257,15 @@ function SwapSettingsDialogContent({
 
   const deadlineError = useMemo(() => {
     if (customDeadline === "") {
-      return "Deadline cannot be empty";
+      return t("deadline_empty");
     }
     if (+customDeadline < 1) {
-      return "Deadline cannot be lower then 1";
+      return t("deadline_min");
     }
     if (+customDeadline > 4000) {
-      return "Maximum deadline value is 4000 minutes";
+      return t("deadline_max");
     }
-  }, [customDeadline]);
+  }, [customDeadline, t]);
 
   const isButtonDisabled = useMemo(() => {
     return (

@@ -18,6 +18,7 @@ import PoolsTable from "./PoolsTable";
 
 export default function PoolsPage() {
   const [isOpenedTokenPick, setIsOpenedTokenPick] = useState(false);
+  const tSeo = useTranslations("Seo");
   const t = useTranslations("Liquidity");
 
   const router = useRouter();
@@ -61,6 +62,7 @@ export default function PoolsPage() {
 
   return (
     <Container>
+      <h1 className="sr-only">{tSeo("pools.title")}</h1>
       <div className="py-4 lg:py-10 flex flex-col items-center">
         <div className="flex flex-col lg:flex-row w-full justify-between items-center mb-6 gap-2">
           <div

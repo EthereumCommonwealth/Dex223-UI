@@ -7,12 +7,26 @@ import { IS_SAFE_SEND_LISTED } from "@/app/[locale]/send/config";
 import NavigationItem, { NavigationItemWithSubmenu } from "@/components/atoms/NavigationItem";
 import Popover from "@/components/atoms/Popover";
 import Svg from "@/components/atoms/Svg";
-import { MobileLink } from "@/components/common/MobileMenu";
+import { IS_REWARDS_ENABLED, isRouteActive, MobileLink } from "@/components/common/MobileMenu";
 import { useFeedbackDialogStore } from "@/components/dialogs/stores/useFeedbackDialogStore";
 import { IconName } from "@/config/types/IconName";
 import { isBorrowLendComingSoon } from "@/hooks/useIsMarginAvailable";
 import { usePathname } from "@/i18n/routing";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
+
+// Every route the "More" menu links to, so its trigger lights up on any of them.
+const MORE_MENU_ROUTES = [
+  "/send",
+  "/pay",
+  "/converter",
+  "/revenue",
+  "/governance",
+  "/create-token",
+  "/blog",
+  "/statistics",
+  "/markets",
+  "/guidelines",
+];
 
 function MoreSectionLabel({ children }: { children: ReactNode }) {
   return (
@@ -122,7 +136,7 @@ const menuItems: Array<
         /> */}
       </div>
     ),
-    activeFlags: ["/swap", "/margin-trading", "/buy-crypto"],
+    activeFlags: ["/swap", "/margin-swap", "/buy-crypto"],
   },
   {
     label: "pools",
@@ -137,11 +151,16 @@ const menuItems: Array<
     href: "/portfolio",
   },
   // Served by the DEX223 Rewards app on this domain (next.config.js rewrites).
-  {
-    label: "rewards",
-    href: "/rewards",
-    plain: true,
-  },
+  // Only listed when NEXT_PUBLIC_REWARDS_ENABLED === "true"; see IS_REWARDS_ENABLED.
+  ...(IS_REWARDS_ENABLED
+    ? [
+        {
+          label: "rewards",
+          href: "/rewards",
+          plain: true,
+        },
+      ]
+    : []),
   {
     label: "token_listing",
     href: "/token-listing",
@@ -200,16 +219,7 @@ function NavigationMoreDropdown() {
   } = useManageTokensDialogStore();
 
   const active = useMemo(() => {
-    return (
-      pathname.includes("/send") ||
-      pathname.includes("/pay") ||
-      pathname.includes("/converter") ||
-      pathname.includes("/create-token") ||
-      pathname.includes("/blog") ||
-      pathname.includes("/statistics") ||
-      pathname.includes("/markets") ||
-      pathname.includes("/guidelines")
-    );
+    return MORE_MENU_ROUTES.some((route) => isRouteActive(pathname, route));
   }, [pathname]);
 
   const isSmallScreen = useMediaQuery({ query: "(max-width: 1280px)" });
@@ -411,7 +421,7 @@ export default function Navigation() {
               <NavigationItemWithSubmenu
                 title={menuItem.label ? t(menuItem.label) : ""}
                 submenu={menuItem.submenu}
-                active={pathname.includes(menuItem.activeFlags[0])}
+                active={menuItem.activeFlags.some((flag) => pathname.startsWith(flag))}
               />
             </li>
           );
@@ -426,7 +436,7 @@ export default function Navigation() {
                 "plain" in menuItem && menuItem.plain ? `${menuItem.href}/${locale}` : menuItem.href
               }
               plain={"plain" in menuItem && menuItem.plain}
-              active={pathname.includes(menuItem.href)}
+              active={isRouteActive(pathname, menuItem.href)}
             />
           </li>
         );

@@ -48,7 +48,7 @@ export const PoolsDataDocument = gql`
         addressERC223
         totalValueLocked
       }
-      poolDayData(first: 1) {
+      poolDayData(first: 7, orderBy: date, orderDirection: desc) {
         volumeUSD
         date
       }
@@ -86,7 +86,7 @@ export const PoolDataDocument = gql`
         totalValueLocked
         decimals
       }
-      poolDayData(first: 1) {
+      poolDayData(first: 1, orderBy: date, orderDirection: desc) {
         date
         feesUSD
         volumeUSD

@@ -86,7 +86,10 @@ const useRemoveLiquidityParams = () => {
   }, [accountAddress, chainId, deadline, percentage, tokenId, position]);
 };
 
-const COLLECT_FEES_DEFAULT_GAS_LIMIT = BigInt(200000);
+// Shown when estimation fails (no wallet, RPC error). decreaseLiquidity on this position
+// manager can exceed 200k, so this matches the 250k collect-fees fallback in useCollectFees.
+// Submission re-estimates gas, so this only drives the displayed fee and gas field.
+const REMOVE_LIQUIDITY_DEFAULT_GAS_LIMIT = BigInt(250000);
 export function useRemoveLiquidityEstimatedGas() {
   const { address } = useAccount();
   const { removeLiquidityParams } = useRemoveLiquidityParams();
@@ -96,7 +99,7 @@ export function useRemoveLiquidityEstimatedGas() {
   useDeepEffect(() => {
     IIFE(async () => {
       if (!removeLiquidityParams || !address) {
-        setEstimatedGas(COLLECT_FEES_DEFAULT_GAS_LIMIT);
+        setEstimatedGas(REMOVE_LIQUIDITY_DEFAULT_GAS_LIMIT);
         console.log("Can't estimate gas");
         return;
       }
@@ -106,11 +109,11 @@ export function useRemoveLiquidityEstimatedGas() {
         if (estimated) {
           setEstimatedGas(estimated + BigInt(10000));
         } else {
-          setEstimatedGas(COLLECT_FEES_DEFAULT_GAS_LIMIT);
+          setEstimatedGas(REMOVE_LIQUIDITY_DEFAULT_GAS_LIMIT);
         }
       } catch (e) {
         console.log(e);
-        setEstimatedGas(COLLECT_FEES_DEFAULT_GAS_LIMIT);
+        setEstimatedGas(REMOVE_LIQUIDITY_DEFAULT_GAS_LIMIT);
       }
     });
   }, [publicClient, address, removeLiquidityParams]);

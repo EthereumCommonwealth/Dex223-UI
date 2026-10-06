@@ -34,6 +34,8 @@ interface StakeDialogStore {
 
   // Actions
   openDialog: (type: "stake" | "unstake", amount: string, standard: "ERC-20" | "ERC-223") => void;
+  // Brings the dialog back without resetting an in-flight flow (status, hashes, amount).
+  reopenDialog: () => void;
   closeDialog: () => void;
   setStatus: (status: StakeStatus) => void;
   setErrorType: (errorType: StakeError) => void;
@@ -65,6 +67,8 @@ export const useStakeDialogStore = create<StakeDialogStore>((set) => ({
       stakeHash: undefined,
       errorMessage: undefined,
     }),
+
+  reopenDialog: () => set({ isOpen: true }),
 
   closeDialog: () =>
     set((state) => {

@@ -337,6 +337,7 @@ export const PriceRange = ({
               className="placeholder:text-tertiary-text outline-0 text-16 w-full rounded-3 bg-secondary-bg px-5 py-3 border border-transparent hocus:shadow hocus:shadow-green/60 focus:border-green focus:shadow focus:shadow-green/60"
               placeholder="0"
               type="text"
+              aria-label={t("starting_price")}
               value={startPriceTypedValue}
               onChange={(e) => {
                 const value = e.target.value;
