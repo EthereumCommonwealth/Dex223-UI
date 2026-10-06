@@ -130,7 +130,11 @@
     "tracker_hide": "Ocultar",
     "tracker_reopen": "Abrir detalhes da troca",
     "tracker_failed_details": "Ver o que deu errado",
-    "tracker_explorer": "Ver no explorador"
+    "tracker_explorer": "Ver no explorador",
+    "swap_modes": "Modos de troca",
+    "convert_tab": "Converter",
+    "token_standard": "Padrão do token",
+    "native_currency_tooltip": "Moeda nativa da rede que você está usando (por exemplo, ETH na Ethereum). Na maioria das redes, as taxas de gas são pagas na moeda nativa."
   },
   "Wallet": {
     "my_wallet": "A minha carteira",

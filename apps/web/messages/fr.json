@@ -130,7 +130,11 @@
     "tracker_hide": "Masquer",
     "tracker_reopen": "Ouvrir les détails de l'échange",
     "tracker_failed_details": "Voir ce qui n'a pas fonctionné",
-    "tracker_explorer": "Voir dans l'explorateur"
+    "tracker_explorer": "Voir dans l'explorateur",
+    "swap_modes": "Modes d'échange",
+    "convert_tab": "Convertir",
+    "token_standard": "Standard du jeton",
+    "native_currency_tooltip": "Monnaie native du réseau utilisé (par ex. ETH sur Ethereum). Sur la plupart des réseaux, les frais de gas sont payés dans la monnaie native."
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",

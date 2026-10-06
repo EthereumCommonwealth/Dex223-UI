@@ -130,7 +130,11 @@
     "tracker_hide": "Скрыть",
     "tracker_reopen": "Открыть детали обмена",
     "tracker_failed_details": "Узнать, что пошло не так",
-    "tracker_explorer": "Открыть в обозревателе"
+    "tracker_explorer": "Открыть в обозревателе",
+    "swap_modes": "Режимы обмена",
+    "convert_tab": "Конвертировать",
+    "token_standard": "Стандарт токена",
+    "native_currency_tooltip": "Нативная валюта используемой сети (например, ETH в Ethereum). В большинстве сетей комиссия за газ оплачивается в нативной валюте."
   },
   "Wallet": {
     "my_wallet": "Мой кошелёк",
