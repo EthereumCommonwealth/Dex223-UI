@@ -15,7 +15,7 @@ import { Currency } from "@/sdk_bi/entities/currency";
 import { Bar, Resolution, RESOLUTIONS, Trade } from "./datafeed/types";
 import { compact, formatPercent, formatPrice } from "./format";
 import { useChartMarket } from "./hooks/useChartMarket";
-import { useMarketTrades, usePairStats } from "./hooks/useMarketData";
+import { useMarketTrades, usePairStats, useQuoteUsdPrice } from "./hooks/useMarketData";
 import MarketTrades from "./MarketTrades";
 import ProChart from "./ProChart";
 import { useTradingChartStore } from "./store";
@@ -52,6 +52,12 @@ export default function TradingChart({
   const { resolution, setResolution } = useTradingChartStore();
 
   const { data: stats } = usePairStats(market);
+  // Dollars per quote token, so a pair quoted in WETH still headlines its USD price.
+  const quoteUsd = useQuoteUsdPrice(market);
+  const inUsd = (value: number | null | undefined) =>
+    quoteUsd !== null && value !== null && value !== undefined && Number.isFinite(value)
+      ? `$${formatPrice(value * quoteUsd)}`
+      : formatPrice(value);
   const { data: myTrades } = useMarketTrades(market, { origin: address ?? "", limit: 200 });
 
   const [lastBar, setLastBar] = useState<Bar | null>(null);
@@ -197,16 +203,27 @@ export default function TradingChart({
                       : "text-primary-text",
                 )}
               >
-                {formatPrice(price)}
+                {inUsd(price)}
               </span>
+              {quoteUsd !== null && quoteUsd !== 1 && price !== null && (
+                <span className="text-14 text-tertiary-text tabular-nums whitespace-nowrap">
+                  {formatPrice(price)} {quote.symbol}
+                </span>
+              )}
               <ChangePill value={change} />
             </div>
             <dl className="flex flex-wrap gap-y-2 text-12 -mx-3 md:ml-auto">
-              <Stat label={t("high_24h")} value={formatPrice(stats?.high_24h)} />
-              <Stat label={t("low_24h")} value={formatPrice(stats?.low_24h)} />
+              <Stat label={t("high_24h")} value={inUsd(stats?.high_24h)} />
+              <Stat label={t("low_24h")} value={inUsd(stats?.low_24h)} />
               <Stat
                 label={t("volume_24h")}
-                value={stats ? `${compact(stats.volume1_24h)} ${quote.symbol ?? ""}` : "–"}
+                value={
+                  !stats
+                    ? "–"
+                    : quoteUsd !== null
+                      ? `$${compact(stats.volume1_24h * quoteUsd)}`
+                      : `${compact(stats.volume1_24h)} ${quote.symbol ?? ""}`
+                }
               />
               <Stat label={t("trades_24h")} value={stats ? String(stats.trades_24h) : "–"} />
             </dl>
