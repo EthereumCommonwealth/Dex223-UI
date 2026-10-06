@@ -16,6 +16,7 @@ import { useRevenueStore } from "@/app/[locale]/revenue/stores/useRevenueStore";
 import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { TokenListId } from "@/db/db";
 import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
 import { formatFloat } from "@/functions/formatFloat";
@@ -83,11 +84,13 @@ export function Revenue() {
   );
   const {
     openDialog,
+    reopenDialog: reopenStakeDialog,
     status: stakeStatus,
     isOpen: isStakeDialogOpen,
     dialogType,
   } = useStakeDialogStore();
   const { switchChain } = useSwitchChain();
+  const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
 
   const allAvailableTokens = useTokens();
   const usdPrices = useUSDPriceStore((state) => state.prices);
@@ -206,10 +209,18 @@ export function Revenue() {
 
   const handleStakeClick = () => {
     if (isStakeActionLocked) return;
+    if (!address) {
+      setWalletConnectOpened(true);
+      return;
+    }
     openDialog("stake", "", "ERC-20");
   };
 
   const handleUnstakeClick = () => {
+    if (!address) {
+      setWalletConnectOpened(true);
+      return;
+    }
     openDialog("unstake", "", "ERC-20");
   };
 
@@ -521,7 +532,7 @@ export function Revenue() {
             <Button
               size={ButtonSize.EXTRA_SMALL}
               colorScheme={ButtonColor.LIGHT_GREEN}
-              onClick={() => {}}
+              onClick={reopenStakeDialog}
             >
               {t("details")}
             </Button>

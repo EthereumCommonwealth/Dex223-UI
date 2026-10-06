@@ -18,7 +18,7 @@ import useMultisigContract from "../../hooks/useMultisigContract";
 import useMultisigTransactions, {
   TransactionDisplayData,
 } from "../../hooks/useMultisigTransactions";
-import { TransactionInfoCard } from "../shared";
+import { parseTxId, TransactionInfoCard } from "../shared";
 import {
   useMultisigGasLimitStore,
   useMultisigGasModeStore,
@@ -85,11 +85,18 @@ export default function VoteExisting() {
         return;
       }
 
+      if (parseTxId(txId) === null) {
+        // Non-numeric input cannot be an id; show the not-found state instead of throwing.
+        setError("Transaction not found");
+        setCurrentTransaction(null);
+        return;
+      }
+
       setLoading(true);
       setError(null);
 
       try {
-        const tx = await loadTransaction(txId);
+        const tx = await loadTransaction(txId.trim());
         if (tx) {
           setCurrentTransaction(tx);
         } else {
@@ -107,10 +114,11 @@ export default function VoteExisting() {
   );
 
   const handleApproveTransaction = useCallback(async () => {
-    if (!transactionId || !currentTransaction) return;
+    const txId = parseTxId(transactionId);
+    if (txId === null || !currentTransaction) return;
 
     try {
-      await approveTransaction(BigInt(transactionId));
+      await approveTransaction(txId);
       await loadTransactionData(transactionId);
     } catch (error) {
       console.error(error);
@@ -118,10 +126,11 @@ export default function VoteExisting() {
   }, [transactionId, currentTransaction, approveTransaction, loadTransactionData]);
 
   const handleRejectTransaction = useCallback(async () => {
-    if (!transactionId || !currentTransaction) return;
+    const txId = parseTxId(transactionId);
+    if (txId === null || !currentTransaction) return;
 
     try {
-      await declineTransaction(BigInt(transactionId));
+      await declineTransaction(txId);
       await loadTransactionData(transactionId);
     } catch (error) {
       console.error(error);
@@ -129,9 +138,11 @@ export default function VoteExisting() {
   }, [transactionId, currentTransaction, declineTransaction, loadTransactionData]);
 
   const handleExecuteTransaction = useCallback(async () => {
-    if (!transactionId || !currentTransaction) return;
+    const txId = parseTxId(transactionId);
+    if (txId === null || !currentTransaction) return;
+
     try {
-      await executeTransaction(BigInt(transactionId));
+      await executeTransaction(txId);
       await loadTransactionData(transactionId);
     } catch (error) {
       console.error(error);
@@ -139,8 +150,9 @@ export default function VoteExisting() {
   }, [transactionId, currentTransaction, executeTransaction, loadTransactionData]);
 
   const generateApproveData = useCallback(() => {
-    if (!transactionId) return "";
-    return generateTransactionData("approveTx", [BigInt(transactionId)]);
+    const txId = parseTxId(transactionId);
+    if (txId === null) return "";
+    return generateTransactionData("approveTx", [txId]);
   }, [transactionId, generateTransactionData]);
 
   const debouncedTransactionId = useDebounce(transactionId, 500);

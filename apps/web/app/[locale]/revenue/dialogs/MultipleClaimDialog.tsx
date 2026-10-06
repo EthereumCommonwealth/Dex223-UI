@@ -15,6 +15,7 @@ import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
+import { useTransactionSpeedUpDialogStore } from "@/components/dialogs/stores/useTransactionSpeedUpDialogStore";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
@@ -28,6 +29,7 @@ import {
   RecentTransactionTitleTemplate,
 } from "@/stores/useRecentTransactionsStore";
 
+import useRecentTransactionByHash from "../hooks/useRecentTransactionByHash";
 import useRevenueContract from "../hooks/useRevenueContract";
 import { useClaimDialogStore } from "../stores/useClaimDialogStore";
 import {
@@ -44,6 +46,8 @@ const MultipleClaimDialog = () => {
   const chainId = useCurrentChainId();
   const { openConfirmInWalletAlert, closeConfirmInWalletAlert } = useConfirmInWalletAlertStore();
   const { claim, refetchUserData, canUnstake, unstakeCountdown } = useRevenueContract();
+  const claimRecentTransaction = useRecentTransactionByHash(data?.claimTransactionHash);
+  const { handleSpeedUp } = useTransactionSpeedUpDialogStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpenedFee, setIsOpenedFee] = useState(false);
@@ -175,9 +179,11 @@ const MultipleClaimDialog = () => {
         gasPriceSettings,
         customGasLimit || estimatedGas,
         Standard.ERC223,
+        (hash) => {
+          setClaimTransactionHash(hash);
+          setState("executing-claim");
+        },
       );
-
-      setState("executing-claim");
 
       if (claimResult?.hash) {
         setClaimTransactionHash(claimResult.hash);
@@ -405,15 +411,19 @@ const MultipleClaimDialog = () => {
           </span>
         </div>
         <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
-          <Button
-            size={ButtonSize.EXTRA_SMALL}
-            colorScheme={ButtonColor.LIGHT_GREEN}
-            className="max-md:text-10 max-md:px-2 max-md:py-1"
-          >
-            Speed up
-          </Button>
+          {claimRecentTransaction && (
+            <Button
+              size={ButtonSize.EXTRA_SMALL}
+              colorScheme={ButtonColor.LIGHT_GREEN}
+              className="max-md:text-10 max-md:px-2 max-md:py-1"
+              onClick={() => handleSpeedUp(claimRecentTransaction)}
+            >
+              {tLiq("speed_up")}
+            </Button>
+          )}
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={
               data?.claimTransactionHash
                 ? getExplorerLink(ExplorerLinkType.TRANSACTION, data.claimTransactionHash, chainId)
@@ -462,6 +472,7 @@ const MultipleClaimDialog = () => {
         <div className="flex items-center gap-2 flex-shrink-0">
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={
               data?.claimTransactionHash
                 ? getExplorerLink(ExplorerLinkType.TRANSACTION, data.claimTransactionHash, chainId)

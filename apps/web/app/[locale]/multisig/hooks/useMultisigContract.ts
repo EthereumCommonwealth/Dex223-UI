@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Address, encodeFunctionData, Log } from "viem";
+import { Address, encodeFunctionData, Log, parseEventLogs } from "viem";
 import { useAccount, usePublicClient, useWalletClient, useWatchContractEvent } from "wagmi";
 
 import { MULTISIG_ABI } from "@/config/abis/Multisig";
@@ -267,6 +267,7 @@ export default function useMultisigContract() {
       notificationTemplate: RecentTransactionTitleTemplate;
     }) => {
       openDialog("sending", { transactionId });
+      let revertedHash: string | undefined;
 
       try {
         setSendingTransaction(true);
@@ -286,15 +287,59 @@ export default function useMultisigContract() {
           canClose: true,
         });
 
-        await publicClient?.waitForTransactionReceipt({ hash });
+        if (!publicClient) {
+          throw new Error("No public client");
+        }
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        setSendingTransaction(false);
 
-        // setSendingTransaction(false);
-        // updateStatus("success", {
-        //   transactionId,
-        //   transactionHash: hash,
-        //   explorerUrl,
-        //   canClose: true,
-        // });
+        // The TransactionProposed watcher may already have settled this dialog, or moved it on
+        // to an auto-execute. Only settle it here if it still shows this transaction.
+        const isDialogOnThisTx = () =>
+          useTransactionSendDialogStore.getState().transactionHash === hash;
+
+        if (receipt.status === "reverted") {
+          if (isDialogOnThisTx()) {
+            updateStatus("failed", {
+              transactionId,
+              transactionHash: hash,
+              explorerUrl,
+              canClose: true,
+            });
+          }
+          addNotification(
+            {
+              template: notificationTemplate as any,
+              chainId: currentChainId as DexChainId,
+              hash,
+            },
+            RecentTransactionStatus.ERROR,
+          );
+          revertedHash = hash;
+          throw new Error(`Transaction reverted: ${hash}`);
+        }
+
+        if (isDialogOnThisTx()) {
+          // Every action goes through proposeTx; show the id the contract assigned when the
+          // receipt carries it, as the event watcher would.
+          let settledId = transactionId;
+          try {
+            const [proposed] = parseEventLogs({
+              abi: MULTISIG_ABI as any,
+              logs: receipt.logs,
+              eventName: "TransactionProposed",
+            }) as any[];
+            if (proposed?.args?.txId !== undefined) settledId = proposed.args.txId.toString();
+          } catch {
+            // keep the caller's label
+          }
+          updateStatus("success", {
+            transactionId: settledId,
+            transactionHash: hash,
+            explorerUrl,
+            canClose: true,
+          });
+        }
 
         addNotification(
           {
@@ -308,10 +353,13 @@ export default function useMultisigContract() {
         return hash;
       } catch (error) {
         setSendingTransaction(false);
-        updateStatus("error", {
-          transactionId,
-          errorMessage: error instanceof Error ? error.message : "Unknown error",
-        });
+        // A reverted receipt already put the dialog in its "failed" state.
+        if (!revertedHash) {
+          updateStatus("error", {
+            transactionId,
+            errorMessage: error instanceof Error ? error.message : "Unknown error",
+          });
+        }
         throw error;
       }
     },

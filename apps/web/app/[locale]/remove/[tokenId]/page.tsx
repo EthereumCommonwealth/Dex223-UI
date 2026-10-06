@@ -102,7 +102,10 @@ export default function DecreaseLiquidityPage({
   const tWallet = useTranslations("Wallet");
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
 
-  const { position: positionInfo } = usePositionFromTokenId(tokenId, false);
+  const { position: positionInfo, loading: positionLoading } = usePositionFromTokenId(
+    tokenId,
+    false,
+  );
   const position = usePositionFromPositionInfo(positionInfo);
   const chainId = useCurrentChainId();
   // const [value, setValue] = useState(25);
@@ -220,7 +223,21 @@ export default function DecreaseLiquidityPage({
     setTokenId(tokenId);
   }, [tokenId, setTokenId, reset]);
 
-  if (!tokenA || !tokenB) return <div>{t("missing_tokens")}</div>;
+  if (!tokenA || !tokenB) {
+    // Still reading the position (or building it from its pool and tokens): not an error yet.
+    if (positionLoading || (positionInfo && !position)) {
+      return (
+        <Container>
+          <div className="py-4 lg:py-10 lg:w-[600px] mx-auto">
+            <div className="min-h-[340px] bg-primary-bg flex items-center justify-center w-full rounded-5">
+              <Preloader size={50} type="awaiting" />
+            </div>
+          </div>
+        </Container>
+      );
+    }
+    return <div>{t("missing_tokens")}</div>;
+  }
 
   return (
     <Container>

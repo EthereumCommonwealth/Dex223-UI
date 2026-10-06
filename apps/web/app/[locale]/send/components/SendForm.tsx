@@ -18,7 +18,6 @@ import {
   encodeInvoice,
   erc20Abi,
   erc223Abi,
-  PAYMENT_RECEIVER,
   SAFE_SEND_ROUTER,
   SAFE_SEND_TOKENS,
   safeSendRouterAbi,
@@ -44,7 +43,8 @@ export default function SendForm({ mode }: { mode: Mode }) {
 
   const [tokenKey, setTokenKey] = useState(preset?.index ?? 0);
   const [hold, setHold] = useState<Hold>("223");
-  const [to, setTo] = useState(mode === "pay" ? params.get("to") || PAYMENT_RECEIVER : "");
+  // Pay mode only uses the merchant from the link; a missing ?to stays empty for the user to fill.
+  const [to, setTo] = useState(mode === "pay" ? params.get("to") || "" : "");
   const [amount, setAmount] = useState(params.get("amount") || "");
   const [invoice, setInvoice] = useState(params.get("invoice") || "");
   const [hash, setHash] = useState<Hex | undefined>();
@@ -151,6 +151,11 @@ export default function SendForm({ mode }: { mode: Mode }) {
   async function onSubmit(event: React.FormEvent) {
     event.preventDefault();
     setLocalError(null);
+    // Invoice mode only builds a link; Enter copies it (validated) and never touches the wallet.
+    if (mode === "invoice") {
+      await copyLink();
+      return;
+    }
     if (!isConnected || !address || !walletClient) {
       setLocalError(t("connect_first"));
       return;
@@ -159,15 +164,14 @@ export default function SendForm({ mode }: { mode: Mode }) {
       setLocalError(t("sepolia_only"));
       return;
     }
-    if (mode !== "invoice" && !isAddress(to)) {
+    if (!isAddress(to)) {
       setLocalError(t("bad_address"));
       return;
     }
-    if (mode !== "invoice" && (parsed == null || parsed <= 0n)) {
+    if (parsed == null || parsed <= 0n) {
       setLocalError(t("bad_amount"));
       return;
     }
-    if (mode === "invoice") return;
     if (heldBalance !== undefined && parsed! > heldBalance) {
       setLocalError(t("insufficient"));
       return;
@@ -225,9 +229,23 @@ export default function SendForm({ mode }: { mode: Mode }) {
   }
 
   async function copyLink() {
+    setLocalError(null);
+    if (!isAddress(to)) {
+      setLocalError(t("bad_address"));
+      return;
+    }
+    if (parsed == null || parsed <= 0n) {
+      setLocalError(t("bad_amount"));
+      return;
+    }
     const origin = window.location.origin;
     const locale = window.location.pathname.split("/")[1] || "en";
-    await navigator.clipboard.writeText(`${origin}/${locale}${payLink}`);
+    try {
+      await navigator.clipboard.writeText(`${origin}/${locale}${payLink}`);
+    } catch {
+      setLocalError(t("copy_failed"));
+      return;
+    }
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   }

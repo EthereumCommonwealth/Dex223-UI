@@ -89,9 +89,27 @@ export default function MarketsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
-          <MoversCard title={t("top_gainers")} coins={gainers.data?.coins} kind="change" />
-          <MoversCard title={t("top_losers")} coins={losers.data?.coins} kind="change" />
-          <MoversCard title={t("most_traded")} coins={traded.data?.coins} kind="volume" />
+          <MoversCard
+            title={t("top_gainers")}
+            coins={gainers.data?.coins}
+            isError={gainers.isError}
+            errorText={t("unavailable")}
+            kind="change"
+          />
+          <MoversCard
+            title={t("top_losers")}
+            coins={losers.data?.coins}
+            isError={losers.isError}
+            errorText={t("unavailable")}
+            kind="change"
+          />
+          <MoversCard
+            title={t("most_traded")}
+            coins={traded.data?.coins}
+            isError={traded.isError}
+            errorText={t("unavailable")}
+            kind="volume"
+          />
         </div>
 
         <div className="bg-primary-bg rounded-5 overflow-hidden">
@@ -208,12 +226,26 @@ export default function MarketsPage() {
 function MoversCard({
   title,
   coins,
+  isError = false,
+  errorText,
   kind,
 }: {
   title: string;
   coins: Coin[] | undefined;
+  isError?: boolean;
+  errorText: string;
   kind: "change" | "volume";
 }) {
+  // A failed query has no coins and never will; show the message instead of pulsing rows.
+  if (isError && !coins) {
+    return (
+      <div className="bg-primary-bg rounded-5 p-4">
+        <h2 className="text-14 text-secondary-text mb-2">{title}</h2>
+        <p className="text-14 text-secondary-text py-2">{errorText}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-primary-bg rounded-5 p-4">
       <h2 className="text-14 text-secondary-text mb-2">{title}</h2>
