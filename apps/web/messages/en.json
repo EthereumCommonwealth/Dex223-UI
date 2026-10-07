@@ -426,11 +426,7 @@
     "tracker_hide": "Hide",
     "tracker_reopen": "Open swap details",
     "tracker_failed_details": "See what went wrong",
-    "tracker_explorer": "View on explorer",
-    "swap_modes": "Swap modes",
-    "convert_tab": "Convert",
-    "token_standard": "Token standard",
-    "native_currency_tooltip": "Native currency of the network you are using (e.g. ETH on Ethereum). On most networks gas fees are paid with native currency."
+    "tracker_explorer": "View on explorer"
   },
   "Liquidity": {
     "set_default": "Set default",

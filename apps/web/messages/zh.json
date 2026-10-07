@@ -130,11 +130,7 @@
     "tracker_hide": "隐藏",
     "tracker_reopen": "打开兑换详情",
     "tracker_failed_details": "查看失败原因",
-    "tracker_explorer": "在浏览器中查看",
-    "swap_modes": "兑换模式",
-    "convert_tab": "转换",
-    "token_standard": "代币标准",
-    "native_currency_tooltip": "您所用网络的原生货币（例如以太坊上的 ETH）。在大多数网络上，Gas 费用以原生货币支付。"
+    "tracker_explorer": "在浏览器中查看"
   },
   "Wallet": {
     "my_wallet": "我的钱包",

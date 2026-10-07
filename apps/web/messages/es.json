@@ -130,11 +130,7 @@
     "tracker_hide": "Ocultar",
     "tracker_reopen": "Abrir detalles del intercambio",
     "tracker_failed_details": "Ver qué salió mal",
-    "tracker_explorer": "Ver en el explorador",
-    "swap_modes": "Modos de intercambio",
-    "convert_tab": "Convertir",
-    "token_standard": "Estándar del token",
-    "native_currency_tooltip": "Moneda nativa de la red que usas (p. ej., ETH en Ethereum). En la mayoría de las redes, las comisiones de gas se pagan con la moneda nativa."
+    "tracker_explorer": "Ver en el explorador"
   },
   "Wallet": {
     "my_wallet": "Mi monedero",
