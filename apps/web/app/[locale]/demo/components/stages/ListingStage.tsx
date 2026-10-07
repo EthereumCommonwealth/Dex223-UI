@@ -104,7 +104,8 @@ export default function ListingStage(props: StageProps) {
             [tf("your_collateral"), tf("collateral_value")],
             [tf("pnl"), "+42.10 USDT", "text-green"],
             [tf("accrued"), "1.30 USDT"],
-            [tf("liquidation"), tf("liquidation_value"), "text-red-light"],
+            [tf("expected_balance"), "5,001.30 USDT"],
+            [tf("health"), "1.51", "text-green"],
           ]}
         />
       </DemoCard>
@@ -177,7 +178,7 @@ export default function ListingStage(props: StageProps) {
             rows={[
               [tf("your_collateral"), tf("collateral_value")],
               [tf("position_size"), "~7,500 USDT"],
-              [tf("liquidation"), tf("liquidation_value"), "text-red-light"],
+              [tf("expected_at_term", { days: 30 }), "5,400 USDT"],
             ]}
           />
           <DemoAction
