@@ -24,6 +24,7 @@ import {
   useSwapStatusStore,
 } from "@/app/[locale]/swap/stores/useSwapStatusStore";
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
+import { useSwapTrackerStore } from "@/app/[locale]/swap/stores/useSwapTrackerStore";
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import EmptyStateIcon from "@/components/atoms/EmptyStateIcon";
@@ -568,6 +569,31 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
 
   const isConversion = useMemo(() => tokenB && tokenA?.equals(tokenB), [tokenA, tokenB]);
 
+  const { snapshot: trackedSwap, show: showTracker, hide: hideTracker } = useSwapTrackerStore();
+
+  // Reopened from the swap form's "Review swap" bar: the full dialog replaces the tracker.
+  useEffect(() => {
+    if (isOpen && trackedSwap) hideTracker();
+  }, [isOpen, trackedSwap, hideTracker]);
+  const isInFlight = isPendingApprove || isLoadingApprove || isPendingSwap || isLoadingSwap;
+
+  // Closing mid-swap no longer means watching a spinner: the swap keeps running and a
+  // compact tracker takes over in the corner until it settles.
+  const closeDialog = () => {
+    if (isInFlight && tokenA && tokenB && !isConversion) {
+      showTracker({
+        symbolA: tokenA.symbol ?? "",
+        symbolB: tokenB.symbol ?? "",
+        logoA: tokenA.logoURI,
+        logoB: tokenB.logoURI,
+        amountIn: typedValue,
+        amountOut: output,
+        withApprove: tokenA.isToken && tokenAStandard === Standard.ERC20,
+      });
+    }
+    setIsOpen(false);
+  };
+
   useEffect(() => {
     if (isSuccessSwap && !isOpen && !isConversion) {
       resetAmounts();
@@ -575,7 +601,13 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
   }, [isSuccessSwap, resetAmounts, isOpen, isConversion]);
 
   useEffect(() => {
-    if ((isSuccessSwap || isRevertedSwap || isRevertedApprove) && !isOpen && !isConversion) {
+    // While the tracker shows this swap it owns the reset, so its result stays visible.
+    if (
+      (isSuccessSwap || isRevertedSwap || isRevertedApprove) &&
+      !isOpen &&
+      !isConversion &&
+      !trackedSwap
+    ) {
       setTimeout(() => {
         setSwapStatus(SwapStatus.INITIAL);
       }, 400);
@@ -588,6 +620,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
     isSuccessSwap,
     setSwapStatus,
     swapStatus,
+    trackedSwap,
   ]);
 
   const [isEditApproveActive, setEditApproveActive] = useState(false);
@@ -613,16 +646,15 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
     <DrawerDialog
       isOpen={isOpen}
       setIsOpen={(isOpen) => {
-        setIsOpen(isOpen);
+        if (isOpen) {
+          setIsOpen(true);
+        } else {
+          closeDialog();
+        }
       }}
     >
       <div className="bg-primary-bg rounded-5 w-full sm:w-[600px]">
-        <DialogHeader
-          onClose={() => {
-            setIsOpen(false);
-          }}
-          title={t("review_swap")}
-        />
+        <DialogHeader onClose={closeDialog} title={t("review_swap")} />
         <div className="card-spacing">
           {!isSettledSwap && !isRevertedApprove && (
             <div className="flex flex-col gap-3">
