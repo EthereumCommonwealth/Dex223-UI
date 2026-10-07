@@ -1124,7 +1124,7 @@
     "duration_second": "{count, plural, =0 {# secondes} one {# seconde} other {# secondes}}",
     "tx_insufficient_funds": "Fonds insuffisants pour payer cette transaction et ses frais de réseau.",
     "tx_reverted": "La transaction a été annulée, rien n’a changé. Les frais de réseau sont tout de même prélevés.",
-    "contract_holds_only": "Le contrat Revenue ne détient que {amount} D223 en {standard}. Retirez le reste dans l’autre standard.",
+    "staked_in_version_only": "Vous avez staké {amount} D223 en {standard}. Retirez le reste dans l’autre standard.",
     "gas_too_low_hint": "La transaction a échoué car la limite de gaz est trop basse. Ajustez les réglages de votre portefeuille.",
     "still_have_issues_discord": "Si le problème persiste, posez votre question sur notre <discord>Discord</discord>.",
     "save": "Enregistrer"
