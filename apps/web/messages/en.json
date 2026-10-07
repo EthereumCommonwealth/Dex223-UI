@@ -1068,7 +1068,7 @@
     "duration_second": "{count, plural, one {# second} other {# seconds}}",
     "tx_insufficient_funds": "Not enough funds to pay for this transaction and its network fee.",
     "tx_reverted": "The transaction was reverted, so nothing changed. The network fee is still charged.",
-    "contract_holds_only": "The Revenue contract holds only {amount} D223 as {standard}. Unstake the rest in the other standard.",
+    "staked_in_version_only": "You staked {amount} D223 as {standard}. Unstake the rest in the other standard.",
     "gas_too_low_hint": "Transaction failed because the gas limit is too low. Adjust your wallet settings.",
     "still_have_issues_discord": "If you still have issues, ask in our <discord>Discord</discord>.",
     "save": "Save"

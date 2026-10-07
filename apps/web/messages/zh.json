@@ -1124,7 +1124,7 @@
     "duration_second": "{count} 秒",
     "tx_insufficient_funds": "资金不足，无法支付此交易及其网络费用。",
     "tx_reverted": "交易已回滚，没有任何变化。网络费用仍会收取。",
-    "contract_holds_only": "Revenue 合约中仅有 {amount} D223（{standard}）。请以另一种标准取消质押其余部分。",
+    "staked_in_version_only": "您以 {standard} 质押了 {amount} D223。请以另一种标准取消质押其余部分。",
     "gas_too_low_hint": "交易失败，因为 Gas 上限太低。请调整钱包设置。",
     "still_have_issues_discord": "如果问题仍然存在，请在我们的 <discord>Discord</discord> 中提问。",
     "save": "保存"
