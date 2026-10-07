@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
-import { useLayoutEffect, useRef, useState } from "react";
+import { MouseEvent, useLayoutEffect, useRef, useState } from "react";
 
 import Container from "@/components/atoms/Container";
 import LocaleSwitcher from "@/components/atoms/LocaleSwitcher";
@@ -14,7 +14,8 @@ import TokenListsSettings from "@/components/common/TokenListsSettings";
 import AccountDialog from "@/components/dialogs/AccountDialog";
 import { useMintTestTokensDialogStore } from "@/components/dialogs/stores/useMintTestTokensDialogStore";
 import { useRecentTransactionTracking } from "@/hooks/useRecentTransactionTracking";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
+import { useDemoWalletDialogStore } from "@/stores/useDemoWalletDialogStore";
 
 /**
  * True when the header's contents are wider than the header, so the widest controls
@@ -58,6 +59,18 @@ export default function Header() {
   const { handleOpen } = useMintTestTokensDialogStore();
   const rowRef = useRef<HTMLDivElement>(null);
   const compact = useCompactWhenCrowded(rowRef, useLocale());
+
+  // The demo uses a pretend wallet, so wallet, network and token list controls explain that
+  // instead of opening the real flows.
+  const pathname = usePathname();
+  const isDemo = pathname === "/demo" || pathname.startsWith("/demo/");
+  const { setIsOpen: setDemoWalletDialogOpen } = useDemoWalletDialogStore();
+  const interceptInDemo = (e: MouseEvent) => {
+    if (!isDemo) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setDemoWalletDialogOpen(true);
+  };
   return (
     <div>
       <header className="xl:before:hidden before:h-[1px] before:bg-gradient-to-r before:from-secondary-border/20 before:via-50% before:via-secondary-border before:to-secondary-border/20 before:w-full before:absolute relative before:bottom-0 before:left-0">
@@ -82,12 +95,20 @@ export default function Header() {
             </div>
             <div className="flex items-center gap-2 md:gap-3 group-data-[compact]/header:gap-2">
               <LocaleSwitcher />
-              <div className="fixed w-[calc(50%-20px)] bottom-3 left-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
+              <div
+                onClickCapture={interceptInDemo}
+                className="fixed w-[calc(50%-20px)] bottom-3 left-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]"
+              >
                 <TokenListsSettings compact={compact} />
               </div>
-              <NetworkPicker compact={compact} />
+              <div onClickCapture={interceptInDemo} className="contents">
+                <NetworkPicker compact={compact} />
+              </div>
 
-              <div className="fixed w-[calc(50%-20px)] bottom-3 right-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]">
+              <div
+                onClickCapture={interceptInDemo}
+                className="fixed w-[calc(50%-20px)] bottom-3 right-4 md:static md:w-auto md:bottom-unset z-[88] md:z-[21]"
+              >
                 <AccountDialog />
               </div>
 

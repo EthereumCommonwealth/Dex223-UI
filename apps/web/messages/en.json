@@ -910,7 +910,10 @@
           }
         }
       }
-    }
+    },
+    "demo_title": "Try the interactive demo",
+    "demo_description": "Practice swapping, converting, adding liquidity and listing a token with pretend balances. No wallet needed.",
+    "demo_cta": "Start the demo"
   },
   "A11y": {
     "close": "Close",
@@ -1892,6 +1895,10 @@
     "home": {
       "title": "DEX223: Decentralized Exchange for ERC-20 and ERC-223 Tokens",
       "description": "Swap, earn fees, lend, borrow and trade on margin with ERC-20 and ERC-223 tokens. Convert between standards 1:1 and list any token without permission."
+    },
+    "demo": {
+      "title": "Interactive Demo",
+      "description": "Practice swapping, converting, adding liquidity, listing a token and margin trading on DEX223 with pretend balances. No wallet needed."
     }
   },
   "Landing": {
@@ -2008,5 +2015,271 @@
       "title": "Start trading in under a minute",
       "body": "Connect a wallet, pick a pair, swap. No sign-up."
     }
+  },
+  "Demo": {
+    "banner_label": "Demo mode",
+    "banner_text": "Balances are pretend. Nothing is signed or sent to a blockchain.",
+    "banner_text_short": "Demo mode · pretend balances",
+    "exit": "Exit demo",
+    "exit_short": "Exit",
+    "breadcrumb_guidelines": "Guidelines",
+    "title": "Interactive demo",
+    "description": "Practice the main DEX223 actions with pretend tokens. No wallet, no gas, no risk.",
+    "start_with": "Start with {flow}",
+    "continue_with": "Continue: {flow}",
+    "replay_all": "Replay the swap demo",
+    "wallet": "Demo wallet",
+    "wallet_summary": "Demo wallet · {count} tokens",
+    "balances": "Balances",
+    "reset": "Reset demo",
+    "completed": "Completed",
+    "start": "Start",
+    "replay": "Replay",
+    "ready_title": "Ready for the real thing?",
+    "ready_text": "Connect a wallet and use the same screens on Ethereum. Want practice tokens first? Use the Sepolia test app.",
+    "open_test_app": "Open test app",
+    "go_to_swap": "Go to Swap",
+    "step_of": "Step {current} of {total}",
+    "step_short": "{current} of {total}",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "simulated": "Simulated screen. Same layout as the live page, pretend data.",
+    "signing": "Proceed in your wallet",
+    "wrong_click": "Click the highlighted control to continue.",
+    "insufficient": "Insufficient {symbol} balance",
+    "insufficient_alert": "You only have {balance} demo {symbol}. Lower the amount or click Max.",
+    "too_high_title": "Amount too high",
+    "too_high_body": "Your demo wallet has {balance} {symbol}. Enter {balance} or less to continue.",
+    "max": "Max",
+    "you_pay": "You pay",
+    "you_receive": "You receive",
+    "balance": "Balance: {amount}",
+    "pay_with": "Pay with {standard}",
+    "network_fee": "Network fee (pretend)",
+    "show_coach": "Show steps",
+    "hide_coach": "Hide steps",
+    "wallet_dialog_title": "This is a demo wallet",
+    "wallet_dialog_text": "The demo never connects to a real wallet. Exit the demo to connect yours and use the live app.",
+    "wallet_dialog_stay": "Stay in demo",
+    "wallet_dialog_exit": "Exit and connect",
+    "complete_title": "{flow} demo complete",
+    "try_for_real": "Try it for real",
+    "next_flow": "Next: {flow}",
+    "back_to_hub": "Back to demo hub",
+    "flows": {
+      "swap": {
+        "title": "Swap: ERC-20 vs ERC-223",
+        "description": "See why ERC-20 needs an approval and ERC-223 does not.",
+        "meta": "4 steps · about 1 min",
+        "short": "Swap",
+        "complete_text": "You saw the difference: ERC-20 took an approval and a swap, ERC-223 took one transaction.",
+        "steps": {
+          "choose": {
+            "title": "Pick how you pay",
+            "body": "Every token on DEX223 has an ERC-20 and an ERC-223 version. Start with the one most wallets hold today: click the highlighted ERC-20 card.",
+            "tip": "You choose the standard separately for the token you pay and the token you receive.",
+            "hint": "Pick ERC-20"
+          },
+          "approve": {
+            "title": "Approve, then swap",
+            "body": "ERC-20 tokens need two transactions: first you allow the exchange to spend your USDT, then you swap. Click the highlighted Approve button.",
+            "tip": "With ERC-223 there is no approval step, so the same swap is one transaction.",
+            "hint": "Click Approve"
+          },
+          "swap": {
+            "title": "Now the swap itself",
+            "body": "The approval is done. The second transaction moves your USDT into the pool and sends D223 back. Click Swap.",
+            "tip": "An approval left open can be abused by a malicious contract later. ERC-223 never creates one.",
+            "hint": "Click Swap"
+          },
+          "compare": {
+            "title": "Same trade, one transaction",
+            "body": "Paying with the ERC-223 version of USDT skips the approval. The tokens move straight into the pool in a single transaction.",
+            "tip": "Every pool accepts both standards. You choose ERC-20 or ERC-223 on each side of a trade."
+          }
+        },
+        "approve_usdt": "Approve USDT",
+        "swap_usdt": "Swap USDT for D223",
+        "swap_erc223": "Swap USDT (ERC-223) for D223",
+        "approve_button": "Approve USDT",
+        "swap_button": "Swap",
+        "fee_value": "~257K gas · 2 transactions",
+        "result": "Result",
+        "tx_one": "1 transaction",
+        "tx_two": "2 transactions",
+        "you_paid": "You paid",
+        "you_received": "You received",
+        "saved": "Saved",
+        "saved_value": "~37K gas, no approval"
+      },
+      "convert": {
+        "title": "Convert 1:1",
+        "description": "Turn USDT into its ERC-223 version and back, with no fees.",
+        "meta": "3 steps · under 1 min",
+        "short": "Convert 1:1",
+        "complete_text": "You moved USDT to ERC-223 and back at exactly 1:1, with no protocol fee.",
+        "steps": {
+          "pick": {
+            "title": "Pick the direction",
+            "body": "The converter works both ways. Click the highlighted direction to turn ERC-20 USDT into ERC-223 USDT.",
+            "tip": "Your demo wallet already holds both versions of USDT.",
+            "hint": "Pick ERC-20 → ERC-223"
+          },
+          "convert": {
+            "title": "Convert to ERC-223",
+            "body": "The converter swaps a token between its ERC-20 and ERC-223 versions at exactly 1:1. There is no protocol fee. Click Convert.",
+            "tip": "You need the ERC-223 version to skip approvals when you trade.",
+            "hint": "Click Convert"
+          },
+          "back": {
+            "title": "And back again",
+            "body": "You can always return to ERC-20, for example to send tokens to an exchange that only supports ERC-20. Click Convert back.",
+            "tip": "Both versions are the same token. Only the way it moves is different.",
+            "hint": "Click Convert back"
+          }
+        },
+        "card_title": "Token converter",
+        "from": "From ({standard})",
+        "to": "To ({standard})",
+        "rate": "Rate",
+        "rate_value": "1 USDT = 1 USDT",
+        "fee": "Protocol fee",
+        "convert_button": "Convert",
+        "convert_back_button": "Convert back",
+        "direction": "{from} → {to}"
+      },
+      "liquidity": {
+        "title": "Add liquidity",
+        "description": "Pick a fee tier and price range, deposit two tokens, earn fees.",
+        "meta": "5 steps · about 2 min",
+        "short": "Add liquidity",
+        "complete_text": "You opened a USDT / D223 position. In the live app it earns 0.3% of every trade that uses your price range.",
+        "steps": {
+          "pair": {
+            "title": "Pick a pair",
+            "body": "A position holds two tokens. This demo uses USDT and D223, already selected for you. Click Next.",
+            "tip": "You can deposit either standard of each token. The pool accepts both."
+          },
+          "fee": {
+            "title": "Pick a fee tier",
+            "body": "Every trade in this pool pays its fee to liquidity providers. 0.3% suits most pairs. Click the highlighted tier.",
+            "tip": "Lower tiers suit stable pairs; higher tiers suit volatile tokens.",
+            "hint": "Pick 0.3%"
+          },
+          "range": {
+            "title": "Set a price range",
+            "body": "Your liquidity only earns fees while the price is inside your range. Click Use suggested range to fill in a range around the current price.",
+            "tip": "A narrow range earns more per trade but goes out of range more often.",
+            "hint": "Use suggested range"
+          },
+          "deposit": {
+            "title": "Check the amounts",
+            "body": "The app works out how much of each token the range needs. Here it is 100 USDT and 12,431.2 D223. Click Next.",
+            "tip": "Amounts are pretend. In the live app you can deposit any amount up to your balance."
+          },
+          "add": {
+            "title": "Add the position",
+            "body": "One last check, then the position is created. Click Add liquidity.",
+            "tip": "Collected fees can be claimed from Pools at any time.",
+            "hint": "Click Add liquidity"
+          }
+        },
+        "pair": "USDT / D223",
+        "fee_tier": "Fee tier",
+        "tiers": {
+          "t001": "Very stable pairs",
+          "t005": "Stable pairs",
+          "t03": "Most pairs",
+          "t1": "Exotic pairs"
+        },
+        "price_range": "Price range",
+        "min_price": "Min price",
+        "max_price": "Max price",
+        "per": "D223 per USDT",
+        "suggested": "Use suggested range",
+        "deposit": "Deposit",
+        "add_button": "Add liquidity",
+        "in_range": "In range"
+      },
+      "listing": {
+        "title": "List a token and trade on margin",
+        "description": "List a token with an auto-listing contract, then borrow from a lending order.",
+        "meta": "6 steps · about 3 min",
+        "short": "Listing and margin",
+        "complete_text": "You listed a token without asking anyone and opened a margin position from an on-chain lending order.",
+        "steps": {
+          "token": {
+            "title": "Pick a token to list",
+            "body": "Listing is permissionless: anyone can list a token that has a pool. This demo lists a token called DEMO. Click Next.",
+            "tip": "No application and no approval from the DEX223 team are needed."
+          },
+          "contract": {
+            "title": "Choose an auto-listing contract",
+            "body": "Auto-listing contracts are token lists that live on chain. Some are free, some charge a fee set by their owner. Click the free one.",
+            "tip": "Wallets and apps can read these lists straight from the contract.",
+            "hint": "Pick the free list"
+          },
+          "list": {
+            "title": "List DEMO",
+            "body": "Listing is one transaction. Click List DEMO.",
+            "tip": "Once listed, the token shows up in the token search for everyone using that list.",
+            "hint": "Click List DEMO"
+          },
+          "order": {
+            "title": "Find a lending order",
+            "body": "Margin trading on DEX223 uses lending orders posted by other users. Each order sets its own interest, leverage and term. Click order #12.",
+            "tip": "Lenders choose which tokens you may trade with their money.",
+            "hint": "Pick order #12"
+          },
+          "open": {
+            "title": "Borrow from a lending order",
+            "body": "You borrow against your collateral and trade inside the position. Click Open position.",
+            "tip": "Your borrowed funds stay inside the position contract, so they can only be traded on DEX223.",
+            "hint": "Click Open position"
+          },
+          "watch": {
+            "title": "Watch the position",
+            "body": "The position is open. Its value, interest and liquidation price update with the market. Click Finish when you are done.",
+            "tip": "If the collateral value drops below the liquidation price, the position is closed automatically."
+          }
+        },
+        "token_card": "Token",
+        "demo_token": "DEMO",
+        "demo_token_name": "Demo token",
+        "pool_exists": "Pool exists: DEMO / USDT",
+        "contracts": "Auto-listing contract",
+        "free_list": "Free listing",
+        "free_list_text": "Anyone can list. No fee.",
+        "paid_list": "Core list",
+        "paid_list_text": "Listing fee: 500 USDT",
+        "list_button": "List DEMO",
+        "listed": "Listed: DEMO",
+        "orders": "Lending orders",
+        "order": "Order #{id}",
+        "offers": "Lender offers",
+        "interest": "Interest",
+        "interest_value": "{value}% / month",
+        "max_leverage": "Max leverage",
+        "term": "Term",
+        "term_value": "{days} days",
+        "collateral": "Collateral accepted",
+        "leverage": "Leverage",
+        "your_collateral": "Collateral",
+        "collateral_value": "1 ETH (pretend)",
+        "position_size": "Position size",
+        "liquidation": "Liquidation at",
+        "liquidation_value": "ETH below $1,840",
+        "open_button": "Open position",
+        "position": "Position #1",
+        "status_open": "Open",
+        "pnl": "Profit and loss",
+        "borrowed": "Borrowed",
+        "accrued": "Interest so far"
+      }
+    },
+    "wrong_click_next": "Click Next to continue.",
+    "dismiss": "Dismiss",
+    "enter_amount": "Enter an amount"
   }
 }
