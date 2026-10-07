@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
-import React, { useMemo } from "react";
+import { getTranslations } from "next-intl/server";
+import React from "react";
 
 import BorrowMarketPageContent from "@/app/[locale]/margin-trading/components/BorrowMarketPageContent";
 
@@ -17,7 +18,14 @@ export default async function MarginTrading({ searchParams }: { searchParams: Pr
     defaultTab = 2;
   }
 
-  return <BorrowMarketPageContent defaultTab={defaultTab} />;
+  const tSeo = await getTranslations("Seo");
+
+  return (
+    <>
+      <h1 className="sr-only">{tSeo("margin_trading.title")}</h1>
+      <BorrowMarketPageContent defaultTab={defaultTab} />
+    </>
+  );
 }
 
 // function RedirectPage() {

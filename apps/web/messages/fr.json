@@ -130,7 +130,39 @@
     "tracker_hide": "Masquer",
     "tracker_reopen": "Ouvrir les détails de l'échange",
     "tracker_failed_details": "Voir ce qui n'a pas fonctionné",
-    "tracker_explorer": "Voir dans l'explorateur"
+    "tracker_explorer": "Voir dans l'explorateur",
+    "confirm_in_your_wallet": "Confirmez dans votre portefeuille",
+    "approving": "Approbation en cours",
+    "approve_failed": "Échec de l’approbation",
+    "failed_to_confirm_swap": "Échec de la confirmation de l’échange",
+    "executed_swap": "Échange effectué",
+    "tx_failed_gas_or_contract": "La transaction a échoué par manque de gas ou en raison d’une erreur interne du contrat. Essayez un slippage ou un gas plus élevé pour garantir son exécution. Si le problème persiste, posez votre question sur notre <discord>Discord</discord>.",
+    "tx_failed_out_of_gas": "La transaction a échoué par manque de gas. Essayez d’augmenter la limite de gas pour garantir son exécution. Si le problème persiste, contactez le support.",
+    "try_again": "Réessayer",
+    "native": "Natif",
+    "loading": "Chargement...",
+    "approve_must_be_at_least": "Doit être supérieur ou égal à {amount}",
+    "save": "Enregistrer",
+    "confirm_conversion": "Confirmer la conversion",
+    "conversion_in_progress": "Conversion en cours",
+    "conversion_failed": "Échec de la conversion",
+    "conversion_completed": "Conversion terminée",
+    "review_conversion": "Vérifier la conversion",
+    "you_convert": "Vous convertissez",
+    "gas_price": "Prix du gas",
+    "gas_price_tooltip": "Les frais de réseau sont calculés comme gas utilisé × prix du gas. Si le prix du gas de votre transaction est inférieur au prix actuel du réseau, elle ne sera pas confirmée tant que les prix du gas du réseau n’auront pas baissé.",
+    "convert_to_standard": "Convertir {symbol} en {standard}",
+    "insufficient_liquidity": "Liquidité insuffisante pour cette transaction",
+    "pool_does_not_exist": "Le pool demandé n’existe pas. Vous pouvez <link>créer un nouveau pool</link>.",
+    "fetching_best_price": "Recherche du meilleur prix...",
+    "margin_swap": "Échange sur marge",
+    "processing_margin_swap": "Échange sur marge en cours",
+    "margin_swap_completed": "Échange sur marge terminé",
+    "margin_swap_process_failed": "Échec du traitement de l’échange sur marge",
+    "confirm_margin_swap": "Confirmer l’échange sur marge",
+    "review_margin_swap": "Vérifier l’échange sur marge",
+    "successful_margin_swap": "Échange sur marge réussi",
+    "margin_swap_failed": "Échec de l’échange sur marge"
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",
@@ -295,7 +327,8 @@
     "transaction_link": "Lien de la transaction",
     "list_single_subtitle": "{symbol} dans la liste « {list} »",
     "list_double_subtitle": "{symbol0} et {symbol1} dans la liste « {list} »",
-    "create_margin_position_subtitle": "{amountCollateral} {symbolCollateral} de garantie et {amountFee} {symbolFee} de frais"
+    "create_margin_position_subtitle": "{amountCollateral} {symbolCollateral} de garantie et {amountFee} {symbolFee} de frais",
+    "id_subtitle": "{symbol} (ID: {id})"
   },
   "Portfolio": {
     "approved_deposited": "Approuvés et déposés",
@@ -582,7 +615,6 @@
     "mint_liquidity": "Frapper la liquidité",
     "remove_liquidity_title": "Retirer la liquidité",
     "try_again": "Réessayer",
-    "common_errors": "erreurs courantes",
     "claim_tokens": "réclamer les jetons",
     "removed_liquidity_message": "Les jetons ont été transférés vers votre position. Vous pouvez les réclamer via le lien suivant",
     "day_volume": "Volume 24 h",
@@ -657,7 +689,6 @@
     "button_approve_and_deposit": "Approuver et déposer",
     "approve_transaction_modal_title": "transactions",
     "init_pool_message": "Ce pool doit être initialisé avant de pouvoir ajouter de la liquidité. Pour l’initialiser, choisissez un prix de départ pour le pool. Saisissez ensuite votre fourchette de prix et le montant du dépôt. Les frais de gas seront plus élevés que d’habitude en raison de la transaction d’initialisation.",
-    "failed_transaction_error_message": "La transaction a échoué par manque de gas ou en raison d’une erreur interne du contrat. Essayez un slippage ou un gas plus élevé pour garantir son exécution. Si le problème persiste, cliquez sur",
     "gas_price_tooltip": "Les frais que vous payez avec une transaction legacy sont calculés comme gasPrice * gasUsed. Votre transaction ne sera pas confirmée tant que votre gasPrice n’est pas supérieur ou égal au prix du gas du réseau dans le dernier bloc.",
     "approved_tooltip": "Pour déposer des jetons ERC-20 dans des contrats, vous devez « autoriser » le contrat à prélever le jeton sur votre solde. L’approbation détermine la quantité de jetons de votre solde qu’un contrat peut déplacer en votre nom. Les jetons ERC-223 ne nécessitent pas d’approbation, vous n’avez donc pas à autoriser un contrat à accéder à votre solde.",
     "deposited_tooltip": "Les jetons ERC-223 doivent d’abord être déposés dans le contrat pour pouvoir être utilisés. Ce montant indique la quantité de vos jetons déjà présents dans le contrat. Vous pouvez retirer vos jetons ERC-223 déposés à tout moment.",
@@ -701,7 +732,8 @@
     "swap_action": "Échanger",
     "add_action": "Ajouter de la liquidité",
     "sort_by_tvl": "Trier par TVL",
-    "tvl_trend_label": "TVL de {pair} sur les 7 derniers jours"
+    "tvl_trend_label": "TVL de {pair} sur les 7 derniers jours",
+    "failed_transaction_discord": "La transaction a échoué par manque de gas ou en raison d’une erreur interne du contrat. Essayez un slippage ou un gas plus élevé pour garantir son exécution. Si le problème persiste, posez votre question sur notre <discord>Discord</discord>."
   },
   "Statistics": {
     "title": "Statistiques",
@@ -1067,7 +1099,6 @@
     "tokens_locked": "Les jetons sont encore verrouillés. Attendez la fin de la période de verrouillage.",
     "unstake_failed": "Échec du retrait",
     "tx_failed_retry": "La transaction a échoué. Réessayez.",
-    "gas_too_low": "La transaction a échoué car la limite de gaz est trop basse. Ajustez les réglages de votre portefeuille. Si le problème continue, cliquez",
     "lock_notice": "Vous pouvez retirer et réclamer les récompenses <b>{time}</b> après votre dernier staking.",
     "restake_restarts": "Staker davantage maintenant relance ce verrouillage pour tout votre solde staké.",
     "stake_amount": "Montant à staker",
@@ -1094,7 +1125,11 @@
     "duration_minute": "{count, plural, =0 {# minutes} one {# minute} other {# minutes}}",
     "duration_second": "{count, plural, =0 {# secondes} one {# seconde} other {# secondes}}",
     "tx_insufficient_funds": "Fonds insuffisants pour payer cette transaction et ses frais de réseau.",
-    "tx_reverted": "La transaction a été annulée, rien n’a changé. Les frais de réseau sont tout de même prélevés."
+    "tx_reverted": "La transaction a été annulée, rien n’a changé. Les frais de réseau sont tout de même prélevés.",
+    "contract_holds_only": "Le contrat Revenue ne détient que {amount} D223 en {standard}. Retirez le reste dans l’autre standard.",
+    "gas_too_low_hint": "La transaction a échoué car la limite de gaz est trop basse. Ajustez les réglages de votre portefeuille.",
+    "still_have_issues_discord": "Si le problème persiste, posez votre question sur notre <discord>Discord</discord>.",
+    "save": "Enregistrer"
   },
   "Governance": {
     "title": "Gouvernance",
@@ -1621,7 +1656,19 @@
     "borrow_now": "Emprunter maintenant",
     "min_order_balance_filter_tooltip": "Affiche uniquement les ordres de prêt disposant d’au moins ce montant disponible à l’emprunt.",
     "min_loan_amount_filter_tooltip": "Affiche uniquement les ordres de prêt dont le prêt minimum est d’au moins ce montant.",
-    "duration_filter_tooltip": "Affiche uniquement les ordres de prêt dont la durée de position, en jours, se situe dans cette plage."
+    "duration_filter_tooltip": "Affiche uniquement les ordres de prêt dont la durée de position, en jours, se situe dans cette plage.",
+    "deposit_funds": "Déposer des fonds",
+    "executing_deposit": "Dépôt en cours",
+    "deposited_funds": "Fonds déposés",
+    "deposit_funds_failed": "Échec du dépôt des fonds",
+    "not_order_owner": "Vous n’êtes pas le propriétaire de cet ordre, vous ne pouvez donc pas le modifier.",
+    "swap_connect_to_see_positions": "Connectez un portefeuille pour voir vos positions sur marge",
+    "swap_no_active_positions": "Vous n'avez aucune position active",
+    "swap_positions_with_a": "{count, plural, one {# position} other {# positions}} avec {symbolA}",
+    "swap_positions_for_b": "{count, plural, one {# position autorise} other {# positions autorisent}} le trading de {symbolB}",
+    "swap_positions_with_a_for_b": "{count, plural, one {# position} other {# positions}} avec {symbolA} autorisant le trading de {symbolB}",
+    "swap_no_positions_for_tokens": "Aucune position pour les jetons sélectionnés",
+    "swap_you_have_positions": "Vous avez {count, plural, one {# position} other {# positions}}"
   },
   "TradingChart": {
     "select_pair": "Sélectionnez deux jetons pour voir leur graphique",

@@ -98,10 +98,10 @@ function ApproveRow({
           )}
         >
           {(isSuccess || isSuccessSwap) && t("approved")}
-          {isPending && "Confirm in your wallet"}
-          {isLoading && "Approving"}
-          {!isSuccess && !isPending && !isReverted && !isLoading && !isSuccessSwap && "Approve"}
-          {isReverted && "Approve failed"}
+          {isPending && t("confirm_in_your_wallet")}
+          {isLoading && t("approving")}
+          {!isSuccess && !isPending && !isReverted && !isLoading && !isSuccessSwap && t("approve")}
+          {isReverted && t("approve_failed")}
         </span>
         {!isSuccess && <span className="text-green text-12">{t("why_do_i_have_to_approve")}</span>}
       </div>
@@ -174,8 +174,8 @@ function SwapRow({
         <span className={clsx("text-14", isDisabled ? "text-tertiary-text" : "text-primary-text")}>
           {(isPending || (!isLoading && !isReverted && !isSuccess)) && t("confirm_swap")}
           {isLoading && t("executing_swap")}
-          {isReverted && "Failed to confirm a swap"}
-          {isSuccess && "Executed swap"}
+          {isReverted && t("failed_to_confirm_swap")}
+          {isSuccess && t("executed_swap")}
         </span>
         {(isPending || isLoading) && (
           <span className="text-green text-12">{t("learn_more_about_swap")}</span>
@@ -283,13 +283,18 @@ function SwapActionButton({
               type="error"
               text={
                 <span>
-                  Transaction failed due to lack of gas or an internal contract error. Try using
-                  higher slippage or gas to ensure your transaction is completed. If you still have
-                  issues, click{" "}
-                  <a href="#" className="text-green hocus:underline">
-                    common errors
-                  </a>
-                  .
+                  {t.rich("tx_failed_gas_or_contract", {
+                    discord: (chunks) => (
+                      <a
+                        href="https://discord.gg/t5bdeGC5Jk"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green hocus:underline"
+                      >
+                        {chunks}
+                      </a>
+                    ),
+                  })}
                 </span>
               }
             />
@@ -299,7 +304,7 @@ function SwapActionButton({
                 setIsOpen(false);
               }}
             >
-              Try again
+              {t("try_again")}
             </Button>
           </div>
         </>
@@ -356,19 +361,21 @@ function SwapActionButton({
             text={
               errorType === SwapError.UNKNOWN ? (
                 <span>
-                  Transaction failed due to lack of gas or an internal contract error. Try using
-                  higher slippage or gas to ensure your transaction is completed. If you still have
-                  issues, click{" "}
-                  <a href="#" className="text-green hocus:underline">
-                    common errors
-                  </a>
-                  .
+                  {t.rich("tx_failed_gas_or_contract", {
+                    discord: (chunks) => (
+                      <a
+                        href="https://discord.gg/t5bdeGC5Jk"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-green hocus:underline"
+                      >
+                        {chunks}
+                      </a>
+                    ),
+                  })}
                 </span>
               ) : (
-                <span>
-                  Transaction failed due to lack of gas. Try increasing gas limit to ensure your
-                  transaction is completed. If you still have issues, contact support.
-                </span>
+                <span>{t("tx_failed_out_of_gas")}</span>
               )
             }
           />
@@ -378,7 +385,7 @@ function SwapActionButton({
               setIsOpen(false);
             }}
           >
-            Try again
+            {t("try_again")}
           </Button>
         </div>
       </>
@@ -404,6 +411,8 @@ function ReadonlyTokenAmountCard({
   standard: Standard;
   title: string;
 }) {
+  const t = useTranslations("Swap");
+
   return (
     <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
       <p className="text-secondary-text text-14">{title}</p>
@@ -418,7 +427,7 @@ function ReadonlyTokenAmountCard({
           />
           {token?.symbol}
           {token?.isNative ? (
-            <Badge color="green" text={"Native"} />
+            <Badge color="green" text={t("native")} />
           ) : (
             <Badge variant={BadgeVariant.STANDARD} standard={standard} />
           )}
@@ -695,7 +704,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 <span className="text-20 font-bold text-primary-text mb-1">
                   {isRevertedSwap && t("swap_failed")}
                   {isSuccessSwap && t("successful_swap")}
-                  {isRevertedApprove && "Approve failed"}
+                  {isRevertedApprove && t("approve_failed")}
                 </span>
               </div>
 
@@ -745,13 +754,13 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 value={
                   trade
                     ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
-                    .toSignificant() || "Loading..."
+                    .toSignificant() || t("loading")
                 }
                 tooltipText={t("minimum_received_tooltip")}
               />
               <SwapDetailsRow
                 title={t("price_impact")}
-                value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : "Loading..."}
+                value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : t("loading")}
                 tooltipText={t("price_impact_tooltip")}
               />
               <SwapDetailsRow
@@ -759,7 +768,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 value={
                   typedValue && Boolean(+typedValue) && tokenA
                     ? `${formatFloat((+typedValue * feeMultiplier) / 100)} ${tokenA.symbol}`
-                    : "Loading..."
+                    : t("loading")
                 }
                 tooltipText={t("trading_fee_tooltip")}
               />
@@ -778,7 +787,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                 value={
                   customGasLimit
                     ? customGasLimit.toString()
-                    : (estimatedGas + BigInt(30000)).toString() || "Loading..."
+                    : (estimatedGas + BigInt(30000)).toString() || t("loading")
                 }
                 tooltipText={t("gas_limit_tooltip")}
               />
@@ -824,7 +833,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                         </div>
                         {+amountToApprove < +typedValue && (
                           <span className="text-red-light sm:absolute text-12 sm:translate-y-0.5">
-                            Must be higher or equal {typedValue}
+                            {t("approve_must_be_at_least", { amount: typedValue })}
                           </span>
                         )}
                       </div>
@@ -840,7 +849,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                         onClick={() => setEditApproveActive(true)}
                         className="!rounded-20"
                       >
-                        Edit
+                        {t("edit")}
                       </Button>
                     ) : (
                       <Button
@@ -851,7 +860,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
                         onClick={() => setEditApproveActive(false)}
                         className="!rounded-20 disabled:bg-quaternary-bg"
                       >
-                        Save
+                        {t("save")}
                       </Button>
                     )}
                   </div>

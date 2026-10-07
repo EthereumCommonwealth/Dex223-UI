@@ -1,5 +1,6 @@
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React from "react";
 import { formatUnits, parseUnits } from "viem";
 
@@ -24,6 +25,8 @@ export default function ApproveAmountConfig({
   setAmountToApprove: (value: string) => void;
   minAmount: bigint;
 }) {
+  const t = useTranslations("Margin");
+
   return (
     <div
       className={clsx(
@@ -32,13 +35,8 @@ export default function ApproveAmountConfig({
       )}
     >
       <div className="flex items-center gap-1 text-secondary-text whitespace-nowrap">
-        <Tooltip
-          iconSize={20}
-          text={
-            " In order to make a swap with ERC-20 token you need to give the DEX contract permission to withdraw your tokens. All DEX'es require this operation. Here you are specifying the amount of tokens that you allow the contract to transfer on your behalf. Note that this amount never expires."
-          }
-        />
-        <span className="text-14">Approve amount</span>
+        <Tooltip iconSize={20} text={t("approve_amount_tooltip")} />
+        <span className="text-14">{t("approve_amount")}</span>
       </div>
       <div className="flex items-center gap-2 flex-grow justify-end">
         {!isEditApproveActive ? (
@@ -61,7 +59,7 @@ export default function ApproveAmountConfig({
             </div>
             {parseUnits(amountToApprove, asset.decimals ?? 18) < minAmount && (
               <span className="text-red-light absolute text-12 translate-y-0.5">
-                Must be higher or equal {formatUnits(minAmount, asset.decimals)}
+                {t("approve_must_be_higher", { amount: formatUnits(minAmount, asset.decimals) })}
               </span>
             )}
           </div>
@@ -72,7 +70,7 @@ export default function ApproveAmountConfig({
             colorScheme={ButtonColor.LIGHT_GREEN}
             onClick={() => setEditApproveActive(true)}
           >
-            Edit
+            {t("edit")}
           </Button>
         ) : (
           <Button
@@ -81,7 +79,7 @@ export default function ApproveAmountConfig({
             colorScheme={ButtonColor.LIGHT_GREEN}
             onClick={() => setEditApproveActive(false)}
           >
-            Save
+            {t("save")}
           </Button>
         )}
       </div>
