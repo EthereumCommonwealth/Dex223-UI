@@ -30,8 +30,8 @@ export function isRouteActive(pathname: string, href: string) {
 }
 
 // The Rewards app is served on this domain only when next.config.js rewrites /rewards to
-// REWARDS_ORIGIN. Without that rewrite the link 404s, so it is rendered only when the build
-// sets NEXT_PUBLIC_REWARDS_ENABLED="true" (set it together with REWARDS_ORIGIN).
+// REWARDS_ORIGIN. Without that rewrite the link 404s, so next.config.js derives
+// NEXT_PUBLIC_REWARDS_ENABLED from REWARDS_ORIGIN and the link follows the route.
 export const IS_REWARDS_ENABLED = process.env.NEXT_PUBLIC_REWARDS_ENABLED === "true";
 
 export function MobileLink({

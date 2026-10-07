@@ -10,6 +10,11 @@ const REWARDS_ORIGIN = process.env.REWARDS_ORIGIN?.replace(/\/+$/, "");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // The nav shows its Rewards link exactly when /rewards is served, so the link can never
+  // point at a 404 and needs no second variable to keep in sync with REWARDS_ORIGIN.
+  env: {
+    NEXT_PUBLIC_REWARDS_ENABLED: REWARDS_ORIGIN ? "true" : "false",
+  },
   async rewrites() {
     if (!REWARDS_ORIGIN) return [];
     return {
