@@ -1,6 +1,7 @@
 "use client";
 
 import clsx from "clsx";
+import { useTranslations } from "next-intl";
 import React, { use, useEffect } from "react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
@@ -33,6 +34,7 @@ export default function EditLendingOrderPage({
     id: string;
   }>;
 }) {
+  const t = useTranslations("Margin");
   const { id: orderId } = use(params);
   const { order, loading } = useOrder({ id: +orderId });
 
@@ -118,11 +120,11 @@ export default function EditLendingOrderPage({
   }, [setStep]);
 
   if (!order || loading) {
-    return "Loading...";
+    return t("loading");
   }
 
   if (!address || order.owner.toLowerCase() !== address.toLowerCase()) {
-    return "Seems like you are not the owner of this order, you can't edit this one";
+    return t("not_order_owner");
   }
 
   return (

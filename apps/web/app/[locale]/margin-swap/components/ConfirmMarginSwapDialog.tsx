@@ -56,25 +56,29 @@ type OperationStepConfig = {
   error: MarginSwapStatus;
 };
 
-const closePositionSteps: OperationStepConfig[] = [
-  {
-    iconName: "swap",
-    pending: MarginSwapStatus.PENDING_SWAP,
-    loading: MarginSwapStatus.LOADING_SWAP,
-    error: MarginSwapStatus.ERROR_SWAP,
-    textMap: {
-      [OperationStepStatus.IDLE]: "Margin swap",
-      [OperationStepStatus.AWAITING_SIGNATURE]: "Margin swap",
-      [OperationStepStatus.LOADING]: "Processing margin swap",
-      [OperationStepStatus.STEP_COMPLETED]: "Margin swap completed",
-      [OperationStepStatus.STEP_FAILED]: "Failed to process margin swap",
-      [OperationStepStatus.OPERATION_COMPLETED]: "Margin swap completed",
+function composeMarginSwapSteps(t: ReturnType<typeof useTranslations>): OperationStepConfig[] {
+  return [
+    {
+      iconName: "swap",
+      pending: MarginSwapStatus.PENDING_SWAP,
+      loading: MarginSwapStatus.LOADING_SWAP,
+      error: MarginSwapStatus.ERROR_SWAP,
+      textMap: {
+        [OperationStepStatus.IDLE]: t("margin_swap"),
+        [OperationStepStatus.AWAITING_SIGNATURE]: t("margin_swap"),
+        [OperationStepStatus.LOADING]: t("processing_margin_swap"),
+        [OperationStepStatus.STEP_COMPLETED]: t("margin_swap_completed"),
+        [OperationStepStatus.STEP_FAILED]: t("margin_swap_process_failed"),
+        [OperationStepStatus.OPERATION_COMPLETED]: t("margin_swap_completed"),
+      },
     },
-  },
-];
+  ];
+}
 
 function MarginSwapActionButton() {
+  const t = useTranslations("Swap");
   const { handleMarginSwap } = useMarginSwap();
+  const closePositionSteps = composeMarginSwapSteps(t);
 
   const { status, marginSwapHash } = useMarginSwapStatusStore();
 
@@ -105,7 +109,7 @@ function MarginSwapActionButton() {
 
   return (
     <Button colorScheme={ButtonColor.PURPLE} onClick={() => handleMarginSwap()} fullWidth>
-      Confirm margin swap
+      {t("confirm_margin_swap")}
     </Button>
   );
 }
@@ -123,6 +127,8 @@ function ReadonlyTokenAmountCard({
   standard: Standard;
   title: string;
 }) {
+  const t = useTranslations("Swap");
+
   return (
     <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
       <p className="text-secondary-text text-14">{title}</p>
@@ -137,7 +143,7 @@ function ReadonlyTokenAmountCard({
           />
           {token?.symbol}
           {token?.isNative ? (
-            <Badge color="purple" text={"Native"} />
+            <Badge color="purple" text={t("native")} />
           ) : (
             <Badge color="purple" variant={BadgeVariant.STANDARD} standard={standard} />
           )}
@@ -255,7 +261,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
           onClose={() => {
             setIsOpen(false);
           }}
-          title={"Review margin swap"}
+          title={t("review_margin_swap")}
         />
         <div className="card-spacing">
           {isFinalStatus && (
@@ -277,13 +283,15 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
 
               {status === MarginSwapStatus.SUCCESS && (
                 <div>
-                  <h2 className="text-center mb-1 font-bold text-20 ">Successful margin swap</h2>
+                  <h2 className="text-center mb-1 font-bold text-20 ">
+                    {t("successful_margin_swap")}
+                  </h2>
                 </div>
               )}
               {status === MarginSwapStatus.ERROR_SWAP && (
                 <div>
                   <h2 className="text-center mb-1 font-bold text-20 text-red-light">
-                    Margin swap failed
+                    {t("margin_swap_failed")}
                   </h2>
                   <div className="flex justify-center gap-2 items-center">
                     <Image
@@ -353,13 +361,13 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 value={
                   trade
                     ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
-                    .toSignificant() || "Loading..."
+                    .toSignificant() || t("loading")
                 }
                 tooltipText={t("minimum_received_tooltip")}
               />
               <SwapDetailsRow
                 title={t("price_impact")}
-                value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : "Loading..."}
+                value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : t("loading")}
                 tooltipText={t("price_impact_tooltip")}
               />
               <SwapDetailsRow
@@ -367,7 +375,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 value={
                   typedValue && Boolean(+typedValue) && tokenA
                     ? `${(+typedValue * 0.3) / 100} ${tokenA.symbol}`
-                    : "Loading..."
+                    : t("loading")
                 }
                 tooltipText={t("trading_fee_tooltip")}
               />
@@ -386,7 +394,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 value={
                   customGasLimit
                     ? customGasLimit.toString()
-                    : (estimatedGas + BigInt(30000)).toString() || "Loading..."
+                    : (estimatedGas + BigInt(30000)).toString() || t("loading")
                 }
                 tooltipText={t("gas_limit_tooltip")}
               />

@@ -366,7 +366,7 @@ const StakeDialog = () => {
         case "insufficient_funds":
           return { type: StakeError.UNKNOWN, message: t("tx_insufficient_funds") };
         case "out_of_gas":
-          return { type: StakeError.OUT_OF_GAS, message: t("gas_too_low") };
+          return { type: StakeError.OUT_OF_GAS, message: t("gas_too_low_hint") };
         case "reverted":
           return { type: StakeError.UNKNOWN, message: t("tx_reverted") };
         default:
@@ -669,7 +669,10 @@ const StakeDialog = () => {
           setStatus(StakeStatus.ERROR);
           setErrorType(StakeError.INSUFFICIENT_BALANCE);
           setErrorMessage(
-            `The Revenue contract holds only ${formatUnits(held ?? 0n, 18)} D223 as ${selectedStandard}. Unstake the rest in the other standard.`,
+            t("contract_holds_only", {
+              amount: formatUnits(held ?? 0n, 18),
+              standard: selectedStandard,
+            }),
           );
           return;
         }
@@ -804,10 +807,19 @@ const StakeDialog = () => {
               <p className="text-12 md:text-14 text-secondary-text break-words">
                 {errorType === StakeError.OUT_OF_GAS || !errorMessage ? (
                   <>
-                    {t("gas_too_low")}{" "}
-                    <a href="#" className="text-secondary-text underline">
-                      {tLiq("common_errors")}
-                    </a>
+                    {t("gas_too_low_hint")}{" "}
+                    {t.rich("still_have_issues_discord", {
+                      discord: (chunks) => (
+                        <a
+                          href="https://discord.gg/t5bdeGC5Jk"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-secondary-text underline"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                    })}
                   </>
                 ) : (
                   errorMessage
@@ -874,13 +886,22 @@ const StakeDialog = () => {
           <div className="flex flex-col gap-4 mt-4 md:mt-5">
             <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4 overflow-hidden">
               <p className="text-12 md:text-14 text-secondary-text break-words overflow-wrap break-all">
-                {errorMessage || t("gas_too_low")}
+                {errorMessage || t("gas_too_low_hint")}
                 {(!errorMessage || errorType === StakeError.OUT_OF_GAS) && (
                   <>
                     {" "}
-                    <a href="#" className="text-secondary-text underline">
-                      {tLiq("common_errors")}
-                    </a>
+                    {t.rich("still_have_issues_discord", {
+                      discord: (chunks) => (
+                        <a
+                          href="https://discord.gg/t5bdeGC5Jk"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-secondary-text underline"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                    })}
                   </>
                 )}
               </p>
@@ -1045,7 +1066,7 @@ const StakeDialog = () => {
                   </div>
                   {+amountToApprove < +amount && (
                     <span className="text-red-light md:absolute text-12 md:translate-y-0.5">
-                      Must be higher or equal {amount}
+                      {tLiq("must_be_at_least", { val: amount })}
                     </span>
                   )}
                 </div>
@@ -1070,7 +1091,7 @@ const StakeDialog = () => {
                   onClick={() => setIsEditApproveActive(false)}
                   className="!rounded-20 disabled:bg-quaternary-bg"
                 >
-                  Save
+                  {t("save")}
                 </Button>
               )}
             </div>
@@ -1133,7 +1154,7 @@ const StakeDialog = () => {
                               ? "/images/badges/erc-20-green-small.svg"
                               : "/images/badges/erc-223-green-small.svg"
                           }
-                          alt="Standard"
+                          alt={tSwap("standard")}
                           width={40}
                           height={40}
                           className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12"
