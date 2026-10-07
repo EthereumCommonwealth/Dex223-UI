@@ -2185,10 +2185,10 @@
       },
       "listing": {
         "title": "List a token and trade on margin",
-        "description": "List a token with an auto-listing contract, then borrow from a lending order.",
+        "description": "List a token with an auto-listing contract, then borrow from a lending order. Margin is on testnet for now.",
         "meta": "6 steps · about 3 min",
         "short": "Listing and margin",
-        "complete_text": "You listed a token without asking anyone and opened a margin position from an on-chain lending order.",
+        "complete_text": "You listed a token without asking anyone and opened a margin position from an on-chain lending order. Margin trading is live on the Sepolia test app and coming to Ethereum mainnet.",
         "steps": {
           "token": {
             "title": "Pick a token to list",
@@ -2209,7 +2209,7 @@
           },
           "order": {
             "title": "Find a lending order",
-            "body": "Margin trading on DEX223 uses lending orders posted by other users. Each order sets its own interest, leverage and term. Click order #12.",
+            "body": "Margin trading on DEX223 uses lending orders posted by other users. Each order sets its own monthly interest, leverage and term. Click order #12.",
             "tip": "Lenders choose which tokens you may trade with their money.",
             "hint": "Pick order #12"
           },
@@ -2221,8 +2221,8 @@
           },
           "watch": {
             "title": "Watch the position",
-            "body": "The position is open. Its value, interest and liquidation price update with the market. Click Finish when you are done.",
-            "tip": "If the collateral value drops below the liquidation price, the position is closed automatically."
+            "body": "The position is open. Its value, interest and health update with the market. Click Finish when you are done.",
+            "tip": "The expected balance grows with interest over the term. If health falls to 1 or below, anyone can liquidate the position for a reward. No price oracle is involved."
           }
         },
         "token_card": "Token",
@@ -2249,8 +2249,9 @@
         "your_collateral": "Collateral",
         "collateral_value": "1 ETH (pretend)",
         "position_size": "Position size",
-        "liquidation": "Liquidation at",
-        "liquidation_value": "ETH below $1,840",
+        "expected_at_term": "Expected balance on day {days}",
+        "expected_balance": "Expected balance",
+        "health": "Health",
         "open_button": "Open position",
         "position": "Position #1",
         "status_open": "Open",
