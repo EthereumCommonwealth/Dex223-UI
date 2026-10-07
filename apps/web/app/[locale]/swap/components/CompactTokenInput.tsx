@@ -8,6 +8,7 @@ import { NumericFormat } from "react-number-format";
 import SelectButton from "@/components/atoms/SelectButton";
 import Badge from "@/components/badges/Badge";
 import InputButton from "@/components/buttons/InputButton";
+import { ThemeColors } from "@/config/theme/colors";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
@@ -18,7 +19,7 @@ import { Standard } from "@/sdk_bi/standard";
  * Swap-page token input from the "Swap card v2" design: a larger amount, the token as the
  * main control, and the ERC-20 / ERC-223 choice as a compact toggle. Both standards'
  * balances stay visible on one line under it, since holding a token in either standard is
- * what DEX223 is about. Same props as TokenInput minus the colour scheme (swap is green).
+ * what DEX223 is about. Margin swap passes the purple scheme.
  */
 export default function CompactTokenInput({
   handleClick,
@@ -39,6 +40,7 @@ export default function CompactTokenInput({
   gasERC223,
   isError,
   allowedErc223 = true,
+  colorScheme = ThemeColors.GREEN,
 }: {
   handleClick: () => void;
   token: Currency | undefined;
@@ -58,7 +60,9 @@ export default function CompactTokenInput({
   gasERC223?: string;
   isError?: boolean;
   allowedErc223?: boolean;
+  colorScheme?: ThemeColors;
 }) {
+  const isPurple = colorScheme === ThemeColors.PURPLE;
   const t = useTranslations("Swap");
   const { price } = useUSDPrice(token?.wrapped.address0);
 
@@ -87,8 +91,13 @@ export default function CompactTokenInput({
           )}
           {setHalf && setMax && (
             <>
-              <InputButton onClick={setHalf} isActive={isHalf} text="Half" />
-              <InputButton onClick={setMax} isActive={isMax} text="Max" />
+              <InputButton
+                colorScheme={colorScheme}
+                onClick={setHalf}
+                isActive={isHalf}
+                text="Half"
+              />
+              <InputButton colorScheme={colorScheme} onClick={setMax} isActive={isMax} text="Max" />
             </>
           )}
         </span>
@@ -115,7 +124,9 @@ export default function CompactTokenInput({
         <div
           className={clsxMerge(
             "duration-200 rounded-3 pointer-events-none absolute w-full h-full border border-transparent top-0 left-0",
-            "peer-hocus:shadow peer-focus:shadow peer-hocus:shadow-green/60 peer-focus:shadow-green/60 peer-focus:border-green",
+            isPurple
+              ? "peer-hocus:shadow peer-focus:shadow peer-hocus:shadow-purple/60 peer-focus:shadow-purple/60 peer-focus:border-purple"
+              : "peer-hocus:shadow peer-focus:shadow peer-hocus:shadow-green/60 peer-focus:shadow-green/60 peer-focus:border-green",
             isError &&
               "shadow shadow-red-light/60 border-red-light peer-hocus:shadow-red-light/60 peer-focus:shadow-red-light/60 peer-focus:border-red-light",
           )}
@@ -126,6 +137,7 @@ export default function CompactTokenInput({
           variant="rounded"
           onClick={handleClick}
           size="large"
+          colorScheme={colorScheme}
         >
           {token ? (
             <span className="flex gap-2 items-center">
@@ -171,7 +183,9 @@ export default function CompactTokenInput({
                   className={clsx(
                     "h-6 px-2.5 rounded-[6px] text-12 font-medium duration-200 disabled:cursor-not-allowed",
                     active
-                      ? "bg-green-bg text-primary-text shadow-[inset_0_0_0_1px] shadow-green/60"
+                      ? isPurple
+                        ? "bg-purple-bg text-primary-text shadow-[inset_0_0_0_1px] shadow-purple/60"
+                        : "bg-green-bg text-primary-text shadow-[inset_0_0_0_1px] shadow-green/60"
                       : "text-tertiary-text hocus:text-secondary-text disabled:hocus:text-tertiary-text",
                   )}
                 >
@@ -182,7 +196,7 @@ export default function CompactTokenInput({
           </div>
         ) : (
           <span className="flex items-center gap-1">
-            <Badge color="green" text="Native" />
+            <Badge color={isPurple ? "purple" : "green"} text="Native" />
             <Tooltip iconSize={16} text={t("native_currency_tooltip")} />
           </span>
         )}

@@ -13,8 +13,8 @@ import ConfirmSwapDialog from "@/app/[locale]/swap/components/ConfirmSwapDialog"
 import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
+import TradeSummaryLine from "@/app/[locale]/swap/components/TradeSummaryLine";
 import { useSwapEstimatedGas, useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
-import { TokenTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import { useTrade, useTradeComputation } from "@/app/[locale]/swap/hooks/useTrade";
 import { useConfirmConvertDialogStore } from "@/app/[locale]/swap/stores/useConfirmConvertDialogOpened";
 import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
@@ -58,32 +58,6 @@ import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
 
 const ActionButtonSize = ButtonSize.EXTRA_LARGE;
 const MobileActionButtonSize = ButtonSize.LARGE;
-// Under the swap button: price impact coloured by severity (under 1%, 1-3%, above 3%) and
-// the slippage the trade will accept, so neither hides inside the collapsed details.
-function TradeSummaryLine({ trade, slippage }: { trade: TokenTrade; slippage: number | string }) {
-  const t = useTranslations("Swap");
-  const impact = parseFloat(trade.priceImpact.toSignificant());
-
-  return (
-    <p className="flex justify-center gap-2 mt-3 text-12 text-tertiary-text">
-      <span>
-        {t("price_impact")}{" "}
-        <span
-          className={clsx(
-            impact < 1 ? "text-green" : impact <= 3 ? "text-yellow-light" : "text-red-light",
-          )}
-        >
-          {formatFloat(impact)}%
-        </span>
-      </span>
-      <span aria-hidden>·</span>
-      <span>
-        {t("maximum_slippage")} {slippage}%
-      </span>
-    </p>
-  );
-}
-
 function OpenConfirmDialogButton({
   isSufficientBalance,
   isTradeReady,

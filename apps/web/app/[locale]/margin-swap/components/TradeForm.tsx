@@ -15,10 +15,12 @@ import { useMarginSwapSettingsStore } from "@/app/[locale]/margin-swap/stores/us
 import { useMarginSwapTokensStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapTokensStore";
 import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
 import { useConfirmMarginSwapDialogStore } from "@/app/[locale]/margin-trading/stores/dialogStates";
+import CompactTokenInput from "@/app/[locale]/swap/components/CompactTokenInput";
 import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog, {
   MarginSwapSettingsDialog,
 } from "@/app/[locale]/swap/components/SwapSettingsDialog";
+import TradeSummaryLine from "@/app/[locale]/swap/components/TradeSummaryLine";
 import { useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
 import {
   useMarginTrade,
@@ -37,7 +39,6 @@ import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSw
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import SwapButton from "@/components/buttons/SwapButton";
-import TokenInput from "@/components/common/TokenInput";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
@@ -633,7 +634,13 @@ export default function TradeForm({
   return (
     <div className="card-spacing pt-2.5 surface rounded-5">
       <div className="flex justify-between items-center mb-2.5">
-        <h1 className="font-bold text-20">{t("swap")}</h1>
+        <h1 className="sr-only">{t("swap")}</h1>
+        <span
+          aria-hidden
+          className="h-9 px-3 flex items-center rounded-2 bg-tertiary-bg text-16 font-medium text-primary-text"
+        >
+          {t("swap")}
+        </span>
         <div className="flex items-center relative left-3">
           {setIsChartVisible && tokenB && tokenA && (
             <IconButton
@@ -675,7 +682,7 @@ export default function TradeForm({
           </span>
         </div>
       </div>
-      <TokenInput
+      <CompactTokenInput
         colorScheme={ThemeColors.PURPLE}
         value={typedValue}
         onInputChange={(value) => setTypedValue({ typedValue: value, field: Field.CURRENCY_A })}
@@ -775,7 +782,7 @@ export default function TradeForm({
           }}
         />
       </div>
-      <TokenInput
+      <CompactTokenInput
         readOnly
         colorScheme={ThemeColors.PURPLE}
         value={dependentAmountValue}
@@ -821,7 +828,9 @@ export default function TradeForm({
       {/*  </div>*/}
       {/*)}*/}
 
-      {tokenA && tokenB && typedValue ? (
+      {/* With a trade, the rate line below carries the network fee; this bar covers the
+          moments without one (quoting). Same layout as the swap page. */}
+      {tokenA && tokenB && typedValue && !trade ? (
         <div
           className={clsx(
             "rounded-3 py-3.5 flex justify-between duration-200 px-5 bg-tertiary-bg my-5 md:items-center flex-wrap",
@@ -925,6 +934,23 @@ export default function TradeForm({
         </div>
       )}
 
+      {trade && tokenA && tokenB && (
+        <SwapDetails
+          trade={trade}
+          tokenA={tokenA}
+          tokenB={tokenB}
+          networkFee={computedGasSpendingETH}
+          networkFeeUSD={
+            price && computedGasSpendingETH
+              ? `$${formatFloat(+computedGasSpendingETH * price)}`
+              : undefined
+          }
+          gasPrice={computedGasSpending}
+          settingsStore={settingsStore}
+          className="mt-0 mb-4"
+        />
+      )}
+
       <OpenConfirmDialogButton
         isSufficientBalance={
           (tokenAStandard === Standard.ERC20 &&
@@ -941,16 +967,7 @@ export default function TradeForm({
         isTradeLoading={false}
       />
 
-      {trade && tokenA && tokenB && (
-        <SwapDetails
-          trade={trade}
-          tokenA={tokenA}
-          tokenB={tokenB}
-          networkFee={computedGasSpendingETH}
-          gasPrice={computedGasSpending}
-          settingsStore={settingsStore}
-        />
-      )}
+      {trade && <TradeSummaryLine trade={trade} slippage={settingsStore.slippage} />}
 
       <NetworkFeeConfigDialog
         isAdvanced={isAdvanced}
