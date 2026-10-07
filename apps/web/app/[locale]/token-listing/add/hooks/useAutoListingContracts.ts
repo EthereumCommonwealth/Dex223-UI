@@ -33,6 +33,10 @@ const AUTOLISTING_BLACKLIST = [
   // the old factory 0x5D63...50f9, so every v2 pool reverts with "Token pool is not a part of Dex223 factory."
   "0x8a1839E6b7b4538a15de8865891FcE6e24a27ddA",
   "0xBC5fC0bbd73DF985Cc28c9367407f9FfB1FD4CC3",
+  // Sepolia v2 core and free autolistings, replaced with the v3 factory 0xf07c...42B9 on 2026-10-07.
+  // They are bound to 0xeA0A...37eb, so a listing there does not reach the v3 pools.
+  "0xcF08b4d75B20c2b6B2C3EF5921a60B15CE7B010a",
+  "0x5BDdb8BF9404DFBF2C45c4eEad817F5e54782734",
 ];
 
 const query = gql(`
