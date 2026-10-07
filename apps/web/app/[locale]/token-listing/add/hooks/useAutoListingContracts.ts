@@ -33,6 +33,10 @@ const AUTOLISTING_BLACKLIST = [
   // the old factory 0x5D63...50f9, so every v2 pool reverts with "Token pool is not a part of Dex223 factory."
   "0x8a1839E6b7b4538a15de8865891FcE6e24a27ddA",
   "0xBC5fC0bbd73DF985Cc28c9367407f9FfB1FD4CC3",
+  // Mainnet core and free autolistings replaced with the v2 factory 0x8990...C3a5 on 2026-10-07.
+  // They are bound to 0xeA0A...37eb, so a listing there does not reach the v2 pools.
+  "0x83E1e7f47536515db9Ec4D7C4024e7395CD11A48",
+  "0xCc46E110426958E83e9298d46a50572691065eC5",
 ];
 
 const query = gql(`
