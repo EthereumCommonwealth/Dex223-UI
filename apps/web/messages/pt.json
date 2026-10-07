@@ -1124,7 +1124,7 @@
     "duration_second": "{count, plural, =0 {# segundos} one {# segundo} other {# segundos}}",
     "tx_insufficient_funds": "Fundos insuficientes para pagar esta transação e a respetiva taxa de rede.",
     "tx_reverted": "A transação foi revertida, por isso nada mudou. A taxa de rede é cobrada na mesma.",
-    "contract_holds_only": "O contrato Revenue só tem {amount} D223 como {standard}. Retire o restante no outro padrão.",
+    "staked_in_version_only": "Fez staking de {amount} D223 como {standard}. Retire o restante no outro padrão.",
     "gas_too_low_hint": "A transação falhou porque o limite de gás é demasiado baixo. Ajuste as definições da carteira.",
     "still_have_issues_discord": "Se o problema persistir, pergunte no nosso <discord>Discord</discord>.",
     "save": "Guardar"
