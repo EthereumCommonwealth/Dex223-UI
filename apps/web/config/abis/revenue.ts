@@ -77,6 +77,18 @@ export const REVENUE_ABI = [
   },
   {
     inputs: [],
+    name: "min_stake",
+    outputs: [
+      {
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "reward_duration",
     outputs: [
       {

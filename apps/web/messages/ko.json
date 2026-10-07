@@ -1125,6 +1125,11 @@
     "tx_insufficient_funds": "이 트랜잭션과 네트워크 수수료를 지불할 자금이 부족합니다.",
     "tx_reverted": "트랜잭션이 되돌려져 아무것도 바뀌지 않았습니다. 네트워크 수수료는 그대로 청구됩니다.",
     "staked_in_version_only": "{standard} 형태로 스테이킹한 D223는 {amount}개입니다. 나머지는 다른 표준으로 언스테이킹하세요.",
+    "min_stake_hint": "최소 스테이킹: {min} D223. 이보다 작은 포지션은 열 수 없습니다.",
+    "min_stake_error": "포지션을 열려면 {min} D223 이상 스테이킹하세요.",
+    "unstake_remainder_error": "{remaining} D223가 스테이킹된 채로 남습니다. {min} D223 이상 남기거나 전부 언스테이킹하세요.",
+    "unstake_all": "전부 언스테이킹: {amount} D223",
+    "split_position_notice": "{total} D223가 ERC-20 {erc20}, ERC-223 {erc223}로 스테이킹되어 있습니다. 각각 스테이킹한 표준으로 돌려받습니다. 전부 언스테이킹하면 한 번의 트랜잭션으로 둘 다 돌려받습니다.",
     "gas_too_low_hint": "가스 한도가 너무 낮아 트랜잭션이 실패했습니다. 지갑 설정을 조정하세요.",
     "still_have_issues_discord": "문제가 계속되면 <discord>Discord</discord>에서 문의하세요.",
     "save": "저장"
