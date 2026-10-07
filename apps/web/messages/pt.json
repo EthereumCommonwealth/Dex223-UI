@@ -1504,6 +1504,8 @@
     "default_dex223_oracle": "Oráculo DEX223 predefinido",
     "default_oracle_tooltip": "Preço de mercado DEX223 usado para valorizar este empréstimo.",
     "unknown_oracle": "Oráculo desconhecido",
+    "unverified_oracle_button": "Oráculo de preços não verificado",
+    "unverified_oracle_blocked": "Esta ordem usa um oráculo de preços não verificado. O empréstimo está desativado para proteger sua garantia.",
     "leverage_borrow_tooltip": "Quanto este empréstimo está alavancado em relação à sua garantia.",
     "deadline_borrow_tooltip": "Quando esta posição emprestada deve ser fechada.",
     "review_borrow": "Rever o empréstimo",

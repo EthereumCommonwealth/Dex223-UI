@@ -1504,6 +1504,8 @@
     "default_dex223_oracle": "默认 DEX223 预言机",
     "default_oracle_tooltip": "用于为此贷款定价的 DEX223 市场价格。",
     "unknown_oracle": "未知预言机",
+    "unverified_oracle_button": "未经验证的价格预言机",
+    "unverified_oracle_blocked": "此订单使用未经验证的价格预言机。为保护您的抵押品，借款已被禁用。",
     "leverage_borrow_tooltip": "此贷款相对抵押的杠杆倍数。",
     "deadline_borrow_tooltip": "此借入仓位必须关闭的时间。",
     "review_borrow": "确认借入",

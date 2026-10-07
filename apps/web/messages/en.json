@@ -1508,6 +1508,8 @@
     "default_dex223_oracle": "Default DEX223 oracle",
     "default_oracle_tooltip": "DEX223 market price used to value this loan.",
     "unknown_oracle": "Unknown oracle",
+    "unverified_oracle_button": "Unverified price oracle",
+    "unverified_oracle_blocked": "This order uses an unverified price oracle. Borrowing is disabled to protect your collateral.",
     "leverage_borrow_tooltip": "How much this loan is leveraged against your collateral.",
     "deadline_borrow_tooltip": "When this borrowed position must be closed.",
     "review_borrow": "Review borrow",
