@@ -8,11 +8,13 @@ import { useMediaQuery } from "react-responsive";
 import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 import { useAccount } from "wagmi";
 
+import CompactTokenInput from "@/app/[locale]/swap/components/CompactTokenInput";
 import ConfirmSwapDialog from "@/app/[locale]/swap/components/ConfirmSwapDialog";
 import PriceImpactWarning from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
 import { useSwapEstimatedGas, useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
+import { TokenTrade } from "@/app/[locale]/swap/hooks/useTrade";
 import { useTrade, useTradeComputation } from "@/app/[locale]/swap/hooks/useTrade";
 import { useConfirmConvertDialogStore } from "@/app/[locale]/swap/stores/useConfirmConvertDialogOpened";
 import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
@@ -29,7 +31,6 @@ import { TradeError } from "@/app/[locale]/swap/stores/useSwapTradeStore";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import SwapButton from "@/components/buttons/SwapButton";
-import TokenInput from "@/components/common/TokenInput";
 import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog";
 import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
@@ -57,6 +58,32 @@ import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
 
 const ActionButtonSize = ButtonSize.EXTRA_LARGE;
 const MobileActionButtonSize = ButtonSize.LARGE;
+// Under the swap button: price impact coloured by severity (under 1%, 1-3%, above 3%) and
+// the slippage the trade will accept, so neither hides inside the collapsed details.
+function TradeSummaryLine({ trade, slippage }: { trade: TokenTrade; slippage: number | string }) {
+  const t = useTranslations("Swap");
+  const impact = parseFloat(trade.priceImpact.toSignificant());
+
+  return (
+    <p className="flex justify-center gap-2 mt-3 text-12 text-tertiary-text">
+      <span>
+        {t("price_impact")}{" "}
+        <span
+          className={clsx(
+            impact < 1 ? "text-green" : impact <= 3 ? "text-yellow-light" : "text-red-light",
+          )}
+        >
+          {formatFloat(impact)}%
+        </span>
+      </span>
+      <span aria-hidden>·</span>
+      <span>
+        {t("maximum_slippage")} {slippage}%
+      </span>
+    </p>
+  );
+}
+
 function OpenConfirmDialogButton({
   isSufficientBalance,
   isTradeReady,
@@ -496,7 +523,21 @@ export default function TradeForm({
   return (
     <div className="card-spacing pt-2.5 surface rounded-5">
       <div className="flex justify-between items-center mb-2.5">
-        <h1 className="font-bold text-20">{t("swap")}</h1>
+        <h1 className="sr-only">{t("swap")}</h1>
+        <nav aria-label={t("swap_modes")} className="flex items-center gap-1">
+          <span
+            aria-current="page"
+            className="h-9 px-3 flex items-center rounded-2 bg-tertiary-bg text-16 font-medium text-primary-text"
+          >
+            {t("swap")}
+          </span>
+          <Link
+            href="/converter"
+            className="h-9 px-3 flex items-center rounded-2 text-16 font-medium text-tertiary-text hocus:text-primary-text hocus:bg-tertiary-bg duration-200"
+          >
+            {t("convert_tab")}
+          </Link>
+        </nav>
         <div className="flex items-center relative left-3">
           {setIsChartVisible && tokenA && tokenB && (
             <IconButton
@@ -538,7 +579,7 @@ export default function TradeForm({
           </span>
         </div>
       </div>
-      <TokenInput
+      <CompactTokenInput
         value={typedValue}
         onInputChange={(value) => setTypedValue({ typedValue: value, field: Field.CURRENCY_A })}
         handleClick={() => {
@@ -653,7 +694,7 @@ export default function TradeForm({
           }}
         />
       </div>
-      <TokenInput
+      <CompactTokenInput
         readOnly
         value={dependentAmountValue}
         onInputChange={(value) => null}
@@ -751,7 +792,9 @@ export default function TradeForm({
 
       <PriceImpactWarning trade={trade} className="mt-5" />
 
-      {tokenA && tokenB && typedValue ? (
+      {/* With a trade, the rate line below carries the network fee; this bar covers the
+          moments without one (quoting, conversions). */}
+      {tokenA && tokenB && typedValue && !trade ? (
         <div
           className={clsx(
             "rounded-3 py-3.5 flex justify-between duration-200 px-5 bg-tertiary-bg my-5 md:items-center flex-wrap",
@@ -855,6 +898,23 @@ export default function TradeForm({
         </div>
       )}
 
+      {trade && tokenA && tokenB && (
+        <SwapDetails
+          trade={trade}
+          tokenA={tokenA}
+          tokenB={tokenB}
+          networkFee={computedGasSpendingETH}
+          networkFeeUSD={
+            price && computedGasSpendingETH
+              ? `$${formatFloat(+computedGasSpendingETH * price)}`
+              : undefined
+          }
+          gasPrice={computedGasSpending}
+          settingsStore={settingsStore}
+          className="mt-0 mb-4"
+        />
+      )}
+
       <OpenConfirmDialogButton
         cannotReceiveOutput={Boolean(
           tokenB && tokenBStandard === Standard.ERC223 && !canReceiveERC223,
@@ -873,16 +933,7 @@ export default function TradeForm({
         isTradeLoading={loading}
       />
 
-      {trade && tokenA && tokenB && (
-        <SwapDetails
-          trade={trade}
-          tokenA={tokenA}
-          tokenB={tokenB}
-          networkFee={computedGasSpendingETH}
-          gasPrice={computedGasSpending}
-          settingsStore={settingsStore}
-        />
-      )}
+      {trade && <TradeSummaryLine trade={trade} slippage={settingsStore.slippage} />}
 
       <NetworkFeeConfigDialog
         isAdvanced={isAdvanced}

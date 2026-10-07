@@ -15,6 +15,7 @@ import {
 import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
 import { ThemeColors } from "@/config/theme/colors";
+import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
@@ -30,14 +31,19 @@ export default function SwapDetails({
   tokenB,
   gasPrice,
   networkFee,
+  networkFeeUSD,
   settingsStore,
+  className,
 }: {
   trade: TokenTrade;
   tokenA: Currency;
   tokenB: Currency;
   gasPrice: string | undefined;
   networkFee: string | undefined;
+  // When given, the collapsed header shows this network fee instead of the "Swap details" label.
+  networkFeeUSD?: string;
   settingsStore: MarginSwapSettingsStore;
+  className?: string;
 }) {
   const t = useTranslations("Swap");
   const nativeCurrency = useNativeCurrency();
@@ -91,7 +97,11 @@ export default function SwapDetails({
   return (
     <>
       <div
-        className={clsx("mt-5 bg-tertiary-bg", !isDetailsExpanded ? "rounded-3" : "rounded-t-3")}
+        className={clsxMerge(
+          "mt-5 bg-tertiary-bg",
+          !isDetailsExpanded ? "rounded-3" : "rounded-t-3",
+          className,
+        )}
       >
         <div
           className={clsx(
@@ -141,11 +151,19 @@ export default function SwapDetails({
           <div className="flex gap-3">
             <div
               className={clsx(
-                "max-sm:hidden text-14 flex items-center duration-200",
+                "text-14 flex items-center duration-200",
+                !networkFeeUSD && "max-sm:hidden",
                 isDetailsExpanded && "opacity-0",
               )}
             >
-              {t("swap_details")}
+              {networkFeeUSD ? (
+                <span className="flex items-center gap-1 text-secondary-text">
+                  <Svg iconName="gas" size={16} />
+                  {networkFeeUSD}
+                </span>
+              ) : (
+                t("swap_details")
+              )}
             </div>
             <span>
               <Svg
