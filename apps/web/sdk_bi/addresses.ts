@@ -207,10 +207,9 @@ export const ERC223_TOKEN_DEPLOYER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.MANTLE]: ZERO_ADDRESS,
 };
 
-// RevenueV2. Mainnet still points at RevenueV1 until V2 is deployed there and the collector is switched;
-// the page's earned/unlock_time reads only work against V2.
+// RevenueV2. The page reads earned / unlock_time / staked_by_version, which RevenueV1 does not have.
 export const REVENUE_ADDRESS: Record<DexChainId, Address> = {
-  [DexChainId.MAINNET]: "0xbA75fA26BB88BccEB74a967E4cA2FBfe99d6CE6e",
+  [DexChainId.MAINNET]: "0xFDE47dE2fe7c98688373b6D2F3BD628A5Da0Df3D",
   [DexChainId.SEPOLIA]: "0xC107239bfe75382112034a269386Ef608aA80EC1",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
