@@ -1504,6 +1504,8 @@
     "default_dex223_oracle": "Oracle DEX223 par défaut",
     "default_oracle_tooltip": "Prix de marché DEX223 utilisé pour valoriser cet emprunt.",
     "unknown_oracle": "Oracle inconnu",
+    "unverified_oracle_button": "Oracle de prix non vérifié",
+    "unverified_oracle_blocked": "Cet ordre utilise un oracle de prix non vérifié. L'emprunt est désactivé pour protéger votre garantie.",
     "leverage_borrow_tooltip": "Effet de levier de cet emprunt par rapport à votre garantie.",
     "deadline_borrow_tooltip": "Date à laquelle cette position empruntée doit être clôturée.",
     "review_borrow": "Vérifier l’emprunt",

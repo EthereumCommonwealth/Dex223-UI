@@ -202,6 +202,11 @@ export default function BorrowPage({
   const { order, loading } = useOrder({ id: +orderId });
 
   const chainId = useCurrentChainId();
+  // Only the default DEX223 oracle is trusted. An order owner can name any contract as its oracle,
+  // and a dishonest one can report prices that liquidate a healthy position and remove the floor on
+  // the forced sale, so borrowing against such an order is blocked, not just warned about.
+  const isUnverifiedOracle =
+    !!order && order.oracle.toLowerCase() !== ORACLE_ADDRESS[chainId]?.toLowerCase();
 
   const publicClient = usePublicClient();
   const [ratio, setRatio] = useState<number | undefined>();
@@ -291,6 +296,7 @@ export default function BorrowPage({
     validate,
     initialValues: savedValues,
     onSubmit: (values) => {
+      if (isUnverifiedOracle) return;
       setValues(values);
       setIsOpen(true);
     },
@@ -475,6 +481,10 @@ export default function BorrowPage({
   const tokenLists = useTokenLists();
 
   const buttonText = useMemo(() => {
+    if (isUnverifiedOracle) {
+      return t("unverified_oracle_button");
+    }
+
     if (!values.collateralToken) {
       return t("select_collateral_asset");
     }
@@ -492,7 +502,14 @@ export default function BorrowPage({
     }
 
     return t("start_borrowing");
-  }, [getBalanceError, oraclePriceError, t, values.collateralAmount, values.collateralToken]);
+  }, [
+    getBalanceError,
+    isUnverifiedOracle,
+    oraclePriceError,
+    t,
+    values.collateralAmount,
+    values.collateralToken,
+  ]);
 
   const [formattedEndTime, setFormattedEndTime] = useState<string>("");
 
@@ -578,7 +595,7 @@ export default function BorrowPage({
                 />
               </div>
 
-              {order.oracle.toLowerCase() === ORACLE_ADDRESS[chainId].toLowerCase() ? (
+              {!isUnverifiedOracle ? (
                 <div className="flex justify-between shadow px-4 py-3 rounded-3 mb-2 bg-tertiary-bg">
                   <div className="flex items-center gap-1">
                     <Svg iconName="done" className="text-green" />
@@ -597,6 +614,11 @@ export default function BorrowPage({
                   <span className="text-red-light flex items-center gap-1 rounded-3 ">
                     {t("unknown_oracle")} <Svg iconName="info" />
                   </span>
+                </div>
+              )}
+              {isUnverifiedOracle && (
+                <div className="mb-4">
+                  <Alert text={t("unverified_oracle_blocked")} type="error" />
                 </div>
               )}
               <form onSubmit={handleSubmit}>
@@ -823,6 +845,7 @@ export default function BorrowPage({
                   type="submit"
                   fullWidth
                   disabled={
+                    isUnverifiedOracle ||
                     !!getBalanceError ||
                     !values.collateralToken ||
                     !values.collateralAmount ||
