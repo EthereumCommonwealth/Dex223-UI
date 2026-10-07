@@ -1,5 +1,6 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
+import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useState } from "react";
@@ -12,11 +13,6 @@ import TokenLogo from "@/components/atoms/TokenLogo";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/buttons/Button";
 import { SortingType } from "@/components/buttons/IconButton";
-import IconButton, {
-  IconButtonSize,
-  IconButtonVariant,
-  IconSize,
-} from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { formatNumberKilos } from "@/functions/formatFloat";
@@ -27,39 +23,9 @@ import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { Link, useRouter } from "@/i18n/routing";
 
 import { usePoolPriceIndex, usePoolsData } from "./hooks";
-
-function HeaderItem({
-  isFirst = false,
-  label,
-  sorting,
-  handleSort,
-}: {
-  isFirst?: boolean;
-  label: string;
-  handleSort?: () => void;
-  sorting: SortingType;
-}) {
-  return (
-    <div
-      role={handleSort && "button"}
-      onClick={handleSort}
-      className={clsx(
-        "h-[60px] flex items-center justify-end text-tertiary-text relative -left-3 mb-2",
-        isFirst && "pl-2",
-      )}
-    >
-      {handleSort && (
-        <IconButton
-          variant={IconButtonVariant.SORTING}
-          buttonSize={IconButtonSize.SMALL}
-          iconSize={IconSize.SMALL}
-          sorting={sorting}
-        />
-      )}
-      {label}
-    </div>
-  );
-}
+import { feeApr, formatApr, tvlSeries7d, volume1d, volume7d } from "./poolMetrics";
+import Sparkline from "./Sparkline";
+import { PoolCategory, usePoolCategories } from "./usePoolCategories";
 
 const PAGE_SIZE = 10;
 
@@ -69,45 +35,71 @@ const MAX_ONCHAIN_BALANCE_POOLS = 200;
 
 const MISSING_VALUE = "\u2013";
 
-const renderTVL = (tvlUSD: number | undefined) =>
-  tvlUSD === undefined ? MISSING_VALUE : `$${formatNumberKilos(tvlUSD)}`;
+const renderUSD = (value: number | undefined) =>
+  value === undefined ? MISSING_VALUE : `$${formatNumberKilos(value)}`;
 
-type PoolDayVolume = { volumeUSD?: string | number; date?: number | string };
+const renderTVL = renderUSD;
 
-const DAY_SECONDS = 86400;
+function FeeApr({ pool }: { pool: any }) {
+  const apr = formatApr(feeApr(pool.poolDayData, pool.tvlUSD));
+  if (!apr) return <span className="text-tertiary-text">{MISSING_VALUE}</span>;
+  return <span className="text-green">{apr}</span>;
+}
 
-// Most recent day bucket's volume. The query orders poolDayData by date desc.
-const renderVolume1d = (poolDayData: PoolDayVolume[] | undefined) => {
-  if (!Array.isArray(poolDayData)) return MISSING_VALUE;
-  const value = parseFloat(String(poolDayData[0]?.volumeUSD ?? 0));
-  return Number.isFinite(value) ? `$${formatNumberKilos(value)}` : MISSING_VALUE;
-};
+const CATEGORY_LABEL = {
+  all: "filter_all",
+  stable: "filter_stable",
+  eth: "filter_eth_pairs",
+  erc223: "filter_erc223_native",
+  mine: "filter_my_pools",
+} as const satisfies Record<PoolCategory, string>;
 
-// Sum of the day buckets that fall inside the last 7 calendar days (UTC, the subgraph's
-// day boundary). Days without swaps have no bucket, so an empty window is a real $0.
-const renderVolume7d = (poolDayData: PoolDayVolume[] | undefined) => {
-  if (!Array.isArray(poolDayData)) return MISSING_VALUE;
-  const todayStart = Math.floor(Date.now() / 1000 / DAY_SECONDS) * DAY_SECONDS;
-  const windowStart = todayStart - 6 * DAY_SECONDS;
-  let total = 0;
-  for (const day of poolDayData.slice(0, 7)) {
-    if (Number(day?.date) < windowStart) continue;
-    const value = parseFloat(String(day?.volumeUSD ?? 0));
-    if (!Number.isFinite(value)) return MISSING_VALUE;
-    total += value;
-  }
-  return `$${formatNumberKilos(total)}`;
-};
+function CategoryChips({
+  available,
+  category,
+  setCategory,
+}: {
+  available: PoolCategory[];
+  category: PoolCategory;
+  setCategory: (category: PoolCategory) => void;
+}) {
+  const t = useTranslations("Liquidity");
+  return (
+    <div
+      role="group"
+      aria-label={t("filters_label")}
+      className="flex gap-2 overflow-x-auto pb-1 -mb-1 w-full"
+    >
+      {available.map((key) => (
+        <button
+          key={key}
+          type="button"
+          aria-pressed={category === key}
+          onClick={() => setCategory(key)}
+          className={clsx(
+            "h-8 px-3.5 rounded-20 border text-14 whitespace-nowrap duration-200",
+            category === key
+              ? "bg-green-bg border-green text-primary-text"
+              : "bg-tertiary-bg border-transparent text-secondary-text hocus:text-primary-text hocus:bg-quaternary-bg",
+          )}
+        >
+          {t(CATEGORY_LABEL[key])}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const DESKTOP_GRID =
+  "grid-cols-[minmax(200px,2.2fr),minmax(80px,1fr),minmax(80px,1fr),minmax(80px,1fr),minmax(90px,1fr),minmax(150px,1.3fr)]";
 
 const PoolsTableDesktop = ({
   tableData,
-  currentPage,
   sorting,
   handleSort,
   isLoading = false,
 }: {
   tableData: any[];
-  currentPage: number;
   sorting: SortingType;
   handleSort: () => any;
   isLoading?: boolean;
@@ -115,21 +107,36 @@ const PoolsTableDesktop = ({
   const t = useTranslations("Liquidity");
   const chainId = useCurrentChainId();
   const tokenMeta = useTokenMeta();
+  const router = useRouter();
 
   return (
-    <div className="hidden lg:grid pr-3 pl-2 rounded-3 overflow-hidden bg-table-gradient grid-cols-[_minmax(20px,0.5fr),minmax(50px,2.67fr),_minmax(87px,1.33fr),_minmax(30px,1fr),_minmax(30px,1fr),_minmax(30px,1fr)] pb-2">
-      <div className=" h-[60px] flex items-center justify-center  text-tertiary-text ">#</div>
-      <div className=" h-[60px] flex items-center text-tertiary-text">{t("pool")}</div>
-      <div className=" h-[60px] flex items-center justify-end  text-tertiary-text ">
-        {t("transactions")}
+    <div
+      className={clsx(
+        "hidden lg:grid px-3 rounded-3 overflow-hidden bg-table-gradient pb-2",
+        DESKTOP_GRID,
+      )}
+    >
+      <div className="h-[60px] flex items-center text-tertiary-text pl-3">{t("pool")}</div>
+      <button
+        type="button"
+        onClick={handleSort}
+        className="h-[60px] flex items-center gap-1 text-tertiary-text hocus:text-secondary-text"
+        aria-label={t("sort_by_tvl")}
+      >
+        TVL
+        <Svg
+          size={20}
+          iconName={sorting === SortingType.ASCENDING ? "sort-up" : "sort-down"}
+          className={sorting === SortingType.NONE ? "text-tertiary-text" : "text-green"}
+        />
+      </button>
+      <div className="h-[60px] flex items-center text-tertiary-text">{t("day_volume")}</div>
+      <div className="h-[60px] flex items-center text-tertiary-text">{t("volume_7d_short")}</div>
+      <div className="h-[60px] flex items-center gap-1 text-tertiary-text">
+        {t("fee_apr")}
+        <Tooltip iconSize={16} text={t("fee_apr_tooltip")} />
       </div>
-      <HeaderItem label="TVL" sorting={sorting} handleSort={handleSort} />
-      <div className=" h-[60px] flex items-center justify-end text-tertiary-text ">
-        {t("volume_1d")}
-      </div>
-      <div className=" h-[60px] flex items-center justify-end text-tertiary-text pr-2">
-        {t("volume_7d")}
-      </div>
+      <div className="h-[60px] flex items-center text-tertiary-text">{t("last_7_days")}</div>
 
       {isLoading
         ? [...Array(10)].map((row, index) => (
@@ -140,33 +147,26 @@ const PoolsTableDesktop = ({
                 borderRadius="0.5rem"
                 duration={5}
               >
-                <div className="h-[56px] flex justify-center items-center">
-                  <Skeleton width={40} height={16} />
-                </div>
-                <div className="flex-nowrap flex flex-row h-[56px] gap-2 items-center">
-                  <div className="flex relative flex-row h-[56px] w-[40px]">
+                <div className="flex-nowrap flex flex-row h-[64px] gap-2 items-center pl-3">
+                  <div className="flex relative flex-row h-[64px] w-[48px]">
                     <SkeletonTheme baseColor="#272727" highlightColor="#2E2F2F" duration={5}>
-                      <div className=" absolute left-0 top-3">
-                        <Skeleton enableAnimation={true} circle={true} width={24} height={24} />
+                      <div className="absolute left-0 top-4">
+                        <Skeleton enableAnimation={true} circle={true} width={32} height={32} />
                       </div>
-                      <div className="absolute left-[12px] top-3">
-                        <Skeleton enableAnimation={true} circle={true} width={24} height={24} />
+                      <div className="absolute left-[20px] top-4">
+                        <Skeleton enableAnimation={true} circle={true} width={32} height={32} />
                       </div>
                     </SkeletonTheme>
                   </div>
-                  <Skeleton enableAnimation={true} width={236} height={16} />
+                  <Skeleton enableAnimation={true} width={140} height={16} />
                 </div>
-                <div className="h-[56px] flex justify-end items-center">
-                  <Skeleton enableAnimation={true} width={44} height={16} />
-                </div>
-                <div className="h-[56px] flex justify-end items-center pr-1">
-                  <Skeleton enableAnimation={true} width={54} height={16} />
-                </div>
-                <div className="h-[56px] flex justify-end items-center">
-                  <Skeleton enableAnimation={true} width={68} height={16} />
-                </div>
-                <div className="h-[56px] flex justify-end items-center pr-4">
-                  <Skeleton enableAnimation={true} width={60} height={16} />
+                {[56, 48, 56, 44].map((width, i) => (
+                  <div key={i} className="h-[64px] flex items-center">
+                    <Skeleton enableAnimation={true} width={width} height={16} />
+                  </div>
+                ))}
+                <div className="h-[64px] flex items-center">
+                  <Skeleton enableAnimation={true} width={120} height={20} />
                 </div>
               </SkeletonTheme>
             </React.Fragment>
@@ -174,6 +174,14 @@ const PoolsTableDesktop = ({
         : tableData.map((o: any, index: number) => {
             const { symbol: token0Symbol, image: token0Image } = tokenMeta(o.token0);
             const { symbol: token1Symbol, image: token1Image } = tokenMeta(o.token1);
+            const pairLabel = `${truncateMiddle(token0Symbol, {
+              charsFromStart: 4,
+              charsFromEnd: 3,
+            })} / ${truncateMiddle(token1Symbol, {
+              charsFromStart: 4,
+              charsFromEnd: 3,
+            })}`;
+            const cell = "h-[64px] cursor-pointer flex items-center group-hocus:bg-tertiary-bg";
 
             return (
               <Link
@@ -181,62 +189,81 @@ const PoolsTableDesktop = ({
                 className="contents group"
                 key={o.id || index}
               >
-                <div className="h-[56px] cursor-pointer flex items-center rounded-l-4 justify-center text-secondary-text group-hocus:bg-tertiary-bg">
-                  {(currentPage - 1) * PAGE_SIZE + index + 1}
-                </div>
-                <div
-                  className={`h-[56px] cursor-pointer flex pl-2 items-center group-hocus:bg-tertiary-bg`}
-                >
-                  <div className="flex items-center ">
-                    <span className="w-[26px] h-[26px] rounded-full bg-primary-bg flex items-center justify-center overflow-hidden">
+                <div className={clsx(cell, "pl-3 rounded-l-3")}>
+                  <div className="flex items-center flex-shrink-0">
+                    <span className="w-[32px] h-[32px] rounded-full bg-primary-bg flex items-center justify-center overflow-hidden">
                       <TokenLogo
                         src={token0Image}
                         alt={token0Symbol}
-                        size={24}
-                        className="h-[24px] w-[24px] rounded-full"
+                        size={30}
+                        className="h-[30px] w-[30px] rounded-full"
                       />
                     </span>
-                    <span className="w-[26px] h-[26px]   rounded-full bg-primary-bg flex items-center justify-center -ml-3.5 overflow-hidden">
+                    <span className="w-[32px] h-[32px] rounded-full bg-primary-bg flex items-center justify-center -ml-2 overflow-hidden">
                       <TokenLogo
                         src={token1Image}
                         alt={token1Symbol}
-                        size={24}
-                        className="h-[24px] w-[24px] rounded-full"
+                        size={30}
+                        className="h-[30px] w-[30px] rounded-full"
                       />
                     </span>
                   </div>
-                  <span className="ml-3 mr-2">{`${truncateMiddle(token0Symbol, {
-                    charsFromStart: 4,
-                    charsFromEnd: 3,
-                  })}/${truncateMiddle(token1Symbol, {
-                    charsFromStart: 4,
-                    charsFromEnd: 3,
-                  })}`}</span>
+                  <span className="ml-3 mr-2 text-primary-text font-medium whitespace-nowrap">
+                    {pairLabel}
+                  </span>
                   <Badge
                     variant={BadgeVariant.PERCENTAGE}
                     percentage={`${(FEE_AMOUNT_DETAIL as any)[o.feeTier as any].label}%`}
                   />
-                  <Svg iconName="next" className="ml-1 text-green group-hocus:block hidden" />
                 </div>
-                <div
-                  className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text pr-3 group-hocus:bg-tertiary-bg`}
-                >
-                  {formatNumberKilos(o.txCount, { significantDigits: 0 })}
+                <div className={clsx(cell, "text-primary-text")}>{renderTVL(o.tvlUSD)}</div>
+                <div className={clsx(cell, "text-secondary-text")}>
+                  {renderUSD(volume1d(o.poolDayData))}
                 </div>
-                <div
-                  className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
-                >
-                  {renderTVL(o.tvlUSD)}
+                <div className={clsx(cell, "text-secondary-text")}>
+                  {renderUSD(volume7d(o.poolDayData))}
                 </div>
-                <div
-                  className={`h-[56px] cursor-pointer flex justify-end items-center text-secondary-text group-hocus:bg-tertiary-bg`}
-                >
-                  {renderVolume1d(o.poolDayData)}
+                <div className={cell}>
+                  <FeeApr pool={o} />
                 </div>
-                <div
-                  className={`h-[56px] cursor-pointer flex justify-end items-center pr-4 rounded-r-4 text-secondary-text group-hocus:bg-tertiary-bg`}
-                >
-                  {renderVolume7d(o.poolDayData)}
+                <div className={clsx(cell, "pr-3 rounded-r-3 relative")}>
+                  <span className="group-hocus:invisible">
+                    <Sparkline
+                      values={tvlSeries7d(o.poolDayData)}
+                      label={t("tvl_trend_label", { pair: pairLabel })}
+                    />
+                  </span>
+                  {/* Buttons, not links: an <a> inside the row's <a> is invalid HTML. */}
+                  <span className="absolute inset-y-0 left-0 right-3 hidden group-hocus:flex items-center gap-2">
+                    <Button
+                      type="button"
+                      size={ButtonSize.SMALL}
+                      colorScheme={ButtonColor.LIGHT_GREEN}
+                      className="lg:px-3 whitespace-nowrap"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(`/swap?tokenA=${o.token0?.id}&tokenB=${o.token1?.id}`);
+                      }}
+                    >
+                      {t("swap_action")}
+                    </Button>
+                    <Button
+                      type="button"
+                      size={ButtonSize.SMALL}
+                      colorScheme={ButtonColor.LIGHT_GREEN}
+                      className="lg:px-3 whitespace-nowrap"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        router.push(
+                          `/add?tier=${o.feeTier}&tokenA=${o.token0?.id}&tokenB=${o.token1?.id}&chainId=${chainId}`,
+                        );
+                      }}
+                    >
+                      {t("add_action")}
+                    </Button>
+                  </span>
                 </div>
               </Link>
             );
@@ -286,8 +313,10 @@ const PoolsTableItemMobile = ({
         <div className="flex flex-col gap-2">
           <div className="flex justify-between gap-x-2">
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
-              <span className="text-14 text-tertiary-text">{t("transactions")}</span>
-              <span className="text-14 text-secondary-text">{formatNumberKilos(pool.txCount)}</span>
+              <span className="text-14 text-tertiary-text">{t("fee_apr")}</span>
+              <span className="text-14">
+                <FeeApr pool={pool} />
+              </span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">TVL</span>
@@ -302,13 +331,13 @@ const PoolsTableItemMobile = ({
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">{t("volume_1d")}</span>
               <span className="text-14 text-secondary-text">
-                {renderVolume1d(pool.poolDayData)}
+                {renderUSD(volume1d(pool.poolDayData))}
               </span>
             </div>
             <div className="flex w-full flex-col items-start bg-tertiary-bg rounded-2 px-4 py-[10px]">
               <span className="text-14 text-tertiary-text">{t("volume_7d")}</span>
               <span className="text-14 text-secondary-text">
-                {renderVolume7d(pool.poolDayData)}
+                {renderUSD(volume7d(pool.poolDayData))}
               </span>
             </div>
           </div>
@@ -451,6 +480,19 @@ export default function PoolsTable({
     chainId,
   });
 
+  const [category, setCategoryState] = useState<PoolCategory>("all");
+  const setCategory = useCallback((next: PoolCategory) => {
+    setCategoryState(next);
+    setCurrentPage(1);
+  }, []);
+  const {
+    available: availableCategories,
+    matches: matchesCategory,
+    loading: categoryLoading,
+  } = usePoolCategories({ pools: data?.pools || [], chainId, category });
+  // A chip that stops applying (wallet disconnected, chain switched) falls back to "All".
+  const activeCategory = availableCategories.includes(category) ? category : "all";
+
   const pools: any[] = useMemo(() => {
     // The subgraph also prices every pool with one global price per token, which overstates
     // any pool trading away from that price - see computePoolTVL. Chains with no stablecoin
@@ -469,10 +511,10 @@ export default function PoolsTable({
       };
     });
 
-    return localSorting(pools, sorting);
-  }, [data?.pools, onChainBalances, priceIndex, sorting]);
+    return localSorting(activeCategory === "all" ? pools : pools.filter(matchesCategory), sorting);
+  }, [data?.pools, onChainBalances, priceIndex, sorting, activeCategory, matchesCategory]);
 
-  const isLoading = loading || pricesLoading || balancesLoading;
+  const isLoading = loading || pricesLoading || balancesLoading || categoryLoading;
 
   const currentTableData = useMemo(() => {
     const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
@@ -483,6 +525,15 @@ export default function PoolsTable({
   return (
     <>
       <div className="min-h-[640px] mb-5 w-full">
+        {availableCategories.length > 1 && (
+          <div className="mb-4">
+            <CategoryChips
+              available={availableCategories}
+              category={activeCategory}
+              setCategory={setCategory}
+            />
+          </div>
+        )}
         <>
           {error && pools.length === 0 ? (
             <div className="min-h-[340px] bg-primary-bg flex flex-col gap-4 items-center justify-center w-full rounded-5 px-4 text-center">
@@ -501,7 +552,6 @@ export default function PoolsTable({
                 isLoading={isLoading}
                 tableData={currentTableData}
                 sorting={sorting}
-                currentPage={currentPage}
                 handleSort={handleSort}
               />
               <PoolsTableMobile

@@ -691,7 +691,21 @@
     "volume_7d": "Volume de 7 dias",
     "view_pool": "Ver pool",
     "missing_tokens": "Falta o token A ou o token B",
-    "pools": "Pools"
+    "pools": "Pools",
+    "fee_apr": "APR de taxas",
+    "fee_apr_tooltip": "Taxas de negociação das últimas 24 horas, anualizadas e divididas pelo TVL do pool. Reflete taxas passadas, não um retorno garantido, e varia com o volume e o preço.",
+    "last_7_days": "Últimos 7 dias",
+    "volume_7d_short": "Volume 7d",
+    "filters_label": "Filtrar pools",
+    "filter_all": "Todos",
+    "filter_stable": "Estáveis",
+    "filter_eth_pairs": "Pares com ETH",
+    "filter_erc223_native": "ERC-223 nativo",
+    "filter_my_pools": "Meus pools",
+    "swap_action": "Trocar",
+    "add_action": "Adicionar liquidez",
+    "sort_by_tvl": "Ordenar por TVL",
+    "tvl_trend_label": "TVL de {pair} nos últimos 7 dias"
   },
   "Statistics": {
     "title": "Estatísticas",
@@ -1813,6 +1827,125 @@
     "pay": {
       "title": "Pagar",
       "description": "Pague um comerciante em cripto com os dados do pedido."
+    },
+    "home": {
+      "title": "DEX223: exchange descentralizada para tokens ERC-20 e ERC-223",
+      "description": "Troque, ganhe taxas, empreste, tome emprestado e opere com margem com tokens ERC-20 e ERC-223. Converta 1:1 entre padrões e liste qualquer token sem permissão."
+    }
+  },
+  "Landing": {
+    "hero": {
+      "eyebrow": "Feita para ERC-223 e ERC-20",
+      "title": "Negocie qualquer token. Sem perder nenhum.",
+      "subtitle": "A DEX223 é a exchange descentralizada para ERC-20 e ERC-223. Troque, ganhe taxas, empreste e tome emprestado, com transferências que não somem no contrato errado.",
+      "trust": {
+        "audited": "Contratos auditados",
+        "non_custodial": "Sem custódia",
+        "open_source": "Código aberto"
+      }
+    },
+    "cta": {
+      "launch": "Abrir o app",
+      "guide": "Ler o guia"
+    },
+    "preview": {
+      "title": "Troca",
+      "pay": "Você paga",
+      "receive": "Você recebe",
+      "button": "Começar a trocar",
+      "aria": "Abrir a página de troca"
+    },
+    "stats": {
+      "label": "Estatísticas do protocolo",
+      "tvl": "Valor total bloqueado",
+      "volume": "Volume histórico",
+      "pools": "Pools",
+      "transactions": "Transações"
+    },
+    "features": {
+      "title": "Tudo o que um trader sério precisa, on-chain",
+      "swap": {
+        "title": "Troque em qualquer padrão",
+        "body": "Escolha ERC-20 ou ERC-223 em cada lado da operação. A liquidez concentrada mantém os preços justos.",
+        "link": "Começar a trocar"
+      },
+      "convert": {
+        "title": "Converta 1:1, sem taxas",
+        "body": "Mova qualquer token entre ERC-20 e ERC-223 a uma taxa fixa, sem taxas de protocolo.",
+        "link": "Abrir o conversor"
+      },
+      "earn": {
+        "title": "Ganhe com sua liquidez",
+        "body": "Escolha uma faixa de taxa e um intervalo de preços e receba taxas de cada negociação.",
+        "link": "Adicionar liquidez"
+      },
+      "margin": {
+        "title": "Margem de credores reais",
+        "body": "Tome emprestado de ordens de empréstimo on-chain com alavancagem, juros e prazos personalizados.",
+        "link": "Explorar margem"
+      },
+      "list": {
+        "title": "Liste qualquer token, sem permissão",
+        "body": "Os contratos de auto-listagem tornam seu token negociável assim que ele tiver um pool.",
+        "link": "Listar um token"
+      },
+      "launch": {
+        "title": "Lance um token em minutos",
+        "body": "Crie um token ERC-223, adicione uma versão ERC-20 e depois crie o pool e liste-o.",
+        "link": "Criar token"
+      }
+    },
+    "why": {
+      "eyebrow": "Por que ERC-223",
+      "title": "Milhões de dólares em tokens ERC-20 estão presos em contratos que não podiam recebê-los.",
+      "body": "O ERC-223 consulta o destinatário antes e reverte a transferência se ele não puder aceitar os tokens. A DEX223 foi construída sobre essa segurança e continua negociando qualquer ERC-20.",
+      "calculator": "Ver a calculadora de perdas de ERC-20",
+      "table_caption": "ERC-20 comparado ao ERC-223",
+      "feature": "Recurso",
+      "rows": {
+        "lost": {
+          "label": "Perda em transferência errada",
+          "erc20": "Sim",
+          "erc223": "Não"
+        },
+        "approval": {
+          "label": "Etapa de aprovação separada",
+          "erc20": "Necessária",
+          "erc223": "Não necessária"
+        },
+        "deposit": {
+          "label": "Depósito em uma única transação",
+          "erc20": "Não",
+          "erc223": "Sim"
+        }
+      }
+    },
+    "faq": {
+      "title": "Perguntas frequentes",
+      "what": {
+        "q": "O que é a DEX223?",
+        "a": "Uma exchange descentralizada onde você pode trocar, fornecer liquidez, emprestar, tomar emprestado e operar com margem com tokens ERC-20 e ERC-223."
+      },
+      "need_erc223": {
+        "q": "Preciso de tokens ERC-223 para usar?",
+        "a": "Não. Todos os pools aceitam os dois padrões. Você escolhe ERC-20 ou ERC-223 para cada lado da operação, e o conversor integrado move tokens entre eles em 1:1."
+      },
+      "list": {
+        "q": "Como listo meu token?",
+        "a": "Abra Listagem de tokens, escolha um contrato de auto-listagem e confirme. A listagem não exige permissão: não é preciso inscrição nem aprovação da equipe."
+      },
+      "custodial": {
+        "q": "A DEX223 tem custódia dos meus fundos?",
+        "a": "Não. Você negocia a partir da sua própria carteira e assina cada transação. A DEX223 nunca guarda suas chaves."
+      },
+      "fees": {
+        "q": "Quanto custa?",
+        "a": "Os traders pagam a faixa de taxa do pool, que vai para os provedores de liquidez, mais o gás da rede. Converter entre ERC-20 e ERC-223 não tem taxa de protocolo."
+      }
+    },
+    "final": {
+      "title": "Comece a negociar em menos de um minuto",
+      "body": "Conecte uma carteira, escolha um par e troque. Sem cadastro."
     }
   }
 }

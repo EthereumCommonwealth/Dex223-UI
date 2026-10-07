@@ -691,7 +691,21 @@
     "volume_7d": "Volumen de 7 días",
     "view_pool": "Ver pool",
     "missing_tokens": "Falta el token A o el token B",
-    "pools": "Pools"
+    "pools": "Pools",
+    "fee_apr": "APR por comisiones",
+    "fee_apr_tooltip": "Comisiones de trading de las últimas 24 horas, anualizadas y divididas entre el TVL del pool. Refleja comisiones pasadas, no un rendimiento garantizado, y varía con el volumen y el precio.",
+    "last_7_days": "Últimos 7 días",
+    "volume_7d_short": "Volumen 7 d",
+    "filters_label": "Filtrar pools",
+    "filter_all": "Todos",
+    "filter_stable": "Estables",
+    "filter_eth_pairs": "Pares con ETH",
+    "filter_erc223_native": "ERC-223 nativo",
+    "filter_my_pools": "Mis pools",
+    "swap_action": "Intercambiar",
+    "add_action": "Añadir liquidez",
+    "sort_by_tvl": "Ordenar por TVL",
+    "tvl_trend_label": "TVL de {pair} en los últimos 7 días"
   },
   "Statistics": {
     "title": "Estadísticas",
@@ -1813,6 +1827,125 @@
     "pay": {
       "title": "Pagar",
       "description": "Paga a un comercio en cripto con los datos del pedido incluidos."
+    },
+    "home": {
+      "title": "DEX223: exchange descentralizado para tokens ERC-20 y ERC-223",
+      "description": "Intercambia, gana comisiones, presta, pide prestado y opera con margen con tokens ERC-20 y ERC-223. Convierte 1:1 entre estándares y lista cualquier token sin permisos."
+    }
+  },
+  "Landing": {
+    "hero": {
+      "eyebrow": "Creado para ERC-223 y ERC-20",
+      "title": "Opera con cualquier token. Sin perder ninguno.",
+      "subtitle": "DEX223 es el exchange descentralizado para ERC-20 y ERC-223. Intercambia, gana comisiones, presta y pide prestado, con transferencias que no pueden perderse en el contrato equivocado.",
+      "trust": {
+        "audited": "Contratos auditados",
+        "non_custodial": "Sin custodia",
+        "open_source": "Código abierto"
+      }
+    },
+    "cta": {
+      "launch": "Abrir la app",
+      "guide": "Leer la guía"
+    },
+    "preview": {
+      "title": "Intercambio",
+      "pay": "Pagas",
+      "receive": "Recibes",
+      "button": "Empezar a intercambiar",
+      "aria": "Abrir la página de intercambio"
+    },
+    "stats": {
+      "label": "Estadísticas del protocolo",
+      "tvl": "Valor total bloqueado",
+      "volume": "Volumen histórico",
+      "pools": "Pools",
+      "transactions": "Transacciones"
+    },
+    "features": {
+      "title": "Todo lo que un trader serio necesita, on-chain",
+      "swap": {
+        "title": "Intercambia en cualquier estándar",
+        "body": "Elige ERC-20 o ERC-223 en cada lado de la operación. La liquidez concentrada mantiene los precios ajustados.",
+        "link": "Empezar a intercambiar"
+      },
+      "convert": {
+        "title": "Convierte 1:1, sin comisiones",
+        "body": "Pasa cualquier token entre ERC-20 y ERC-223 a un tipo fijo y sin comisiones del protocolo.",
+        "link": "Abrir el conversor"
+      },
+      "earn": {
+        "title": "Gana con tu liquidez",
+        "body": "Elige un nivel de comisión y un rango de precios, y cobra comisiones de cada operación.",
+        "link": "Añadir liquidez"
+      },
+      "margin": {
+        "title": "Margen de prestamistas reales",
+        "body": "Pide prestado de órdenes de préstamo on-chain con apalancamiento, interés y condiciones a medida.",
+        "link": "Explorar el margen"
+      },
+      "list": {
+        "title": "Lista cualquier token, sin permisos",
+        "body": "Los contratos de auto-listado hacen que tu token se pueda negociar en cuanto tenga un pool.",
+        "link": "Listar un token"
+      },
+      "launch": {
+        "title": "Lanza un token en minutos",
+        "body": "Crea un token ERC-223, añade una versión ERC-20 y luego crea su pool y lístalo.",
+        "link": "Crear token"
+      }
+    },
+    "why": {
+      "eyebrow": "Por qué ERC-223",
+      "title": "Millones de dólares en tokens ERC-20 están atrapados en contratos que no podían recibirlos.",
+      "body": "ERC-223 consulta primero al receptor y revierte la transferencia si no puede aceptar los tokens. DEX223 se basa en esa seguridad y sigue operando con cualquier ERC-20.",
+      "calculator": "Ver la calculadora de pérdidas de ERC-20",
+      "table_caption": "ERC-20 frente a ERC-223",
+      "feature": "Característica",
+      "rows": {
+        "lost": {
+          "label": "Se pierden en una transferencia errónea",
+          "erc20": "Sí",
+          "erc223": "No"
+        },
+        "approval": {
+          "label": "Paso de aprobación aparte",
+          "erc20": "Necesario",
+          "erc223": "No necesario"
+        },
+        "deposit": {
+          "label": "Depósito en una sola transacción",
+          "erc20": "No",
+          "erc223": "Sí"
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "what": {
+        "q": "¿Qué es DEX223?",
+        "a": "Un exchange descentralizado donde puedes intercambiar, aportar liquidez, prestar, pedir prestado y operar con margen con tokens ERC-20 y ERC-223."
+      },
+      "need_erc223": {
+        "q": "¿Necesito tokens ERC-223 para usarlo?",
+        "a": "No. Todos los pools aceptan ambos estándares. Eliges ERC-20 o ERC-223 para cada lado de la operación, y el conversor integrado pasa tokens de uno a otro 1:1."
+      },
+      "list": {
+        "q": "¿Cómo listo mi token?",
+        "a": "Abre Listado de tokens, elige un contrato de auto-listado y confirma. El listado no requiere permisos: no hace falta solicitud ni aprobación del equipo."
+      },
+      "custodial": {
+        "q": "¿DEX223 custodia mis fondos?",
+        "a": "No. Operas desde tu propia billetera y firmas tú mismo cada transacción. DEX223 nunca tiene tus claves."
+      },
+      "fees": {
+        "q": "¿Cuánto cuesta?",
+        "a": "Los traders pagan el nivel de comisión del pool, que va a sus proveedores de liquidez, más el gas de la red. Convertir entre ERC-20 y ERC-223 no tiene comisión del protocolo."
+      }
+    },
+    "final": {
+      "title": "Empieza a operar en menos de un minuto",
+      "body": "Conecta una billetera, elige un par e intercambia. Sin registro."
     }
   }
 }
