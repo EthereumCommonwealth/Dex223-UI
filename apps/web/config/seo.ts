@@ -43,6 +43,7 @@ export type SeoPage =
   | "token_listing_add"
   | "statistics"
   | "guidelines"
+  | "demo"
   | "portfolio"
   | "revenue"
   | "markets"

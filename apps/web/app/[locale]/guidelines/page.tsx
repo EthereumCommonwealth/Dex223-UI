@@ -53,6 +53,22 @@ export default function GuidelinesPage() {
         <h1 className="mb-2 text-24 lg:text-40">{t("title")}</h1>
         <p className="text-secondary-text text-14 md:text-16 mb-5">{t("description")}</p>
 
+        <div className="bg-primary-bg rounded-5 p-5 mb-5 border border-green/40 flex flex-col md:flex-row md:items-center gap-4 md:gap-5">
+          <span className="self-start md:self-auto rounded-full bg-green-bg p-3 text-green">
+            <Svg iconName="guidelines" />
+          </span>
+          <div className="flex flex-col gap-1 flex-grow">
+            <h2 className="text-20 font-bold">{t("demo_title")}</h2>
+            <p className="text-secondary-text">{t("demo_description")}</p>
+          </div>
+          <Link
+            href="/demo"
+            className="flex items-center justify-center min-h-10 px-6 rounded-2 bg-green text-black hocus:bg-green-hover duration-200 font-medium whitespace-nowrap"
+          >
+            {t("demo_cta")}
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
           <GuidelineCard
             title={t("getting_started_title")}

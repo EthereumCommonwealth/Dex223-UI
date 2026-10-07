@@ -27,6 +27,7 @@ const ROUTES: {
   { path: "markets", priority: 0.6, changeFrequency: "hourly" },
   { path: "revenue", priority: 0.6, changeFrequency: "weekly" },
   { path: "guidelines", priority: 0.4, changeFrequency: "yearly" },
+  { path: "demo", priority: 0.5, changeFrequency: "monthly" },
   { path: "governance", priority: 0.3, changeFrequency: "monthly" },
 ];
 
