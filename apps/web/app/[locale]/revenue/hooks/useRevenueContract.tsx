@@ -10,7 +10,7 @@ import {
   useWalletClient,
 } from "wagmi";
 
-import { estimateClaimDividends, isStakingToken } from "@/app/[locale]/revenue/lib/claimEstimate";
+import { isStakingToken } from "@/app/[locale]/revenue/lib/stakingToken";
 import { ERC20_ABI } from "@/config/abis/erc20";
 import { FEE_COLLECTOR_ABI } from "@/config/abis/feeCollector";
 import { REVENUE_ABI } from "@/config/abis/revenue";
@@ -84,7 +84,7 @@ export default function useRevenueContract({
   // Candidate reward tokens for this chain, supplied by the page from its token lists.
   const [rewardTokens, setRewardTokens] = useState<Token[]>([]);
 
-  // RevenueV1 global configuration. The staking token pair is read from the
+  // RevenueV2 global configuration. The staking token pair is read from the
   // contract instead of being hardcoded, so every chain uses its own deployment.
   const {
     data: revenueConfig,
@@ -96,11 +96,7 @@ export default function useRevenueContract({
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "staking_token_erc20" },
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "staking_token_erc223" },
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "claim_delay" },
-          {
-            abi: REVENUE_ABI,
-            address: revenueAddress,
-            functionName: "assigned_avg_staking_duration",
-          },
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "reward_duration" },
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "total_staked" },
         ].map((contract) => ({ ...contract, chainId }))
       : [],
@@ -112,7 +108,8 @@ export default function useRevenueContract({
   const stakingTokenERC20 = (revenueConfig?.[0]?.result as Address | undefined) ?? zeroAddress;
   const stakingTokenERC223 = (revenueConfig?.[1]?.result as Address | undefined) ?? zeroAddress;
   const claimDelay = revenueConfig?.[2]?.result as bigint | undefined;
-  const avgStakingDuration = (revenueConfig?.[3]?.result as bigint | undefined) ?? 0n;
+  // How long each batch of protocol fees is streamed to stakers.
+  const rewardDuration = (revenueConfig?.[3]?.result as bigint | undefined) ?? 0n;
   const totalStaked = (revenueConfig?.[4]?.result as bigint | undefined) ?? 0n;
 
   const hasStakingToken = stakingTokenERC20 !== zeroAddress;
@@ -140,6 +137,18 @@ export default function useRevenueContract({
     abi: REVENUE_ABI,
     address: revenueAddress,
     functionName: "staking_timestamp",
+    args: targetAddress ? [targetAddress] : undefined,
+    chainId: chainId,
+    query: {
+      enabled: Boolean(targetAddress && revenueAddress),
+    },
+  });
+
+  // Set by the contract on every stake; the delay is the one in force at that moment.
+  const { data: userUnlockTime, refetch: refetchUserUnlockTime } = useReadContract({
+    abi: REVENUE_ABI,
+    address: revenueAddress,
+    functionName: "unlock_time",
     args: targetAddress ? [targetAddress] : undefined,
     chainId: chainId,
     query: {
@@ -239,14 +248,16 @@ export default function useRevenueContract({
     },
   });
 
-  const { data: lastClaims, refetch: refetchLastClaims } = useReadContracts({
+  // What the contract says the user has earned in each version of each reward token. Only tokens the
+  // contract lists as rewards ever accrue; everything else reads as zero, so it is never offered for claim.
+  const { data: earnedAmounts, refetch: refetchEarned } = useReadContracts({
     contracts:
       revenueAddress && targetAddress
         ? rewardTokens.flatMap((token) =>
             [token.address0, token.address1].map((address) => ({
               abi: REVENUE_ABI,
               address: revenueAddress,
-              functionName: "last_claim" as const,
+              functionName: "earned" as const,
               args: [targetAddress, address],
               chainId: chainId,
             })),
@@ -254,6 +265,8 @@ export default function useRevenueContract({
         : [],
     query: {
       enabled: Boolean(revenueAddress && targetAddress) && rewardTokens.length > 0,
+      // Earnings grow every second while a reward stream runs.
+      refetchInterval: 15_000,
     },
   });
 
@@ -267,17 +280,17 @@ export default function useRevenueContract({
   }, []);
 
   const canUnstake = useMemo(() => {
-    // Timestamp or delay still loading. A delay of 0 is a real value (no freeze).
-    if (typeof userStakingTimestamp !== "bigint" || typeof claimDelay !== "bigint") {
+    // Still loading. An unlock time of 0 (never staked) or in the past means no freeze.
+    if (typeof userUnlockTime !== "bigint") {
       return { canUnstake: false, timeRemaining: 0, unlockTime: 0 };
     }
 
-    const unlockTime = Number(userStakingTimestamp) + Number(claimDelay);
+    const unlockTime = Number(userUnlockTime);
     const canUnstakeNow = currentTime >= unlockTime;
     const timeRemaining = Math.max(0, unlockTime - currentTime);
 
     return { canUnstake: canUnstakeNow, timeRemaining, unlockTime };
-  }, [userStakingTimestamp, claimDelay, currentTime]);
+  }, [userUnlockTime, currentTime]);
 
   const hasStaked = useMemo(() => {
     return Boolean(userStaked && typeof userStaked === "bigint" && userStaked > 0n);
@@ -301,36 +314,23 @@ export default function useRevenueContract({
   }, []);
 
   const unstakeCountdown = useMemo(() => {
-    if (!hasStaked || !userStakingTimestamp || !claimDelay) return null;
-    const unlockTime = Number(userStakingTimestamp) + Number(claimDelay);
-    const remaining = Math.max(0, unlockTime - currentTime);
+    if (!hasStaked || typeof userUnlockTime !== "bigint") return null;
+    const remaining = Math.max(0, Number(userUnlockTime) - currentTime);
     if (remaining <= 0) return null;
     return formatCountdown(remaining);
-  }, [hasStaked, userStakingTimestamp, claimDelay, currentTime, formatCountdown]);
+  }, [hasStaked, userUnlockTime, currentTime, formatCountdown]);
 
-  // Mirrors RevenueV1.claim(): dividends accrue per averaging period since the last
-  // claim of that token, and the staking token itself always pays zero.
+  // RevenueV2 tracks each staker's earnings on chain; earned() is exactly what claim() pays, give or
+  // take the seconds between this read and the claim landing.
   const claimableRewards = useMemo<ClaimableReward[]>(() => {
-    if (!tokenBalances || typeof userStaked !== "bigint") {
+    if (!tokenBalances || !earnedAmounts) {
       return [];
     }
 
-    const nowTs = BigInt(currentTime);
-    const stakingTimestamp =
-      typeof userStakingTimestamp === "bigint" ? userStakingTimestamp : BigInt(0);
-
     const estimate = (slot: number) => {
-      const selfBalance = (tokenBalances[slot]?.result as bigint | undefined) ?? 0n;
-      const lastClaimTs = (lastClaims?.[slot]?.result as bigint | undefined) ?? 0n;
-      const { dividends } = estimateClaimDividends({
-        selfBalance,
-        userStaked,
-        totalStaked,
-        lastClaimTs: lastClaimTs === 0n ? stakingTimestamp : lastClaimTs,
-        nowTs,
-        avgDuration: avgStakingDuration,
-      });
-      return { held: selfBalance, dividends };
+      const held = (tokenBalances[slot]?.result as bigint | undefined) ?? 0n;
+      const dividends = (earnedAmounts[slot]?.result as bigint | undefined) ?? 0n;
+      return { held, dividends };
     };
 
     return rewardTokens.map((token, index) => {
@@ -370,15 +370,10 @@ export default function useRevenueContract({
     });
   }, [
     tokenBalances,
-    lastClaims,
+    earnedAmounts,
     rewardTokens,
-    userStaked,
-    userStakingTimestamp,
-    totalStaked,
-    avgStakingDuration,
     stakingTokenERC20,
     stakingTokenERC223,
-    currentTime,
   ]);
 
   // Share of all staked D223, which is what claim() splits rewards by.
@@ -393,18 +388,20 @@ export default function useRevenueContract({
     refetchRevenueConfig();
     refetchUserStaked();
     refetchUserStakingTimestamp();
+    refetchUserUnlockTime();
     refetchErc223Deposit();
     refetchStakingTokenData();
     refetchTokenBalances();
-    refetchLastClaims();
+    refetchEarned();
   }, [
     refetchRevenueConfig,
     refetchUserStaked,
     refetchUserStakingTimestamp,
+    refetchUserUnlockTime,
     refetchErc223Deposit,
     refetchStakingTokenData,
     refetchTokenBalances,
-    refetchLastClaims,
+    refetchEarned,
   ]);
 
   const executeTransaction = useCallback(
@@ -752,7 +749,7 @@ export default function useRevenueContract({
     userStaked,
     userStakingTimestamp,
     claimDelay,
-    avgStakingDuration,
+    rewardDuration,
     totalStaked,
     erc223Deposit,
     redErc20Balance,
