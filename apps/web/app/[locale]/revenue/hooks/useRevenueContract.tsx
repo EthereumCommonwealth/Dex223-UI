@@ -98,6 +98,7 @@ export default function useRevenueContract({
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "claim_delay" },
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "reward_duration" },
           { abi: REVENUE_ABI, address: revenueAddress, functionName: "total_staked" },
+          { abi: REVENUE_ABI, address: revenueAddress, functionName: "min_stake" },
         ].map((contract) => ({ ...contract, chainId }))
       : [],
     query: {
@@ -111,6 +112,8 @@ export default function useRevenueContract({
   // How long each batch of protocol fees is streamed to stakers.
   const rewardDuration = (revenueConfig?.[3]?.result as bigint | undefined) ?? 0n;
   const totalStaked = (revenueConfig?.[4]?.result as bigint | undefined) ?? 0n;
+  // Every position must be 0 or at least this; the contract reverts otherwise.
+  const minStake = revenueConfig?.[5]?.result as bigint | undefined;
 
   const hasStakingToken = stakingTokenERC20 !== zeroAddress;
 
@@ -387,13 +390,7 @@ export default function useRevenueContract({
         claimAddresses,
       };
     });
-  }, [
-    tokenBalances,
-    earnedAmounts,
-    rewardTokens,
-    stakingTokenERC20,
-    stakingTokenERC223,
-  ]);
+  }, [tokenBalances, earnedAmounts, rewardTokens, stakingTokenERC20, stakingTokenERC223]);
 
   // Share of all staked D223, which is what claim() splits rewards by.
   const stakingPercentage = useMemo(() => {
@@ -695,6 +692,32 @@ export default function useRevenueContract({
     [executeTransaction, stakingTokenSymbol],
   );
 
+  // withdraw_all() returns the whole position in the versions it was staked in, rewards settled. It is the
+  // only way to close a position whose two version parts are each below min_stake.
+  const unstakeAll = useCallback(
+    async (
+      gasSettings?: CustomGasSettings,
+      customGasLimit?: bigint,
+      onHashReceive?: (hash: Hash) => void,
+    ) => {
+      return executeTransaction({
+        functionName: "withdraw_all",
+        args: [],
+        gasSettings,
+        customGasLimit,
+        onHashReceive,
+        transactionTitle: {
+          template: RecentTransactionTitleTemplate.WITHDRAW,
+          standard: Standard.ERC20,
+          symbol: stakingTokenSymbol,
+          amount: formatUnits(typeof userStaked === "bigint" ? userStaked : 0n, 18),
+          logoURI: STAKING_TOKEN_LOGO,
+        },
+      });
+    },
+    [executeTransaction, stakingTokenSymbol, userStaked],
+  );
+
   const claim = useCallback(
     async (
       tokenAddresses: Address[],
@@ -793,6 +816,8 @@ export default function useRevenueContract({
     stake,
     stakeERC223,
     unstake,
+    unstakeAll,
+    minStake,
     claim,
     recoverDeposit,
     collectProtocolFees,

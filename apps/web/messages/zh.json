@@ -1125,6 +1125,11 @@
     "tx_insufficient_funds": "资金不足，无法支付此交易及其网络费用。",
     "tx_reverted": "交易已回滚，没有任何变化。网络费用仍会收取。",
     "staked_in_version_only": "您以 {standard} 质押了 {amount} D223。请以另一种标准取消质押其余部分。",
+    "min_stake_hint": "最低质押：{min} D223。无法开设更小的仓位。",
+    "min_stake_error": "至少质押 {min} D223 才能开设仓位。",
+    "unstake_remainder_error": "这将只剩 {remaining} D223 处于质押中。请至少保留 {min} D223，或全部取消质押。",
+    "unstake_all": "全部取消质押：{amount} D223",
+    "split_position_notice": "您的 {total} D223 以 {erc20} ERC-20 和 {erc223} ERC-223 质押。每部分都会以您质押时的版本返还。全部取消质押会在一笔交易中返还两者。",
     "gas_too_low_hint": "交易失败，因为 Gas 上限太低。请调整钱包设置。",
     "still_have_issues_discord": "如果问题仍然存在，请在我们的 <discord>Discord</discord> 中提问。",
     "save": "保存"

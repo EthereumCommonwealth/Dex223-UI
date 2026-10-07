@@ -395,6 +395,8 @@ const StakeDialog = () => {
     userStaked,
     userStakedErc20,
     userStakedErc223,
+    minStake,
+    unstakeAll,
     isCorrectNetwork,
     isRevenueDeployed,
     stakingTokenERC20,
@@ -522,6 +524,36 @@ const StakeDialog = () => {
     }
   }, [amount, selectedStandard, available0, available1]);
 
+  // RevenueV2: every position is 0 or at least min_stake. See the "Revenue" page in the DEX223 Figma file.
+  const amountWei = useMemo(() => {
+    try {
+      return amount && parseFloat(amount) > 0 ? parseUnits(amount, 18) : 0n;
+    } catch {
+      return 0n;
+    }
+  }, [amount]);
+  const stakedTotal = typeof userStaked === "bigint" ? userStaked : 0n;
+  const minStakeError = useMemo(() => {
+    if (typeof minStake !== "bigint" || amountWei === 0n) return null;
+    if (isStaking) {
+      return stakedTotal + amountWei < minStake ? "stake" : null;
+    }
+    if (amountWei >= stakedTotal) return null;
+    return stakedTotal - amountWei < minStake ? "remainder" : null;
+  }, [minStake, amountWei, isStaking, stakedTotal]);
+  // Both version parts below the minimum: withdraw() can take neither, only withdraw_all() closes it.
+  const isSplitBelowMinimum =
+    !isStaking &&
+    typeof minStake === "bigint" &&
+    typeof userStakedErc20 === "bigint" &&
+    typeof userStakedErc223 === "bigint" &&
+    userStakedErc20 > 0n &&
+    userStakedErc223 > 0n &&
+    userStakedErc20 < minStake &&
+    userStakedErc223 < minStake;
+  const minStakeDisplay = typeof minStake === "bigint" ? formatUnits(minStake, 18) : "1";
+  const stakedTotalDisplay = formatUnits(stakedTotal, 18);
+
   const isProcessing = useMemo(() => {
     return (
       isPendingStake ||
@@ -538,6 +570,61 @@ const StakeDialog = () => {
     isPendingStake,
     isRevertedApprove,
     isSettledStake,
+  ]);
+
+  const handleUnstakeAll = useCallback(async () => {
+    if (!connectedAddress) {
+      setWalletConnectOpened(true);
+      return;
+    }
+    if (!isCorrectNetwork) {
+      setStatus(StakeStatus.ERROR);
+      setErrorType(StakeError.UNKNOWN);
+      setErrorMessage(t("switch_network"));
+      return;
+    }
+    if (!canUnstake) {
+      setStatus(StakeStatus.ERROR);
+      setErrorType(StakeError.LOCKED_TOKENS);
+      setErrorMessage(t("tokens_locked"));
+      return;
+    }
+    setStatus(StakeStatus.PENDING);
+    try {
+      const result = await unstakeAll(gasPriceSettings, undefined, (hash) => {
+        setStakeHash(hash);
+        setStatus(StakeStatus.LOADING);
+      });
+      if (result?.hash) {
+        setStakeHash(result.hash);
+        if (result.receipt) {
+          setStatus(StakeStatus.SUCCESS);
+          await refetchUserData();
+          addToast(t("success_unstaked_toast", { amount: stakedTotalDisplay }), "success");
+        }
+      }
+    } catch (error: any) {
+      console.error("Unstake all error:", error);
+      const { type, message } = describeTxError(error, t("unstake_failed"));
+      setStatus(StakeStatus.ERROR);
+      setErrorType(type);
+      setErrorMessage(message);
+    }
+  }, [
+    connectedAddress,
+    isCorrectNetwork,
+    canUnstake,
+    unstakeAll,
+    gasPriceSettings,
+    refetchUserData,
+    stakedTotalDisplay,
+    setStatus,
+    setErrorType,
+    setErrorMessage,
+    setStakeHash,
+    setWalletConnectOpened,
+    describeTxError,
+    t,
   ]);
 
   const handleStakeUnstake = useCallback(async () => {
@@ -913,7 +1000,21 @@ const StakeDialog = () => {
       );
     }
 
-    return (
+    if (isSplitBelowMinimum) {
+      return (
+        <Button
+          fullWidth
+          size={ButtonSize.LARGE}
+          colorScheme={ButtonColor.GREEN}
+          onClick={handleUnstakeAll}
+          disabled={!canUnstake}
+        >
+          {t("unstake_all", { amount: stakedTotalDisplay })}
+        </Button>
+      );
+    }
+
+    const mainButton = (
       <Button
         fullWidth
         size={ButtonSize.LARGE}
@@ -924,12 +1025,32 @@ const StakeDialog = () => {
           parseFloat(amount) === 0 ||
           (!isStaking && !canUnstake) ||
           isInsufficientBalance ||
-          isEditApproveActive
+          isEditApproveActive ||
+          minStakeError !== null
         }
       >
         {title}
       </Button>
     );
+
+    if (minStakeError === "remainder") {
+      return (
+        <div className="flex gap-3">
+          <Button
+            fullWidth
+            size={ButtonSize.LARGE}
+            colorScheme={ButtonColor.LIGHT_GREEN}
+            onClick={handleUnstakeAll}
+            disabled={!canUnstake}
+          >
+            {t("unstake_all", { amount: stakedTotalDisplay })}
+          </Button>
+          {mainButton}
+        </div>
+      );
+    }
+
+    return mainButton;
   }
 
   const renderInitialState = () => {
@@ -948,6 +1069,21 @@ const StakeDialog = () => {
                   {hasStaked && ` ${t("restake_restarts")}`}
                 </span>
               </div>
+            }
+          />
+        )}
+
+        {isSplitBelowMinimum && (
+          <Alert
+            type="info"
+            text={
+              <span className="text-14">
+                {t("split_position_notice", {
+                  total: stakedTotalDisplay,
+                  erc20: formatUnits(userStakedErc20 ?? 0n, 18),
+                  erc223: formatUnits(userStakedErc223 ?? 0n, 18),
+                })}
+              </span>
             }
           />
         )}
@@ -1017,6 +1153,25 @@ const StakeDialog = () => {
             <HelperText error={tSwap("insufficient_balance")} />
           </div>
         )}
+        {!isInsufficientBalance && minStakeError === "stake" && (
+          <p className="text-12 text-red-light">{t("min_stake_error", { min: minStakeDisplay })}</p>
+        )}
+        {!isInsufficientBalance && minStakeError === "remainder" && (
+          <p className="text-12 text-red-light">
+            {t("unstake_remainder_error", {
+              remaining: formatUnits(stakedTotal - amountWei, 18),
+              min: minStakeDisplay,
+            })}
+          </p>
+        )}
+        {isStaking &&
+          !minStakeError &&
+          !isInsufficientBalance &&
+          (!amount || parseFloat(amount) === 0) && (
+            <p className="text-12 text-secondary-text">
+              {t("min_stake_hint", { min: minStakeDisplay })}
+            </p>
+          )}
 
         {/* Approve amount section - only show for ERC-20 staking */}
         {isStaking && selectedStandard === Standard.ERC20 && (
