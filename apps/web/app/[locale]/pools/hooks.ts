@@ -50,6 +50,8 @@ export const PoolsDataDocument = gql`
       }
       poolDayData(first: 7, orderBy: date, orderDirection: desc) {
         volumeUSD
+        feesUSD
+        tvlUSD
         date
       }
     }

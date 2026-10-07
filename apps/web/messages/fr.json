@@ -691,7 +691,21 @@
     "volume_7d": "Volume sur 7 jours",
     "view_pool": "Voir le pool",
     "missing_tokens": "Le jeton A ou le jeton B est absent",
-    "pools": "Pools"
+    "pools": "Pools",
+    "fee_apr": "APR des frais",
+    "fee_apr_tooltip": "Frais de trading des dernières 24 heures, annualisés et divisés par la TVL du pool. Reflète les frais passés, pas un rendement garanti, et varie avec le volume et le prix.",
+    "last_7_days": "7 derniers jours",
+    "volume_7d_short": "Volume 7 j",
+    "filters_label": "Filtrer les pools",
+    "filter_all": "Tous",
+    "filter_stable": "Stables",
+    "filter_eth_pairs": "Paires ETH",
+    "filter_erc223_native": "ERC-223 natif",
+    "filter_my_pools": "Mes pools",
+    "swap_action": "Échanger",
+    "add_action": "Ajouter de la liquidité",
+    "sort_by_tvl": "Trier par TVL",
+    "tvl_trend_label": "TVL de {pair} sur les 7 derniers jours"
   },
   "Statistics": {
     "title": "Statistiques",
@@ -1832,6 +1846,125 @@
     "pay": {
       "title": "Payer",
       "description": "Payez un marchand en crypto avec les détails de la commande."
+    },
+    "home": {
+      "title": "DEX223 : exchange décentralisé pour tokens ERC-20 et ERC-223",
+      "description": "Échangez, gagnez des frais, prêtez, empruntez et tradez sur marge avec des tokens ERC-20 et ERC-223. Convertissez 1:1 entre standards et listez tout token sans permission."
+    }
+  },
+  "Landing": {
+    "hero": {
+      "eyebrow": "Conçu pour ERC-223 et ERC-20",
+      "title": "Tradez tous les tokens. N’en perdez aucun.",
+      "subtitle": "DEX223 est l’exchange décentralisé pour ERC-20 et ERC-223. Échangez, gagnez des frais, prêtez et empruntez, avec des transferts qui ne peuvent pas disparaître dans le mauvais contrat.",
+      "trust": {
+        "audited": "Contrats audités",
+        "non_custodial": "Non dépositaire",
+        "open_source": "Open source"
+      }
+    },
+    "cta": {
+      "launch": "Lancer l’app",
+      "guide": "Lire le guide"
+    },
+    "preview": {
+      "title": "Swap",
+      "pay": "Vous payez",
+      "receive": "Vous recevez",
+      "button": "Commencer à échanger",
+      "aria": "Ouvrir la page d’échange"
+    },
+    "stats": {
+      "label": "Statistiques du protocole",
+      "tvl": "Valeur totale verrouillée",
+      "volume": "Volume total",
+      "pools": "Pools",
+      "transactions": "Transactions"
+    },
+    "features": {
+      "title": "Tout ce dont un trader exigeant a besoin, on-chain",
+      "swap": {
+        "title": "Échangez dans l’un ou l’autre standard",
+        "body": "Choisissez ERC-20 ou ERC-223 de chaque côté de l’échange. La liquidité concentrée garde des prix serrés.",
+        "link": "Commencer à échanger"
+      },
+      "convert": {
+        "title": "Conversion 1:1, sans frais",
+        "body": "Passez n’importe quel token entre ERC-20 et ERC-223 à taux fixe, sans aucun frais de protocole.",
+        "link": "Ouvrir le convertisseur"
+      },
+      "earn": {
+        "title": "Faites fructifier votre liquidité",
+        "body": "Choisissez un palier de frais et une fourchette de prix, et percevez des frais sur chaque échange.",
+        "link": "Ajouter de la liquidité"
+      },
+      "margin": {
+        "title": "De la marge fournie par de vrais prêteurs",
+        "body": "Empruntez via des ordres de prêt on-chain avec effet de levier, intérêts et conditions sur mesure.",
+        "link": "Découvrir la marge"
+      },
+      "list": {
+        "title": "Listez tout token, sans permission",
+        "body": "Les contrats d’auto-listing rendent votre token échangeable dès qu’il a un pool.",
+        "link": "Lister un token"
+      },
+      "launch": {
+        "title": "Lancez un token en quelques minutes",
+        "body": "Créez un token ERC-223, ajoutez une version ERC-20, puis créez son pool et listez-le.",
+        "link": "Créer un token"
+      }
+    },
+    "why": {
+      "eyebrow": "Pourquoi ERC-223",
+      "title": "Des millions de dollars en tokens ERC-20 sont bloqués dans des contrats qui ne pouvaient pas les recevoir.",
+      "body": "ERC-223 interroge d’abord le destinataire et annule le transfert s’il ne peut pas accepter les tokens. DEX223 repose sur cette sécurité, tout en échangeant chaque ERC-20.",
+      "calculator": "Voir le calculateur de pertes ERC-20",
+      "table_caption": "ERC-20 comparé à ERC-223",
+      "feature": "Fonctionnalité",
+      "rows": {
+        "lost": {
+          "label": "Perte en cas de mauvais transfert",
+          "erc20": "Oui",
+          "erc223": "Non"
+        },
+        "approval": {
+          "label": "Étape d’approbation séparée",
+          "erc20": "Requise",
+          "erc223": "Non requise"
+        },
+        "deposit": {
+          "label": "Dépôt en une seule transaction",
+          "erc20": "Non",
+          "erc223": "Oui"
+        }
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "what": {
+        "q": "Qu’est-ce que DEX223 ?",
+        "a": "Un exchange décentralisé où vous pouvez échanger, fournir de la liquidité, prêter, emprunter et trader sur marge avec des tokens ERC-20 et ERC-223."
+      },
+      "need_erc223": {
+        "q": "Faut-il des tokens ERC-223 pour l’utiliser ?",
+        "a": "Non. Chaque pool accepte les deux standards. Vous choisissez ERC-20 ou ERC-223 de chaque côté de l’échange, et le convertisseur intégré passe de l’un à l’autre en 1:1."
+      },
+      "list": {
+        "q": "Comment lister mon token ?",
+        "a": "Ouvrez Listing de jetons, choisissez un contrat d’auto-listing et confirmez. Le listing est sans permission : aucune candidature ni approbation de l’équipe n’est nécessaire."
+      },
+      "custodial": {
+        "q": "DEX223 est-il dépositaire ?",
+        "a": "Non. Vous tradez depuis votre propre portefeuille et signez vous-même chaque transaction. DEX223 ne détient jamais vos clés."
+      },
+      "fees": {
+        "q": "Combien ça coûte ?",
+        "a": "Les traders paient le palier de frais du pool, reversé à ses fournisseurs de liquidité, plus le gas du réseau. La conversion entre ERC-20 et ERC-223 n’a aucun frais de protocole."
+      }
+    },
+    "final": {
+      "title": "Commencez à trader en moins d’une minute",
+      "body": "Connectez un portefeuille, choisissez une paire, échangez. Sans inscription."
     }
   }
 }

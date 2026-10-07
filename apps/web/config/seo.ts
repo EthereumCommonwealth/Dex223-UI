@@ -27,6 +27,7 @@ const OG_LOCALE: Record<Locale, string> = {
 
 /** Keys of the `Seo` namespace in messages/*.json. Each has a title and a description. */
 export type SeoPage =
+  | "home"
   | "swap"
   | "margin_swap"
   | "margin_trading"
@@ -63,7 +64,9 @@ export async function pageMetadata(
   const t = await getTranslations({ locale, namespace: "Seo" });
   const title = t(`${page}.title`);
   const description = t(`${page}.description`);
-  const url = `/${locale}/${path}`;
+  // The landing page is the bare locale root: "/en", not "/en/".
+  const localized = (l: string) => (path ? `/${l}/${path}` : `/${l}`);
+  const url = localized(locale);
 
   return {
     // Titles that already name the brand skip the "| DEX223" suffix from the root template.
@@ -72,8 +75,8 @@ export async function pageMetadata(
     alternates: {
       canonical: url,
       languages: {
-        ...Object.fromEntries(locales.map((l) => [l, `/${l}/${path}`])),
-        "x-default": `/en/${path}`,
+        ...Object.fromEntries(locales.map((l) => [l, localized(l)])),
+        "x-default": localized("en"),
       },
     },
     openGraph: {
