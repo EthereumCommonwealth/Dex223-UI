@@ -654,11 +654,18 @@ export default function DecreaseLiquidityPage({
                 type="error"
                 text={
                   <span>
-                    {t("failed_transaction_error_message")}{" "}
-                    <a href="#" className="text-green hocus:text-green-hover underline">
-                      {t("common_errors")}
-                    </a>
-                    .
+                    {t.rich("failed_transaction_discord", {
+                      discord: (chunks) => (
+                        <a
+                          href="https://discord.gg/t5bdeGC5Jk"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-green hocus:text-green-hover underline"
+                        >
+                          {chunks}
+                        </a>
+                      ),
+                    })}
                   </span>
                 }
               />

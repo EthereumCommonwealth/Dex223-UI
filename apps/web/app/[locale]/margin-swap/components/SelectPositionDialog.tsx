@@ -251,6 +251,12 @@ export default function SelectPositionDialog() {
     return openedPositions?.find((position) => position.id.toString() === searchValue);
   }, [openedPositions, searchValue]);
 
+  // Without a wallet there are no positions to load: the query never runs, so waiting on it
+  // would show "Loading..." forever. The bar beside this asks the user to connect instead.
+  if (!address) {
+    return null;
+  }
+
   if (loading || !openedPositions) {
     return <div>{t("loading")}</div>;
   }

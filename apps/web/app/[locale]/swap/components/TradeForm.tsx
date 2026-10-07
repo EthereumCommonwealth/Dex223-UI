@@ -159,7 +159,7 @@ function OpenConfirmDialogButton({
         fullWidth
         onClick={() => setConfirmConvertDialogOpen(true)}
       >
-        Convert {tokenA.wrapped.symbol} to {tokenBStandard}
+        {t("convert_to_standard", { symbol: tokenA.wrapped.symbol, standard: tokenBStandard })}
       </Button>
     );
   }
@@ -167,7 +167,7 @@ function OpenConfirmDialogButton({
   if (error === TradeError.NO_LIQUIDITY) {
     return (
       <Button fullWidth disabled size={ActionButtonSize} mobileSize={MobileActionButtonSize}>
-        Insufficient liquidity for this trade
+        {t("insufficient_liquidity")}
       </Button>
     );
   }
@@ -735,13 +735,16 @@ export default function TradeForm({
           <Alert
             text={
               <span>
-                The requested pool does not exist. You can{" "}
-                <Link
-                  className="text-green hover:text-green-hover duration-200"
-                  href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
-                >
-                  create a new pool
-                </Link>
+                {t.rich("pool_does_not_exist", {
+                  link: (chunks) => (
+                    <Link
+                      className="text-green hover:text-green-hover duration-200"
+                      href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
+                    >
+                      {chunks}
+                    </Link>
+                  ),
+                })}
               </span>
             }
             type="warning"
@@ -821,7 +824,7 @@ export default function TradeForm({
             </>
           ) : (
             <span className="text-secondary-text text-14 flex items-center min-h-[26px]">
-              Fetching best price...
+              {t("fetching_best_price")}
             </span>
           )}
         </div>
@@ -850,7 +853,7 @@ export default function TradeForm({
             }}
             size={ButtonSize.EXTRA_SMALL}
           >
-            {tokenB && tokenA?.equals(tokenB) ? "Review conversion" : t("review_swap")}
+            {tokenB && tokenA?.equals(tokenB) ? t("review_conversion") : t("review_swap")}
           </Button>
         </div>
       )}

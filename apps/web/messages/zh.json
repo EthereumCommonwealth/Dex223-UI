@@ -130,7 +130,39 @@
     "tracker_hide": "隐藏",
     "tracker_reopen": "打开兑换详情",
     "tracker_failed_details": "查看失败原因",
-    "tracker_explorer": "在浏览器中查看"
+    "tracker_explorer": "在浏览器中查看",
+    "confirm_in_your_wallet": "请在钱包中确认",
+    "approving": "正在授权",
+    "approve_failed": "授权失败",
+    "failed_to_confirm_swap": "兑换确认失败",
+    "executed_swap": "兑换已执行",
+    "tx_failed_gas_or_contract": "交易因 Gas 不足或合约内部错误而失败。请尝试提高滑点或 Gas 以确保交易完成。如果问题仍然存在，请在我们的 <discord>Discord</discord> 中提问。",
+    "tx_failed_out_of_gas": "交易因 Gas 不足而失败。请尝试提高 Gas 上限以确保交易完成。如果问题仍然存在，请联系支持团队。",
+    "try_again": "重试",
+    "native": "原生",
+    "loading": "加载中...",
+    "approve_must_be_at_least": "必须大于或等于 {amount}",
+    "save": "保存",
+    "confirm_conversion": "确认转换",
+    "conversion_in_progress": "正在转换",
+    "conversion_failed": "转换失败",
+    "conversion_completed": "转换完成",
+    "review_conversion": "确认转换",
+    "you_convert": "转换",
+    "gas_price": "Gas 价格",
+    "gas_price_tooltip": "网络费用按已用 Gas × Gas 价格计算。如果您交易的 Gas 价格低于当前网络 Gas 价格，交易将在网络 Gas 价格下降之前无法确认。",
+    "convert_to_standard": "将 {symbol} 转换为 {standard}",
+    "insufficient_liquidity": "此交易的流动性不足",
+    "pool_does_not_exist": "所请求的资金池不存在。您可以<link>创建新资金池</link>。",
+    "fetching_best_price": "正在获取最优价格...",
+    "margin_swap": "保证金兑换",
+    "processing_margin_swap": "正在处理保证金兑换",
+    "margin_swap_completed": "保证金兑换完成",
+    "margin_swap_process_failed": "保证金兑换处理失败",
+    "confirm_margin_swap": "确认保证金兑换",
+    "review_margin_swap": "查看保证金兑换",
+    "successful_margin_swap": "保证金兑换成功",
+    "margin_swap_failed": "保证金兑换失败"
   },
   "Wallet": {
     "my_wallet": "我的钱包",
@@ -295,7 +327,8 @@
     "transaction_link": "交易链接",
     "list_single_subtitle": "“{list}”列表中的 {symbol}",
     "list_double_subtitle": "“{list}”列表中的 {symbol0} 和 {symbol1}",
-    "create_margin_position_subtitle": "抵押 {amountCollateral} {symbolCollateral}，费用 {amountFee} {symbolFee}"
+    "create_margin_position_subtitle": "抵押 {amountCollateral} {symbolCollateral}，费用 {amountFee} {symbolFee}",
+    "id_subtitle": "{symbol} (ID: {id})"
   },
   "Portfolio": {
     "approved_deposited": "已授权并存入",
@@ -582,7 +615,6 @@
     "mint_liquidity": "铸造流动性",
     "remove_liquidity_title": "移除流动性",
     "try_again": "重试",
-    "common_errors": "常见错误",
     "claim_tokens": "领取代币",
     "removed_liquidity_message": "代币已转入您的仓位。您可以通过以下链接领取",
     "day_volume": "24 小时交易量",
@@ -657,7 +689,6 @@
     "button_approve_and_deposit": "授权并存入",
     "approve_transaction_modal_title": "交易",
     "init_pool_message": "在添加流动性之前必须先初始化该流动性池。初始化时请为池选择一个初始价格，然后输入您的流动性价格区间和存入数量。由于需要执行初始化交易，Gas 费用会高于平常。",
-    "failed_transaction_error_message": "交易因 Gas 不足或合约内部错误而失败。请尝试提高滑点或 Gas 以确保交易完成。如果问题仍然存在，请点击",
     "gas_price_tooltip": "使用传统（legacy）交易时，您支付的费用按 gasPrice * gasUsed 计算。只有当您的 gasPrice 大于或等于最新区块的网络 Gas 价格时，交易才会被确认。",
     "approved_tooltip": "要将 ERC-20 代币存入合约，您需要“授权”合约从您的余额中提取代币。授权额度决定了合约可以代您转移多少余额中的代币。ERC-223 代币无需授权，因此您不必授权合约访问您的余额。",
     "deposited_tooltip": "ERC-223 代币必须先存入合约，才能对其进行操作。此数额显示您已存入合约的代币数量。您可以随时从合约中提取已存入的 ERC-223 代币。",
@@ -701,7 +732,8 @@
     "swap_action": "兑换",
     "add_action": "添加流动性",
     "sort_by_tvl": "按 TVL 排序",
-    "tvl_trend_label": "{pair} 过去 7 天的 TVL"
+    "tvl_trend_label": "{pair} 过去 7 天的 TVL",
+    "failed_transaction_discord": "交易因 Gas 不足或合约内部错误而失败。请尝试提高滑点或 Gas 以确保交易完成。如果问题仍然存在，请在我们的 <discord>Discord</discord> 中提问。"
   },
   "Statistics": {
     "title": "统计",
@@ -1067,7 +1099,6 @@
     "tokens_locked": "代币仍在锁定期内。请等待锁定期结束。",
     "unstake_failed": "解除质押失败",
     "tx_failed_retry": "交易失败。请重试。",
-    "gas_too_low": "交易失败，因为 Gas 上限太低。请调整钱包设置。如果问题仍然存在，请点击",
     "lock_notice": "上次质押后 <b>{time}</b> 才能解除质押并领取奖励。",
     "restake_restarts": "现在继续质押会重置全部已质押余额的锁定时间。",
     "stake_amount": "质押数量",
@@ -1094,7 +1125,11 @@
     "duration_minute": "{count} 分钟",
     "duration_second": "{count} 秒",
     "tx_insufficient_funds": "资金不足，无法支付此交易及其网络费用。",
-    "tx_reverted": "交易已回滚，没有任何变化。网络费用仍会收取。"
+    "tx_reverted": "交易已回滚，没有任何变化。网络费用仍会收取。",
+    "contract_holds_only": "Revenue 合约中仅有 {amount} D223（{standard}）。请以另一种标准取消质押其余部分。",
+    "gas_too_low_hint": "交易失败，因为 Gas 上限太低。请调整钱包设置。",
+    "still_have_issues_discord": "如果问题仍然存在，请在我们的 <discord>Discord</discord> 中提问。",
+    "save": "保存"
   },
   "Governance": {
     "title": "治理",
@@ -1621,7 +1656,19 @@
     "borrow_now": "立即借入",
     "min_order_balance_filter_tooltip": "仅显示可借金额不少于此数值的借贷订单。",
     "min_loan_amount_filter_tooltip": "仅显示最低借款额不少于此数值的借贷订单。",
-    "duration_filter_tooltip": "仅显示仓位期限（天）在此范围内的借贷订单。"
+    "duration_filter_tooltip": "仅显示仓位期限（天）在此范围内的借贷订单。",
+    "deposit_funds": "存入资金",
+    "executing_deposit": "正在执行存入",
+    "deposited_funds": "资金已存入",
+    "deposit_funds_failed": "资金存入失败",
+    "not_order_owner": "您不是此订单的所有者，因此无法编辑。",
+    "swap_connect_to_see_positions": "连接钱包以查看您的保证金仓位",
+    "swap_no_active_positions": "您没有活跃仓位",
+    "swap_positions_with_a": "{count} 个含 {symbolA} 的仓位",
+    "swap_positions_for_b": "{count} 个允许交易 {symbolB} 的仓位",
+    "swap_positions_with_a_for_b": "{count} 个含 {symbolA} 且允许交易 {symbolB} 的仓位",
+    "swap_no_positions_for_tokens": "所选代币没有对应仓位",
+    "swap_you_have_positions": "您有 {count} 个仓位"
   },
   "TradingChart": {
     "select_pair": "选择两个代币以查看图表",

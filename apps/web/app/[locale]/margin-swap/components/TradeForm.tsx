@@ -202,7 +202,7 @@ function OpenConfirmDialogButton({
         size={ActionButtonSize}
         mobileSize={MobileActionButtonSize}
       >
-        Insufficient liquidity for this trade
+        {t("insufficient_liquidity")}
       </Button>
     );
   }
@@ -895,7 +895,7 @@ export default function TradeForm({
             </>
           ) : (
             <span className="text-secondary-text text-14 flex items-center min-h-[26px]">
-              Fetching best price...
+              {t("fetching_best_price")}
             </span>
           )}
         </div>
@@ -920,7 +920,7 @@ export default function TradeForm({
             }}
             size={ButtonSize.EXTRA_SMALL}
           >
-            {tokenB && tokenA?.equals(tokenB) ? "Review conversion" : t("review_swap")}
+            {tokenB && tokenA?.equals(tokenB) ? t("review_conversion") : t("review_swap")}
           </Button>
         </div>
       )}

@@ -1,5 +1,6 @@
 "use client";
 import { redirect } from "next/navigation";
+import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { useAccount } from "wagmi";
 
@@ -21,6 +22,7 @@ import { ThemeColors } from "@/config/theme/colors";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
 
 export default function MarginSwapPage() {
+  const t = useTranslations("Margin");
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useSwapRecentTransactionsStore();
   const { tokenA, tokenB, reset: resetTokens } = useMarginSwapTokensStore();
@@ -73,20 +75,34 @@ export default function MarginSwapPage() {
           <>
             <div className="flex flex-col gap-2 lg:gap-3">
               <div className="flex justify-between items-center pl-4 pr-5 py-2 text-secondary-text border-l-4 bg-primary-bg rounded-2 border-purple">
-                {!openedPositions?.length ? (
-                  "You don't have any active positions"
+                {!address ? (
+                  t("swap_connect_to_see_positions")
+                ) : !openedPositions?.length ? (
+                  t("swap_no_active_positions")
                 ) : (
                   <>
                     {!!(tokenA && !tokenB && matchingPositions?.length) &&
-                      `${matchingPositions?.length} positions with ${tokenA.symbol}`}
+                      t("swap_positions_with_a", {
+                        count: matchingPositions.length,
+                        symbolA: tokenA.symbol ?? "",
+                      })}
                     {!!(tokenB && !tokenA && matchingPositions?.length) &&
-                      `${matchingPositions?.length} positions allowed for ${tokenB.symbol} trade`}
+                      t("swap_positions_for_b", {
+                        count: matchingPositions.length,
+                        symbolB: tokenB.symbol ?? "",
+                      })}
                     {!!(tokenA && tokenB && matchingPositions?.length) &&
-                      `${matchingPositions?.length} positions with ${tokenA.symbol} allowed for ${tokenB.symbol} trade`}
+                      t("swap_positions_with_a_for_b", {
+                        count: matchingPositions.length,
+                        symbolA: tokenA.symbol ?? "",
+                        symbolB: tokenB.symbol ?? "",
+                      })}
                     {(!!tokenA || !!tokenB) &&
                       matchingPositions?.length === 0 &&
-                      "No positions for selected tokens"}
-                    {!tokenA && !tokenB && `You have ${openedPositions?.length} position(s)`}
+                      t("swap_no_positions_for_tokens")}
+                    {!tokenA &&
+                      !tokenB &&
+                      t("swap_you_have_positions", { count: openedPositions.length })}
                   </>
                 )}
                 <SelectPositionDialog />

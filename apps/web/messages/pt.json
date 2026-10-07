@@ -130,7 +130,39 @@
     "tracker_hide": "Ocultar",
     "tracker_reopen": "Abrir detalhes da troca",
     "tracker_failed_details": "Ver o que deu errado",
-    "tracker_explorer": "Ver no explorador"
+    "tracker_explorer": "Ver no explorador",
+    "confirm_in_your_wallet": "Confirme na sua carteira",
+    "approving": "A aprovar",
+    "approve_failed": "Aprovação falhou",
+    "failed_to_confirm_swap": "Não foi possível confirmar a troca",
+    "executed_swap": "Troca executada",
+    "tx_failed_gas_or_contract": "A transação falhou por falta de gás ou por um erro interno do contrato. Experimente usar um slippage ou gás mais elevado para garantir que é concluída. Se o problema persistir, pergunte no nosso <discord>Discord</discord>.",
+    "tx_failed_out_of_gas": "A transação falhou por falta de gás. Experimente aumentar o limite de gás para garantir que é concluída. Se o problema persistir, contacte o suporte.",
+    "try_again": "Tentar novamente",
+    "native": "Nativo",
+    "loading": "A carregar...",
+    "approve_must_be_at_least": "Tem de ser maior ou igual a {amount}",
+    "save": "Guardar",
+    "confirm_conversion": "Confirmar conversão",
+    "conversion_in_progress": "Conversão em curso",
+    "conversion_failed": "A conversão falhou",
+    "conversion_completed": "Conversão concluída",
+    "review_conversion": "Rever a conversão",
+    "you_convert": "Você converte",
+    "gas_price": "Preço do gás",
+    "gas_price_tooltip": "A taxa de rede é calculada como gás usado × preço do gás. Se o preço do gás da sua transação for inferior ao preço atual da rede, a transação não será confirmada até os preços do gás da rede descerem.",
+    "convert_to_standard": "Converter {symbol} para {standard}",
+    "insufficient_liquidity": "Liquidez insuficiente para esta operação",
+    "pool_does_not_exist": "O pool pedido não existe. Pode <link>criar um novo pool</link>.",
+    "fetching_best_price": "A procurar o melhor preço...",
+    "margin_swap": "Troca de margem",
+    "processing_margin_swap": "A processar a troca de margem",
+    "margin_swap_completed": "Troca de margem concluída",
+    "margin_swap_process_failed": "Não foi possível processar a troca de margem",
+    "confirm_margin_swap": "Confirmar troca de margem",
+    "review_margin_swap": "Rever a troca de margem",
+    "successful_margin_swap": "Troca de margem bem-sucedida",
+    "margin_swap_failed": "A troca de margem falhou"
   },
   "Wallet": {
     "my_wallet": "A minha carteira",
@@ -295,7 +327,8 @@
     "transaction_link": "Link da transação",
     "list_single_subtitle": "{symbol} na lista \"{list}\"",
     "list_double_subtitle": "{symbol0} e {symbol1} na lista \"{list}\"",
-    "create_margin_position_subtitle": "{amountCollateral} {symbolCollateral} de garantia e {amountFee} {symbolFee} de taxa"
+    "create_margin_position_subtitle": "{amountCollateral} {symbolCollateral} de garantia e {amountFee} {symbolFee} de taxa",
+    "id_subtitle": "{symbol} (ID: {id})"
   },
   "Portfolio": {
     "approved_deposited": "Aprovados e depositados",
@@ -582,7 +615,6 @@
     "mint_liquidity": "Cunhar liquidez",
     "remove_liquidity_title": "Remover liquidez",
     "try_again": "Tentar novamente",
-    "common_errors": "erros comuns",
     "claim_tokens": "reclamar tokens",
     "removed_liquidity_message": "Os tokens foram transferidos para a sua posição. Pode reclamá-los através da seguinte ligação",
     "day_volume": "Volume 24 h",
@@ -657,7 +689,6 @@
     "button_approve_and_deposit": "Aprovar e depositar",
     "approve_transaction_modal_title": "transações",
     "init_pool_message": "Este pool tem de ser inicializado antes de poder adicionar liquidez. Para inicializar, selecione um preço inicial para o pool. Depois, introduza o seu intervalo de preços de liquidez e o montante do depósito. As taxas de gás serão mais elevadas do que o habitual devido à transação de inicialização.",
-    "failed_transaction_error_message": "A transação falhou por falta de gás ou por um erro interno do contrato. Experimente usar um slippage ou gás mais elevado para garantir que é concluída. Se o problema persistir, clique em",
     "gas_price_tooltip": "A taxa que vai pagar com uma transação legacy é calculada como gasPrice * gasUsed. A sua transação não será confirmada enquanto o seu gasPrice não for igual ou superior ao preço do gás da rede no último bloco.",
     "approved_tooltip": "Para depositar tokens ERC-20 em contratos, precisa de «autorizar» o contrato a levantar o token do seu saldo. A aprovação determina quantos tokens do seu saldo um contrato pode movimentar em seu nome. Os tokens ERC-223 não exigem aprovações, pelo que não precisa de autorizar nenhum contrato a aceder ao seu saldo.",
     "deposited_tooltip": "Os tokens ERC-223 têm de ser primeiro depositados no contrato para poder operar com eles. Este montante mostra quantos dos seus tokens já estão no contrato. Pode levantar os seus tokens ERC-223 depositados a qualquer momento.",
@@ -701,7 +732,8 @@
     "swap_action": "Trocar",
     "add_action": "Adicionar liquidez",
     "sort_by_tvl": "Ordenar por TVL",
-    "tvl_trend_label": "TVL de {pair} nos últimos 7 dias"
+    "tvl_trend_label": "TVL de {pair} nos últimos 7 dias",
+    "failed_transaction_discord": "A transação falhou por falta de gás ou por um erro interno do contrato. Experimente usar um slippage ou gás mais elevado para garantir que é concluída. Se o problema persistir, pergunte no nosso <discord>Discord</discord>."
   },
   "Statistics": {
     "title": "Estatísticas",
@@ -1067,7 +1099,6 @@
     "tokens_locked": "Os tokens ainda estão bloqueados. Aguarde o fim do período de bloqueio.",
     "unstake_failed": "O levantamento falhou",
     "tx_failed_retry": "A transação falhou. Tente novamente.",
-    "gas_too_low": "A transação falhou porque o limite de gás é demasiado baixo. Ajuste as definições da carteira. Se o problema continuar, clique",
     "lock_notice": "Pode levantar e reclamar recompensas <b>{time}</b> após o último staking.",
     "restake_restarts": "Fazer mais staking agora reinicia esse bloqueio para todo o saldo em staking.",
     "stake_amount": "Montante de staking",
@@ -1094,7 +1125,11 @@
     "duration_minute": "{count, plural, =0 {# minutos} one {# minuto} other {# minutos}}",
     "duration_second": "{count, plural, =0 {# segundos} one {# segundo} other {# segundos}}",
     "tx_insufficient_funds": "Fundos insuficientes para pagar esta transação e a respetiva taxa de rede.",
-    "tx_reverted": "A transação foi revertida, por isso nada mudou. A taxa de rede é cobrada na mesma."
+    "tx_reverted": "A transação foi revertida, por isso nada mudou. A taxa de rede é cobrada na mesma.",
+    "contract_holds_only": "O contrato Revenue só tem {amount} D223 como {standard}. Retire o restante no outro padrão.",
+    "gas_too_low_hint": "A transação falhou porque o limite de gás é demasiado baixo. Ajuste as definições da carteira.",
+    "still_have_issues_discord": "Se o problema persistir, pergunte no nosso <discord>Discord</discord>.",
+    "save": "Guardar"
   },
   "Governance": {
     "title": "Governação",
@@ -1621,7 +1656,19 @@
     "borrow_now": "Pedir emprestado agora",
     "min_order_balance_filter_tooltip": "Mostra apenas as ordens de empréstimo com pelo menos este montante disponível para empréstimo.",
     "min_loan_amount_filter_tooltip": "Mostra apenas as ordens de empréstimo cujo empréstimo mínimo é de pelo menos este montante.",
-    "duration_filter_tooltip": "Mostra apenas as ordens de empréstimo cuja duração da posição, em dias, está dentro deste intervalo."
+    "duration_filter_tooltip": "Mostra apenas as ordens de empréstimo cuja duração da posição, em dias, está dentro deste intervalo.",
+    "deposit_funds": "Depositar fundos",
+    "executing_deposit": "A executar o depósito",
+    "deposited_funds": "Fundos depositados",
+    "deposit_funds_failed": "Falha ao depositar fundos",
+    "not_order_owner": "Não é o proprietário desta ordem, por isso não a pode editar.",
+    "swap_connect_to_see_positions": "Conecte uma carteira para ver suas posições de margem",
+    "swap_no_active_positions": "Você não tem posições ativas",
+    "swap_positions_with_a": "{count, plural, one {# posição} other {# posições}} com {symbolA}",
+    "swap_positions_for_b": "{count, plural, one {# posição permite} other {# posições permitem}} negociar {symbolB}",
+    "swap_positions_with_a_for_b": "{count, plural, one {# posição} other {# posições}} com {symbolA} que permitem negociar {symbolB}",
+    "swap_no_positions_for_tokens": "Nenhuma posição para os tokens selecionados",
+    "swap_you_have_positions": "Você tem {count, plural, one {# posição} other {# posições}}"
   },
   "TradingChart": {
     "select_pair": "Selecione dois tokens para ver o gráfico",

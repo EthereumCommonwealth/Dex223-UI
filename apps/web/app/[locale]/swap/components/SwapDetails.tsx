@@ -14,9 +14,11 @@ import {
 } from "@/app/[locale]/swap/stores/useSwapSettingsStore";
 import Collapse from "@/components/atoms/Collapse";
 import Svg from "@/components/atoms/Svg";
+import { networks } from "@/config/networks";
 import { ThemeColors } from "@/config/theme/colors";
 import { formatFloat } from "@/functions/formatFloat";
 import { slippageToPercent } from "@/functions/slippageToPercent";
+import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { useColorScheme } from "@/lib/color-scheme";
@@ -41,6 +43,7 @@ export default function SwapDetails({
 }) {
   const t = useTranslations("Swap");
   const nativeCurrency = useNativeCurrency();
+  const chainId = useCurrentChainId();
   const { isDetailsExpanded, setIsDetailsExpanded, setIsPriceInverted, isPriceInverted } =
     useSwapDetailsStateStore();
   const { typedValue } = useSwapAmountsStore();
@@ -63,7 +66,7 @@ export default function SwapDetails({
       return (
         <span className="flex items-center gap-2">
           <span className="flex items-center justify-center px-2 text-12 md:text-14 h-5 rounded-20 font-500 text-tertiary-text border border-secondary-border">
-            Auto
+            {t("auto")}
           </span>
           {slippage}%
         </span>
@@ -73,7 +76,7 @@ export default function SwapDetails({
       return (
         <span className="flex items-center gap-2">
           <span className="flex items-center justify-center px-2 text-12 h-5 rounded-20 font-500 text-tertiary-text border border-secondary-border">
-            Custom
+            {t("custom")}
           </span>
           {slippage}%
         </span>
@@ -81,7 +84,7 @@ export default function SwapDetails({
     }
 
     return `${slippage}%`;
-  }, [slippage, slippageType]);
+  }, [slippage, slippageType, t]);
 
   const { price: priceA } = useUSDPrice(tokenA.wrapped.address0);
   const { price: priceB } = useUSDPrice(tokenB.wrapped.address0);
@@ -159,31 +162,29 @@ export default function SwapDetails({
       <Collapse open={isDetailsExpanded}>
         <div className="flex flex-col gap-2 pb-4 px-5 bg-tertiary-bg rounded-b-3 text-14">
           <SwapDetailsRow
-            title={"Gas price"}
+            title={t("gas_price")}
             value={`${gasPrice} GWEI`}
-            tooltipText={
-              "Network fee is calculated as tx gas quantity * gas price. If the gas price value of your transaction will be lower than the gas price value on the network then your transaction will not confirm until the network gas prices will drop."
-            }
+            tooltipText={t("gas_price_tooltip")}
           />
           <SwapDetailsRow
-            title={"Network fee"}
+            title={t("network_fee")}
             value={`${networkFee} ${nativeCurrency.symbol}`}
-            tooltipText={
-              "Network fee is paid to the network operators to include your transaction in a block. It does not depend on Dex223 team. Network fee is calculated as tx gas quantity * tx gas price."
-            }
+            tooltipText={t("network_fee_tooltip", {
+              networkName: networks.find((n) => n.chainId === chainId)?.name,
+            })}
           />
           <SwapDetailsRow
             title={t("minimum_received")}
             value={
               trade
                 ?.minimumAmountOut(slippageToPercent(slippage), dependentAmount)
-                .toSignificant() || "Loading..."
+                .toSignificant() || t("loading")
             }
             tooltipText={t("minimum_received_tooltip")}
           />
           <SwapDetailsRow
             title={t("price_impact")}
-            value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : "Loading..."}
+            value={trade ? `${formatFloat(trade.priceImpact.toSignificant())}%` : t("loading")}
             tooltipText={t("price_impact_tooltip")}
           />
           <SwapDetailsRow
@@ -191,7 +192,7 @@ export default function SwapDetails({
             value={
               typedValue && Boolean(+typedValue) && tokenA
                 ? `${formatFloat((+typedValue * feeMultiplier) / 100)} ${tokenA.symbol}`
-                : "Loading..."
+                : t("loading")
             }
             tooltipText={t("trading_fee_tooltip")}
           />
@@ -210,7 +211,7 @@ export default function SwapDetails({
             value={
               customGasLimit
                 ? customGasLimit.toString()
-                : (estimatedGas + BigInt(30000)).toString() || "Loading..."
+                : (estimatedGas + BigInt(30000)).toString() || t("loading")
             }
             tooltipText={t("gas_limit_tooltip")}
           />

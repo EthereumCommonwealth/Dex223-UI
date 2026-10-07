@@ -473,11 +473,22 @@ const SingleClaimDialog = () => {
 
       <div className="bg-red-light/10 border border-red-light/30 rounded-3 p-3 md:p-4 mb-4">
         <p className="text-12 md:text-14 text-secondary-text break-words">
-          {data?.errorMessage || t("gas_too_low")}
-          {!data?.errorMessage && (
-            <a href="#" className="text-secondary-text underline break-words">
-              {tLiq("common_errors")}
-            </a>
+          {data?.errorMessage || (
+            <>
+              {t("gas_too_low_hint")}{" "}
+              {t.rich("still_have_issues_discord", {
+                discord: (chunks) => (
+                  <a
+                    href="https://discord.gg/t5bdeGC5Jk"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-secondary-text underline"
+                  >
+                    {chunks}
+                  </a>
+                ),
+              })}
+            </>
           )}
         </p>
       </div>

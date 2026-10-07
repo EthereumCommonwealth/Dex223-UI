@@ -45,6 +45,7 @@ type OperationStepConfig = {
 };
 
 function composeDepositOrderSteps(
+  t: ReturnType<typeof useTranslations>,
   symbol: string = "Unknown",
   isNative: boolean,
   standard = Standard.ERC20,
@@ -57,12 +58,12 @@ function composeDepositOrderSteps(
         loading: OrderDepositStatus.LOADING_DEPOSIT,
         error: OrderDepositStatus.ERROR_DEPOSIT,
         textMap: {
-          [OperationStepStatus.IDLE]: "Deposit funds",
-          [OperationStepStatus.AWAITING_SIGNATURE]: "Deposit funds",
-          [OperationStepStatus.LOADING]: "Executing deposit",
-          [OperationStepStatus.STEP_COMPLETED]: "Deposited funds",
-          [OperationStepStatus.STEP_FAILED]: "Failed to deposit funds",
-          [OperationStepStatus.OPERATION_COMPLETED]: "Deposited funds",
+          [OperationStepStatus.IDLE]: t("deposit_funds"),
+          [OperationStepStatus.AWAITING_SIGNATURE]: t("deposit_funds"),
+          [OperationStepStatus.LOADING]: t("executing_deposit"),
+          [OperationStepStatus.STEP_COMPLETED]: t("deposited_funds"),
+          [OperationStepStatus.STEP_FAILED]: t("deposit_funds_failed"),
+          [OperationStepStatus.OPERATION_COMPLETED]: t("deposited_funds"),
         },
       },
     ];
@@ -93,12 +94,12 @@ function composeDepositOrderSteps(
       loading: OrderDepositStatus.LOADING_DEPOSIT,
       error: OrderDepositStatus.ERROR_DEPOSIT,
       textMap: {
-        [OperationStepStatus.IDLE]: "Deposit funds",
-        [OperationStepStatus.AWAITING_SIGNATURE]: "Deposit funds",
-        [OperationStepStatus.LOADING]: "Executing deposit",
-        [OperationStepStatus.STEP_COMPLETED]: "Deposited funds",
-        [OperationStepStatus.STEP_FAILED]: "Failed to deposit funds",
-        [OperationStepStatus.OPERATION_COMPLETED]: "Deposited funds",
+        [OperationStepStatus.IDLE]: t("deposit_funds"),
+        [OperationStepStatus.AWAITING_SIGNATURE]: t("deposit_funds"),
+        [OperationStepStatus.LOADING]: t("executing_deposit"),
+        [OperationStepStatus.STEP_COMPLETED]: t("deposited_funds"),
+        [OperationStepStatus.STEP_FAILED]: t("deposit_funds_failed"),
+        [OperationStepStatus.OPERATION_COMPLETED]: t("deposited_funds"),
       },
     },
   ];
@@ -115,6 +116,7 @@ function OrderDepositActionButton({
   amountToDeposit: string;
   disabled: boolean;
 }) {
+  const t = useTranslations("Margin");
   const { handleOrderDeposit } = useOrderDeposit({
     orderId: order.id,
     currency: order.baseAsset,
@@ -144,6 +146,7 @@ function OrderDepositActionButton({
     return (
       <OperationRows>
         {composeDepositOrderSteps(
+          t,
           order.baseAsset.symbol,
           order.baseAsset.isNative,
           order.baseAssetStandard,
@@ -156,6 +159,7 @@ function OrderDepositActionButton({
             status={operationStatusToStepStatus({
               currentStatus: status,
               orderedSteps: composeDepositOrderSteps(
+                t,
                 order.baseAsset.symbol,
                 order.baseAsset.isNative,
                 order.baseAssetStandard,
@@ -175,7 +179,7 @@ function OrderDepositActionButton({
 
   return (
     <Button disabled={disabled} onClick={() => handleOrderDeposit(amountToApprove)} fullWidth>
-      Deposit {order.baseAsset.symbol}
+      {t("deposit_symbol", { symbol: order.baseAsset.symbol })}
     </Button>
   );
 }
@@ -222,13 +226,17 @@ export default function OrderDepositDialog({
       tokenA0Balance &&
       parseUnits(amountToDeposit, order.baseAsset.decimals) > tokenA0Balance.value
     ) {
-      return `Available balance: ${
-        tokenA0Balance && Boolean(tokenA0Balance.value) ? formatFloat(tokenA0Balance.formatted) : 0
-      } ${order.baseAsset.symbol}`;
+      return t("available_balance_value", {
+        amount:
+          tokenA0Balance && Boolean(tokenA0Balance.value)
+            ? formatFloat(tokenA0Balance.formatted)
+            : 0,
+        symbol: order.baseAsset.symbol,
+      });
     }
 
     return undefined;
-  }, [amountToDeposit, order.baseAsset.decimals, order.baseAsset.symbol, tokenA0Balance]);
+  }, [amountToDeposit, order.baseAsset.decimals, order.baseAsset.symbol, t, tokenA0Balance]);
 
   const currentBalance = useMemo(() => {
     if (
@@ -290,12 +298,7 @@ export default function OrderDepositDialog({
                 )}
               >
                 <div className="flex items-center gap-1 text-secondary-text whitespace-nowrap">
-                  <Tooltip
-                    iconSize={20}
-                    text={
-                      "In order to make a swap with ERC-20 token you need to give the DEX contract permission to withdraw your tokens. All DEX'es require this operation. Here you are specifying the amount of tokens that you allow the contract to transfer on your behalf. Note that this amount never expires."
-                    }
-                  />
+                  <Tooltip iconSize={20} text={t("approve_amount_tooltip")} />
                   <span className="text-14">{t("approve_amount")}</span>
                 </div>
                 <div className="flex items-center gap-2 flex-grow justify-end">
@@ -323,7 +326,7 @@ export default function OrderDepositDialog({
                       {parseUnits(amountToApprove, order.baseAsset.decimals) <
                         parseUnits(amountToDeposit, order.baseAsset.decimals) && (
                         <span className="text-red-light absolute text-12 translate-y-0.5">
-                          Must be higher or equal {amountToDeposit}
+                          {t("approve_must_be_higher", { amount: amountToDeposit })}
                         </span>
                       )}
                     </div>
@@ -334,7 +337,7 @@ export default function OrderDepositDialog({
                       colorScheme={ButtonColor.LIGHT_GREEN}
                       onClick={() => setEditApproveActive(true)}
                     >
-                      Edit
+                      {t("edit")}
                     </Button>
                   ) : (
                     <Button
@@ -349,7 +352,7 @@ export default function OrderDepositDialog({
                         setAmountToApproveModified(true);
                       }}
                     >
-                      Save
+                      {t("save")}
                     </Button>
                   )}
                 </div>
@@ -373,7 +376,7 @@ export default function OrderDepositDialog({
               </div>
               <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
                 <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                  Cheaper
+                  {t("cheap")}
                 </span>
                 <Button
                   colorScheme={ButtonColor.LIGHT_GREEN}
@@ -382,7 +385,7 @@ export default function OrderDepositDialog({
                   fullWidth={false}
                   className="rounded-5"
                 >
-                  Edit
+                  {t("edit")}
                 </Button>
               </div>
             </div>

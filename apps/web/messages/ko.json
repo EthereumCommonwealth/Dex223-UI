@@ -130,7 +130,39 @@
     "tracker_hide": "숨기기",
     "tracker_reopen": "스왑 세부 정보 열기",
     "tracker_failed_details": "실패 원인 보기",
-    "tracker_explorer": "익스플로러에서 보기"
+    "tracker_explorer": "익스플로러에서 보기",
+    "confirm_in_your_wallet": "지갑에서 확인하세요",
+    "approving": "승인 중",
+    "approve_failed": "승인 실패",
+    "failed_to_confirm_swap": "스왑을 확인하지 못했습니다",
+    "executed_swap": "스왑 완료",
+    "tx_failed_gas_or_contract": "가스 부족 또는 컨트랙트 내부 오류로 트랜잭션이 실패했습니다. 슬리피지나 가스를 높여 다시 시도해 보세요. 문제가 계속되면 <discord>Discord</discord>에서 문의하세요.",
+    "tx_failed_out_of_gas": "가스 부족으로 트랜잭션이 실패했습니다. 가스 한도를 높여 다시 시도해 보세요. 문제가 계속되면 지원팀에 문의하세요.",
+    "try_again": "다시 시도",
+    "native": "네이티브",
+    "loading": "불러오는 중...",
+    "approve_must_be_at_least": "{amount} 이상이어야 합니다",
+    "save": "저장",
+    "confirm_conversion": "변환 확인",
+    "conversion_in_progress": "변환 진행 중",
+    "conversion_failed": "변환 실패",
+    "conversion_completed": "변환 완료",
+    "review_conversion": "변환 검토",
+    "you_convert": "변환",
+    "gas_price": "가스 가격",
+    "gas_price_tooltip": "네트워크 수수료는 사용된 가스 × 가스 가격으로 계산됩니다. 트랜잭션의 가스 가격이 현재 네트워크 가스 가격보다 낮으면 네트워크 가스 가격이 내려갈 때까지 트랜잭션이 확정되지 않습니다.",
+    "convert_to_standard": "{symbol}을(를) {standard}(으)로 변환",
+    "insufficient_liquidity": "이 거래에 필요한 유동성이 부족합니다",
+    "pool_does_not_exist": "요청한 풀이 없습니다. <link>새 풀을 생성</link>할 수 있습니다.",
+    "fetching_best_price": "최적 가격을 찾는 중...",
+    "margin_swap": "마진 스왑",
+    "processing_margin_swap": "마진 스왑 처리 중",
+    "margin_swap_completed": "마진 스왑 완료",
+    "margin_swap_process_failed": "마진 스왑을 처리하지 못했습니다",
+    "confirm_margin_swap": "마진 스왑 확인",
+    "review_margin_swap": "마진 스왑 검토",
+    "successful_margin_swap": "마진 스왑 성공",
+    "margin_swap_failed": "마진 스왑 실패"
   },
   "Wallet": {
     "my_wallet": "내 지갑",
@@ -295,7 +327,8 @@
     "transaction_link": "트랜잭션 링크",
     "list_single_subtitle": "\"{list}\" 목록의 {symbol}",
     "list_double_subtitle": "\"{list}\" 목록의 {symbol0}, {symbol1}",
-    "create_margin_position_subtitle": "담보 {amountCollateral} {symbolCollateral}, 수수료 {amountFee} {symbolFee}"
+    "create_margin_position_subtitle": "담보 {amountCollateral} {symbolCollateral}, 수수료 {amountFee} {symbolFee}",
+    "id_subtitle": "{symbol} (ID: {id})"
   },
   "Portfolio": {
     "approved_deposited": "승인 및 입금됨",
@@ -582,7 +615,6 @@
     "mint_liquidity": "유동성 발행",
     "remove_liquidity_title": "유동성 제거",
     "try_again": "다시 시도",
-    "common_errors": "일반적인 오류",
     "claim_tokens": "토큰 수령",
     "removed_liquidity_message": "토큰이 포지션으로 이전되었습니다. 아래 링크에서 수령할 수 있습니다",
     "day_volume": "24시간 거래량",
@@ -657,7 +689,6 @@
     "button_approve_and_deposit": "승인 및 입금",
     "approve_transaction_modal_title": "거래",
     "init_pool_message": "유동성을 추가하려면 먼저 이 풀을 초기화해야 합니다. 초기화하려면 풀의 시작 가격을 선택한 다음, 유동성 가격 구간과 입금 수량을 입력하세요. 초기화 트랜잭션 때문에 가스 수수료가 평소보다 높습니다.",
-    "failed_transaction_error_message": "가스 부족 또는 컨트랙트 내부 오류로 트랜잭션이 실패했습니다. 슬리피지나 가스를 높여 다시 시도해 보세요. 문제가 계속되면 다음을 클릭하세요",
     "gas_price_tooltip": "레거시 트랜잭션에서 지불하는 수수료는 gasPrice * gasUsed로 계산됩니다. gasPrice가 최신 블록의 네트워크 가스 가격 이상이 될 때까지 트랜잭션은 확정되지 않습니다.",
     "approved_tooltip": "ERC-20 토큰을 컨트랙트에 입금하려면 컨트랙트가 잔액에서 토큰을 출금하도록 '승인'해야 합니다. 승인은 컨트랙트가 사용자를 대신해 옮길 수 있는 토큰 수량을 결정합니다. ERC-223 토큰은 승인이 필요 없으므로 컨트랙트에 잔액 접근 권한을 부여하지 않아도 됩니다.",
     "deposited_tooltip": "ERC-223 토큰으로 작업하려면 먼저 컨트랙트에 입금해야 합니다. 이 수량은 이미 컨트랙트에 있는 토큰의 양을 나타냅니다. 입금한 ERC-223 토큰은 언제든지 컨트랙트에서 출금할 수 있습니다.",
@@ -701,7 +732,8 @@
     "swap_action": "스왑",
     "add_action": "유동성 추가",
     "sort_by_tvl": "TVL순 정렬",
-    "tvl_trend_label": "최근 7일간 {pair} TVL"
+    "tvl_trend_label": "최근 7일간 {pair} TVL",
+    "failed_transaction_discord": "가스 부족 또는 컨트랙트 내부 오류로 트랜잭션이 실패했습니다. 슬리피지나 가스를 높여 다시 시도해 보세요. 문제가 계속되면 <discord>Discord</discord>에서 문의하세요."
   },
   "Statistics": {
     "title": "통계",
@@ -1067,7 +1099,6 @@
     "tokens_locked": "토큰이 아직 잠겨 있습니다. 잠금 기간이 끝날 때까지 기다려 주세요.",
     "unstake_failed": "언스테이킹 실패",
     "tx_failed_retry": "트랜잭션이 실패했습니다. 다시 시도하세요.",
-    "gas_too_low": "가스 한도가 너무 낮아 트랜잭션이 실패했습니다. 지갑 설정을 조정하세요. 문제가 계속되면 클릭하세요",
     "lock_notice": "마지막 스테이킹 후 <b>{time}</b>이 지나야 언스테이킹하고 보상을 수령할 수 있습니다.",
     "restake_restarts": "지금 더 스테이킹하면 스테이킹된 전체 잔액의 잠금이 다시 시작됩니다.",
     "stake_amount": "스테이킹 수량",
@@ -1094,7 +1125,11 @@
     "duration_minute": "{count}분",
     "duration_second": "{count}초",
     "tx_insufficient_funds": "이 트랜잭션과 네트워크 수수료를 지불할 자금이 부족합니다.",
-    "tx_reverted": "트랜잭션이 되돌려져 아무것도 바뀌지 않았습니다. 네트워크 수수료는 그대로 청구됩니다."
+    "tx_reverted": "트랜잭션이 되돌려져 아무것도 바뀌지 않았습니다. 네트워크 수수료는 그대로 청구됩니다.",
+    "contract_holds_only": "Revenue 컨트랙트에는 {standard} 형태의 D223가 {amount}개만 있습니다. 나머지는 다른 표준으로 언스테이킹하세요.",
+    "gas_too_low_hint": "가스 한도가 너무 낮아 트랜잭션이 실패했습니다. 지갑 설정을 조정하세요.",
+    "still_have_issues_discord": "문제가 계속되면 <discord>Discord</discord>에서 문의하세요.",
+    "save": "저장"
   },
   "Governance": {
     "title": "거버넌스",
@@ -1621,7 +1656,19 @@
     "borrow_now": "지금 빌리기",
     "min_order_balance_filter_tooltip": "빌릴 수 있는 금액이 이 값 이상인 대출 주문만 표시합니다.",
     "min_loan_amount_filter_tooltip": "최소 대출 금액이 이 값 이상인 대출 주문만 표시합니다.",
-    "duration_filter_tooltip": "포지션 기간(일)이 이 범위 안에 있는 대출 주문만 표시합니다."
+    "duration_filter_tooltip": "포지션 기간(일)이 이 범위 안에 있는 대출 주문만 표시합니다.",
+    "deposit_funds": "자금 입금",
+    "executing_deposit": "입금 실행 중",
+    "deposited_funds": "자금 입금 완료",
+    "deposit_funds_failed": "자금을 입금하지 못했습니다",
+    "not_order_owner": "이 주문의 소유자가 아니므로 수정할 수 없습니다.",
+    "swap_connect_to_see_positions": "마진 포지션을 보려면 지갑을 연결하세요",
+    "swap_no_active_positions": "활성 포지션이 없습니다",
+    "swap_positions_with_a": "{symbolA} 포함 포지션 {count}개",
+    "swap_positions_for_b": "{symbolB} 거래가 허용된 포지션 {count}개",
+    "swap_positions_with_a_for_b": "{symbolA} 포함, {symbolB} 거래가 허용된 포지션 {count}개",
+    "swap_no_positions_for_tokens": "선택한 토큰에 해당하는 포지션이 없습니다",
+    "swap_you_have_positions": "포지션 {count}개 보유 중"
   },
   "TradingChart": {
     "select_pair": "두 토큰을 선택하면 차트가 표시됩니다",
