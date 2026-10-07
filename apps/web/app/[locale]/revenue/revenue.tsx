@@ -124,7 +124,7 @@ export function Revenue() {
     collectProtocolFees,
     refetchUserData,
     isTransactionPending,
-    avgStakingDuration,
+    rewardDuration,
   } = useRevenueContract({ searchAddress });
   const { feeCollectorAddress, pendingPools, refetchPendingPools } =
     usePendingProtocolFees(chainId);
@@ -450,14 +450,9 @@ export function Revenue() {
                   <Tooltip
                     iconSize={16}
                     text={t("claimable_tooltip", {
-                      period:
-                        avgStakingDuration > 0n
-                          ? t("period_named", {
-                              duration: formatDuration(Number(avgStakingDuration), (unit, count) =>
-                                t(durationMessageKey[unit], { count }),
-                              ),
-                            })
-                          : t("period_full"),
+                      period: formatDuration(Number(rewardDuration), (unit, count) =>
+                        t(durationMessageKey[unit], { count }),
+                      ),
                     })}
                   />
                 </div>

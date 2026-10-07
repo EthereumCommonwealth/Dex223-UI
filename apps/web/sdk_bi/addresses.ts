@@ -207,10 +207,11 @@ export const ERC223_TOKEN_DEPLOYER_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.MANTLE]: ZERO_ADDRESS,
 };
 
-// RevenueV1 only. Sepolia 0x4e38… is the older Revenue_old contract with a different ABI.
+// RevenueV2. Mainnet still points at RevenueV1 until V2 is deployed there and the collector is switched;
+// the page's earned/unlock_time reads only work against V2.
 export const REVENUE_ADDRESS: Record<DexChainId, Address> = {
   [DexChainId.MAINNET]: "0xbA75fA26BB88BccEB74a967E4cA2FBfe99d6CE6e",
-  [DexChainId.SEPOLIA]: "0xB5581C5500B3b68c5F3855518e7646304e84f9D2",
+  [DexChainId.SEPOLIA]: "0x624e7e0ffB81f4594921676abc9584b135277f31",
   [DexChainId.BSC_TESTNET]: ZERO_ADDRESS,
   [DexChainId.EOS]: ZERO_ADDRESS,
   [DexChainId.BASE]: ZERO_ADDRESS,
