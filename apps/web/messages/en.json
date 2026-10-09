@@ -380,6 +380,7 @@
     "approve": "Approve",
     "approved": "Approved",
     "why_do_i_have_to_approve": "Why do I have to approve a token?",
+    "why_do_i_have_to_approve_answer": "ERC-20 tokens can't be sent into a contract directly. First you give the DEX223 contract permission to move this amount, then it completes the transaction. The ERC-223 version of a token skips this step.",
     "learn_more_about_swap": "Learn more about swap",
     "proceed_in_your_wallet": "Proceed in your wallet",
     "executing_swap": "Executing swap",

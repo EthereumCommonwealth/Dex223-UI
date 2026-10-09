@@ -82,6 +82,7 @@
     "approve": "授权",
     "approved": "已授权",
     "why_do_i_have_to_approve": "为什么需要授权代币？",
+    "why_do_i_have_to_approve_answer": "ERC-20 代币无法直接发送到合约。你需要先授权 DEX223 合约转移这笔金额，然后由合约完成交易。代币的 ERC-223 版本无需此步骤。",
     "learn_more_about_swap": "了解更多兑换信息",
     "proceed_in_your_wallet": "请在钱包中继续操作",
     "executing_swap": "正在执行兑换",
