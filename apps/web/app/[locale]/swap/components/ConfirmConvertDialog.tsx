@@ -29,6 +29,7 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import EmptyStateIcon from "@/components/atoms/EmptyStateIcon";
 import Input from "@/components/atoms/Input";
 import Svg from "@/components/atoms/Svg";
+import WhyApproveHint from "@/components/atoms/WhyApproveHint";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
@@ -97,7 +98,7 @@ function ApproveRow({
           {!isSuccess && !isPending && !isReverted && !isLoading && !isSuccessSwap && t("approve")}
           {isReverted && t("approve_failed")}
         </span>
-        {!isSuccess && <span className="text-green text-12">{t("why_do_i_have_to_approve")}</span>}
+        {!isSuccess && !isSuccessSwap && !isReverted && <WhyApproveHint />}
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
