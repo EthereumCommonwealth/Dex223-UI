@@ -128,10 +128,6 @@ function getMarks(max: number): Marks {
   return marks;
 }
 
-function getPrice(inputAmount: bigint, outputAmount: bigint, scale: bigint = 10n ** 18n): number {
-  return Number((outputAmount * scale) / inputAmount) / Number(scale);
-}
-
 const DECIMALS = 18n;
 const ONE = 10n ** DECIMALS;
 
@@ -369,23 +365,27 @@ export default function BorrowPage({
         return 1;
       }
 
-      const inputAmount = parseUnits("1", base.decimals); // 1 base unit
+      // getAmountOut(buy, sell, amount) reads `amount` in the sell token, the way the margin module
+      // values collateral, so this quotes collateral and returns base units per collateral unit.
+      // Quoting one base unit here instead returned the inverse, which the seeded 1:1 pools hid.
+      // A million whole tokens keeps digits when one token is worth only a few base units
+      // (an 18-decimal collateral against a 6-decimal base).
+      const inputAmount = parseUnits("1000000", collateral.decimals);
 
       try {
-        const outputAmount = await publicClient.readContract({
+        const outputAmount = (await publicClient.readContract({
           address: order!.oracle,
           abi: ORACLE_ABI,
           functionName: "getAmountOut",
           args: [base.address0, collateral.address0, inputAmount],
-        });
+        })) as bigint;
 
         if (!outputAmount) {
           throw new Error("Error getting price with oracle");
         }
 
-        // output/base
         setOraclePriceError(undefined);
-        return getPrice(outputAmount as bigint, inputAmount);
+        return Number(outputAmount) / Number(inputAmount);
       } catch (e) {
         setOraclePriceError(t("oracle_no_price"));
         return undefined;
