@@ -6,7 +6,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { DexChainId } from "@/sdk_bi/chains";
 
 const marginModuleUrlMap: Record<DexChainId, string> = {
-  // Margin module 0xd48A...55e4 (Dex223-contracts #103). Studio endpoint until the subgraph is
+  // Margin module 0x052F...Ae17 (redeployed 2026-10-10 with the oracle precision fix). Studio endpoint until the subgraph is
   // published; then replace it with its gateway URL (https://gateway.thegraph.com/api/subgraphs/id/...).
   [DexChainId.MAINNET]:
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-mainnet/version/latest",
