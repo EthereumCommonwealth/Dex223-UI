@@ -1202,6 +1202,7 @@
     "autolisting_heading": "Contratos de auto-listado",
     "autolisting_p1": "Puedes listar un token en cualquier contrato de auto-listado. Los usuarios pueden activar o desactivar esos contratos en su interfaz en cualquier momento. Tu token se mostrará si está en al menos uno de los contratos o listas activados. El usuario también verá en cuántas listas está tu token, así que si aparece en varias listas activas ganará más confianza. Los contratos pueden tener criterios distintos: algunos cobran y otros son gratuitos.",
     "autolisting_p2": "Puedes listar un token en un contrato de auto-listado sin hablar con el equipo de DEX223. El proceso está automatizado.",
+    "autolisting_cta": "Lista tu token",
     "existing_heading": "Lista de tokens existente",
     "existing_p1": "Tokenlists es un proyecto de Uniswap Labs. Visita <link>https://tokenlists.org/</link> para más información.",
     "existing_p2": "Las tokenlists las mantienen entidades de confianza como CoinMarketCap o CoinGecko. Si consigues que listen tu token, los usuarios de DEX223 podrán verlo al activar esa lista. La mayoría de listas aún solo admiten tokens ERC-20.",
