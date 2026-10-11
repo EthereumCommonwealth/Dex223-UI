@@ -1202,6 +1202,7 @@
     "autolisting_heading": "Contrats d’auto-listing",
     "autolisting_p1": "Vous pouvez lister un jeton sur n’importe quel contrat d’auto-listing. Les utilisateurs peuvent activer ou désactiver ces contrats à tout moment. Votre jeton s’affiche s’il est présent dans au moins un contrat ou une liste activés. L’utilisateur voit aussi dans combien de listes il figure, donc plusieurs listes activées renforcent la confiance. Les contrats ont des critères différents : certains sont payants, d’autres gratuits.",
     "autolisting_p2": "Vous pouvez lister un jeton sur un contrat d’auto-listing sans contacter l’équipe DEX223. Le processus est automatisé.",
+    "autolisting_cta": "Lister votre jeton",
     "existing_heading": "Liste de jetons existante",
     "existing_p1": "Tokenlists est un projet d’Uniswap Labs. Plus d’infos sur <link>https://tokenlists.org/</link>.",
     "existing_p2": "Les tokenlists sont tenues par des entités de confiance comme CoinMarketCap ou CoinGecko. Si votre jeton y figure, les utilisateurs DEX223 pourront le voir en activant cette liste. La plupart des listes ne prennent encore en charge que l’ERC-20.",
