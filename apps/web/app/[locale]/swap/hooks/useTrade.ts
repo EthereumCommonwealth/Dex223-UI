@@ -147,7 +147,8 @@ export function useTradeComputation() {
           });
           if (!poolAddress || !client) return null;
 
-          const zeroForOne = tokenA.equals(pool.token0.wrapped);
+          // Compare wrapped tokens: a native coin never equals its pool's WETH.
+          const zeroForOne = tokenA.wrapped.equals(pool.token0.wrapped);
           const sqrtLimit = zeroForOne
             ? TickMath.MIN_SQRT_RATIO + ONE
             : TickMath.MAX_SQRT_RATIO - ONE;
@@ -318,7 +319,8 @@ export function useMarginTradeComputation() {
           });
           if (!poolAddress || !address || !client) return null;
 
-          const zeroForOne = tokenA.equals(pool.token0.wrapped);
+          // Compare wrapped tokens: a native coin never equals its pool's WETH.
+          const zeroForOne = tokenA.wrapped.equals(pool.token0.wrapped);
           const sqrtLimit = zeroForOne
             ? TickMath.MIN_SQRT_RATIO + ONE
             : TickMath.MAX_SQRT_RATIO - ONE;
