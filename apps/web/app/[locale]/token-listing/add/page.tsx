@@ -52,6 +52,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useIsErc777 } from "@/hooks/useErc777";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { PoolState, useStorePools } from "@/hooks/usePools";
 import { useTokens } from "@/hooks/useTokenLists";
@@ -65,9 +66,11 @@ import { GasFeeModel, GasOption } from "@/stores/factories/createGasPriceStore";
 function OpenConfirmListTokenButton({
   isPoolExists,
   isBothTokensAlreadyInList,
+  hasUnsupportedToken,
 }: {
   isPoolExists: boolean;
   isBothTokensAlreadyInList: boolean;
+  hasUnsupportedToken: boolean;
 }) {
   const tWallet = useTranslations("Wallet");
   const t = useTranslations("Swap");
@@ -122,6 +125,14 @@ function OpenConfirmListTokenButton({
           <span>{t("waiting_for_confirmation")}</span>
           <Preloader size={20} color="black" />
         </span>
+      </Button>
+    );
+  }
+
+  if (hasUnsupportedToken) {
+    return (
+      <Button size={ButtonSize.EXTRA_LARGE} tabletSize={ButtonSize.LARGE} fullWidth disabled>
+        {tListing("token_not_supported")}
       </Button>
     );
   }
@@ -328,12 +339,24 @@ export default function ListTokenPage() {
     }
   }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings]);
 
+  // A typed ERC-777 address is never imported, so check the typed address as well as a picked token.
+  const { isErc777: isTokenAErc777 } = useIsErc777(tokenA?.wrapped.address0 || tokenAAddress);
+  const { isErc777: isTokenBErc777 } = useIsErc777(tokenB?.wrapped.address0 || tokenBAddress);
+  const erc777Symbol = isTokenAErc777
+    ? tokenA?.symbol || truncateMiddle(tokenAAddress)
+    : isTokenBErc777
+      ? tokenB?.symbol || truncateMiddle(tokenBAddress)
+      : undefined;
+
   const firstFieldError = useMemo(() => {
     if (tokenAAddress && !isAddress(tokenAAddress)) {
       return tListing("invalid_address");
     }
+    if (isTokenAErc777) {
+      return tListing("erc777_field_error");
+    }
     return;
-  }, [tListing, tokenAAddress]);
+  }, [isTokenAErc777, tListing, tokenAAddress]);
 
   const sameTokensSelected = useMemo(() => {
     return Boolean(tokenAAddress && tokenAAddress === tokenBAddress);
@@ -347,7 +370,11 @@ export default function ListTokenPage() {
     if (sameTokensSelected) {
       return tListing("tokens_must_differ");
     }
-  }, [sameTokensSelected, tListing, tokenBAddress]);
+
+    if (isTokenBErc777) {
+      return tListing("erc777_field_error");
+    }
+  }, [isTokenBErc777, sameTokensSelected, tListing, tokenBAddress]);
 
   const isMobile = useMediaQuery({ query: "(max-width: 519px)" });
   const nativeCurrency = useNativeCurrency();
@@ -487,7 +514,11 @@ export default function ListTokenPage() {
                     <HelperText error={secondFieldError} helperText={tListing("paired_helper")} />
                   </div>
 
-                  {!isPoolExists && !sameTokensSelected && tokenA && tokenB && (
+                  {erc777Symbol && (
+                    <Alert text={tListing("erc777_alert", { symbol: erc777Symbol })} type="error" />
+                  )}
+
+                  {!erc777Symbol && !isPoolExists && !sameTokensSelected && tokenA && tokenB && (
                     <Alert
                       text={tListing.rich("no_pool", {
                         link: (chunks) => (
@@ -503,7 +534,7 @@ export default function ListTokenPage() {
                     />
                   )}
 
-                  {!isPoolExists && (!tokenA || !tokenB || sameTokensSelected) && (
+                  {!erc777Symbol && !isPoolExists && (!tokenA || !tokenB || sameTokensSelected) && (
                     <Alert text={tListing("pool_required")} type="info" />
                   )}
 
@@ -719,6 +750,7 @@ export default function ListTokenPage() {
                 <OpenConfirmListTokenButton
                   isPoolExists={isPoolExists}
                   isBothTokensAlreadyInList={!tokensToList.length}
+                  hasUnsupportedToken={Boolean(erc777Symbol)}
                 />
               </div>
             </div>
