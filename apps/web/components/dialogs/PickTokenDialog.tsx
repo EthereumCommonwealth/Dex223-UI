@@ -30,6 +30,7 @@ import { filterTokens } from "@/functions/searchTokens";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDerivedTokenInfo from "@/hooks/useDerivedTokenInfo";
+import { useErc777Addresses } from "@/hooks/useErc777";
 import useTokenBalances from "@/hooks/useTokenBalances";
 import { useTokenLists, useTokens } from "@/hooks/useTokenLists";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
@@ -82,15 +83,33 @@ function FoundInOtherListMarker() {
   );
 }
 
+function Erc777Badge() {
+  const t = useTranslations("ManageTokens");
+
+  return (
+    <Tooltip
+      text={t("erc777_tooltip")}
+      renderTrigger={(ref, refProps) => (
+        <span ref={ref.setReference} {...refProps} className="flex">
+          <Badge size="small" variant={BadgeVariant.COLORED} color="red" text="ERC-777" />
+        </span>
+      )}
+    />
+  );
+}
+
 function TokenRow({
   currency,
   handlePick,
   setTokenForPortfolio,
+  unsupported = false,
 }: {
   currency: Currency;
   handlePick: (currency: Currency) => void;
   setTokenForPortfolio: (currency: Currency) => void;
+  unsupported?: boolean;
 }) {
+  const t = useTranslations("ManageTokens");
   const { isConnected } = useAccount();
 
   const { toggleToken, isTokenPinned, pinnedTokens } = usePinnedTokensStore((s) => ({
@@ -141,8 +160,12 @@ function TokenRow({
   return (
     <div
       role="button"
+      aria-disabled={unsupported}
       onClick={() => handlePick(currency)}
-      className="rounded-2 flex items-center flex-wrap md:block md:rounded-0 pl-3 pr-1.5 md:pl-10 md:pr-4 bg-tertiary-bg md:bg-transparent hocus:bg-tertiary-bg duration-200 group pt-1.5 md:pt-0 pb-1.5 md:pb-2 w-full text-left"
+      className={clsx(
+        "rounded-2 flex items-center flex-wrap md:block md:rounded-0 pl-3 pr-1.5 md:pl-10 md:pr-4 bg-tertiary-bg md:bg-transparent hocus:bg-tertiary-bg duration-200 group pt-1.5 md:pt-0 pb-1.5 md:pb-2 w-full text-left",
+        unsupported && "opacity-70 cursor-not-allowed",
+      )}
     >
       <div className="grid grid-cols-[40px_1fr] gap-2 w-full">
         <div className="flex items-center md:pt-3">
@@ -197,7 +220,7 @@ function TokenRow({
               )}
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className={clsx("items-center gap-1", unsupported ? "hidden" : "flex")}>
               {totalUSDBalance ? (
                 <span className="text-primary-text text-12 hidden md:inline pr-2.5">
                   ${formatFloat(totalUSDBalance)}
@@ -247,11 +270,21 @@ function TokenRow({
                 active={isTokenPinned}
               />
             </div>
+            {unsupported && (
+              <span className="text-red-light text-14 pr-2.5">{t("unsupported")}</span>
+            )}
           </div>
 
           <div className="auto-cols-fr grid-flow-col gap-2 hidden md:grid min-h-4">
-            {(!isTokenPinned || (!erc20Balance && !erc223Balance)) && (
-              <span className="text-secondary-text text-12">{currency.symbol}</span>
+            {unsupported ? (
+              <span className="flex items-center gap-1">
+                <Erc777Badge />
+                <span className="text-secondary-text text-12">{currency.symbol}</span>
+              </span>
+            ) : (
+              (!isTokenPinned || (!erc20Balance && !erc223Balance)) && (
+                <span className="text-secondary-text text-12">{currency.symbol}</span>
+              )
             )}
             {erc20Balance && currency.isNative && (
               <div className="flex items-center gap-1">
@@ -282,6 +315,7 @@ function TokenRow({
       </div>
 
       <div className="auto-cols-fr grid grid-flow-col gap-2 md:hidden mt-1">
+        {unsupported && <Erc777Badge />}
         {erc20Balance && currency.isNative && (
           <div className="flex items-center gap-1">
             <Badge size="small" variant={BadgeVariant.COLORED} text="Native" />
@@ -317,18 +351,24 @@ function TokenRowSimple({
   setTokenForPortfolio,
   isMobile,
   prevToken,
+  unsupported = false,
 }: {
   currency: Currency;
   handlePick: (currency: Currency) => void;
   setTokenForPortfolio: (currency: Currency) => void;
   isMobile: boolean;
   prevToken: Currency | null;
+  unsupported?: boolean;
 }) {
   return (
     <div
       role="button"
+      aria-disabled={unsupported}
       onClick={() => handlePick(currency)}
-      className="rounded-2 flex items-center flex-wrap md:block md:rounded-0 pl-3 pr-1.5 md:pl-10 md:pr-7 bg-transparent hocus:bg-tertiary-bg duration-200 group py-1 md:py-2 w-full text-left"
+      className={clsx(
+        "rounded-2 flex items-center flex-wrap md:block md:rounded-0 pl-3 pr-1.5 md:pl-10 md:pr-7 bg-transparent hocus:bg-tertiary-bg duration-200 group py-1 md:py-2 w-full text-left",
+        unsupported && "opacity-70 cursor-not-allowed",
+      )}
     >
       <div className="grid md:grid-cols-[40px_1fr] grid-cols-[32px_1fr] gap-2 w-full">
         <div className="flex items-center">
@@ -350,6 +390,7 @@ function TokenRowSimple({
                 <span className="whitespace-nowrap overflow-ellipsis overflow-hidden">
                   {currency.name}
                 </span>
+                {unsupported && <Erc777Badge />}
               </div>
 
               <span className="w-full ">
@@ -407,7 +448,7 @@ export default function PickTokenDialog({
 
 function PickTokenDialogContent({
   setIsOpen,
-  handlePick,
+  handlePick: handlePickToken,
   simpleForm = false,
   prevToken = null,
   availableTokens,
@@ -437,7 +478,11 @@ function PickTokenDialogContent({
     return tokensSearchValue ? [filterTokens(tokensSearchValue, tokens), true] : [tokens, false];
   }, [tokens, tokensSearchValue]);
 
-  const { token: derivedToken, isLoading } = useDerivedTokenInfo({
+  const {
+    token: derivedToken,
+    isErc777,
+    isLoading,
+  } = useDerivedTokenInfo({
     tokenAddressToImport: tokensSearchValue as Address,
     enabled: !!tokensSearchValue && isAddress(tokensSearchValue) && filteredTokens.length === 0,
   });
@@ -448,6 +493,27 @@ function PickTokenDialogContent({
     estimateSize: () => 60,
   });
   const items = virtualizer.getVirtualItems();
+
+  // Check the rows on screen and the pinned chips for ERC-777, which the converter does not support.
+  const erc777Candidates = useMemo(
+    () =>
+      [...items.map((item) => filteredTokens[item.index]), ...pinnedTokens]
+        .filter((c): c is Token => !!c && c.isToken)
+        .map((c) => c.address0),
+    [filteredTokens, items, pinnedTokens],
+  );
+  const erc777Addresses = useErc777Addresses(erc777Candidates);
+  const isUnsupported = useCallback(
+    (currency: Currency) =>
+      currency.isToken && erc777Addresses.has(currency.address0.toLowerCase()),
+    [erc777Addresses],
+  );
+  const handlePick = useCallback(
+    (currency: Currency) => {
+      if (!isUnsupported(currency)) handlePickToken(currency);
+    },
+    [handlePickToken, isUnsupported],
+  );
 
   const minYPadding = useMemo(() => (pinnedTokens?.length ? 8 : 0), [pinnedTokens]);
 
@@ -638,6 +704,7 @@ function PickTokenDialogContent({
                                   currency={token}
                                   isMobile={isMobile}
                                   prevToken={prevToken}
+                                  unsupported={isUnsupported(token)}
                                 />
                               );
                             })
@@ -654,6 +721,7 @@ function PickTokenDialogContent({
                                       : `native-${token.wrapped.address0}`
                                   }
                                   currency={token}
+                                  unsupported={isUnsupported(token)}
                                 />
                               );
                             })}
@@ -686,10 +754,18 @@ function PickTokenDialogContent({
                             <div className="grid grid-cols-[1fr_auto_32px] gap-y-1">
                               <span className="text-secondary-text flex items-center gap-1">
                                 {t("address")}{" "}
-                                <Badge
-                                  variant={BadgeVariant.STANDARD}
-                                  standard={Standard.ERC20}
-                                />{" "}
+                                {isErc777 ? (
+                                  <Badge
+                                    variant={BadgeVariant.COLORED}
+                                    color="red"
+                                    text="ERC-777"
+                                  />
+                                ) : (
+                                  <Badge
+                                    variant={BadgeVariant.STANDARD}
+                                    standard={Standard.ERC20}
+                                  />
+                                )}{" "}
                               </span>
                               <ExternalTextLink
                                 text={truncateMiddle(derivedToken.address0)}
@@ -705,26 +781,33 @@ function PickTokenDialogContent({
                                 buttonSize={IconButtonSize.SMALL}
                                 text={derivedToken.address0}
                               />
-                              <span className="text-secondary-text flex items-center gap-1">
-                                {t("address")}{" "}
-                                <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
-                              </span>
-                              {derivedToken.address1 && derivedToken.address1 && (
+                              {!isErc777 && (
                                 <>
-                                  <ExternalTextLink
-                                    text={truncateMiddle(derivedToken.address1)}
-                                    href={getExplorerLink(
-                                      ExplorerLinkType.ADDRESS,
-                                      derivedToken.address1,
-                                      chainId,
-                                    )}
-                                    className="justify-between"
-                                  />
-                                  <IconButton
-                                    variant={IconButtonVariant.COPY}
-                                    buttonSize={IconButtonSize.SMALL}
-                                    text={derivedToken.address1}
-                                  />
+                                  <span className="text-secondary-text flex items-center gap-1">
+                                    {t("address")}{" "}
+                                    <Badge
+                                      variant={BadgeVariant.STANDARD}
+                                      standard={Standard.ERC223}
+                                    />
+                                  </span>
+                                  {derivedToken.address1 && derivedToken.address1 && (
+                                    <>
+                                      <ExternalTextLink
+                                        text={truncateMiddle(derivedToken.address1)}
+                                        href={getExplorerLink(
+                                          ExplorerLinkType.ADDRESS,
+                                          derivedToken.address1,
+                                          chainId,
+                                        )}
+                                        className="justify-between"
+                                      />
+                                      <IconButton
+                                        variant={IconButtonVariant.COPY}
+                                        buttonSize={IconButtonSize.SMALL}
+                                        text={derivedToken.address1}
+                                      />
+                                    </>
+                                  )}
                                 </>
                               )}
                               {/*{erc223AddressToImport && !isErc223Exist && (*/}
@@ -740,22 +823,26 @@ function PickTokenDialogContent({
                         </>
                       )}
 
-                      <Alert text={t("import_token_warning")} type="warning" />
+                      {isErc777 ? (
+                        <Alert text={t("erc777_warning")} type="error" />
+                      ) : (
+                        <Alert text={t("import_token_warning")} type="warning" />
+                      )}
                     </div>
 
                     <div className="flex flex-col gap-5 mt-5">
-                      {/*{!alreadyImported && (*/}
-                      <Checkbox
-                        checked={checkedUnderstand}
-                        handleChange={() => setCheckedUnderstand(!checkedUnderstand)}
-                        id="approve-list-import"
-                        label={t("i_understand")}
-                      />
-                      {/*)}*/}
+                      {!isErc777 && (
+                        <Checkbox
+                          checked={checkedUnderstand}
+                          handleChange={() => setCheckedUnderstand(!checkedUnderstand)}
+                          id="approve-list-import"
+                          label={t("i_understand")}
+                        />
+                      )}
                       <Button
                         fullWidth
                         size={ButtonSize.LARGE}
-                        disabled={!checkedUnderstand}
+                        disabled={!checkedUnderstand || isErc777}
                         onClick={async () => {
                           if (chainId && derivedToken) {
                             const currentCustomList = tokenLists?.find(
@@ -788,7 +875,9 @@ function PickTokenDialogContent({
                           addToast(t("imported_successfully"));
                         }}
                       >
-                        {t("import_symbol", { symbol: derivedToken.symbol })}
+                        {isErc777
+                          ? t("token_not_supported")
+                          : t("import_symbol", { symbol: derivedToken.symbol })}
                       </Button>
                     </div>
                   </div>

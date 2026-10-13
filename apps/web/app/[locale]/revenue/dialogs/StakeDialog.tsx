@@ -16,6 +16,7 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Input from "@/components/atoms/Input";
 import Svg from "@/components/atoms/Svg";
 import { HelperText } from "@/components/atoms/TextField";
+import WhyApproveHint from "@/components/atoms/WhyApproveHint";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import GasSettingsBlock from "@/components/common/GasSettingsBlock";
@@ -143,9 +144,7 @@ function ApproveRow({
           {isReverted && t("approve_failed")}
         </span>
         {!isSuccess && !isSuccessStake && !isReverted && (
-          <span className="text-green text-12 max-md:hidden">
-            {tSwap("why_do_i_have_to_approve")}
-          </span>
+          <WhyApproveHint className="max-md:hidden" />
         )}
         {isPending && (
           <span className="text-secondary-text text-12 md:hidden mt-0.5">
