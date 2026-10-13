@@ -8,6 +8,7 @@ import SelectPositionDialog, {
   SelectedPositionInfo,
 } from "@/app/[locale]/margin-swap/components/SelectPositionDialog";
 import TradeForm from "@/app/[locale]/margin-swap/components/TradeForm";
+import { useMarginSwapDefaultPair } from "@/app/[locale]/margin-swap/hooks/useMarginSwapDefaultPair";
 import { useMarginSwapTokensStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapTokensStore";
 import { usePositionsByOwner } from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
@@ -22,6 +23,8 @@ import { ThemeColors } from "@/config/theme/colors";
 import { ColorSchemeProvider } from "@/lib/color-scheme";
 
 export default function MarginSwapPage() {
+  useMarginSwapDefaultPair();
+
   const t = useTranslations("Margin");
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useSwapRecentTransactionsStore();
