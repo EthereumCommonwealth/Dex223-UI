@@ -39,6 +39,45 @@ export const useFetchPoolData = (chainId: number) => {
     client: _apolloClient,
   });
 
+  const publicClient = usePublicClient({ chainId });
+
+  // Fallback when the subgraph is unavailable (Studio rate-limits often): read the pool's state
+  // straight from the chain. There are no ticks here, which quoting does not need, since quotes
+  // come from the pool's own quoteSwap.
+  const readPoolOnChain = useCallback(
+    async (address: Address, token0: Currency, token1: Currency, tier: FeeAmount) => {
+      if (!publicClient) {
+        throw new Error("No RPC client for the pool fallback");
+      }
+
+      const code = await publicClient.getCode({ address });
+      if (!code || code === "0x") {
+        return null;
+      }
+
+      const [slot0, liquidity] = await Promise.all([
+        publicClient.readContract({ address, abi: POOL_STATE_ABI, functionName: "slot0" }),
+        publicClient.readContract({ address, abi: POOL_STATE_ABI, functionName: "liquidity" }),
+      ]);
+      const [sqrtPriceX96, tick] = slot0;
+
+      if (!sqrtPriceX96) {
+        return null;
+      }
+
+      return new Pool(
+        token0,
+        token1,
+        tier,
+        sqrtPriceX96.toString(),
+        liquidity.toString(),
+        tick,
+        [],
+      );
+    },
+    [publicClient],
+  );
+
   return useCallback(
     async (key: string, address: Address, token0: Currency, token1: Currency, tier: FeeAmount) => {
       try {
@@ -51,16 +90,17 @@ export const useFetchPoolData = (chainId: number) => {
           variables: { addresses: [address.toLowerCase()] },
         });
 
-        // A failed query (rate limit, network) must not read as "pool does not exist".
+        // A failed query (rate limit, network) must not read as "pool does not exist". Ask the
+        // chain instead.
         if (queryResult.error || !queryResult.data) {
-          throw queryResult.error ?? new Error("Subgraph returned no data");
+          return await readPoolOnChain(address, token0, token1, tier);
         }
 
         const poolGqlData = queryResult.data?.pools?.[0];
         console.log("gqldata:", poolGqlData);
         if (!poolGqlData) {
-          // Pool does not exist in the subgraph
-          return null;
+          // Not in the subgraph, which can lag behind the chain. The chain has the final word.
+          return await readPoolOnChain(address, token0, token1, tier);
         }
 
         const ticks = poolGqlData.ticks
@@ -98,6 +138,6 @@ export const useFetchPoolData = (chainId: number) => {
         throw new Error(err.message || "Unknown error");
       }
     },
-    [triggerQuery],
+    [readPoolOnChain, triggerQuery],
   );
 };

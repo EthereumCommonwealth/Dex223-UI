@@ -93,7 +93,10 @@ export default function useMarginSwap() {
         args: [BigInt(marginSwapPosition.id)],
       });
 
-      const zeroForOne = tokenA.wrapped.address0 < tokenB.wrapped.address0;
+      // Same order as the pool's token0/token1. A plain string compare of checksummed addresses
+      // gets it wrong when letter case differs (WETH 0xb16F… vs USDC 0xFC86…).
+      const zeroForOne =
+        !tokenA.wrapped.equals(tokenB.wrapped) && tokenA.wrapped.sortsBefore(tokenB.wrapped);
 
       const sqrtPriceLimitX96 = zeroForOne
         ? TickMath.MIN_SQRT_RATIO + ONE
