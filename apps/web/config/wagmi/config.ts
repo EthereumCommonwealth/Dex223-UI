@@ -99,17 +99,13 @@ export const config = createConfig({
   multiInjectedProviderDiscovery: false, // to avoid connecting to io.metamask and other injected connectors
   transports: {
     [mainnet.id]: fallback([
-      webSocket(
-        "wss://lb.drpc.org/ogws?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-      ),
-      http(
-        "https://lb.drpc.org/ogrpc?network=ethereum&dkey=AkwuSJ_nLEH3t2kOUJMm2iFCwFk2Dk4R8JcUgk2scBzi",
-      ),
-      webSocket("wss://ethereum.callstaticrpc.com"),
+      // dRPC (keyed and public) rejects every Ethereum method, ethereum.callstaticrpc.com no longer
+      // resolves and 1rpc.io/eth is discontinued, so all three were removed. Each failed attempt
+      // logged console errors before the fallback moved on.
       webSocket("wss://ethereum-rpc.publicnode.com"),
       http("https://ethereum-rpc.publicnode.com"),
-      http("https://eth.drpc.org"),
-      http("https://1rpc.io/eth"),
+      http("https://eth-mainnet.public.blastapi.io"),
+      http("https://mainnet.gateway.tenderly.co"),
       http(),
     ]),
     [sepolia.id]: fallback([

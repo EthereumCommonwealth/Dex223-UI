@@ -5,6 +5,7 @@ import { Address } from "viem";
 import { Check, OtherListCheck, Rate, TrustRateCheck } from "@/components/badges/TrustBadge";
 import { db, TokenList, TokenListId } from "@/db/db";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { usePoolTokens } from "@/hooks/usePoolTokens";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { NativeCoin } from "@/sdk_bi/entities/ether";
@@ -258,4 +259,42 @@ export function useTokens(onlyCustom: boolean = false): Currency[] {
 
     return onlyCustom ? tokens : [native, ...tokens];
   }, [chainId, onlyCustom, tokenLists]);
+}
+
+// Tokens for the swap form: everything from the enabled lists, plus any token that has a pool on
+// this chain's factory but is in none of those lists. Without the second part, a pair shown on the
+// Pools page (and linked from its Swap button) can be impossible to pick. Pool-only tokens are
+// rated against the lists like any other token, so they carry the usual low-trust warning.
+export function useSwapTokens(): { tokens: Currency[]; isLoading: boolean } {
+  const tokens = useTokens();
+  const tokenLists = useTokenLists();
+  const { tokens: poolTokens, isLoading } = usePoolTokens();
+
+  const swapTokens = useMemo(() => {
+    if (!poolTokens.length) return tokens;
+
+    const known = new Set(
+      tokens.filter((t) => t.isToken).map((t) => t.wrapped.address0.toLowerCase()),
+    );
+    const extra = poolTokens
+      .filter((t) => !known.has(t.address0.toLowerCase()))
+      .map(
+        (t) =>
+          new Token(
+            t.chainId,
+            t.address0,
+            t.address1,
+            t.decimals,
+            t.symbol,
+            t.name,
+            t.logoURI,
+            [],
+            getTokenRate(t, tokenLists || [], t.chainId),
+          ),
+      );
+
+    return extra.length ? [...tokens, ...extra] : tokens;
+  }, [poolTokens, tokenLists, tokens]);
+
+  return { tokens: swapTokens, isLoading };
 }

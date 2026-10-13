@@ -51,6 +51,11 @@ export const useFetchPoolData = (chainId: number) => {
           variables: { addresses: [address.toLowerCase()] },
         });
 
+        // A failed query (rate limit, network) must not read as "pool does not exist".
+        if (queryResult.error || !queryResult.data) {
+          throw queryResult.error ?? new Error("Subgraph returned no data");
+        }
+
         const poolGqlData = queryResult.data?.pools?.[0];
         console.log("gqldata:", poolGqlData);
         if (!poolGqlData) {

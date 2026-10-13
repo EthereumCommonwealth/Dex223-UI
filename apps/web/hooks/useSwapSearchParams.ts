@@ -6,7 +6,7 @@ import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStor
 import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { usePathname } from "@/i18n/routing";
 
-import { useTokens } from "./useTokenLists";
+import { useSwapTokens } from "./useTokenLists";
 
 enum SwapQueryParams {
   tokenA = "tokenA",
@@ -19,7 +19,7 @@ export const useSwapSearchParams = () => {
   const _pathname = usePathname();
   const pathname = `/${locale}${_pathname}`;
   const searchParams = useSearchParams();
-  const tokens = useTokens();
+  const { tokens, isLoading: arePoolTokensLoading } = useSwapTokens();
 
   const { tokenA, tokenB, setTokenA, setTokenB, setTokenAStandard, setTokenBStandard } =
     useSwapTokensStore();
@@ -45,7 +45,9 @@ export const useSwapSearchParams = () => {
   }, [pathname, searchParams, tokenA, tokenB]);
 
   useEffect(() => {
-    if (!isInitialized && tokens.length > 1) {
+    // Wait for pool tokens too, so a pair linked from the Pools page resolves even when a token
+    // is in no enabled list.
+    if (!isInitialized && tokens.length > 1 && !arePoolTokensLoading) {
       const queryTokenA = searchParams.get(SwapQueryParams.tokenA);
       const queryTokenB = searchParams.get(SwapQueryParams.tokenB);
 
@@ -78,6 +80,7 @@ export const useSwapSearchParams = () => {
     setTokenAStandard,
     setTokenBStandard,
     isInitialized,
+    arePoolTokensLoading,
   ]);
   useEffect(() => {
     if (isInitialized) {

@@ -160,6 +160,25 @@ export function useStoreAllowance({
         args: [contractAddress!, amountToApprove!],
       };
 
+      // The per-chain table is only a floor. What an approve costs depends on the token and on
+      // the network's storage pricing (Sepolia approves that create a new allowance slot cost
+      // about 129k gas, more than double the table), and a limit that is too low makes the
+      // simulation fail before the wallet opens. Estimate on chain and add a 20% margin.
+      let usedGas = gasLimit;
+      const approveGas = async (amount: bigint) => {
+        try {
+          const estimated = await publicClient.estimateContractGas({
+            ...params,
+            args: [contractAddress!, amount],
+          });
+          const buffered = (estimated * BigInt(12)) / BigInt(10);
+          usedGas = buffered > gasLimit ? buffered : gasLimit;
+          return usedGas;
+        } catch (e) {
+          return gasLimit;
+        }
+      };
+
       // USDT can't rewrite existing allowance, so we have to manually revoke allowance
       // to 0 before we can attach an allowance. This flag check if token can rewrite allowance,
       // that in this case with USDT results to true
@@ -173,7 +192,7 @@ export function useStoreAllowance({
         const hash = await walletClient.writeContract({
           ...revokeParams,
           ...(customGasSettings || {}),
-          gas: gasLimit,
+          gas: await approveGas(BigInt(0)),
           account: undefined,
         });
 
@@ -190,19 +209,23 @@ export function useStoreAllowance({
               ...params,
               ...(customGasSettings || {}),
               args: [contractAddress!, MAX_SAFE_INTEGER],
-              gas: gasLimit,
+              gas: await approveGas(MAX_SAFE_INTEGER),
               account: undefined,
             });
           } else {
             const { request } = await publicClient.simulateContract({
               ...params,
               ...(customGasSettings || {}),
-              gas: gasLimit,
+              gas: await approveGas(amountToApprove),
             });
             hash = await walletClient.writeContract({ ...request, account: undefined });
           }
         } catch (e) {
           console.log(e);
+          // A failed simulation used to end here silently, so Approve looked like it did nothing.
+          if ((e as any)?.name !== "UserRejectedRequestError" && !/rejected/i.test(String(e))) {
+            addToast((e as any)?.shortMessage || String(e), "error");
+          }
         }
 
         if (hash) {
@@ -223,7 +246,7 @@ export function useStoreAllowance({
                 chainId,
                 gas: {
                   model: GasFeeModel.EIP1559,
-                  gas: gasLimit.toString(),
+                  gas: usedGas.toString(),
                   maxFeePerGas: undefined,
                   maxPriorityFeePerGas: undefined,
                 },

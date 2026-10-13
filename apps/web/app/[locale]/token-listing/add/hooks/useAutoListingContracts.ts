@@ -37,6 +37,10 @@ const AUTOLISTING_BLACKLIST = [
   // They are bound to 0xeA0A...37eb, so a listing there does not reach the v2 pools.
   "0x83E1e7f47536515db9Ec4D7C4024e7395CD11A48",
   "0xCc46E110426958E83e9298d46a50572691065eC5",
+  // Sepolia v2 core and free autolistings, replaced with the v3 factory 0xf07c...42B9 on 2026-10-07.
+  // They are bound to 0xeA0A...37eb, so a listing there does not reach the v3 pools.
+  "0xcF08b4d75B20c2b6B2C3EF5921a60B15CE7B010a",
+  "0x5BDdb8BF9404DFBF2C45c4eEad817F5e54782734",
 ];
 
 const query = gql(`

@@ -43,6 +43,7 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { usePoolBalances } from "@/hooks/usePoolBalances";
 import useTokenBalances from "@/hooks/useTokenBalances";
+import { useSwapTokens } from "@/hooks/useTokenLists";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { Link } from "@/i18n/routing";
 import { ROUTER_ADDRESS } from "@/sdk_bi/addresses";
@@ -249,6 +250,7 @@ export default function TradeForm({
 
   const { computed } = settingsStore;
   const [currentlyPicking, setCurrentlyPicking] = useState<"tokenA" | "tokenB">("tokenA");
+  const { tokens: swapTokens } = useSwapTokens();
 
   const { setTypedValue, typedValue } = useSwapAmountsStore();
 
@@ -903,6 +905,7 @@ export default function TradeForm({
       />
       <PickTokenDialog
         handlePick={handlePick}
+        availableTokens={swapTokens}
         isOpen={isOpenedTokenPick}
         setIsOpen={setIsOpenedTokenPick}
       />
