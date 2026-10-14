@@ -12,6 +12,7 @@ import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
 import { formatPostDate } from "@/functions/formatPostDate";
 import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
+import { postUrl } from "@/functions/postUrl";
 import { Link } from "@/i18n/routing";
 
 function PostContainer({ children }: PropsWithChildren<{}>) {
@@ -34,14 +35,14 @@ async function fetchPost(id: string): Promise<PostDetails | null> {
 }
 
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const { id, locale } = await params;
+  const { id } = await params;
   const post = await fetchPost(id);
 
   if (!post) {
     return {};
   }
 
-  const url = `/${locale}/${post.id}?slug=${post.slug}`;
+  const url = postUrl(post);
   const images = post.thumbnail?.link
     ? [{ url: post.thumbnail.link, alt: post.thumbnail.alt || post.title }]
     : undefined;
@@ -248,8 +249,36 @@ export default async function PostPage({ params }: PostPageProps) {
       .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    url: postUrl(post),
+    mainEntityOfPage: postUrl(post),
+    inLanguage: post.language_code || "en",
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt,
+    image: post.thumbnail?.link || undefined,
+    keywords: post.tags?.length ? post.tags.join(", ") : undefined,
+    author: post.author
+      ? { "@type": "Person", name: post.author.username }
+      : { "@id": "https://www.dex223.io/#organization" },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.dex223.io/#organization",
+      name: "DEX223",
+      logo: { "@type": "ImageObject", url: "https://www.dex223.io/dex.png" },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        // Built from the post's own fields; "<" is escaped so text cannot close the tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
+      />
       <PostContainer>
         <div className="flex justify-between my-4 md:my-10 flex-wrap gap-y-2 ">
           <Link

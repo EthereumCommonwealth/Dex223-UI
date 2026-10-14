@@ -66,6 +66,6 @@ export const config = {
     // paths belong to the rewards app (see next.config.js), which has its own
     // locale handling under /rewards/<locale>. Metadata files (icons, manifest,
     // share image) are served from the root and must not get a locale prefix.
-    "/((?!_next|_vercel|favicon.ico|icon.svg|apple-icon|manifest.webmanifest|opengraph-image|images|robots.txt|sitemap.xml|static|api|rewards).*)",
+    "/((?!_next|_vercel|favicon.ico|icon.svg|apple-icon|manifest.webmanifest|opengraph-image|images|robots.txt|sitemap.xml|llms.txt|static|api|rewards).*)",
   ],
 };

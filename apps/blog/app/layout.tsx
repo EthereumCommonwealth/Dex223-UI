@@ -43,7 +43,7 @@ export default async function RootLayout({ children }: PropsWithChildren) {
 
 export const metadata = {
   metadataBase: new URL("https://blog.dex223.io"),
-  title: "Dex223 Blog",
+  title: "DEX223 Blog: ERC-223, DeFi and Development Updates",
   description:
-    "Explore in-depth insights, updates, and guides on Dex223, your go-to source for decentralized exchange (DEX) development, token standards, and blockchain innovations. Stay ahead in the Web3 ecosystem!",
+    "News, development reports and guides from DEX223, the decentralized exchange for ERC-223 and ERC-20 tokens: token standards, DeFi security and product updates.",
 };
