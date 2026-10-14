@@ -11,9 +11,10 @@ import { SITE_URL } from "@/config/site";
 import { Locale, routing } from "@/i18n/routing";
 
 // Organization, WebSite and WebApplication entities so search engines show the
-// brand, social profiles and app type correctly.
+// brand, social profiles and app type correctly. The Organization is the one www.dex223.io
+// publishes, so the site, the app and the blog describe a single DEX223 entity.
 function structuredData(locale: Locale) {
-  const org = `${SITE_URL}/#organization`;
+  const org = "https://www.dex223.io/#organization";
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -21,14 +22,16 @@ function structuredData(locale: Locale) {
         "@type": "Organization",
         "@id": org,
         name: SITE_NAME,
-        url: "https://dex223.io",
-        logo: `${SITE_URL}/icon.svg`,
+        legalName: "DEX223 DAO LLC",
+        url: "https://www.dex223.io",
+        logo: "https://www.dex223.io/dex.png",
         sameAs: [
           "https://x.com/Dex_223",
           "https://t.me/Dex223_defi",
           "https://t.me/Dex_223",
           "https://discord.gg/t5bdeGC5Jk",
-          "https://github.com/EthereumCommonwealth/Dex223-UI",
+          "https://github.com/EthereumCommonwealth",
+          "https://blog.dex223.io",
         ],
       },
       {
@@ -41,6 +44,7 @@ function structuredData(locale: Locale) {
       },
       {
         "@type": "WebApplication",
+        "@id": `${SITE_URL}/#app`,
         name: "DEX223 Exchange",
         url: `${SITE_URL}/${locale}/swap`,
         applicationCategory: "FinanceApplication",
