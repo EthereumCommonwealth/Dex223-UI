@@ -10,6 +10,7 @@ import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { HIDDEN_POST_IDS, POST_REDIRECTS } from "@/config/curation";
 import { resolvePost } from "@/functions/blogPosts";
 import { formatPostDate } from "@/functions/formatPostDate";
 import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
@@ -27,11 +28,13 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
   const { slug } = await params;
   const resolved = await resolvePost(slug);
 
-  // Old id URLs redirect from the page itself; they need no metadata of their own.
-  if (!resolved || resolved.legacyId) {
+  // Old id URLs and merged posts redirect from the page itself; they need no metadata of their own.
+  if (!resolved || resolved.legacyId || POST_REDIRECTS[resolved.post.id]) {
     return {};
   }
   const { post } = resolved;
+  // Curated out of search (config/curation.ts): still reachable by link, but not indexed.
+  const robots = HIDDEN_POST_IDS.has(post.id) ? { index: false, follow: true } : undefined;
 
   const url = postUrl(post);
   const images = post.thumbnail?.link
@@ -39,6 +42,7 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
     : undefined;
 
   return {
+    robots,
     title: `${post.title} | Dex223 Blog`,
     description: post.description,
     alternates: { canonical: url },
@@ -75,6 +79,12 @@ export default async function PostPage({ params }: PostPageProps) {
 
   // Old links (/en/<id>?slug=..., often with tracking parameters) move permanently to the
   // post's slug URL, so their links and search ranking carry over.
+  // Merged explainers move permanently to the post they were folded into (config/curation.ts).
+  const mergedInto = POST_REDIRECTS[resolved.post.id];
+  if (mergedInto) {
+    permanentRedirect(`/en/${encodeURIComponent(mergedInto)}`);
+  }
+
   if (resolved.legacyId) {
     permanentRedirect(postPath(resolved.post));
   }
