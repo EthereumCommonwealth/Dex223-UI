@@ -15,9 +15,9 @@ async function publishedPosts(): Promise<SlimPost[]> {
   const seen = new Set<string>();
 
   for (let page = 1; page <= 20; page += 1) {
-    const skip = (page - 1) * 100;
+    // The API offsets by (page - 1) * limit + skip, so page alone walks the list; skip stays 0.
     const response = await fetch(
-      `https://api.dex223.io/v1/core/api/blog/list-slim?page=${page}&limit=100&skip=${skip}`,
+      `https://api.dex223.io/v1/core/api/blog/list-slim?page=${page}&limit=100&skip=0`,
       { next: { revalidate: 86400 } },
     );
     if (!response.ok) break;
