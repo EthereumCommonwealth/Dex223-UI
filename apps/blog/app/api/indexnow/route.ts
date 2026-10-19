@@ -1,3 +1,4 @@
+import { isListed } from "@/config/curation";
 import { BLOG_URL, postUrl } from "@/functions/postUrl";
 
 // IndexNow tells Bing (which feeds ChatGPT search, Copilot and DuckDuckGo) and Yandex about new or
@@ -33,7 +34,9 @@ export async function GET(request: Request) {
   }
 
   const posts = await recentPosts(Date.now() - WINDOW_MS);
-  const urlList = posts.filter((post) => post.slug).map((post) => postUrl(post));
+  const urlList = posts
+    .filter((post) => post.slug && isListed(post.id))
+    .map((post) => postUrl(post));
   if (!urlList.length) {
     return Response.json({ submitted: 0 });
   }
