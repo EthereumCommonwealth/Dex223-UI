@@ -16,9 +16,9 @@ export async function fetchPostById(id: string): Promise<PostDetails | null> {
 async function slimPosts(fresh: boolean): Promise<SlimPost[]> {
   const posts: SlimPost[] = [];
   for (let page = 1; page <= 20; page += 1) {
-    const skip = (page - 1) * 100;
+    // The API offsets by (page - 1) * limit + skip, so page alone walks the list; skip stays 0.
     const res = await fetch(
-      `${API}/list-slim?page=${page}&limit=100&skip=${skip}`,
+      `${API}/list-slim?page=${page}&limit=100&skip=0`,
       fresh ? { cache: "no-store" } : { next: { revalidate: 300 } },
     );
     if (!res.ok) break;
