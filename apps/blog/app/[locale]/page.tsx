@@ -11,6 +11,7 @@ import Container from "@/components/atoms/Container";
 import { SearchInput } from "@/components/atoms/Input";
 import Select from "@/components/atoms/Select";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { isListed } from "@/config/curation";
 import { IIFE } from "@/functions/iife";
 
 const INITAL_LOAD = 10;
@@ -74,6 +75,8 @@ async function getPosts({
 
   const res = await fetch(url);
   const posts: { data: Post[]; total: number; per_page: number } = await res.json();
+  // Curated posts (config/curation.ts) stay off the blog lists.
+  if (posts.data) posts.data = posts.data.filter((post) => isListed(post.id));
 
   return posts;
 }

@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 
+import { isListed } from "@/config/curation";
 import { postUrl } from "@/functions/postUrl";
 import { locales } from "@/i18n/routing";
 
@@ -66,7 +67,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // One entry per post, at the same URL its page declares as canonical (its own language).
   for (const post of posts) {
-    if (!post.slug) continue;
+    // Hidden and merged posts stay out of the sitemap (config/curation.ts).
+    if (!post.slug || !isListed(post.id)) continue;
     routes.push({
       url: postUrl(post),
       lastModified: post.updatedAt ? new Date(post.updatedAt) : undefined,
