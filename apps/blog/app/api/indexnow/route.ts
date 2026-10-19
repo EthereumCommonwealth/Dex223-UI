@@ -12,9 +12,9 @@ async function recentPosts(since: number): Promise<SlimPost[]> {
   const posts: SlimPost[] = [];
   // The list is newest first, so a few pages cover any two-day window.
   for (let page = 1; page <= 3; page += 1) {
-    const skip = (page - 1) * 100;
+    // The API offsets by (page - 1) * limit + skip, so page alone walks the list; skip stays 0.
     const response = await fetch(
-      `https://api.dex223.io/v1/core/api/blog/list-slim?page=${page}&limit=100&skip=${skip}`,
+      `https://api.dex223.io/v1/core/api/blog/list-slim?page=${page}&limit=100&skip=0`,
       { cache: "no-store" },
     );
     if (!response.ok) break;
