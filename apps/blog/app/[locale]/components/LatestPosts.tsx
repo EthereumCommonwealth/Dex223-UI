@@ -28,7 +28,7 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
       <h2 className="text-20 md:text-32 mb-4 md:mb-5">{t("latest_news")}</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[6fr_4fr] xl:grid-cols-[7fr_4fr] gap-4 md:gap-5">
         <Link
-          href={`/${latestPost.id}?slug=${latestPost.slug}`}
+          href={`/${encodeURIComponent(latestPost.slug)}`}
           className={clsx(
             "flex flex-col cursor-pointer rounded-3 md:rounded-5",
             !isTouchDevice && "group",
@@ -63,7 +63,7 @@ export default function LatestPosts({ posts }: { posts: [Post, Post, Post, Post]
           {posts.slice(1).map((post) => {
             return (
               <Link
-                href={`/${post.id}?slug=${post.slug}`}
+                href={`/${encodeURIComponent(post.slug)}`}
                 key={post.id}
                 className={clsx(
                   "flex max-md:flex-col cursor-pointer rounded-3 md:rounded-5",
