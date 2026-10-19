@@ -23,7 +23,7 @@ export default function Posts({ posts }: { posts: Post[] }) {
       {posts.map((post) => {
         return (
           <Link
-            href={`/${post.id}?slug=${post.slug}`}
+            href={`/${encodeURIComponent(post.slug)}`}
             key={post.id}
             className={clsx(
               "flex flex-col cursor-pointer rounded-3 md:rounded-5",

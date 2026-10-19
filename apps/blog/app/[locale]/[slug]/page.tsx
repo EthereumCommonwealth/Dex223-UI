@@ -1,7 +1,7 @@
 import DOMPurify from "isomorphic-dompurify";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
@@ -10,37 +10,28 @@ import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { resolvePost } from "@/functions/blogPosts";
 import { formatPostDate } from "@/functions/formatPostDate";
 import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
-import { postUrl } from "@/functions/postUrl";
+import { postPath, postUrl } from "@/functions/postUrl";
 import { Link } from "@/i18n/routing";
 
 function PostContainer({ children }: PropsWithChildren<{}>) {
   return <div className="w-full max-w-[728px] mx-auto px-4">{children}</div>;
 }
 type PostPageProps = {
-  params: Promise<{ id: string; locale: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 };
 
-// Next.js memoizes this GET, so the page and its metadata share one request.
-async function fetchPost(id: string): Promise<PostDetails | null> {
-  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
-
-  if (!res.ok) {
-    return null;
-  }
-
-  const post: PostDetails = await res.json();
-  return post?.id ? post : null;
-}
-
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const post = await fetchPost(id);
+  const { slug } = await params;
+  const resolved = await resolvePost(slug);
 
-  if (!post) {
+  // Old id URLs redirect from the page itself; they need no metadata of their own.
+  if (!resolved || resolved.legacyId) {
     return {};
   }
+  const { post } = resolved;
 
   const url = postUrl(post);
   const images = post.thumbnail?.link
@@ -73,21 +64,22 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { id, locale } = await params;
+  const { slug, locale } = await params;
   const t = await getTranslations("Post");
-  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+  const resolved = await resolvePost(slug);
 
-  // The API answers 404 for unknown ids and 422 for anything that is not a UUID
-  // (for example /en/blog). Show the not-found page instead of an empty post.
-  if (!res.ok) {
+  // Unknown slugs and ids show the not-found page instead of an empty post.
+  if (!resolved) {
     notFound();
   }
 
-  const post: PostDetails = await res.json();
-
-  if (!post?.id) {
-    notFound();
+  // Old links (/en/<id>?slug=..., often with tracking parameters) move permanently to the
+  // post's slug URL, so their links and search ranking carry over.
+  if (resolved.legacyId) {
+    permanentRedirect(postPath(resolved.post));
   }
+
+  const { post } = resolved;
 
   // DOMPurify is a module singleton on the server: drop the hook from the previous
   // request before adding it again, or every render stacks one more copy.
