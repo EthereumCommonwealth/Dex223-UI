@@ -162,7 +162,9 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       >
         {label}
       </Button>
-      <p className="text-12 text-secondary-text text-center">{t("wallet_destination_hint")}</p>
+      <p className="text-12 text-secondary-text text-center">
+        {t(flow === "sell" ? "wallet_source_hint" : "wallet_destination_hint")}
+      </p>
     </div>
   );
 }

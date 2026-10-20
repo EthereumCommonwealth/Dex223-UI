@@ -172,7 +172,7 @@ export default function BuyCryptoPageClient() {
 
               {address && (
                 <div className="bg-secondary-bg rounded-3 px-4 py-3 text-12 text-secondary-text break-all">
-                  {t("receiving_wallet")}:{" "}
+                  {t(flow === "sell" ? "sending_wallet" : "receiving_wallet")}:{" "}
                   <span className="text-primary-text font-medium">{address}</span>
                 </div>
               )}
