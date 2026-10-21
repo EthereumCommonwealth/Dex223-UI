@@ -476,6 +476,7 @@
     "sell_hint_any": "Onramp 위젯에서 자산을 선택한 뒤 연결된 지갑에서 보내 법정화폐를 받으세요.",
     "swap_hint": "Onramp에서 지원 암호화폐를 스왑한 뒤 DEX223으로 돌아와 거래하세요.",
     "receiving_wallet": "수령 지갑",
+    "sending_wallet": "보내는 지갑",
     "cta_buy_asset": "Onramp로 {symbol} 구매",
     "cta_buy_any": "Onramp로 암호화폐 구매",
     "cta_sell": "Onramp로 암호화폐 판매",

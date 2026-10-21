@@ -168,6 +168,7 @@
     "sell_hint_any": "Choose the asset inside the Onramp widget, then send it from your connected wallet to receive fiat.",
     "swap_hint": "Swap between supported cryptocurrencies in Onramp, then return here to trade on DEX223.",
     "receiving_wallet": "Receiving wallet",
+    "sending_wallet": "Sending wallet",
     "cta_buy_asset": "Buy {symbol} with Onramp",
     "cta_buy_any": "Buy crypto with Onramp",
     "cta_sell": "Sell crypto with Onramp",
