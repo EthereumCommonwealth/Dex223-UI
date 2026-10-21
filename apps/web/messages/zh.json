@@ -338,7 +338,7 @@
     "manage_title": "管理",
     "show_portfolio": "显示投资组合",
     "reset_search": "重置搜索并显示我的钱包",
-    "add_wallet_placeholder": "添加地址或域名",
+    "add_wallet_placeholder": "添加钱包地址",
     "add_wallet": "添加钱包",
     "connect_wallet_placeholder": "添加地址或连接钱包以查看投资组合",
     "search_placeholder": "搜索钱包地址",
