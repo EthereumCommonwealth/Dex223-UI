@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import type { Address } from "viem";
 
 /** `token0Price`/`token1Price` are BigDecimal strings, balances arrive as strings too. */
 export type PoolPriceInput = {
@@ -9,6 +9,7 @@ export type PoolPriceInput = {
   token1Price: string | number;
   totalValueLockedToken0?: string | number;
   totalValueLockedToken1?: string | number;
+  totalValueLockedUSD?: string | number;
 };
 
 export type TokenPrice = {
@@ -98,11 +99,14 @@ export function computePoolTVL({
   balance0,
   balance1,
   priceIndex,
+  subgraphFallback = false,
 }: {
   pool: PoolPriceInput | undefined;
   balance0?: number;
   balance1?: number;
   priceIndex: TokenPriceIndex;
+  /** Only chains with no USD anchor may fall back to the subgraph's totalValueLockedUSD. */
+  subgraphFallback?: boolean;
 }): number | undefined {
   if (!pool) {
     return undefined;
@@ -128,12 +132,17 @@ export function computePoolTVL({
   const usd0 = price0 ?? derivePrice(price1, pool.token1Price);
   const usd1 = price1 ?? derivePrice(price0, pool.token0Price);
   if ((usd0 === undefined && amount0 !== 0) || (usd1 === undefined && amount1 !== 0)) {
-    return undefined;
+    return subgraphFallback ? subgraphUsd(pool) : undefined;
   }
 
   const tvl = amount0 * (usd0 ?? 0) + amount1 * (usd1 ?? 0);
 
   return Number.isFinite(tvl) ? tvl : undefined;
+}
+
+function subgraphUsd(pool: PoolPriceInput): number | undefined {
+  const value = Number(pool.totalValueLockedUSD);
+  return Number.isFinite(value) && value >= 0 ? value : undefined;
 }
 
 function derivePrice(price: number | undefined, ratio: string | number): number | undefined {
