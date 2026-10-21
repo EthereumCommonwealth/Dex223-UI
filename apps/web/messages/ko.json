@@ -930,6 +930,7 @@
     "delete": "삭제",
     "sort": "정렬",
     "back": "뒤로",
+    "disconnect": "연결 해제",
     "add": "추가",
     "recent_transactions": "최근 거래",
     "network_fee_settings": "네트워크 수수료 설정",

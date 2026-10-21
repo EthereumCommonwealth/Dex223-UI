@@ -938,6 +938,7 @@
     "delete": "Delete",
     "sort": "Sort",
     "back": "Back",
+    "disconnect": "Disconnect",
     "add": "Add",
     "recent_transactions": "Recent transactions",
     "network_fee_settings": "Network fee settings",

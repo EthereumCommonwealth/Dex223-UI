@@ -930,6 +930,7 @@
     "delete": "Eliminar",
     "sort": "Ordenar",
     "back": "Atrás",
+    "disconnect": "Desconectar",
     "add": "Añadir",
     "recent_transactions": "Transacciones recientes",
     "network_fee_settings": "Ajustes de la comisión de red",
