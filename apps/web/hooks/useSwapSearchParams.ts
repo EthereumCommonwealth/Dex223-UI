@@ -3,6 +3,7 @@ import { useLocale } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
+import { currencyToQueryParam, findCurrencyByQuery } from "@/functions/findCurrencyByQuery";
 import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePathname } from "@/i18n/routing";
@@ -50,13 +51,15 @@ export const useSwapSearchParams = () => {
 
   const updatedPath = useMemo(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (tokenA?.wrapped.address0) {
-      params.set(SwapQueryParams.tokenA, tokenA?.wrapped.address0);
+    const tokenAParam = currencyToQueryParam(tokenA);
+    const tokenBParam = currencyToQueryParam(tokenB);
+    if (tokenAParam) {
+      params.set(SwapQueryParams.tokenA, tokenAParam);
     } else {
       params.delete(SwapQueryParams.tokenA);
     }
-    if (tokenB?.wrapped.address0) {
-      params.set(SwapQueryParams.tokenB, tokenB.wrapped.address0);
+    if (tokenBParam) {
+      params.set(SwapQueryParams.tokenB, tokenBParam);
     } else {
       params.delete(SwapQueryParams.tokenB);
     }
@@ -84,19 +87,15 @@ export const useSwapSearchParams = () => {
       }
 
       if (queryTokenA) {
-        const token = tokens.find(
-          (t) => t.wrapped.address0.toLowerCase() === queryTokenA.toLowerCase(),
-        );
+        const token = findCurrencyByQuery(tokens, queryTokenA);
         if (token) {
           setTokenA(token);
           setTokenAStandard(getDefaultStandard(token));
         }
       }
       if (queryTokenB) {
-        const token = tokens.find(
-          (t) => t.wrapped.address0.toLowerCase() === queryTokenB.toLowerCase(),
-        );
-        if (token && queryTokenA !== queryTokenB) {
+        const token = findCurrencyByQuery(tokens, queryTokenB);
+        if (token && queryTokenA?.toLowerCase() !== queryTokenB.toLowerCase()) {
           setTokenB(token);
           setTokenBStandard(getDefaultStandard(token));
         }
