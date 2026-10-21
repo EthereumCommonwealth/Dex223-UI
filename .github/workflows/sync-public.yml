@@ -1,6 +1,7 @@
-# test-app.dex223.io deploys from the `public` branch, so every master push is
-# merged into it. On conflict nothing is pushed to `public`; a PR is opened from
-# a separate branch so resolving it in the GitHub UI never commits to master.
+# test-app.dex223.io deploys from the `public` branch, which is a copy of master: every master push
+# fast-forwards it. PRs go to master, never to `public`. If `public` ever has commits that master
+# does not, nothing is pushed and a PR from `public` into master is opened, so those commits are
+# reviewed into master instead of drifting.
 name: Sync public with master
 
 on:
@@ -20,7 +21,6 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     env:
-      CONFLICT_BRANCH: sync/master-into-public
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -28,32 +28,28 @@ jobs:
           ref: public
           fetch-depth: 0
 
-      - name: Merge master into public
+      - name: Fast-forward public to master
         id: merge
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if git merge --no-edit origin/master; then
+          if git merge --ff-only origin/master; then
             echo "result=merged" >> "$GITHUB_OUTPUT"
           else
-            git merge --abort
-            echo "result=conflict" >> "$GITHUB_OUTPUT"
+            echo "result=diverged" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Push public
         if: steps.merge.outputs.result == 'merged'
         run: git push origin HEAD:public
 
-      - name: Open a PR for the conflict
-        if: steps.merge.outputs.result == 'conflict'
+      - name: Open a PR to bring public's own commits into master
+        if: steps.merge.outputs.result == 'diverged'
         run: |
-          existing=$(gh pr list --base public --head "$CONFLICT_BRANCH" --state open --json number --jq '.[0].number')
+          existing=$(gh pr list --base master --head public --state open --json number --jq '.[0].number')
           if [ -n "$existing" ]; then
-            echo "PR #$existing is already open. Merge the latest master into $CONFLICT_BRANCH while resolving it."
+            echo "PR #$existing is already open."
           else
-            git push --force origin "origin/master:refs/heads/$CONFLICT_BRANCH"
-            gh pr create --base public --head "$CONFLICT_BRANCH" \
-              --title "Sync public with master (merge conflict)" \
-              --body "Merging master into public conflicts, so test-app.dex223.io is not updating. Resolve the conflicts on this branch and merge with a merge commit, not squash."
+            gh pr create --base master --head public \
+              --title "Bring public's own commits into master" \
+              --body "\`public\` has commits that master does not, so test-app.dex223.io is not updating. Review them here and merge with a merge commit, not squash. Changes for test-app go to master as PRs, not to \`public\`."
           fi
-          echo "::warning::master could not be merged into public automatically. See the open PR from $CONFLICT_BRANCH."
+          echo "::warning::public has commits that master does not. See the open PR from public into master."
