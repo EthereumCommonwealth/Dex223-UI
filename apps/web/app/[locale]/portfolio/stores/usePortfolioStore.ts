@@ -16,6 +16,7 @@ interface PortfolioStore {
   removeWallet: (address: Address) => void;
   setIsWalletActive: (address: Address, isActive: boolean) => void;
   setAllWalletActive: () => void;
+  setEveryWalletActive: (isActive: boolean) => void;
   isConnectedWalletActive: boolean;
   setIsConnectedWalletActive: (isActive: boolean) => void;
   isAllWalletActive: boolean;
@@ -99,6 +100,18 @@ export const usePortfolioStore = create<PortfolioStore>()(
             ),
           };
         }),
+      setEveryWalletActive: (isActive) =>
+        set((state) => ({
+          isConnectedWalletActive: isActive,
+          isAllWalletActive: isActive,
+          wallets: uniqby(
+            state.wallets.map((wallet) => ({
+              ...wallet,
+              isActive,
+            })),
+            "address",
+          ),
+        })),
       isConnectedWalletActive: true,
       hasSearchWallet: false,
       isAllWalletActive: false,
