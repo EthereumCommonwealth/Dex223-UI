@@ -16,6 +16,7 @@ import { SortingType } from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { formatNumberKilos } from "@/functions/formatFloat";
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { computePoolTVL } from "@/functions/poolTvl";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -493,6 +494,7 @@ export default function PoolsTable({
   // A chip that stops applying (wallet disconnected, chain switched) falls back to "All".
   const activeCategory = availableCategories.includes(category) ? category : "all";
 
+  const subgraphFallback = getUSDAnchorTokens(chainId).length === 0;
   const pools: any[] = useMemo(() => {
     // The subgraph also prices every pool with one global price per token, which overstates
     // any pool trading away from that price - see computePoolTVL. Chains with no stablecoin
@@ -507,12 +509,13 @@ export default function PoolsTable({
           balance0: balances?.token0.formatted,
           balance1: balances?.token1.formatted,
           priceIndex,
+          subgraphFallback,
         }),
       };
     });
 
     return localSorting(activeCategory === "all" ? pools : pools.filter(matchesCategory), sorting);
-  }, [data?.pools, onChainBalances, priceIndex, sorting, activeCategory, matchesCategory]);
+  }, [data?.pools, onChainBalances, priceIndex, subgraphFallback, sorting, activeCategory, matchesCategory]);
 
   const isLoading = loading || pricesLoading || balancesLoading || categoryLoading;
 
