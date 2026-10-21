@@ -1,6 +1,6 @@
 "use client";
 
-import { IndicatorValues, PaneLayout } from "./ChartCanvas";
+import { CompareSeries, IndicatorValues, PaneLayout } from "./ChartCanvas";
 import { Bar } from "./datafeed/types";
 import { compact, formatPercent, formatPrice } from "./format";
 import { IndicatorConfig, INDICATORS, indicatorTitle } from "./indicators/registry";
@@ -39,6 +39,9 @@ export function PriceLegend({
   volumeUnit,
   removeLabel,
   onRemove,
+  compare = [],
+  compareValues,
+  onRemoveCompare,
 }: {
   title: string;
   bar: Bar;
@@ -48,6 +51,10 @@ export function PriceLegend({
   volumeUnit: string;
   removeLabel: string;
   onRemove: (id: string) => void;
+  compare?: CompareSeries[];
+  /** Each compared symbol's close at the hovered (or latest) bar. */
+  compareValues?: Record<string, number | null>;
+  onRemoveCompare?: (symbol: string) => void;
 }) {
   const up = bar.close >= bar.open;
   const change = bar.open ? ((bar.close - bar.open) / bar.open) * 100 : 0;
@@ -90,6 +97,19 @@ export function PriceLegend({
             label={`${removeLabel} ${indicatorTitle(config)}`}
             onClick={() => onRemove(config.id)}
           />
+        </div>
+      ))}
+      {compare.map((c) => (
+        <div key={c.symbol} className="group pointer-events-auto flex items-center gap-2 w-fit">
+          <span className="w-2 h-2 rounded-full" style={{ background: c.color }} aria-hidden />
+          <span className="text-secondary-text">{c.label}</span>
+          <span style={{ color: c.color }}>{formatPrice(compareValues?.[c.symbol] ?? null)}</span>
+          {onRemoveCompare && (
+            <RemoveButton
+              label={`${removeLabel} ${c.label}`}
+              onClick={() => onRemoveCompare(c.symbol)}
+            />
+          )}
         </div>
       ))}
     </div>

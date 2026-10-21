@@ -10,12 +10,15 @@ import addToast from "@/other/toast";
 
 import ChartCanvas, {
   ChartCanvasHandle,
+  COMPARE_VALUES,
+  CompareSeries,
   IndicatorValues,
   LoadState,
   PaneLayout,
 } from "./ChartCanvas";
 import ChartFooter from "./ChartFooter";
 import { PaneLabels, PriceLegend } from "./ChartLegend";
+import CompareMenu from "./CompareMenu";
 import { Bar, Datafeed, Resolution, RESOLUTIONS, resolutionSeconds, Trade } from "./datafeed/types";
 import { Drawing, DrawingTool } from "./drawings/primitive";
 import DrawingToolbar from "./DrawingToolbar";
@@ -130,6 +133,10 @@ export default function ProChart({
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [fullscreen, setFullscreen] = useState(false);
   const [reloadKey, setReloadKey] = useState(0);
+  // Comparisons belong to the symbol they were made on.
+  const [compare, setCompare] = useState<CompareSeries[]>([]);
+  useEffect(() => setCompare([]), [symbol]);
+  const effectiveScale = compare.length ? "percent" : scaleMode;
   // Narrow charts (the form column on a laptop, tablets, phones) get a compact toolbar.
   const [width, setWidth] = useState(1000);
   const compact = width < 760;
@@ -292,6 +299,14 @@ export default function ProChart({
           compact={compact}
         />
 
+        <CompareMenu
+          symbol={symbol}
+          compare={compare}
+          onChange={setCompare}
+          accent={accent}
+          compact={compact}
+        />
+
         <div className="ml-auto flex items-center gap-0.5 shrink-0">
           <ToolButton label={t("reset_view")} onClick={() => canvasRef.current?.resetView()}>
             <Svg iconName="reset" size={18} />
@@ -347,7 +362,8 @@ export default function ProChart({
               initialVisible={initialVisible}
               watermark={label}
               indicators={indicators}
-              scaleMode={scaleMode}
+              scaleMode={effectiveScale}
+              compare={compare}
               tool={tool}
               magnet={magnet}
               drawings={drawings}
@@ -377,6 +393,9 @@ export default function ProChart({
                 volumeUnit={volumeUnit}
                 removeLabel={t("remove")}
                 onRemove={removeIndicator}
+                compare={compare}
+                compareValues={legend.values?.[COMPARE_VALUES]}
+                onRemoveCompare={(sym) => setCompare(compare.filter((c) => c.symbol !== sym))}
               />
               <PaneLabels
                 layout={paneLayout}
@@ -425,8 +444,9 @@ export default function ProChart({
         accent={accent}
         lastBar={lastBar}
         seconds={resolutionSeconds(resolution)}
-        scaleMode={scaleMode}
+        scaleMode={effectiveScale}
         onScaleMode={setScaleMode}
+        scaleLocked={compare.length ? t("compare_scale_locked") : undefined}
       />
     </div>
   );
