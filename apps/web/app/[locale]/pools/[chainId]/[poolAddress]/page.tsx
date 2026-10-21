@@ -21,10 +21,10 @@ import IconButton, {
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import TokensPair from "@/components/common/TokensPair";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
-import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { computePoolTVL } from "@/functions/poolTvl";
 import { renderShortAddress } from "@/functions/renderAddress";
 import { PoolTokenBalance, usePoolOnChainBalances } from "@/hooks/usePoolOnChainBalances";

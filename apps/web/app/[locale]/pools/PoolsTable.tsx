@@ -15,8 +15,8 @@ import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/but
 import { SortingType } from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
-import { formatNumberKilos } from "@/functions/formatFloat";
 import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
+import { formatNumberKilos } from "@/functions/formatFloat";
 import { computePoolTVL } from "@/functions/poolTvl";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -515,7 +515,15 @@ export default function PoolsTable({
     });
 
     return localSorting(activeCategory === "all" ? pools : pools.filter(matchesCategory), sorting);
-  }, [data?.pools, onChainBalances, priceIndex, subgraphFallback, sorting, activeCategory, matchesCategory]);
+  }, [
+    data?.pools,
+    onChainBalances,
+    priceIndex,
+    subgraphFallback,
+    sorting,
+    activeCategory,
+    matchesCategory,
+  ]);
 
   const isLoading = loading || pricesLoading || balancesLoading || categoryLoading;
 
