@@ -1930,10 +1930,6 @@
       "guide": "Lire le guide"
     },
     "preview": {
-      "title": "Swap",
-      "pay": "Vous payez",
-      "receive": "Vous recevez",
-      "button": "Commencer à échanger",
       "aria": "Ouvrir la page d’échange"
     },
     "stats": {
