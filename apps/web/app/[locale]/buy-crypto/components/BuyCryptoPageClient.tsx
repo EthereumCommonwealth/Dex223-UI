@@ -23,7 +23,6 @@ export default function BuyCryptoPageClient() {
   const [flow, setFlow] = useState<OnrampFlow>("buy");
   const [assetId, setAssetId] = useState<OnrampAssetId>("d223");
   const [completedSymbol, setCompletedSymbol] = useState<string | null>(null);
-  const [completedFlow, setCompletedFlow] = useState<OnrampFlow | null>(null);
 
   const appId = Number(process.env.NEXT_PUBLIC_ONRAMP_APP_ID);
   const selectedAsset = useMemo(
@@ -37,22 +36,20 @@ export default function BuyCryptoPageClient() {
         payload.coinCode?.toUpperCase() ||
         (selectedAsset.coinCode ? selectedAsset.symbol : t("any_token"));
       setCompletedSymbol(symbol);
-      setCompletedFlow(flow);
     },
-    [flow, selectedAsset.coinCode, selectedAsset.symbol, t],
+    [selectedAsset.coinCode, selectedAsset.symbol, t],
   );
 
   const selectAsset = (asset: OnrampAsset) => {
     setAssetId(asset.id);
     setCompletedSymbol(null);
-    setCompletedFlow(null);
   };
 
-  const steps =
-    flow === "sell"
-      ? [t("step_sell_send"), t("step_sell_fiat"), t("step_sell_use")]
-      : [t("step_buy"), t("step_receive"), t("step_use")];
+  // Switching tabs clears completedSymbol, so the success card always matches the current flow.
   const isSell = flow === "sell";
+  const steps = isSell
+    ? [t("step_sell_send"), t("step_sell_fiat"), t("step_sell_use")]
+    : [t("step_buy"), t("step_receive"), t("step_use")];
 
   return (
     <ColorSchemeProvider value={ThemeColors.PURPLE}>
@@ -90,7 +87,6 @@ export default function BuyCryptoPageClient() {
                     onClick={() => {
                       setFlow(item);
                       setCompletedSymbol(null);
-                      setCompletedFlow(null);
                     }}
                     className={clsx(
                       "w-full h-10 lg:h-12 rounded-2 text-14 lg:text-16 border duration-200",
@@ -200,10 +196,10 @@ export default function BuyCryptoPageClient() {
             {completedSymbol && (
               <section className="bg-primary-bg rounded-5 p-4 md:p-6 border border-purple">
                 <h2 className="text-18 font-medium mb-1">
-                  {t(completedFlow === "sell" ? "success_sell_title" : "success_title")}
+                  {t(isSell ? "success_sell_title" : "success_title")}
                 </h2>
                 <p className="text-14 text-secondary-text mb-4">
-                  {t(completedFlow === "sell" ? "success_sell_body" : "success_body", {
+                  {t(isSell ? "success_sell_body" : "success_body", {
                     symbol: completedSymbol,
                   })}
                 </p>

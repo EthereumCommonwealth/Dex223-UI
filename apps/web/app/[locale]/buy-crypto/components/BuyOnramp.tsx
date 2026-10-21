@@ -64,7 +64,7 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       config.merchantRecognitionId = address;
     }
 
-    if ((flow === "buy" || flow === "sell") && asset.coinCode) {
+    if (asset.coinCode) {
       config.coinCode = asset.coinCode;
       config.defaultCoinCode = asset.coinCode;
       if (asset.network) {
