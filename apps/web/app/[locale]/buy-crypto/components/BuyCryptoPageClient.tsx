@@ -23,6 +23,7 @@ export default function BuyCryptoPageClient() {
   const [flow, setFlow] = useState<OnrampFlow>("buy");
   const [assetId, setAssetId] = useState<OnrampAssetId>("d223");
   const [completedSymbol, setCompletedSymbol] = useState<string | null>(null);
+  const [completedFlow, setCompletedFlow] = useState<OnrampFlow | null>(null);
 
   const appId = Number(process.env.NEXT_PUBLIC_ONRAMP_APP_ID);
   const selectedAsset = useMemo(
@@ -36,14 +37,22 @@ export default function BuyCryptoPageClient() {
         payload.coinCode?.toUpperCase() ||
         (selectedAsset.coinCode ? selectedAsset.symbol : t("any_token"));
       setCompletedSymbol(symbol);
+      setCompletedFlow(flow);
     },
-    [selectedAsset.coinCode, selectedAsset.symbol, t],
+    [flow, selectedAsset.coinCode, selectedAsset.symbol, t],
   );
 
   const selectAsset = (asset: OnrampAsset) => {
     setAssetId(asset.id);
     setCompletedSymbol(null);
+    setCompletedFlow(null);
   };
+
+  const steps =
+    flow === "sell"
+      ? [t("step_sell_send"), t("step_sell_fiat"), t("step_sell_use")]
+      : [t("step_buy"), t("step_receive"), t("step_use")];
+  const isSell = flow === "sell";
 
   return (
     <ColorSchemeProvider value={ThemeColors.PURPLE}>
@@ -61,7 +70,7 @@ export default function BuyCryptoPageClient() {
             </header>
 
             <ol className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              {[t("step_buy"), t("step_receive"), t("step_use")].map((label, index) => (
+              {steps.map((label, index) => (
                 <li
                   key={label}
                   className="bg-primary-bg rounded-3 px-4 py-3 flex items-start gap-3 border border-transparent"
@@ -81,6 +90,7 @@ export default function BuyCryptoPageClient() {
                     onClick={() => {
                       setFlow(item);
                       setCompletedSymbol(null);
+                      setCompletedFlow(null);
                     }}
                     className={clsx(
                       "w-full h-10 lg:h-12 rounded-2 text-14 lg:text-16 border duration-200",
@@ -94,79 +104,81 @@ export default function BuyCryptoPageClient() {
                 ))}
               </div>
 
-              {flow === "buy" && (
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center justify-between gap-3">
-                    <h2 className="text-16 md:text-18 font-medium">{t("choose_asset")}</h2>
-                    <span className="text-12 text-secondary-text">{t("choose_asset_hint")}</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => selectAsset(BUY_ASSETS[0])}
-                    className={clsx(
-                      "w-full text-left rounded-4 border px-4 py-4 duration-200",
-                      assetId === "d223"
-                        ? "border-purple bg-purple-bg shadow shadow-purple/40"
-                        : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Image
-                        src="/images/tokens/DEX.svg"
-                        alt=""
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-18 font-medium">D223</span>
-                          <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-purple">
-                            {t("badge_erc223")}
-                          </span>
-                          <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-secondary-text">
-                            {t("badge_featured")}
-                          </span>
-                        </div>
-                        <p className="text-14 text-secondary-text mt-1">{t("d223_blurb")}</p>
-                      </div>
-                    </div>
-                  </button>
-
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    {BUY_ASSETS.slice(1).map((asset) => (
-                      <button
-                        key={asset.id}
-                        type="button"
-                        onClick={() => selectAsset(asset)}
-                        className={clsx(
-                          "rounded-3 border px-3 py-3 flex flex-col items-center gap-2 duration-200",
-                          assetId === asset.id
-                            ? "border-purple bg-purple-bg"
-                            : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
-                        )}
-                      >
-                        {asset.logoURI ? (
-                          <Image src={asset.logoURI} alt="" width={28} height={28} />
-                        ) : (
-                          <span className="w-7 h-7 rounded-full bg-primary-bg flex items-center justify-center text-12 text-secondary-text">
-                            +
-                          </span>
-                        )}
-                        <span className="text-14 font-medium">{asset.symbol}</span>
-                        <span className="text-12 text-secondary-text text-center leading-tight">
-                          {asset.id === "any" ? t("any_token_short") : asset.name}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center justify-between gap-3">
+                  <h2 className="text-16 md:text-18 font-medium">
+                    {t(isSell ? "choose_asset_sell" : "choose_asset")}
+                  </h2>
+                  <span className="text-12 text-secondary-text">{t("choose_asset_hint")}</span>
                 </div>
-              )}
 
-              {flow === "sell" && (
+                <button
+                  type="button"
+                  onClick={() => selectAsset(BUY_ASSETS[0])}
+                  className={clsx(
+                    "w-full text-left rounded-4 border px-4 py-4 duration-200",
+                    assetId === "d223"
+                      ? "border-purple bg-purple-bg shadow shadow-purple/40"
+                      : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <Image
+                      src="/images/tokens/DEX.svg"
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="rounded-full"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-18 font-medium">D223</span>
+                        <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-purple">
+                          {t("badge_erc223")}
+                        </span>
+                        <span className="text-12 px-2 py-0.5 rounded-20 bg-primary-bg text-secondary-text">
+                          {t("badge_featured")}
+                        </span>
+                      </div>
+                      <p className="text-14 text-secondary-text mt-1">
+                        {t(isSell ? "d223_sell_blurb" : "d223_blurb")}
+                      </p>
+                    </div>
+                  </div>
+                </button>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {BUY_ASSETS.slice(1).map((asset) => (
+                    <button
+                      key={asset.id}
+                      type="button"
+                      onClick={() => selectAsset(asset)}
+                      className={clsx(
+                        "rounded-3 border px-3 py-3 flex flex-col items-center gap-2 duration-200",
+                        assetId === asset.id
+                          ? "border-purple bg-purple-bg"
+                          : "border-transparent bg-secondary-bg hocus:bg-purple-bg",
+                      )}
+                    >
+                      {asset.logoURI ? (
+                        <Image src={asset.logoURI} alt="" width={28} height={28} />
+                      ) : (
+                        <span className="w-7 h-7 rounded-full bg-primary-bg flex items-center justify-center text-12 text-secondary-text">
+                          +
+                        </span>
+                      )}
+                      <span className="text-14 font-medium">{asset.symbol}</span>
+                      <span className="text-12 text-secondary-text text-center leading-tight">
+                        {asset.id === "any" ? t("any_token_short") : asset.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {isSell && (
                 <div className="bg-secondary-bg rounded-3 px-4 py-3 text-14 text-secondary-text">
-                  {t("sell_hint")}
+                  {t(selectedAsset.coinCode ? "sell_hint" : "sell_hint_any")}
                 </div>
               )}
 
@@ -187,9 +199,13 @@ export default function BuyCryptoPageClient() {
 
             {completedSymbol && (
               <section className="bg-primary-bg rounded-5 p-4 md:p-6 border border-purple">
-                <h2 className="text-18 font-medium mb-1">{t("success_title")}</h2>
+                <h2 className="text-18 font-medium mb-1">
+                  {t(completedFlow === "sell" ? "success_sell_title" : "success_title")}
+                </h2>
                 <p className="text-14 text-secondary-text mb-4">
-                  {t("success_body", { symbol: completedSymbol })}
+                  {t(completedFlow === "sell" ? "success_sell_body" : "success_body", {
+                    symbol: completedSymbol,
+                  })}
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Link href="/swap" className="w-full">
@@ -212,7 +228,9 @@ export default function BuyCryptoPageClient() {
             )}
 
             <section className="bg-primary-bg rounded-5 p-4 md:p-6">
-              <h2 className="text-16 md:text-18 font-medium mb-3">{t("after_title")}</h2>
+              <h2 className="text-16 md:text-18 font-medium mb-3">
+                {t(isSell ? "after_sell_title" : "after_title")}
+              </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <Link
                   href="/swap"
