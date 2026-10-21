@@ -476,6 +476,7 @@
     "sell_hint_any": "在 Onramp 小组件中选择资产，然后从已连接的钱包发送，即可收到法币。",
     "swap_hint": "在 Onramp 中兑换支持的加密资产，然后返回 DEX223 交易。",
     "receiving_wallet": "收款钱包",
+    "sending_wallet": "付款钱包",
     "cta_buy_asset": "用 Onramp 购买 {symbol}",
     "cta_buy_any": "用 Onramp 购买加密资产",
     "cta_sell": "用 Onramp 卖出加密资产",
