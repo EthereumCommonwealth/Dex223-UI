@@ -95,7 +95,11 @@ export const Balances = ({
         <div className="flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full relative overflow-hidden">
           <div className="flex items-center gap-1 mb-auto">
             <span className="text-14 lg:text-16 text-secondary-text">{t("wallet_balance")}</span>
-            <Tooltip iconSize={20} text={t("wallet_assets_tooltip")} />
+            <Tooltip
+              iconSize={20}
+              triggerLabel={t("info_label")}
+              text={t("wallet_assets_tooltip")}
+            />
           </div>
 
           <span className="text-24 lg:text-32 font-medium">$ —</span>
@@ -113,7 +117,7 @@ export const Balances = ({
         <div className="relative flex flex-col bg-gradient-card-blue-light-fill  rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
           <div className="flex items-center gap-1 z-10">
             <span className="text-14 lg:text-16 text-secondary-text">{t("margin_balance")}</span>
-            <Tooltip iconSize={20} text={t("margin_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("margin_tooltip")} />
           </div>
           <span className="text-24 lg:text-32 font-medium">$ —</span>
           <Image
@@ -130,7 +134,7 @@ export const Balances = ({
         <div className="flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full">
           <div className="flex items-center gap-1">
             <span className="text-14 lg:text-16 text-secondary-text">{t("liquidity_balance")}</span>
-            <Tooltip iconSize={20} text={t("liquidity_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("liquidity_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">$ —</span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
@@ -140,7 +144,7 @@ export const Balances = ({
         <div className="flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full">
           <div className="flex items-center gap-1">
             <span className="text-14 lg:text-16 text-secondary-text">{t("lending_balance")}</span>
-            <Tooltip iconSize={20} text={t("lending_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("lending_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">$ —</span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
@@ -152,7 +156,7 @@ export const Balances = ({
             <span className="text-14 lg:text-16 text-secondary-text">
               {t("deposited_contract")}
             </span>
-            <Tooltip iconSize={20} text={t("stuck_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("stuck_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">$ —</span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
