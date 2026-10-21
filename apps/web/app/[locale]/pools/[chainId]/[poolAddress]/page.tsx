@@ -21,6 +21,7 @@ import IconButton, {
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import TokensPair from "@/components/common/TokensPair";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
@@ -90,8 +91,9 @@ export default function ExplorePoolPage({
       balance0: balances.token0.formatted,
       balance1: balances.token1.formatted,
       priceIndex,
+      subgraphFallback: getUSDAnchorTokens(Number(chainId) as DexChainId).length === 0,
     });
-  }, [balances, pool, priceIndex, pricesLoading]);
+  }, [balances, chainId, pool, priceIndex, pricesLoading]);
 
   const renderBalance = (balance: PoolTokenBalance | undefined) =>
     balance ? formatNumberKilos(balance.formatted) : "\u2014";
