@@ -34,18 +34,36 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePortfolioSearchParams } from "@/hooks/usePortfolioSearchParams";
+import { useTokens } from "@/hooks/useTokenLists";
+import { useUSDPrice } from "@/hooks/useUSDPrice";
 import addToast from "@/other/toast";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
 import { Balances } from "./components/Balances";
 import { LendingOrders } from "./components/LendingOrders";
 import { LiquidityPositions } from "./components/LiquidityPositions";
 import { MarginPositions } from "./components/MarginPositions";
+import { formatPortfolioUsd, walletHoldingsUsd } from "./lib/usd";
+import { useActiveWalletBalances } from "./stores/balances.hooks";
 import { useActiveAddresses, usePortfolioWallets } from "./stores/hooks";
 import {
   ActiveTab,
   usePortfolioActiveTabStore,
   usePortfolioStore,
 } from "./stores/usePortfolioStore";
+import { useWalletsBalances } from "./stores/useWalletsBalances";
+
+function WalletUsd({ address }: { address: string }) {
+  const prices = useUSDPriceStore((state) => state.prices);
+  const balances = useWalletsBalances((state) => state.balances);
+  const tokens = useTokens();
+  const value = useMemo(() => {
+    const wallet = balances.find((item) => item.address.toLowerCase() === address.toLowerCase());
+    return walletHoldingsUsd(prices, tokens, wallet);
+  }, [address, balances, prices, tokens]);
+
+  return <span className="text-secondary-text text-14">{formatPortfolioUsd(value)}</span>;
+}
 
 const AddWalletInput = ({ onAdd }: { onAdd?: () => void }) => {
   const t = useTranslations("Portfolio");
@@ -312,7 +330,7 @@ const ManageWalletsContent = ({
                           charsFromEnd: 6,
                         })}
                       </span>
-                      <span className="text-secondary-text text-14">$ —</span>
+                      <WalletUsd address={searchValue} />
                     </div>
                     <div className="ml-auto flex flex-row gap-x-1">
                       {!hasSearchWallet && (
@@ -397,7 +415,7 @@ const ManageWalletsContent = ({
                     <span className="font-medium">
                       {truncateMiddle(address || "", { charsFromStart: 6, charsFromEnd: 6 })}
                     </span>
-                    <span className="text-secondary-text text-14">$ —</span>
+                    <WalletUsd address={address} />
                   </div>
                 </div>
               ))}
@@ -445,7 +463,7 @@ const ManageWalletsContent = ({
                       <span className="font-medium">
                         {truncateMiddle(address || "", { charsFromStart: 6, charsFromEnd: 6 })}
                       </span>
-                      <span className="text-secondary-text text-14">$ —</span>
+                      <WalletUsd address={address} />
                     </div>
                   </div>
                   {isConnectedWallet ? (
@@ -570,6 +588,8 @@ export function Portfolio() {
   const [searchValue, setSearchValue] = useState("");
 
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
+  useUSDPrice(undefined);
+  useActiveWalletBalances({ searchValue, setSearchValue });
 
   const handleAddWallet = useCallback(() => {
     addWallet(searchValue as Address);

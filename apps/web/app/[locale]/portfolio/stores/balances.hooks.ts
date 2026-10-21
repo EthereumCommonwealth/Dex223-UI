@@ -75,9 +75,11 @@ const getWalletBalances = async (
 export const useActiveWalletBalances = ({
   searchValue,
   setSearchValue,
+  enabled = true,
 }: {
   searchValue: string;
   setSearchValue: (value: string) => void;
+  enabled?: boolean;
 }) => {
   const chainId = useCurrentChainId();
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
@@ -85,6 +87,8 @@ export const useActiveWalletBalances = ({
   const { balances, setAllBalances } = useWalletsBalances();
 
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
     let inFlight = false;
 
@@ -122,7 +126,7 @@ export const useActiveWalletBalances = ({
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
     };
-  }, [tokens, activeAddresses, chainId, setAllBalances]);
+  }, [tokens, activeAddresses, chainId, setAllBalances, enabled]);
 
   const tokenBalances = useMemo(() => {
     return tokens.map((token) => {

@@ -15,8 +15,11 @@ import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolio
 import { formatFloat } from "@/functions/formatFloat";
 import usePositions from "@/hooks/usePositions";
 import { Currency } from "@/sdk_bi/entities/currency";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
+import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
 import { useActiveWalletBalances } from "../../stores/balances.hooks";
+import { useWalletsBalances } from "../../stores/useWalletsBalances";
 import { BalancesDesktopTable, BalancesMobileTable } from "./BalancesTable";
 
 const filterTable = ({
@@ -57,9 +60,12 @@ export const Balances = ({
   const loading = false;
 
   const { positions } = usePositions();
+  const prices = useUSDPriceStore((state) => state.prices);
+  const storedBalances = useWalletsBalances((state) => state.balances);
   const { tokenBalances, activeAddresses } = useActiveWalletBalances({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
+    enabled: false,
   });
 
   const { isLoading, deposites } = useActiveWalletsDeposites({
@@ -67,14 +73,24 @@ export const Balances = ({
     setSearchValue: setAddressSearch,
   });
 
-  const currentTableData = tokenBalances
+  const rowsWithUsd = tokenBalances.map((row) => ({
+    ...row,
+    usd: combineUsd([
+      holdingUsd(prices, row.token, row.amountERC20 || BigInt(0)),
+      holdingUsd(prices, row.token, row.amountERC223 || BigInt(0)),
+    ]),
+  }));
+  const walletTotalUsd =
+    storedBalances.length === 0 ? null : combineUsd(rowsWithUsd.map((row) => row.usd));
+
+  const currentTableData = rowsWithUsd
     .filter((value) => filterTable({ searchValue, value }))
-    .map(({ token, amountERC20, amountERC223, amountFiat }) => ({
+    .map(({ token, amountERC20, amountERC223, usd }) => ({
       logoURI: token.logoURI,
       name: token.isNative ? token.name : token.wrapped.name,
       amountERC20: formatFloat(formatUnits(amountERC20 || BigInt(0), token.decimals)),
       amountERC223: formatFloat(formatUnits(amountERC223 || BigInt(0), token.decimals)),
-      amountFiat: amountFiat,
+      amountFiat: formatPortfolioUsd(usd),
       token,
     })) as any[];
 
@@ -88,6 +104,17 @@ export const Balances = ({
     return depositCount;
   }, [deposites]);
 
+  const depositedTotalUsd = useMemo(() => {
+    if (isLoading) return null;
+    const values: Array<number | null> = [];
+    for (const walletDeposites of deposites) {
+      for (const deposite of walletDeposites.deposites) {
+        values.push(holdingUsd(prices, deposite.token, deposite.deposited));
+      }
+    }
+    return combineUsd(values);
+  }, [deposites, isLoading, prices]);
+
   return (
     <>
       <div className="mt-5 grid lg:grid-cols-2 gap-5">
@@ -98,7 +125,9 @@ export const Balances = ({
             <Tooltip iconSize={20} text={t("wallet_assets_tooltip")} />
           </div>
 
-          <span className="text-24 lg:text-32 font-medium">$ —</span>
+          <span className="text-24 lg:text-32 font-medium">
+            {formatPortfolioUsd(walletTotalUsd)}
+          </span>
 
           <Image
             src="/images/logo-short.svg"
@@ -154,7 +183,9 @@ export const Balances = ({
             </span>
             <Tooltip iconSize={20} text={t("stuck_tooltip")} />
           </div>
-          <span className="text-18 lg:text-24 font-medium">$ —</span>
+          <span className="text-18 lg:text-24 font-medium">
+            {formatPortfolioUsd(depositedTotalUsd)}
+          </span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
             {tMT("tokens_amount", { amount: depositTokensCount })}
           </span>

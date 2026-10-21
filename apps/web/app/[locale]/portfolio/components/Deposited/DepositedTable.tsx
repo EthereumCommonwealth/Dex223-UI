@@ -21,8 +21,18 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Standard } from "@/sdk_bi/standard";
 import { useRevokeDialogStatusStore } from "@/stores/useRevokeDialogStatusStore";
 import { useRevokeStatusStore } from "@/stores/useRevokeStatusStore";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
+import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
 import { WalletDeposite } from "../../stores/useWalletsDeposites";
+
+function useDepositRowUsd(deposite: WalletDeposite) {
+  const prices = useUSDPriceStore((state) => state.prices);
+  return combineUsd([
+    holdingUsd(prices, deposite.token, deposite.approved),
+    holdingUsd(prices, deposite.token, deposite.deposited),
+  ]);
+}
 
 const DepositedTokenTableItem = ({
   deposite,
@@ -42,6 +52,7 @@ const DepositedTokenTableItem = ({
   const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
+  const rowUsd = useDepositRowUsd(deposite);
 
   return (
     <>
@@ -75,7 +86,9 @@ const DepositedTokenTableItem = ({
           {`${formatNumber(formatUnits(deposite.deposited, deposite.token.decimals), 8)} ${deposite.token.symbol}`}
         </div>
       </div>
-      <div className={clsx("h-[56px] flex items-center", isOdd ? "bg-tertiary-bg" : "")}>$ —</div>
+      <div className={clsx("h-[56px] flex items-center", isOdd ? "bg-tertiary-bg" : "")}>
+        {formatPortfolioUsd(rowUsd)}
+      </div>
       <div
         className={clsx(
           "h-[56px] flex pr-5 rounded-r-3 flex-col justify-center",
@@ -202,6 +215,7 @@ const DepositedTokenMobileTableItem = ({
   const chainId = useCurrentChainId();
   const { address } = useAccount();
   const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
+  const rowUsd = useDepositRowUsd(deposite);
 
   return (
     <>
@@ -224,7 +238,7 @@ const DepositedTokenMobileTableItem = ({
                   {deposite.token.symbol}
                 </div>
               </div>
-              <span className="text-12 text-primary-text">{"$ —"}</span>
+              <span className="text-12 text-primary-text">{formatPortfolioUsd(rowUsd)}</span>
             </div>
           </div>
         </div>

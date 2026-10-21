@@ -15,13 +15,20 @@ import {
   usePositionRangeStatus,
 } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
+import { formatPortfolioUsd, positionFeesUsd, positionValueUsd } from "../../lib/usd";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 
 const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo }) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
+  const prices = useUSDPriceStore((state) => state.prices);
   const { inRange, removed } = usePositionRangeStatus({ position });
+  const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
+  const feesUsd = formatPortfolioUsd(
+    positionFeesUsd(prices, position, positionInfo.tokensOwed0, positionInfo.tokensOwed1),
+  );
 
   return (
     <Link className="group cursor-pointer contents" href={`/pool/${positionInfo.tokenId}`}>
@@ -60,14 +67,14 @@ const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo
           "h-[56px] group-hover:bg-quaternary-bg duration-200 flex items-center text-secondary-text",
         )}
       >
-        $0.00
+        {valueUsd}
       </div>
       <div
         className={clsx(
           "h-[56px] group-hover:bg-quaternary-bg duration-200 flex items-center text-secondary-text",
         )}
       >
-        $0.00
+        {feesUsd}
       </div>
       <div
         className={clsx(
@@ -192,7 +199,12 @@ export const LiquidityPositionsDesktopTable = ({
 const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo }) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
+  const prices = useUSDPriceStore((state) => state.prices);
   const { inRange, removed } = usePositionRangeStatus({ position });
+  const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
+  const feesUsd = formatPortfolioUsd(
+    positionFeesUsd(prices, position, positionInfo.tokensOwed0, positionInfo.tokensOwed1),
+  );
 
   return (
     <>
@@ -232,12 +244,12 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
           </div>
           <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
             <span className="text-14 text-secondary-text">{t("amount_label")}</span>
-            <span className="text-14 font-medium">{`$ —`}</span>
+            <span className="text-14 font-medium">{valueUsd}</span>
           </div>
         </div>
         <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
           <span className="text-14 text-secondary-text">{t("unclaimed_fees_label")}</span>
-          <span className="text-14 font-medium">{`$ —`}</span>
+          <span className="text-14 font-medium">{feesUsd}</span>
         </div>
       </Link>
     </>

@@ -4,7 +4,7 @@ import Preloader from "@repo/ui/preloader";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import React from "react";
 
 import { RevokeDialog } from "@/app/[locale]/add/components/DepositAmounts/RevokeDialog";
@@ -13,7 +13,9 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import { SearchInput } from "@/components/atoms/Input";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
 import { Token } from "@/sdk_bi/entities/token";
+import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
+import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
 import { useActiveWalletsDeposites } from "../../stores/deposites.hooks";
 import { DesktopTable, MobileTable } from "./DepositedTable";
 import { TableData, WithdrawDesktopTable, WithdrawMobileTable } from "./DepositedWithdrawTable";
@@ -55,6 +57,22 @@ export const Deposited = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const prices = useUSDPriceStore((state) => state.prices);
+  const { approvedTotalUsd, depositedTotalUsd } = useMemo(() => {
+    if (isLoading) return { approvedTotalUsd: null, depositedTotalUsd: null };
+    const approved: Array<number | null> = [];
+    const deposited: Array<number | null> = [];
+    for (const walletDeposites of deposites) {
+      for (const deposite of walletDeposites.deposites) {
+        approved.push(holdingUsd(prices, deposite.token, deposite.approved));
+        deposited.push(holdingUsd(prices, deposite.token, deposite.deposited));
+      }
+    }
+    return {
+      approvedTotalUsd: combineUsd(approved),
+      depositedTotalUsd: combineUsd(deposited),
+    };
+  }, [deposites, isLoading, prices]);
 
   const currentTableData: TableData = [];
 
@@ -100,7 +118,9 @@ export const Deposited = ({
               <span className="text-14 lg:text-16 text-secondary-text">{t("approved")}</span>
               <Tooltip iconSize={20} text={t("approvals_tooltip")} />
             </div>
-            <span className="text-24 lg:text-32 font-medium">$ —</span>
+            <span className="text-24 lg:text-32 font-medium">
+              {formatPortfolioUsd(approvedTotalUsd)}
+            </span>
             <Image
               src="/images/approved-bar.svg"
               alt="Side Icon"
@@ -119,7 +139,9 @@ export const Deposited = ({
               </span>
               <Tooltip iconSize={20} text={t("stuck_tooltip")} />
             </div>
-            <span className="text-24 lg:text-32 font-medium">$ —</span>
+            <span className="text-24 lg:text-32 font-medium">
+              {formatPortfolioUsd(depositedTotalUsd)}
+            </span>
             <Image
               src="/images/deposited-bar.svg"
               alt="Side Icon"
