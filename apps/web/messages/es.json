@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Añadir dirección o dominio",
     "add_wallet": "Añadir monedero",
     "connect_wallet_placeholder": "Añade una dirección o conecta un monedero para ver la cartera",
+    "balances_error": "No se pudieron cargar los saldos.",
     "search_placeholder": "Buscar dirección de monedero",
     "balances_title": "Activos del monedero",
     "balances_search_placeholder": "Buscar nombre o pegar dirección",

@@ -676,6 +676,7 @@
     "add_wallet_placeholder": "Add address or domain",
     "add_wallet": "Add wallet",
     "connect_wallet_placeholder": "Add address or connect wallet to view portfolio",
+    "balances_error": "Balances could not be loaded.",
     "search_placeholder": "Search wallet address",
     "balances_title": "Wallet assets",
     "balances_search_placeholder": "Search name or paste address",

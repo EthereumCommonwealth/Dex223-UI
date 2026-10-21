@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "주소 또는 도메인 추가",
     "add_wallet": "지갑 추가",
     "connect_wallet_placeholder": "포트폴리오를 보려면 주소를 추가하거나 지갑을 연결하세요",
+    "balances_error": "잔액을 불러오지 못했습니다.",
     "search_placeholder": "지갑 주소 검색",
     "balances_title": "지갑 자산",
     "balances_search_placeholder": "이름 검색 또는 주소 붙여넣기",

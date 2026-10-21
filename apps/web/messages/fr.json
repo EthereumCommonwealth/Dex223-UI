@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Ajouter une adresse ou un domaine",
     "add_wallet": "Ajouter un portefeuille",
     "connect_wallet_placeholder": "Ajoutez une adresse ou connectez un portefeuille pour voir le portefeuille",
+    "balances_error": "Les soldes n'ont pas pu être chargés.",
     "search_placeholder": "Rechercher une adresse de portefeuille",
     "balances_title": "Actifs du portefeuille",
     "balances_search_placeholder": "Rechercher un nom ou coller une adresse",
