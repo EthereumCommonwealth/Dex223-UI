@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "添加地址或域名",
     "add_wallet": "添加钱包",
     "connect_wallet_placeholder": "添加地址或连接钱包以查看投资组合",
+    "unsupported_network": "此钱包所在的网络不受支持。请切换到受支持的网络以查看余额、仓位和存款。",
     "search_placeholder": "搜索钱包地址",
     "balances_title": "钱包资产",
     "balances_search_placeholder": "搜索名称或粘贴地址",
