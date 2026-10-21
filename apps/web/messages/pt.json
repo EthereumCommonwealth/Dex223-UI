@@ -476,6 +476,7 @@
     "sell_hint_any": "Escolha o ativo no widget do Onramp e envie-o da sua carteira conectada para receber fiat.",
     "swap_hint": "Troque criptomoedas suportadas no Onramp e volte para negociar no DEX223.",
     "receiving_wallet": "Carteira de recebimento",
+    "sending_wallet": "Carteira de envio",
     "cta_buy_asset": "Comprar {symbol} com Onramp",
     "cta_buy_any": "Comprar cripto com Onramp",
     "cta_sell": "Vender cripto com Onramp",
