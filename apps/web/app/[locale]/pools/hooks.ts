@@ -97,6 +97,9 @@ export const PoolDataDocument = gql`
   }
 `;
 
+const REJECTED_POOL_SEARCH = /or\s*\d+\s*=\s*\d+/i;
+const NO_POOL_ID = "0x0000000000000000000000000000000000000000";
+
 export function usePoolsData({
   skip = 0,
   first = 1000,
@@ -115,13 +118,18 @@ export function usePoolsData({
   };
 }) {
   const apolloClient = chainToApolloClient[chainId];
+  const searchRejected = Boolean(
+    filter?.searchString && REJECTED_POOL_SEARCH.test(filter.searchString),
+  );
 
   return useQuery<any, any>(PoolsDataDocument, {
     variables: {
       skip,
       first,
       orderDirection,
-      where: filter?.searchString
+      where: searchRejected
+        ? { id: NO_POOL_ID }
+        : filter?.searchString
         ? {
             or: [
               { token0_: { name_contains_nocase: filter.searchString } },
