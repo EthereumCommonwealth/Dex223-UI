@@ -1,7 +1,13 @@
-# test-app.dex223.io deploys from the `public` branch, which is a copy of master: every master push
-# fast-forwards it. PRs go to master, never to `public`. If `public` ever has commits that master
-# does not, nothing is pushed and a PR from `public` into master is opened, so those commits are
-# reviewed into master instead of drifting.
+# test-app.dex223.io deploys from the `public` branch, which carries exactly master's code: every
+# master push is merged into it. PRs go to master, never to `public`.
+#
+# The merge is always a merge commit (--no-ff). Vercel skips any commit SHA it has already deployed,
+# and master's SHA is already deployed to production, so a fast-forwarded `public` would never
+# rebuild test-app.
+#
+# If `public` ever holds changes that master does not (its tree differs from master after the
+# merge, or the merge conflicts), nothing is pushed and a PR from `public` into master is opened,
+# so those changes are reviewed into master instead of drifting.
 name: Sync public with master
 
 on:
@@ -28,12 +34,19 @@ jobs:
           ref: public
           fetch-depth: 0
 
-      - name: Fast-forward public to master
+      - name: Merge master into public
         id: merge
         run: |
-          if git merge --ff-only origin/master; then
-            echo "result=merged" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git merge --no-ff --no-edit -m "Sync public with master $(git rev-parse --short origin/master)" origin/master; then
+            if git diff --quiet origin/master HEAD; then
+              echo "result=merged" >> "$GITHUB_OUTPUT"
+            else
+              echo "result=diverged" >> "$GITHUB_OUTPUT"
+            fi
           else
+            git merge --abort
             echo "result=diverged" >> "$GITHUB_OUTPUT"
           fi
 
@@ -41,7 +54,7 @@ jobs:
         if: steps.merge.outputs.result == 'merged'
         run: git push origin HEAD:public
 
-      - name: Open a PR to bring public's own commits into master
+      - name: Open a PR to bring public's own changes into master
         if: steps.merge.outputs.result == 'diverged'
         run: |
           existing=$(gh pr list --base master --head public --state open --json number --jq '.[0].number')
@@ -49,7 +62,7 @@ jobs:
             echo "PR #$existing is already open."
           else
             gh pr create --base master --head public \
-              --title "Bring public's own commits into master" \
-              --body "\`public\` has commits that master does not, so test-app.dex223.io is not updating. Review them here and merge with a merge commit, not squash. Changes for test-app go to master as PRs, not to \`public\`."
+              --title "Bring public's own changes into master" \
+              --body "\`public\` has changes that master does not, so test-app.dex223.io is not updating. Review them here and merge with a merge commit, not squash. Changes for test-app go to master as PRs, not to \`public\`."
           fi
-          echo "::warning::public has commits that master does not. See the open PR from public into master."
+          echo "::warning::public has changes that master does not. See the open PR from public into master."
