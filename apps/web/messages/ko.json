@@ -1930,10 +1930,6 @@
       "guide": "가이드 읽기"
     },
     "preview": {
-      "title": "스왑",
-      "pay": "지불",
-      "receive": "수령",
-      "button": "스왑 시작",
       "aria": "스왑 페이지 열기"
     },
     "stats": {

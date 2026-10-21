@@ -1945,10 +1945,6 @@
       "guide": "Read the guide"
     },
     "preview": {
-      "title": "Swap",
-      "pay": "You pay",
-      "receive": "You receive",
-      "button": "Start swapping",
       "aria": "Open the swap page"
     },
     "stats": {

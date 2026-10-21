@@ -1930,10 +1930,6 @@
       "guide": "阅读指南"
     },
     "preview": {
-      "title": "兑换",
-      "pay": "支付",
-      "receive": "收到",
-      "button": "开始兑换",
       "aria": "打开兑换页面"
     },
     "stats": {
