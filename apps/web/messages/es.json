@@ -1930,10 +1930,6 @@
       "guide": "Leer la guía"
     },
     "preview": {
-      "title": "Intercambio",
-      "pay": "Pagas",
-      "receive": "Recibes",
-      "button": "Empezar a intercambiar",
       "aria": "Abrir la página de intercambio"
     },
     "stats": {

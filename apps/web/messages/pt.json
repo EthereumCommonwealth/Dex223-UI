@@ -1930,10 +1930,6 @@
       "guide": "Ler o guia"
     },
     "preview": {
-      "title": "Troca",
-      "pay": "Você paga",
-      "receive": "Você recebe",
-      "button": "Começar a trocar",
       "aria": "Abrir a página de troca"
     },
     "stats": {

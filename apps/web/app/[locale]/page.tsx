@@ -1,8 +1,8 @@
-import Image from "next/image";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
+import LandingSwapPreview from "@/components/landing/LandingSwapPreview";
 import { pageMetadata } from "@/config/seo";
 import { IconName } from "@/config/types/IconName";
 import { clsxMerge } from "@/functions/clsxMerge";
@@ -83,51 +83,6 @@ const FEATURES: {
 const COMPARISON = ["lost", "approval", "deposit"] as const;
 const FAQ = ["what", "need_erc223", "list", "custodial", "fees"] as const;
 
-function StandardPill({ label, active }: { label: string; active?: boolean }) {
-  return (
-    <span
-      className={clsxMerge(
-        "flex-1 rounded-2 px-3 py-1.5 text-12 border",
-        active
-          ? "bg-green-bg border-green text-primary-text"
-          : "bg-quaternary-bg border-transparent text-tertiary-text",
-      )}
-    >
-      {label}
-    </span>
-  );
-}
-
-function PreviewSide({
-  label,
-  symbol,
-  logo,
-  standard,
-}: {
-  label: string;
-  symbol: string;
-  logo: string;
-  standard: "ERC-20" | "ERC-223";
-}) {
-  return (
-    <div className="bg-secondary-bg rounded-3 p-4 flex flex-col gap-3">
-      <span className="text-12 text-tertiary-text">{label}</span>
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-32 font-medium text-tertiary-text">0</span>
-        <span className="flex items-center gap-2 rounded-20 bg-tertiary-bg pl-1.5 pr-3 py-1.5">
-          <Image src={logo} alt="" width={24} height={24} className="rounded-full" />
-          <span className="text-16 font-medium text-primary-text">{symbol}</span>
-          <Svg iconName="expand-arrow" size={20} className="text-tertiary-text" />
-        </span>
-      </div>
-      <div className="flex gap-2">
-        <StandardPill label="ERC-20" active={standard === "ERC-20"} />
-        <StandardPill label="ERC-223" active={standard === "ERC-223"} />
-      </div>
-    </div>
-  );
-}
-
 export default async function LandingPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -184,34 +139,7 @@ export default async function LandingPage({ params }: Props) {
             </ul>
           </div>
 
-          {/* A preview, not a working form: the real one needs a wallet and lives on /swap. */}
-          <Link
-            href="/swap"
-            aria-label={t("preview.aria")}
-            className="group block rounded-5 bg-primary-bg p-5 lg:p-7 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.6)] border border-transparent hocus:border-green-bg duration-200"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-20 font-bold text-primary-text">{t("preview.title")}</span>
-              <Svg iconName="settings" className="text-tertiary-text" />
-            </div>
-            <div className="flex flex-col gap-3">
-              <PreviewSide
-                label={t("preview.pay")}
-                symbol="USDT"
-                logo="/images/tokens/USDT.svg"
-                standard="ERC-20"
-              />
-              <PreviewSide
-                label={t("preview.receive")}
-                symbol="D223"
-                logo="/images/tokens/DEX.svg"
-                standard="ERC-223"
-              />
-            </div>
-            <span className="mt-4 flex items-center justify-center min-h-12 rounded-3 bg-green text-black text-16 font-medium group-hocus:bg-green-hover duration-200">
-              {t("preview.button")}
-            </span>
-          </Link>
+          <LandingSwapPreview />
         </Container>
       </section>
 
