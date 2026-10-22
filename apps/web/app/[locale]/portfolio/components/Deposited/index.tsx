@@ -4,7 +4,7 @@ import Preloader from "@repo/ui/preloader";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import React from "react";
 
 import { RevokeDialog } from "@/app/[locale]/add/components/DepositAmounts/RevokeDialog";
@@ -14,6 +14,7 @@ import { SearchInput } from "@/components/atoms/Input";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
 import { Token } from "@/sdk_bi/entities/token";
 
+import { formatPortfolioUsd, holdingsUsd, usePortfolioPrices } from "../../lib/usd";
 import { useActiveWalletsDeposites } from "../../stores/deposites.hooks";
 import { DesktopTable, MobileTable } from "./DepositedTable";
 import { TableData, WithdrawDesktopTable, WithdrawMobileTable } from "./DepositedWithdrawTable";
@@ -55,6 +56,21 @@ export const Deposited = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const prices = usePortfolioPrices();
+  const { approvedTotalUsd, depositedTotalUsd } = useMemo(() => {
+    if (isLoading) return { approvedTotalUsd: null, depositedTotalUsd: null };
+    const rows = deposites.flatMap((walletDeposites) => walletDeposites.deposites);
+    return {
+      approvedTotalUsd: holdingsUsd(
+        prices,
+        rows.map((deposite) => ({ token: deposite.token, amount: deposite.approved })),
+      ),
+      depositedTotalUsd: holdingsUsd(
+        prices,
+        rows.map((deposite) => ({ token: deposite.token, amount: deposite.deposited })),
+      ),
+    };
+  }, [deposites, isLoading, prices]);
 
   const currentTableData: TableData = [];
 
@@ -100,7 +116,9 @@ export const Deposited = ({
               <span className="text-14 lg:text-16 text-secondary-text">{t("approved")}</span>
               <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("approvals_tooltip")} />
             </div>
-            <span className="text-24 lg:text-32 font-medium">$ —</span>
+            <span className="text-24 lg:text-32 font-medium">
+              {formatPortfolioUsd(approvedTotalUsd)}
+            </span>
             <Image
               src="/images/approved-bar.svg"
               alt="Side Icon"
@@ -119,7 +137,9 @@ export const Deposited = ({
               </span>
               <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("stuck_tooltip")} />
             </div>
-            <span className="text-24 lg:text-32 font-medium">$ —</span>
+            <span className="text-24 lg:text-32 font-medium">
+              {formatPortfolioUsd(depositedTotalUsd)}
+            </span>
             <Image
               src="/images/deposited-bar.svg"
               alt="Side Icon"

@@ -75,20 +75,25 @@ const getWalletBalances = async (
 export const useActiveWalletBalances = ({
   searchValue,
   setSearchValue,
+  enabled = true,
 }: {
   searchValue: string;
   setSearchValue: (value: string) => void;
+  enabled?: boolean;
 }) => {
   const chainId = useCurrentChainId();
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
   const tokens = useTokens();
   const { balances, setAllBalances, loadedKey, hasError, setBalanceStatus } = useWalletsBalances();
-  const addressKey = activeAddresses
+  // Keyed by chain too, so balances read on the previous network never count as loaded.
+  const addressKey = `${chainId}:${activeAddresses
     .map((address) => address.toLowerCase())
     .sort()
-    .join(",");
+    .join(",")}`;
 
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
     let inFlight = false;
 
@@ -138,7 +143,7 @@ export const useActiveWalletBalances = ({
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
     };
-  }, [tokens, activeAddresses, chainId, setAllBalances, setBalanceStatus, addressKey]);
+  }, [tokens, activeAddresses, chainId, setAllBalances, setBalanceStatus, addressKey, enabled]);
 
   const tokenBalances = useMemo(() => {
     return tokens.map((token) => {

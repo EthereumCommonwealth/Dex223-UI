@@ -16,12 +16,29 @@ import {
 } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
 
+import {
+  formatPortfolioUsd,
+  PortfolioPrices,
+  positionFeesUsd,
+  positionValueUsd,
+  usePortfolioPrices,
+} from "../../lib/usd";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 
-const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+const PositionTableItemDesktop = ({
+  positionInfo,
+  prices,
+}: {
+  positionInfo: PositionInfo;
+  prices: PortfolioPrices;
+}) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
   const { inRange, removed } = usePositionRangeStatus({ position });
+  const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
+  const feesUsd = formatPortfolioUsd(
+    positionFeesUsd(prices, position, positionInfo.tokensOwed0, positionInfo.tokensOwed1),
+  );
 
   return (
     <Link className="group cursor-pointer contents" href={`/pool/${positionInfo.tokenId}`}>
@@ -60,14 +77,14 @@ const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo
           "h-[56px] group-hover:bg-quaternary-bg duration-200 flex items-center text-secondary-text",
         )}
       >
-        $0.00
+        {valueUsd}
       </div>
       <div
         className={clsx(
           "h-[56px] group-hover:bg-quaternary-bg duration-200 flex items-center text-secondary-text",
         )}
       >
-        $0.00
+        {feesUsd}
       </div>
       <div
         className={clsx(
@@ -96,6 +113,7 @@ export const LiquidityPositionsDesktopTable = ({
   isLoading: boolean;
 }) => {
   const t = useTranslations("Portfolio");
+  const prices = usePortfolioPrices();
   return (
     <div className="hidden lg:grid px-5 rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,1.33fr),_minmax(87px,2.67fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr),_minmax(50px,1.33fr)] pb-2.5 relative">
       {isLoading ? (
@@ -180,7 +198,11 @@ export const LiquidityPositionsDesktopTable = ({
             return (
               <React.Fragment key={index}>
                 {positions.map((position) => (
-                  <PositionTableItemDesktop key={position.tokenId} positionInfo={position} />
+                  <PositionTableItemDesktop
+                    key={position.tokenId}
+                    positionInfo={position}
+                    prices={prices}
+                  />
                 ))}
               </React.Fragment>
             );
@@ -189,10 +211,20 @@ export const LiquidityPositionsDesktopTable = ({
   );
 };
 
-const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+const PositionTableItemMobile = ({
+  positionInfo,
+  prices,
+}: {
+  positionInfo: PositionInfo;
+  prices: PortfolioPrices;
+}) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
   const { inRange, removed } = usePositionRangeStatus({ position });
+  const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
+  const feesUsd = formatPortfolioUsd(
+    positionFeesUsd(prices, position, positionInfo.tokensOwed0, positionInfo.tokensOwed1),
+  );
 
   return (
     <>
@@ -232,12 +264,12 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
           </div>
           <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
             <span className="text-14 text-secondary-text">{t("amount_label")}</span>
-            <span className="text-14 font-medium">{`$ —`}</span>
+            <span className="text-14 font-medium">{valueUsd}</span>
           </div>
         </div>
         <div className="flex w-full items-center gap-1 bg-tertiary-bg rounded-2 px-4 py-[10px]">
           <span className="text-14 text-secondary-text">{t("unclaimed_fees_label")}</span>
-          <span className="text-14 font-medium">{`$ —`}</span>
+          <span className="text-14 font-medium">{feesUsd}</span>
         </div>
       </Link>
     </>
@@ -245,13 +277,19 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
 };
 
 export const LiquidityPositionsMobileTable = ({ tableData }: { tableData: WalletPositions[] }) => {
+  const prices = usePortfolioPrices();
+
   return (
     <div className="flex lg:hidden flex-col gap-4">
       {tableData?.map(({ positions }, index: number) => {
         return (
           <React.Fragment key={index}>
             {positions.map((position) => (
-              <PositionTableItemMobile key={position.tokenId} positionInfo={position} />
+              <PositionTableItemMobile
+                key={position.tokenId}
+                positionInfo={position}
+                prices={prices}
+              />
             ))}
           </React.Fragment>
         );
