@@ -25,7 +25,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
       return;
     }
 
-    if (!walletClient || !publicClient) {
+    if (!walletClient || !publicClient || !position.isClosed) {
       return;
     }
 
@@ -77,6 +77,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     chainId,
     position.assetAddresses,
     position.id,
+    position.isClosed,
     publicClient,
     setStatus,
     walletClient,

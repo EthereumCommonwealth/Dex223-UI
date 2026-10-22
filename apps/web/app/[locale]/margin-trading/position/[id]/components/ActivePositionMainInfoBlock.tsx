@@ -46,11 +46,9 @@ function BalanceCard({ position }: { position: MarginPosition }) {
 
 export default function ActivePositionMainInfoBlock({
   position,
-  setIsWithdrawDialogOpened,
   setIsCloseDialogOpened,
 }: {
   position: MarginPosition;
-  setIsWithdrawDialogOpened: (isOpened: boolean) => void;
   setIsCloseDialogOpened: (isOpened: boolean) => void;
 }) {
   const t = useTranslations("Margin");
@@ -105,13 +103,6 @@ export default function ActivePositionMainInfoBlock({
             </Link>
           ) : (
             <>
-              <Button
-                disabled={!position.isClosed}
-                colorScheme={ButtonColor.LIGHT_GREEN}
-                onClick={() => setIsWithdrawDialogOpened(true)}
-              >
-                {t("withdraw")}
-              </Button>
               <Button
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 onClick={() => setIsCloseDialogOpened(true)}
