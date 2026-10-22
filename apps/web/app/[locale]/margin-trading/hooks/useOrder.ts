@@ -76,7 +76,8 @@ export function useOrder({ id }: { id: number }): {
   const [pages, setPages] = useState<{ source: any; positions: GqlPosition[]; error?: Error }>();
   useEffect(() => {
     const source = data?.order;
-    if (!source || source.positions.length < 1000 || !apolloClient) return;
+    const client = apolloClient || chainToApolloClient[DexChainId.SEPOLIA];
+    if (!source || (source.positions?.length ?? 0) < 1000) return;
     let cancelled = false;
     let retryTimer: ReturnType<typeof setTimeout> | undefined;
     const loadPositions = async () => {
@@ -85,7 +86,7 @@ export function useOrder({ id }: { id: number }): {
           source.positions,
           async (offset) => {
             if (cancelled) throw new Error("Order changed");
-            const result = await apolloClient.query({
+            const result = await client.query({
               query: queryId,
               variables: { id, positionsSkip: offset },
               fetchPolicy: "network-only",
@@ -111,7 +112,7 @@ export function useOrder({ id }: { id: number }): {
     };
   }, [apolloClient, data?.order, id]);
   const completePages = pages?.source === data?.order ? pages : undefined;
-  const loadingPages = Boolean(data?.order?.positions.length === 1000 && !completePages);
+  const loadingPages = Boolean(data?.order?.positions?.length === 1000 && !completePages);
 
   const order = useMemo(() => {
     if (!data?.order) {
@@ -120,9 +121,11 @@ export function useOrder({ id }: { id: number }): {
 
     return {
       ...serializeGqlOrder(data.order, chainId),
-      positions: (completePages?.positions ?? data.order.positions).map((position: GqlPosition) => {
-        return serializeGqlPosition(position, chainId);
-      }),
+      positions: (completePages?.positions ?? data.order.positions ?? []).map(
+        (position: GqlPosition) => {
+          return serializeGqlPosition(position, chainId);
+        },
+      ),
     };
   }, [chainId, completePages?.positions, data]);
 

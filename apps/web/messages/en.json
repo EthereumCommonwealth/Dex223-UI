@@ -1367,6 +1367,8 @@
     "lending_orders_count": "{count} lending orders",
     "margin_positions_count": "{count} margin positions",
     "orders_load_error": "Lending orders could not be loaded.",
+    "position_not_found": "This margin position could not be found",
+    "order_not_found": "This lending order could not be found",
     "positions_not_found": "No margin positions found for this address",
     "positions_here": "Your margin positions will appear here",
     "positions_connect": "Search by address or connect wallet to view margin positions",

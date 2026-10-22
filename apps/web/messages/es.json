@@ -1356,6 +1356,8 @@
     "lending_orders_count": "{count} órdenes de préstamo",
     "margin_positions_count": "{count} posiciones de margen",
     "orders_load_error": "No se pudieron cargar las órdenes de préstamo.",
+    "position_not_found": "No se ha encontrado esta posición de margen",
+    "order_not_found": "No se ha encontrado esta orden de préstamo",
     "positions_not_found": "No se encontraron posiciones de margen para esta dirección",
     "positions_here": "Tus posiciones de margen aparecerán aquí",
     "positions_connect": "Busca por dirección o conecta el monedero para ver las posiciones de margen",

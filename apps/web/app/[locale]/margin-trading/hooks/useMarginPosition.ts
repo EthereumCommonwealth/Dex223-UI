@@ -57,8 +57,8 @@ export function usePositionsByOwner({ owner }: { owner: Address | undefined }): 
   });
 
   const positions = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.positions) {
+      return [];
     }
 
     return data.positions.map((position: GqlPosition) => {
@@ -74,7 +74,7 @@ export function usePositionsByOwner({ owner }: { owner: Address | undefined }): 
 
 export default function useMarginPositionById({ id }: { id: string | undefined }): {
   loading: boolean;
-  position: MarginPosition;
+  position: MarginPosition | undefined;
   refetch: (variables?: Partial<any> | undefined) => Promise<ApolloQueryResult<any>>;
 } {
   const apolloClient = useMarginModuleApolloClient();
@@ -90,8 +90,8 @@ export default function useMarginPositionById({ id }: { id: string | undefined }
   });
 
   const position = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.position?.order) {
+      return undefined;
     }
 
     return {
