@@ -35,6 +35,7 @@ import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/useTransactionSettingsDialogStore";
 import { networks } from "@/config/networks";
+import { currencyToQueryParam } from "@/functions/findCurrencyByQuery";
 import { formatFloat } from "@/functions/formatFloat";
 import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
@@ -741,7 +742,7 @@ export default function TradeForm({
                   link: (chunks) => (
                     <Link
                       className="text-green hover:text-green-hover duration-200"
-                      href={`/add?tokenA=${tokenA.wrapped.address0}&tokenB=${tokenB.wrapped.address0}`}
+                      href={`/add?tokenA=${currencyToQueryParam(tokenA)}&tokenB=${currencyToQueryParam(tokenB)}`}
                     >
                       {chunks}
                     </Link>
