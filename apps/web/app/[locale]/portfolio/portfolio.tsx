@@ -190,9 +190,8 @@ const ManageWalletsContent = ({
 
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
   const {
-    setAllWalletActive,
+    setEveryWalletActive,
     removeWallet,
-    isAllWalletActive,
     showFromSearch,
     setShowFromSearch,
     addWallet,
@@ -200,6 +199,7 @@ const ManageWalletsContent = ({
   } = usePortfolioStore();
 
   const { wallets, setIsWalletActive } = usePortfolioWallets();
+  const allSelected = wallets.length > 0 && wallets.every((wallet) => wallet.isActive);
   const [content, setContent] = useState<ManageWalletsPopoverContent>(
     wallets.length || showFromSearch ? "list" : "add",
   );
@@ -348,9 +348,9 @@ const ManageWalletsContent = ({
               <div className="flex justify-between text-secondary-text text-16 font-medium px-4 md:px-5">
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
-                  onClick={() => setAllWalletActive()}
+                  onClick={() => setEveryWalletActive(!allSelected)}
                 >
-                  {isAllWalletActive ? t("deselect_all") : t("select_all")}
+                  {allSelected ? t("deselect_all") : t("select_all")}
                 </span>
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
