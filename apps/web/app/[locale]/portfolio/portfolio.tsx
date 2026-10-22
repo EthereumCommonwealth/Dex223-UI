@@ -381,7 +381,7 @@ const ManageWalletsContent = ({
                     handleChange={(event) => {
                       setIsWalletActive(address, event.target.checked);
                     }}
-                    id="isActive"
+                    id={`wallet-active-${address}`}
                   />
                   <Image
                     width={40}
