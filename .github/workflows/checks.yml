@@ -1,0 +1,44 @@
+# Typecheck and lint both apps on every PR, so errors show on the PR before Vercel's build fails on them.
+# Lint runs without --fix: it reports errors (Prettier, import order, Next rules) instead of changing files.
+# To fix lint errors locally: cd apps/<app> && yarn lint
+name: Checks
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck-lint:
+    name: ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [web, blog]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Typecheck
+        working-directory: apps/${{ matrix.app }}
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        working-directory: apps/${{ matrix.app }}
+        run: npx eslint -c .eslintrc.json --ext .js,.jsx,.ts,.tsx .
