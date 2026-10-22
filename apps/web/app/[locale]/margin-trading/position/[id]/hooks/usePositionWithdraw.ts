@@ -3,7 +3,6 @@ import { encodeFunctionData, parseUnits } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
-
 import { calculateInterestRate } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/hooks/useEditOrder";
 import {
   PositionWithdrawStatus,
@@ -30,7 +29,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
       return;
     }
 
-    if (!walletClient || !publicClient) {
+    if (!walletClient || !publicClient || !position.isClosed) {
       return;
     }
 
@@ -73,7 +72,16 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     }
 
     return;
-  }, [chainId, gasOverrides, position.assetsWithBalances, position.id, publicClient, setStatus, walletClient]);
+  }, [
+    chainId,
+    gasOverrides,
+    position.assetsWithBalances,
+    position.id,
+    position.isClosed,
+    publicClient,
+    setStatus,
+    walletClient,
+  ]);
 
   return { handlePositionWithdraw };
 }

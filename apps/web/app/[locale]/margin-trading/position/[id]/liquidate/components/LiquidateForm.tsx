@@ -204,8 +204,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
             />
           </div>
 
-                    <MarginGasSettings operation="liquidatePosition" />
-
+          <MarginGasSettings operation="liquidatePosition" />
         </div>
 
         {!position.isLiquidated ? (

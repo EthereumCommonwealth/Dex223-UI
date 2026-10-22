@@ -20,7 +20,7 @@ import { DexChainId } from "@/sdk_bi/chains";
 
 const queryOwner = gql(`
   query GetPositions($owner: String!) {
-    positions(where: {owner: $owner}, orderBy: createdAt, orderDirection: desc) {
+    positions(first: 1000, where: {owner: $owner}, orderBy: createdAt, orderDirection: desc) {
       ${GQL_POSITION_FIELDS}
       order {
         ${GQL_ORDER_FIELDS}
@@ -57,8 +57,8 @@ export function usePositionsByOwner({ owner }: { owner: Address | undefined }): 
   });
 
   const positions = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.positions) {
+      return [];
     }
 
     return data.positions.map((position: GqlPosition) => {
@@ -74,7 +74,7 @@ export function usePositionsByOwner({ owner }: { owner: Address | undefined }): 
 
 export default function useMarginPositionById({ id }: { id: string | undefined }): {
   loading: boolean;
-  position: MarginPosition;
+  position: MarginPosition | undefined;
   refetch: (variables?: Partial<any> | undefined) => Promise<ApolloQueryResult<any>>;
 } {
   const apolloClient = useMarginModuleApolloClient();
@@ -90,8 +90,8 @@ export default function useMarginPositionById({ id }: { id: string | undefined }
   });
 
   const position = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.position?.order) {
+      return undefined;
     }
 
     return {

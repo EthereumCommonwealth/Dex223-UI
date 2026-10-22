@@ -93,7 +93,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
           </div>
         </div>
 
-                <div className="mt-5">
+        <div className="mt-5">
           <MarginGasSettings operation="depositPosition" />
         </div>
 

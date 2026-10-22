@@ -79,13 +79,9 @@ export function getWhitelistId(addresses: Address[], isContract: boolean): Hash 
  * @param durationDays  Actual position length in days
  * @returns             Integer interestRate for your contract
  */
-export function calculateInterestRate(monthlyPct: number, durationDays: number): bigint {
-  // Convert 30-day % to “percent × 100”
-  return BigInt(monthlyPct * 100);
-  // Prorate by (durationDays / 30)
-  // const prorated = (baseRate * durationDays) / 30;
-  // // Round down to an integer (solidity uint)
-  // return BigInt(Math.floor(prorated));
+export function calculateInterestRate(monthlyPct: number, _durationDays: number): bigint {
+  if (!Number.isFinite(monthlyPct) || monthlyPct < 0) throw new Error("Invalid interest rate");
+  return BigInt(Math.round(monthlyPct * 100));
 }
 
 export default function useCreateOrder() {
@@ -177,6 +173,19 @@ export default function useCreateOrder() {
         return;
       }
 
+      const durationDays = Number(period.positionDuration);
+      const interestPercent = Number(interestRatePerMonth);
+      if (
+        !Number.isFinite(durationDays) ||
+        durationDays <= 0 ||
+        durationDays > 182 ||
+        !Number.isFinite(interestPercent) ||
+        interestPercent < 0
+      ) {
+        setStatus(CreateOrderStatus.INITIAL);
+        return;
+      }
+
       const sortedAddresses =
         tradingTokens.inputMode === TradingTokensInputMode.AUTOLISTING
           ? [tradingTokens.tradingTokensAutoListing!.id] // add ! here because we have check upper
@@ -205,11 +214,8 @@ export default function useCreateOrder() {
         args: [
           {
             whitelistId: whitelistId,
-            interestRate: calculateInterestRate(
-              Number(interestRatePerMonth),
-              Number(period.positionDuration),
-            ),
-            duration: BigInt(Number(period.positionDuration) * 24 * 60 * 60), // positionDuration in seconds
+            interestRate: calculateInterestRate(interestPercent, durationDays),
+            duration: BigInt(Math.round(durationDays * 24 * 60 * 60)), // positionDuration in seconds
             minLoan: parseUnits(minimumBorrowingAmount.toString(), loanToken.decimals),
             liquidationRewardAmount: parseUnits(
               liquidationFeeForLiquidator,

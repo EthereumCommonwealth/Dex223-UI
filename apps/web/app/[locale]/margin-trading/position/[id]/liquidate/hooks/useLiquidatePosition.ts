@@ -2,7 +2,6 @@ import { useCallback } from "react";
 import { usePublicClient, useWalletClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
-
 import {
   PositionLiquidateStatus,
   usePositionLiquidateStatusStore,

@@ -11,6 +11,7 @@ import {
 } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import { useEditOrderConfigStore } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/stores/useEditOrderConfigStore";
 import {
   EditOrderStatus,
@@ -21,7 +22,6 @@ import { TradingTokensInputMode } from "@/app/[locale]/margin-trading/lending-or
 import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
-import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -71,13 +71,9 @@ export function getWhitelistId(addresses: Address[], isContract: boolean): Hash 
  * @param durationDays  Actual position length in days
  * @returns             Integer interestRate for your contract
  */
-export function calculateInterestRate(monthlyPct: number, durationDays: number): bigint {
-  // Convert 30-day % to “percent × 100”
-  return BigInt(monthlyPct * 100);
-  // Prorate by (durationDays / 30)
-  // const prorated = (baseRate * durationDays) / 30;
-  // // Round down to an integer (solidity uint)
-  // return BigInt(Math.floor(prorated));
+export function calculateInterestRate(monthlyPct: number, _durationDays: number): bigint {
+  if (!Number.isFinite(monthlyPct) || monthlyPct < 0) throw new Error("Invalid interest rate");
+  return BigInt(Math.round(monthlyPct * 100));
 }
 
 export default function useEditOrder() {
@@ -176,7 +172,7 @@ export default function useEditOrder() {
           BigInt(order.id), // _orderId
           whitelistId, // _whitelist
           calculateInterestRate(Number(interestRatePerMonth), Number(period.positionDuration)), // _interestRate
-          BigInt(Number(period.positionDuration) * 24 * 60 * 60), // _duration
+          BigInt(Math.round(Number(period.positionDuration) * 24 * 60 * 60)), // _duration
           parseUnits(minimumBorrowingAmount.toString(), loanToken.decimals), // _minLoan
           Number(orderCurrencyLimit), // _currencyLimit
           leverage, // _leverage

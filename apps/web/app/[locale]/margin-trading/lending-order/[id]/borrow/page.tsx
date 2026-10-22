@@ -12,6 +12,7 @@ import { formatUnits, parseUnits } from "viem";
 import { usePublicClient } from "wagmi";
 import * as Yup from "yup";
 
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import timestampToDateString from "@/app/[locale]/margin-trading/helpers/timestampToDateString";
 import { useOrder } from "@/app/[locale]/margin-trading/hooks/useOrder";
 import ReviewBorrowDialog from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/components/ReviewBorrowDialog";
@@ -36,7 +37,6 @@ import IconButton, {
   IconButtonVariant,
   IconSize,
 } from "@/components/buttons/IconButton";
-import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
 import { ORACLE_ABI } from "@/config/abis/oracle";
