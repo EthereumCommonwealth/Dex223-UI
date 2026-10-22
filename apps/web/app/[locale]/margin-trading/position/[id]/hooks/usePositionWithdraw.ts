@@ -69,7 +69,15 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     }
 
     return;
-  }, [chainId, position.assetsWithBalances, position.id, position.isClosed, publicClient, setStatus, walletClient]);
+  }, [
+    chainId,
+    position.assetsWithBalances,
+    position.id,
+    position.isClosed,
+    publicClient,
+    setStatus,
+    walletClient,
+  ]);
 
   return { handlePositionWithdraw };
 }
