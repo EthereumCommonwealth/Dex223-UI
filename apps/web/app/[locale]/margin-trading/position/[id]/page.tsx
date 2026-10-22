@@ -84,7 +84,6 @@ export default function MarginPositionPage({
               <ActivePositionMainInfoBlock
                 position={position}
                 setIsCloseDialogOpened={setIsCloseDialogOpened}
-                setIsWithdrawDialogOpened={setIsWithdrawDialogOpened}
               />
               <ActivePositionParametersBlock position={position} />
               <ActivePositionTimeframeBlock position={position} />
