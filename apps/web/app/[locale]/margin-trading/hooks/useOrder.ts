@@ -72,13 +72,13 @@ export function useOrder({ id }: { id: number }): {
   });
 
   const order = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.order) {
+      return undefined;
     }
 
     return {
       ...serializeGqlOrder(data.order, chainId),
-      positions: data.order.positions.map((position: GqlPosition) => {
+      positions: (data.order.positions ?? []).map((position: GqlPosition) => {
         return serializeGqlPosition(position, chainId);
       }),
     };
