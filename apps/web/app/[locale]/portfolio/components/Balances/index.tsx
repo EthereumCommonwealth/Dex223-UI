@@ -54,13 +54,12 @@ export const Balances = ({
     setTokenForPortfolio(null);
   };
 
-  const loading = false;
-
   const { positions } = usePositions();
-  const { tokenBalances, activeAddresses } = useActiveWalletBalances({
-    searchValue: addressSearch,
-    setSearchValue: setAddressSearch,
-  });
+  const { tokenBalances, activeAddresses, isInitialLoading, hasError, hasBalanceData } =
+    useActiveWalletBalances({
+      searchValue: addressSearch,
+      setSearchValue: setAddressSearch,
+    });
 
   const { isLoading, deposites } = useActiveWalletsDeposites({
     searchValue: addressSearch,
@@ -179,32 +178,39 @@ export const Balances = ({
       {/*  */}
 
       <div className="mt-5 min-h-[340px] w-full">
-        {!loading && activeAddresses.length && currentTableData.length ? (
-          <>
-            <BalancesDesktopTable
-              tableData={currentTableData}
-              setTokenForPortfolio={setTokenForPortfolio}
-            />
-            <BalancesMobileTable
-              tableData={currentTableData}
-              setTokenForPortfolio={setTokenForPortfolio}
-            />
-          </>
-        ) : Boolean(searchValue) ? (
-          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-token bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">{t("token_not_found")}</span>
-          </div>
-        ) : (
-          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-list bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">{t("no_assets")}</span>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex justify-center items-center h-full min-h-[550px]">
+        {isInitialLoading ? (
+          <div className="flex justify-center items-center h-full min-h-[340px]">
             <Preloader type="awaiting" size={48} />
           </div>
-        ) : null}
+        ) : hasError && !hasBalanceData ? (
+          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1">
+            <span className="text-secondary-text">{t("balances_error")}</span>
+          </div>
+        ) : (
+          <>
+            {hasError ? <p className="mb-3 text-14 text-red-light">{t("balances_error")}</p> : null}
+            {activeAddresses.length && currentTableData.length ? (
+              <>
+                <BalancesDesktopTable
+                  tableData={currentTableData}
+                  setTokenForPortfolio={setTokenForPortfolio}
+                />
+                <BalancesMobileTable
+                  tableData={currentTableData}
+                  setTokenForPortfolio={setTokenForPortfolio}
+                />
+              </>
+            ) : Boolean(searchValue) ? (
+              <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-token bg-no-repeat bg-right-top max-md:bg-size-180">
+                <span className="text-secondary-text">{t("token_not_found")}</span>
+              </div>
+            ) : (
+              <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-list bg-no-repeat bg-right-top max-md:bg-size-180">
+                <span className="text-secondary-text">{t("no_assets")}</span>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <DrawerDialog isOpen={isTokenInfoOpened} setIsOpen={handleClosTokenInfo}>

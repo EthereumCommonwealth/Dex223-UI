@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "添加钱包地址",
     "add_wallet": "添加钱包",
     "connect_wallet_placeholder": "添加地址或连接钱包以查看投资组合",
+    "balances_error": "无法加载余额。",
     "unsupported_network": "此钱包所在的网络不受支持。请切换到受支持的网络以查看余额、仓位和存款。",
     "select_wallet_placeholder": "选择一个钱包以查看此投资组合",
     "search_placeholder": "搜索钱包地址",
