@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 
 import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { buildTokenPriceIndex, PoolDepthBalances, TokenPriceIndex } from "@/functions/poolTvl";
@@ -97,9 +97,6 @@ export const PoolDataDocument = gql`
   }
 `;
 
-const REJECTED_POOL_SEARCH = /or\s*\d+\s*=\s*\d+/i;
-const NO_POOL_ID = "0x0000000000000000000000000000000000000000";
-
 export function usePoolsData({
   skip = 0,
   first = 1000,
@@ -118,25 +115,22 @@ export function usePoolsData({
   };
 }) {
   const apolloClient = chainToApolloClient[chainId];
-  const searchRejected = Boolean(
-    filter?.searchString && REJECTED_POOL_SEARCH.test(filter.searchString),
-  );
 
   return useQuery<any, any>(PoolsDataDocument, {
     variables: {
       skip,
       first,
       orderDirection,
-      where: searchRejected
-        ? { id: NO_POOL_ID }
-        : filter?.searchString
+      where: filter?.searchString
         ? {
             or: [
               { token0_: { name_contains_nocase: filter.searchString } },
               { token1_: { name_contains_nocase: filter.searchString } },
               { token0_: { symbol_contains_nocase: filter.searchString } },
               { token1_: { symbol_contains_nocase: filter.searchString } },
-              { id: filter.searchString.toLowerCase() },
+              ...(isAddress(filter.searchString)
+                ? [{ id: filter.searchString.toLowerCase() }]
+                : []),
             ],
           }
         : {
