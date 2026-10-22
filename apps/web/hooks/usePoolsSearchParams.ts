@@ -6,13 +6,14 @@ import { isAddress } from "viem";
 import { useAddLiquidityTokensStore } from "@/app/[locale]/add/stores/useAddLiquidityTokensStore";
 import { useLiquidityTierStore } from "@/app/[locale]/add/stores/useLiquidityTierStore";
 import { useImportToken } from "@/components/manage-tokens/ImportToken";
+import { currencyToQueryParam, findCurrencyByQuery } from "@/functions/findCurrencyByQuery";
 import { IIFE } from "@/functions/iife";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePathname } from "@/i18n/routing";
 import { DexChainId } from "@/sdk_bi/chains";
 import { FeeAmount } from "@/sdk_bi/constants";
 
-import { useTokens } from "./useTokenLists";
+import { useSwapTokens } from "./useTokenLists";
 
 enum PoolsQueryParams {
   tokenA = "tokenA",
@@ -27,7 +28,7 @@ export const usePoolsSearchParams = () => {
   const _pathname = usePathname();
   const pathname = `/${locale}${_pathname}`;
   const searchParams = useSearchParams();
-  const tokens = useTokens();
+  const { tokens, isLoading: arePoolTokensLoading } = useSwapTokens();
   const _chainId = useCurrentChainId();
 
   const { tokenA, tokenB, setTokenA, setTokenB } = useAddLiquidityTokensStore();
@@ -39,13 +40,15 @@ export const usePoolsSearchParams = () => {
 
   const updatedPath = useMemo(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (tokenA?.wrapped.address0) {
-      params.set(PoolsQueryParams.tokenA, tokenA.wrapped.address0);
+    const tokenAParam = currencyToQueryParam(tokenA);
+    const tokenBParam = currencyToQueryParam(tokenB);
+    if (tokenAParam) {
+      params.set(PoolsQueryParams.tokenA, tokenAParam);
     } else {
       params.delete(PoolsQueryParams.tokenA);
     }
-    if (tokenB?.wrapped.address0) {
-      params.set(PoolsQueryParams.tokenB, tokenB.wrapped.address0);
+    if (tokenBParam) {
+      params.set(PoolsQueryParams.tokenB, tokenBParam);
     } else {
       params.delete(PoolsQueryParams.tokenB);
     }
@@ -63,15 +66,11 @@ export const usePoolsSearchParams = () => {
   }, [searchParams]);
 
   const tokenAFromList = useMemo(() => {
-    if (queryTokenA && isAddress(queryTokenA)) {
-      return tokens.find((t) => t.wrapped.address0.toLowerCase() === queryTokenA.toLowerCase());
-    }
+    return findCurrencyByQuery(tokens, queryTokenA);
   }, [queryTokenA, tokens]);
 
   const tokenBFromList = useMemo(() => {
-    if (queryTokenB && isAddress(queryTokenB)) {
-      return tokens.find((t) => t.wrapped.address0.toLowerCase() === queryTokenB.toLowerCase());
-    }
+    return findCurrencyByQuery(tokens, queryTokenB);
   }, [queryTokenB, tokens]);
 
   const queryChainId = useMemo(() => {
@@ -83,7 +82,7 @@ export const usePoolsSearchParams = () => {
   const { handleImport } = useImportToken();
 
   useEffect(() => {
-    if (!isInitialized && tokens.length > 1) {
+    if (!isInitialized && tokens.length > 1 && !arePoolTokensLoading) {
       IIFE(async () => {
         if (tokenAFromList) {
           setTokenA(tokenAFromList);
@@ -130,6 +129,7 @@ export const usePoolsSearchParams = () => {
     handleImport,
     queryChainId,
     queryTokenB,
+    arePoolTokensLoading,
   ]);
 
   useEffect(() => {

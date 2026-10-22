@@ -338,9 +338,12 @@
     "manage_title": "Gérer",
     "show_portfolio": "Afficher le portefeuille",
     "reset_search": "Réinitialiser la recherche et afficher mes portefeuilles",
-    "add_wallet_placeholder": "Ajouter une adresse ou un domaine",
+    "add_wallet_placeholder": "Ajouter l'adresse du portefeuille",
     "add_wallet": "Ajouter un portefeuille",
     "connect_wallet_placeholder": "Ajoutez une adresse ou connectez un portefeuille pour voir le portefeuille",
+    "balances_error": "Les soldes n'ont pas pu être chargés.",
+    "unsupported_network": "Ce portefeuille est sur un réseau non pris en charge. Passez à un réseau pris en charge pour voir les soldes, les positions et les dépôts.",
+    "select_wallet_placeholder": "Sélectionnez un portefeuille pour afficher ce portefeuille",
     "search_placeholder": "Rechercher une adresse de portefeuille",
     "balances_title": "Actifs du portefeuille",
     "balances_search_placeholder": "Rechercher un nom ou coller une adresse",
@@ -392,6 +395,7 @@
     "unknown": "Inconnu",
     "margin_building": "La page des positions sur marge est en construction",
     "lending_building": "La page des ordres de prêt est en construction",
+    "info_label": "Plus d'informations",
     "margin_tooltip": "Cette valeur est la somme des actifs de vos positions sur marge actives. Ces actifs sont dans le contrat du module de marge et ne peuvent pas être retirés tant que la position n’est pas fermée.",
     "wallet_assets_tooltip": "Cette valeur est la somme de vos soldes d’actifs, en USD. Elle n’inclut pas les soldes de marge.",
     "liquidity_tooltip": "Cette valeur est la somme des actifs que vous avez fournis en liquidité dans tous les contrats de pool DEX223.",
@@ -930,6 +934,7 @@
     "delete": "Supprimer",
     "sort": "Trier",
     "back": "Retour",
+    "disconnect": "Déconnecter",
     "add": "Ajouter",
     "recent_transactions": "Transactions récentes",
     "network_fee_settings": "Paramètres des frais de réseau",
@@ -1930,10 +1935,6 @@
       "guide": "Lire le guide"
     },
     "preview": {
-      "title": "Swap",
-      "pay": "Vous payez",
-      "receive": "Vous recevez",
-      "button": "Commencer à échanger",
       "aria": "Ouvrir la page d’échange"
     },
     "stats": {
