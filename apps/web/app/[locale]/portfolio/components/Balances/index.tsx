@@ -16,6 +16,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import usePositions from "@/hooks/usePositions";
 import { Currency } from "@/sdk_bi/entities/currency";
 
+import { formatPortfolioUsd, holdingsUsd, tokenUsdPrice, usePortfolioPrices } from "../../lib/usd";
 import { useActiveWalletBalances } from "../../stores/balances.hooks";
 import { BalancesDesktopTable, BalancesMobileTable } from "./BalancesTable";
 
@@ -55,10 +56,13 @@ export const Balances = ({
   };
 
   const { positions } = usePositions();
+  const prices = usePortfolioPrices();
+  // The page polls balances; this call only reads the shared store.
   const { tokenBalances, activeAddresses, isInitialLoading, hasError, hasBalanceData } =
     useActiveWalletBalances({
       searchValue: addressSearch,
       setSearchValue: setAddressSearch,
+      enabled: false,
     });
 
   const { isLoading, deposites } = useActiveWalletsDeposites({
@@ -66,14 +70,34 @@ export const Balances = ({
     setSearchValue: setAddressSearch,
   });
 
-  const currentTableData = tokenBalances
+  const rowsWithUsd = tokenBalances.map((row) => {
+    const holdings = [
+      { token: row.token, amount: row.amountERC20 || BigInt(0) },
+      { token: row.token, amount: row.amountERC223 || BigInt(0) },
+    ];
+    return {
+      ...row,
+      holdings,
+      // A row with no price shows "–" even when empty, never $0.00.
+      usd: tokenUsdPrice(prices, row.token) === null ? null : holdingsUsd(prices, holdings),
+    };
+  });
+  const walletTotalUsd =
+    isInitialLoading || !hasBalanceData
+      ? null
+      : holdingsUsd(
+          prices,
+          rowsWithUsd.flatMap((row) => row.holdings),
+        );
+
+  const currentTableData = rowsWithUsd
     .filter((value) => filterTable({ searchValue, value }))
-    .map(({ token, amountERC20, amountERC223, amountFiat }) => ({
+    .map(({ token, amountERC20, amountERC223, usd }) => ({
       logoURI: token.logoURI,
       name: token.isNative ? token.name : token.wrapped.name,
       amountERC20: formatFloat(formatUnits(amountERC20 || BigInt(0), token.decimals)),
       amountERC223: formatFloat(formatUnits(amountERC223 || BigInt(0), token.decimals)),
-      amountFiat: amountFiat,
+      amountFiat: formatPortfolioUsd(usd),
       token,
     })) as any[];
 
@@ -86,6 +110,19 @@ export const Balances = ({
     }
     return depositCount;
   }, [deposites]);
+
+  const depositedTotalUsd = useMemo(() => {
+    if (isLoading) return null;
+    return holdingsUsd(
+      prices,
+      deposites.flatMap((walletDeposites) =>
+        walletDeposites.deposites.map((deposite) => ({
+          token: deposite.token,
+          amount: deposite.deposited,
+        })),
+      ),
+    );
+  }, [deposites, isLoading, prices]);
 
   return (
     <>
@@ -101,7 +138,9 @@ export const Balances = ({
             />
           </div>
 
-          <span className="text-24 lg:text-32 font-medium">$ —</span>
+          <span className="text-24 lg:text-32 font-medium">
+            {formatPortfolioUsd(walletTotalUsd)}
+          </span>
 
           <Image
             src="/images/logo-short.svg"
@@ -157,7 +196,9 @@ export const Balances = ({
             </span>
             <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("stuck_tooltip")} />
           </div>
-          <span className="text-18 lg:text-24 font-medium">$ —</span>
+          <span className="text-18 lg:text-24 font-medium">
+            {formatPortfolioUsd(depositedTotalUsd)}
+          </span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
             {tMT("tokens_amount", { amount: depositTokensCount })}
           </span>

@@ -22,7 +22,13 @@ import { Standard } from "@/sdk_bi/standard";
 import { useRevokeDialogStatusStore } from "@/stores/useRevokeDialogStatusStore";
 import { useRevokeStatusStore } from "@/stores/useRevokeStatusStore";
 
+import { formatPortfolioUsd, holdingUsd, PortfolioPrices, usePortfolioPrices } from "../../lib/usd";
 import { WalletDeposite } from "../../stores/useWalletsDeposites";
+
+// Only the deposited amount is value held by the contract. An approval is not an asset.
+function depositRowUsd(prices: PortfolioPrices, deposite: WalletDeposite) {
+  return holdingUsd(prices, deposite.token, deposite.deposited);
+}
 
 const DepositedTokenTableItem = ({
   deposite,
@@ -31,6 +37,7 @@ const DepositedTokenTableItem = ({
   onWithdrawDetailsClick,
   setIsWithdrawDetailsOpened,
   isOdd,
+  prices,
 }: {
   deposite: WalletDeposite;
   walletAddresses: Address[];
@@ -38,10 +45,12 @@ const DepositedTokenTableItem = ({
   onWithdrawDetailsClick: () => void;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
   isOdd: boolean;
+  prices: PortfolioPrices;
 }) => {
   const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
+  const rowUsd = depositRowUsd(prices, deposite);
 
   return (
     <>
@@ -75,7 +84,9 @@ const DepositedTokenTableItem = ({
           {`${formatNumber(formatUnits(deposite.deposited, deposite.token.decimals), 8)} ${deposite.token.symbol}`}
         </div>
       </div>
-      <div className={clsx("h-[56px] flex items-center", isOdd ? "bg-tertiary-bg" : "")}>$ —</div>
+      <div className={clsx("h-[56px] flex items-center", isOdd ? "bg-tertiary-bg" : "")}>
+        {formatPortfolioUsd(rowUsd)}
+      </div>
       <div
         className={clsx(
           "h-[56px] flex pr-5 rounded-r-3 flex-col justify-center",
@@ -123,6 +134,7 @@ export const DesktopTable = ({
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
 }) => {
   let line = -1;
+  const prices = usePortfolioPrices();
   const { status: revokeStatus } = useRevokeStatusStore();
   const t = useTranslations("Portfolio");
   const { setIsOpenedRevokeDialog, standard } = useRevokeDialogStatusStore();
@@ -177,6 +189,7 @@ export const DesktopTable = ({
                 setTokenForPortfolio(deposite.token);
               }}
               setIsWithdrawDetailsOpened={setIsWithdrawDetailsOpened}
+              prices={prices}
             />
           );
         })}
@@ -191,17 +204,20 @@ const DepositedTokenMobileTableItem = ({
   onDetailsClick,
   onWithdrawDetailsClick,
   setIsWithdrawDetailsOpened,
+  prices,
 }: {
   deposite: WalletDeposite;
   walletAddress: Address;
   onDetailsClick: () => void;
   onWithdrawDetailsClick: () => void;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
+  prices: PortfolioPrices;
 }) => {
   const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
   const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
+  const rowUsd = depositRowUsd(prices, deposite);
 
   return (
     <>
@@ -224,7 +240,7 @@ const DepositedTokenMobileTableItem = ({
                   {deposite.token.symbol}
                 </div>
               </div>
-              <span className="text-12 text-primary-text">{"$ —"}</span>
+              <span className="text-12 text-primary-text">{formatPortfolioUsd(rowUsd)}</span>
             </div>
           </div>
         </div>
@@ -304,6 +320,8 @@ export const MobileTable = ({
   setTokenForWithdraw: any;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
 }) => {
+  const prices = usePortfolioPrices();
+
   return (
     <>
       <div className="flex lg:hidden flex-col gap-4">
@@ -320,6 +338,7 @@ export const MobileTable = ({
                 setTokenForPortfolio(deposite.token);
               }}
               setIsWithdrawDetailsOpened={setIsWithdrawDetailsOpened}
+              prices={prices}
             />
           );
         })}
