@@ -27,7 +27,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
       return;
     }
 
-    if (!walletClient || !publicClient) {
+    if (!walletClient || !publicClient || !position.isClosed) {
       return;
     }
 
@@ -69,7 +69,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     }
 
     return;
-  }, [chainId, position.assetsWithBalances, position.id, publicClient, setStatus, walletClient]);
+  }, [chainId, position.assetsWithBalances, position.id, position.isClosed, publicClient, setStatus, walletClient]);
 
   return { handlePositionWithdraw };
 }
