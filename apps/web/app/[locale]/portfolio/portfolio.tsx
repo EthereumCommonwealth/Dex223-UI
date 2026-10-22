@@ -184,6 +184,7 @@ const ManageWalletsContent = ({
   setSearchValue: (value: string) => void;
 }) => {
   const tWallet = useTranslations("Wallet");
+  const tA11y = useTranslations("A11y");
   const t = useTranslations("Portfolio");
   const { isConnected } = useAccount();
   const { disconnect } = useDisconnect();
@@ -451,6 +452,7 @@ const ManageWalletsContent = ({
                   {isConnectedWallet ? (
                     <IconButton
                       iconName="logout"
+                      aria-label={tA11y("disconnect")}
                       className="text-secondary-text"
                       variant={IconButtonVariant.BACK}
                       onClick={() => {
