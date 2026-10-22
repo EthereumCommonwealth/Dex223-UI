@@ -676,6 +676,7 @@
     "add_wallet_placeholder": "Add wallet address",
     "add_wallet": "Add wallet",
     "connect_wallet_placeholder": "Add address or connect wallet to view portfolio",
+    "unsupported_network": "This wallet is on a network that is not supported. Switch to a supported network to view balances, positions, and deposits.",
     "select_wallet_placeholder": "Select a wallet to view this portfolio",
     "search_placeholder": "Search wallet address",
     "balances_title": "Wallet assets",

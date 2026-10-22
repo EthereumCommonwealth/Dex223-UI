@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Ajouter l'adresse du portefeuille",
     "add_wallet": "Ajouter un portefeuille",
     "connect_wallet_placeholder": "Ajoutez une adresse ou connectez un portefeuille pour voir le portefeuille",
+    "unsupported_network": "Ce portefeuille est sur un réseau non pris en charge. Passez à un réseau pris en charge pour voir les soldes, les positions et les dépôts.",
     "select_wallet_placeholder": "Sélectionnez un portefeuille pour afficher ce portefeuille",
     "search_placeholder": "Rechercher une adresse de portefeuille",
     "balances_title": "Actifs du portefeuille",
