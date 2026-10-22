@@ -18,4 +18,4 @@ Anything not done, known limits, or follow-ups. Write "None" if nothing is open.
 
 ## Retest
 
-Who should retest after merge, and what to check. Merging to master deploys to app.dex223.io.
+Who should retest after merge, and what to check. Merging to master updates test-app.dex223.io within a few minutes. app.dex223.io changes only when the staged production build is promoted in Vercel, after the retest passes on test-app.
