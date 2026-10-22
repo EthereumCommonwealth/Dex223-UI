@@ -119,7 +119,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
         </div>
 
         {assetToDeposit && validationError ? <HelperText error={validationError} /> : null}
-<div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
+        <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
           <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
             <p className="flex flex-col text-tertiary-text">
               <span>{t("gas_price")}</span>

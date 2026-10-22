@@ -118,6 +118,7 @@ function formatOrderAmount(raw: string) {
 }
 
 function formatOrderDuration(seconds: number, t: ReturnType<typeof useTranslations<"Margin">>) {
+  seconds = Number(seconds);
   if (!Number.isFinite(seconds) || seconds <= 0) {
     return t("duration_zero");
   }
@@ -373,7 +374,7 @@ export default function BorrowMarketTable({
                             {o.leverage}x
                           </div>
                           <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                            {Math.floor(o.interestRate / 100)}%
+                            {formatFloat(Number(o.interestRate) / 100, { trimZero: true })}%
                           </div>
                           <div className="h-[56px] min-w-0 flex items-center whitespace-nowrap group-hocus:bg-tertiary-bg duration-200 pr-2">
                             {formatOrderDuration(o.positionDuration, t)}

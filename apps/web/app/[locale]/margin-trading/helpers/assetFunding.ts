@@ -34,9 +34,10 @@ export function getBorrowFunding(
     throw new Error("Borrow and collateral amounts must exceed zero");
   }
 
-  const feeAddress =
-    order.liquidationRewardAddress ??
-    getMarginAssetAddress(order.liquidationRewardAsset, order.liquidationRewardAssetStandard);
+  const feeAddress = getMarginAssetAddress(
+    order.liquidationRewardAsset,
+    order.liquidationRewardAssetStandard,
+  );
   const collateralIsNative = collateralAddress.toLowerCase() === ZERO_ADDRESS;
   const feeIsNative = feeAddress.toLowerCase() === ZERO_ADDRESS;
   const combinedApproval =
