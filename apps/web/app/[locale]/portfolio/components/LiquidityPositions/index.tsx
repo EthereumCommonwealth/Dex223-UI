@@ -35,9 +35,10 @@ export const LiquidityPositions = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const walletsWithPositions = walletsPositions.filter((wallet) => wallet.positions.length > 0);
 
   const currentTableData: WalletPositions[] = searchValue
-    ? walletsPositions
+    ? walletsWithPositions
         .map((value) => {
           const positions = value.positions.filter(({ tokenId }) => {
             if (!tokenId) return false;
@@ -50,7 +51,7 @@ export const LiquidityPositions = ({
           };
         })
         .filter((value) => !!value)
-    : walletsPositions;
+    : walletsWithPositions;
 
   return (
     <>
