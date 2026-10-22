@@ -137,7 +137,7 @@ export const LiquidityPositions = ({
               </Button>
             </Link>
 
-            {currentTableData.length > 0 && (
+            {(currentTableData.length > 0 || searchValue.length > 0) && (
               <SearchInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -160,7 +160,7 @@ export const LiquidityPositions = ({
             <LiquidityPositionsDesktopTable tableData={currentTableData} isLoading={loading} />
             <LiquidityPositionsMobileTable tableData={currentTableData} />
           </>
-        ) : Boolean(searchValue) ? (
+        ) : Boolean(searchValue) && !loading ? (
           <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-pools bg-right-top bg-no-repeat max-md:bg-size-180">
             <span className="text-secondary-text">{t("liq_not_found")}</span>
           </div>
