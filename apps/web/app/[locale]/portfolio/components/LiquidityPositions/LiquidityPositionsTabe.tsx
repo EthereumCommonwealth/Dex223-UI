@@ -209,7 +209,7 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
   return (
     <>
       <Link
-        href={`/pools/${positionInfo.tokenId}`}
+        href={`/pool/${positionInfo.tokenId}`}
         className="flex flex-col bg-primary-bg p-4 rounded-3 gap-2"
       >
         <div className="flex flex-wrap gap-2">

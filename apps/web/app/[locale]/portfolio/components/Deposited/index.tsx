@@ -116,7 +116,7 @@ export const Deposited = ({
           <div className="flex flex-col ">
             <div className="flex items-center gap-1 z-10">
               <span className="text-14 lg:text-16 text-secondary-text">{t("approved")}</span>
-              <Tooltip iconSize={20} text={t("approvals_tooltip")} />
+              <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("approvals_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">
               {formatPortfolioUsd(approvedTotalUsd)}
@@ -137,7 +137,7 @@ export const Deposited = ({
               <span className="text-14 lg:text-16 text-secondary-text">
                 {t("deposited_contract")}
               </span>
-              <Tooltip iconSize={20} text={t("stuck_tooltip")} />
+              <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("stuck_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">
               {formatPortfolioUsd(depositedTotalUsd)}

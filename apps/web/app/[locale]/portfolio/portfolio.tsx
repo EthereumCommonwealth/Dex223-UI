@@ -43,6 +43,7 @@ import { Balances } from "./components/Balances";
 import { LendingOrders } from "./components/LendingOrders";
 import { LiquidityPositions } from "./components/LiquidityPositions";
 import { MarginPositions } from "./components/MarginPositions";
+import { usePortfolioNetworkSupported } from "./lib/network";
 import { formatPortfolioUsd, walletHoldingsUsd } from "./lib/usd";
 import { useActiveWalletBalances } from "./stores/balances.hooks";
 import { useActiveAddresses, usePortfolioWallets } from "./stores/hooks";
@@ -202,15 +203,15 @@ const ManageWalletsContent = ({
   setSearchValue: (value: string) => void;
 }) => {
   const tWallet = useTranslations("Wallet");
+  const tA11y = useTranslations("A11y");
   const t = useTranslations("Portfolio");
   const { isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
   const {
-    setAllWalletActive,
+    setEveryWalletActive,
     removeWallet,
-    isAllWalletActive,
     showFromSearch,
     setShowFromSearch,
     addWallet,
@@ -218,6 +219,7 @@ const ManageWalletsContent = ({
   } = usePortfolioStore();
 
   const { wallets, setIsWalletActive } = usePortfolioWallets();
+  const allSelected = wallets.length > 0 && wallets.every((wallet) => wallet.isActive);
   const [content, setContent] = useState<ManageWalletsPopoverContent>(
     wallets.length || showFromSearch ? "list" : "add",
   );
@@ -366,9 +368,9 @@ const ManageWalletsContent = ({
               <div className="flex justify-between text-secondary-text text-16 font-medium px-4 md:px-5">
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
-                  onClick={() => setAllWalletActive()}
+                  onClick={() => setEveryWalletActive(!allSelected)}
                 >
-                  {isAllWalletActive ? t("deselect_all") : t("select_all")}
+                  {allSelected ? t("deselect_all") : t("select_all")}
                 </span>
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
@@ -399,7 +401,7 @@ const ManageWalletsContent = ({
                     handleChange={(event) => {
                       setIsWalletActive(address, event.target.checked);
                     }}
-                    id="isActive"
+                    id={`wallet-active-${address}`}
                   />
                   <Image
                     width={40}
@@ -469,6 +471,7 @@ const ManageWalletsContent = ({
                   {isConnectedWallet ? (
                     <IconButton
                       iconName="logout"
+                      aria-label={tA11y("disconnect")}
                       className="text-secondary-text"
                       variant={IconButtonVariant.BACK}
                       onClick={() => {
@@ -582,14 +585,18 @@ export function Portfolio() {
   const isMobile = useMediaQuery({ query: "(max-width: 600px)" });
   const { isConnected } = useAccount();
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
+  const networkSupported = usePortfolioNetworkSupported();
 
   const { activeTab, setActiveTab } = usePortfolioActiveTabStore();
   const { showFromSearch, hasSearchWallet, addWallet } = usePortfolioStore();
+  const { wallets } = usePortfolioWallets();
   const [searchValue, setSearchValue] = useState("");
 
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
   useUSDPrice(undefined);
-  useActiveWalletBalances({ searchValue, setSearchValue });
+  // One poller for the whole page; the sections read the shared store. Nothing is
+  // fetched on a network this build does not support.
+  useActiveWalletBalances({ searchValue, setSearchValue, enabled: networkSupported });
 
   const handleAddWallet = useCallback(() => {
     addWallet(searchValue as Address);
@@ -607,145 +614,160 @@ export function Portfolio() {
             <WalletSearchInput searchValue={searchValue} setSearchValue={setSearchValue} />
           </div>
         </div>
-        <div className="flex flex-wrap rounded-3 pt-4 lg:py-5 bg-primary-bg">
-          {activeAddresses.length ? (
-            <div className="flex gap-3 lg:gap-0 flex-col lg:flex-row w-full overflow-hidden">
-              {showFromSearch && (
-                <div className="flex pl-4 lg:pl-5 items-center text-18 font-medium text-tertiary-text text-nowrap">
-                  {t("search_result")}
+        {networkSupported ? (
+          <>
+            <div className="flex flex-wrap rounded-3 pt-4 lg:py-5 bg-primary-bg">
+              {activeAddresses.length ? (
+                <div className="flex gap-3 lg:gap-0 flex-col lg:flex-row w-full overflow-hidden">
+                  {showFromSearch && (
+                    <div className="flex pl-4 lg:pl-5 items-center text-18 font-medium text-tertiary-text text-nowrap">
+                      {t("search_result")}
+                    </div>
+                  )}
+                  <div className="flex px-4 lg:px-5">
+                    {activeAddresses.slice(0, 3).map((ad, index) => (
+                      <Image
+                        width={40}
+                        height={40}
+                        key={ad}
+                        className={clsx(
+                          "w-10 h-10 min-h-10 min-w-10 rounded-2 border-2 border-primary-bg",
+                          index > 0 && "ml-[-12px]",
+                        )}
+                        src={toDataUrl(ad)}
+                        alt={ad}
+                      />
+                    ))}
+                    {activeAddresses.length > 3 && (
+                      <div className="w-10 h-10 min-h-10 min-w-10 bg-tertiary-bg rounded-2 border-2 border-primary-bg ml-[-12px] flex justify-center items-center">{`+${activeAddresses.length - 3}`}</div>
+                    )}
+                  </div>
+                  <div
+                    className={clsxMerge(
+                      "flex gap-3 overflow-x-auto lg:pl-0 lg:flex-wrap pb-4 lg:pb-0",
+                      showFromSearch ? "pl-4 pr-2" : "w-full px-4 lg:pr-5",
+                    )}
+                  >
+                    {activeAddresses.map((ad) => (
+                      <div
+                        key={ad}
+                        className="flex items-center gap-1 pl-3 bg-tertiary-bg rounded-2"
+                      >
+                        <ExternalTextLink
+                          text={truncateMiddle(ad || "", { charsFromStart: 5, charsFromEnd: 3 })}
+                          href={getExplorerLink(ExplorerLinkType.ADDRESS, ad, chainId)}
+                        />
+                        <IconButton variant={IconButtonVariant.COPY} text={ad} /> {/*<IconButton*/}
+                      </div>
+                    ))}
+                  </div>
+                  {showFromSearch && (
+                    <Button
+                      colorScheme={ButtonColor.LIGHT_GREEN}
+                      size={ButtonSize.MEDIUM}
+                      onClick={() => {
+                        if (!hasSearchWallet) {
+                          handleAddWallet();
+                        }
+                      }}
+                      disabled={hasSearchWallet}
+                    >
+                      <div className="flex items-center gap-2  text-nowrap">
+                        <span>
+                          {hasSearchWallet ? t("already_in_wallets") : t("add_to_wallets")}
+                        </span>
+                      </div>
+                    </Button>
+                  )}
+                </div>
+              ) : (
+                <div className="min-h-[72px] md:min-h-[40px] flex flex-col items-start md:flex-row md:items-center gap-3 w-full relative -mt-5 md:mt-0 pt-1 pb-4 md:py-0 px-4 lg:px-5 lg:pb-0">
+                  <span className="text-secondary-text flex pr-[80px] md:pr-0 md:w-full md:mr-auto text-16 items-center">
+                    {wallets.length > 0
+                      ? t("select_wallet_placeholder")
+                      : t("connect_wallet_placeholder")}
+                  </span>
+                  {/* The obvious next step: open the same connect flow as the header button. */}
+                  {wallets.length === 0 && !isConnected && (
+                    <Button
+                      size={ButtonSize.MEDIUM}
+                      colorScheme={ButtonColor.LIGHT_GREEN}
+                      onClick={() => setWalletConnectOpened(true)}
+                      className="relative z-10 flex-shrink-0 md:mr-[96px]"
+                    >
+                      {tWallet("connect_wallet")}
+                    </Button>
+                  )}
+                  <EmptyStateIcon
+                    iconName="wallet"
+                    size={isMobile ? 72 : 80}
+                    className="absolute right-0 top-0 mt-1 md:-mt-5 object-cover"
+                  />
                 </div>
               )}
-              <div className="flex px-4 lg:px-5">
-                {activeAddresses.slice(0, 3).map((ad, index) => (
-                  <Image
-                    width={40}
-                    height={40}
-                    key={ad}
-                    className={clsx(
-                      "w-10 h-10 min-h-10 min-w-10 rounded-2 border-2 border-primary-bg",
-                      index > 0 && "ml-[-12px]",
-                    )}
-                    src={toDataUrl(ad)}
-                    alt={ad}
-                  />
-                ))}
-                {activeAddresses.length > 3 && (
-                  <div className="w-10 h-10 min-h-10 min-w-10 bg-tertiary-bg rounded-2 border-2 border-primary-bg ml-[-12px] flex justify-center items-center">{`+${activeAddresses.length - 3}`}</div>
-                )}
-              </div>
-              <div
-                className={clsxMerge(
-                  "flex gap-3 overflow-x-auto lg:pl-0 lg:flex-wrap pb-4 lg:pb-0",
-                  showFromSearch ? "pl-4 pr-2" : "w-full px-4 lg:pr-5",
-                )}
+            </div>
+            <div
+              role="tablist"
+              className="mt-5 w-full flex lg:grid lg:grid-cols-5 bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto"
+            >
+              <TabButton
+                inactiveBackground="bg-secondary-bg"
+                size={48}
+                active={activeTab === ActiveTab.balances}
+                onClick={() => setActiveTab(ActiveTab.balances)}
               >
-                {activeAddresses.map((ad) => (
-                  <div key={ad} className="flex items-center gap-1 pl-3 bg-tertiary-bg rounded-2">
-                    <ExternalTextLink
-                      text={truncateMiddle(ad || "", { charsFromStart: 5, charsFromEnd: 3 })}
-                      href={getExplorerLink(ExplorerLinkType.ADDRESS, ad, chainId)}
-                    />
-                    <IconButton variant={IconButtonVariant.COPY} text={ad} /> {/*<IconButton*/}
-                  </div>
-                ))}
-              </div>
-              {showFromSearch && (
-                <Button
-                  colorScheme={ButtonColor.LIGHT_GREEN}
-                  size={ButtonSize.MEDIUM}
-                  onClick={() => {
-                    if (!hasSearchWallet) {
-                      handleAddWallet();
-                    }
-                  }}
-                  disabled={hasSearchWallet}
-                >
-                  <div className="flex items-center gap-2  text-nowrap">
-                    <span>{hasSearchWallet ? t("already_in_wallets") : t("add_to_wallets")}</span>
-                  </div>
-                </Button>
-              )}
+                <span className="text-nowrap text-16">{t("balances_tab")}</span>
+              </TabButton>
+              <TabButton
+                inactiveBackground="bg-secondary-bg"
+                size={48}
+                active={activeTab === ActiveTab.margin}
+                onClick={() => setActiveTab(ActiveTab.margin)}
+              >
+                <span className="text-nowrap text-16">{t("margin_title")}</span>
+              </TabButton>
+              <TabButton
+                inactiveBackground="bg-secondary-bg"
+                size={48}
+                active={activeTab === ActiveTab.lending}
+                onClick={() => setActiveTab(ActiveTab.lending)}
+              >
+                <span className="text-nowrap text-16">{t("lending_title")}</span>
+              </TabButton>
+              <TabButton
+                inactiveBackground="bg-secondary-bg"
+                size={48}
+                active={activeTab === ActiveTab.liquidity}
+                onClick={() => setActiveTab(ActiveTab.liquidity)}
+              >
+                <span className="text-nowrap text-16">{t("liquidity_title")}</span>
+              </TabButton>
+              <TabButton
+                inactiveBackground="bg-secondary-bg"
+                size={48}
+                active={activeTab === ActiveTab.deposited}
+                onClick={() => setActiveTab(ActiveTab.deposited)}
+              >
+                <span className="text-nowrap text-16">{t("approved_deposited")}</span>
+              </TabButton>
             </div>
-          ) : (
-            <div className="min-h-[72px] md:min-h-[40px] flex flex-col items-start md:flex-row md:items-center gap-3 w-full relative -mt-5 md:mt-0 pt-1 pb-4 md:py-0 px-4 lg:px-5 lg:pb-0">
-              <span className="text-secondary-text flex pr-[80px] md:pr-0 md:w-full md:mr-auto text-16 items-center">
-                {t("connect_wallet_placeholder")}
-              </span>
-              {/* The obvious next step: open the same connect flow as the header button. */}
-              {!isConnected && (
-                <Button
-                  size={ButtonSize.MEDIUM}
-                  colorScheme={ButtonColor.LIGHT_GREEN}
-                  onClick={() => setWalletConnectOpened(true)}
-                  className="relative z-10 flex-shrink-0 md:mr-[96px]"
-                >
-                  {tWallet("connect_wallet")}
-                </Button>
-              )}
-              <EmptyStateIcon
-                iconName="wallet"
-                size={isMobile ? 72 : 80}
-                className="absolute right-0 top-0 mt-1 md:-mt-5 object-cover"
-              />
-            </div>
-          )}
-        </div>
-        <div
-          role="tablist"
-          className="mt-5 w-full flex lg:grid lg:grid-cols-5 bg-primary-bg p-1 gap-1 rounded-3 overflow-x-auto"
-        >
-          <TabButton
-            inactiveBackground="bg-secondary-bg"
-            size={48}
-            active={activeTab === ActiveTab.balances}
-            onClick={() => setActiveTab(ActiveTab.balances)}
-          >
-            <span className="text-nowrap text-16">{t("balances_tab")}</span>
-          </TabButton>
-          <TabButton
-            inactiveBackground="bg-secondary-bg"
-            size={48}
-            active={activeTab === ActiveTab.margin}
-            onClick={() => setActiveTab(ActiveTab.margin)}
-          >
-            <span className="text-nowrap text-16">{t("margin_title")}</span>
-          </TabButton>
-          <TabButton
-            inactiveBackground="bg-secondary-bg"
-            size={48}
-            active={activeTab === ActiveTab.lending}
-            onClick={() => setActiveTab(ActiveTab.lending)}
-          >
-            <span className="text-nowrap text-16">{t("lending_title")}</span>
-          </TabButton>
-          <TabButton
-            inactiveBackground="bg-secondary-bg"
-            size={48}
-            active={activeTab === ActiveTab.liquidity}
-            onClick={() => setActiveTab(ActiveTab.liquidity)}
-          >
-            <span className="text-nowrap text-16">{t("liquidity_title")}</span>
-          </TabButton>
-          <TabButton
-            inactiveBackground="bg-secondary-bg"
-            size={48}
-            active={activeTab === ActiveTab.deposited}
-            onClick={() => setActiveTab(ActiveTab.deposited)}
-          >
-            <span className="text-nowrap text-16">{t("approved_deposited")}</span>
-          </TabButton>
-        </div>
-        {activeTab === ActiveTab.balances ? (
-          <Balances addressSearch={searchValue} setAddressSearch={setSearchValue} />
-        ) : activeTab === ActiveTab.margin ? (
-          <MarginPositions />
-        ) : activeTab === ActiveTab.lending ? (
-          <LendingOrders />
-        ) : activeTab === ActiveTab.liquidity ? (
-          <LiquidityPositions addressSearch={searchValue} setAddressSearch={setSearchValue} />
-        ) : activeTab === ActiveTab.deposited ? (
-          <Deposited addressSearch={searchValue} setAddressSearch={setSearchValue} />
-        ) : null}
+            {activeTab === ActiveTab.balances ? (
+              <Balances addressSearch={searchValue} setAddressSearch={setSearchValue} />
+            ) : activeTab === ActiveTab.margin ? (
+              <MarginPositions />
+            ) : activeTab === ActiveTab.lending ? (
+              <LendingOrders />
+            ) : activeTab === ActiveTab.liquidity ? (
+              <LiquidityPositions addressSearch={searchValue} setAddressSearch={setSearchValue} />
+            ) : activeTab === ActiveTab.deposited ? (
+              <Deposited addressSearch={searchValue} setAddressSearch={setSearchValue} />
+            ) : null}
+          </>
+        ) : (
+          <div className="mt-5 rounded-3 bg-primary-bg px-4 py-6 text-16 text-secondary-text lg:px-5">
+            {t("unsupported_network")}
+          </div>
+        )}
       </div>
     </Container>
   );

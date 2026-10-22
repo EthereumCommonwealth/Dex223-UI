@@ -19,7 +19,6 @@ import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
 import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
 import { useActiveWalletBalances } from "../../stores/balances.hooks";
-import { useWalletsBalances } from "../../stores/useWalletsBalances";
 import { BalancesDesktopTable, BalancesMobileTable } from "./BalancesTable";
 
 const filterTable = ({
@@ -57,16 +56,15 @@ export const Balances = ({
     setTokenForPortfolio(null);
   };
 
-  const loading = false;
-
   const { positions } = usePositions();
   const prices = useUSDPriceStore((state) => state.prices);
-  const storedBalances = useWalletsBalances((state) => state.balances);
-  const { tokenBalances, activeAddresses } = useActiveWalletBalances({
-    searchValue: addressSearch,
-    setSearchValue: setAddressSearch,
-    enabled: false,
-  });
+  // The page polls balances; this call only reads the shared store.
+  const { tokenBalances, activeAddresses, isInitialLoading, hasError, hasBalanceData } =
+    useActiveWalletBalances({
+      searchValue: addressSearch,
+      setSearchValue: setAddressSearch,
+      enabled: false,
+    });
 
   const { isLoading, deposites } = useActiveWalletsDeposites({
     searchValue: addressSearch,
@@ -81,7 +79,7 @@ export const Balances = ({
     ]),
   }));
   const walletTotalUsd =
-    storedBalances.length === 0 ? null : combineUsd(rowsWithUsd.map((row) => row.usd));
+    isInitialLoading || !hasBalanceData ? null : combineUsd(rowsWithUsd.map((row) => row.usd));
 
   const currentTableData = rowsWithUsd
     .filter((value) => filterTable({ searchValue, value }))
@@ -122,7 +120,11 @@ export const Balances = ({
         <div className="flex flex-col bg-gradient-card-green-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full relative overflow-hidden">
           <div className="flex items-center gap-1 mb-auto">
             <span className="text-14 lg:text-16 text-secondary-text">{t("wallet_balance")}</span>
-            <Tooltip iconSize={20} text={t("wallet_assets_tooltip")} />
+            <Tooltip
+              iconSize={20}
+              triggerLabel={t("info_label")}
+              text={t("wallet_assets_tooltip")}
+            />
           </div>
 
           <span className="text-24 lg:text-32 font-medium">
@@ -142,7 +144,7 @@ export const Balances = ({
         <div className="relative flex flex-col bg-gradient-card-blue-light-fill  rounded-3 px-4 md:px-5 py-2.5 md:py-6 w-full overflow-hidden">
           <div className="flex items-center gap-1 z-10">
             <span className="text-14 lg:text-16 text-secondary-text">{t("margin_balance")}</span>
-            <Tooltip iconSize={20} text={t("margin_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("margin_tooltip")} />
           </div>
           <span className="text-24 lg:text-32 font-medium">$ —</span>
           <Image
@@ -159,7 +161,7 @@ export const Balances = ({
         <div className="flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full">
           <div className="flex items-center gap-1">
             <span className="text-14 lg:text-16 text-secondary-text">{t("liquidity_balance")}</span>
-            <Tooltip iconSize={20} text={t("liquidity_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("liquidity_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">$ —</span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
@@ -169,7 +171,7 @@ export const Balances = ({
         <div className="flex flex-col bg-primary-bg rounded-3 px-5 py-6 w-full">
           <div className="flex items-center gap-1">
             <span className="text-14 lg:text-16 text-secondary-text">{t("lending_balance")}</span>
-            <Tooltip iconSize={20} text={t("lending_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("lending_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">$ —</span>
           <span className="px-2 py-[2px] border border-secondary-border text-tertiary-text text-14 rounded-1 w-max">
@@ -181,7 +183,7 @@ export const Balances = ({
             <span className="text-14 lg:text-16 text-secondary-text">
               {t("deposited_contract")}
             </span>
-            <Tooltip iconSize={20} text={t("stuck_tooltip")} />
+            <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("stuck_tooltip")} />
           </div>
           <span className="text-18 lg:text-24 font-medium">
             {formatPortfolioUsd(depositedTotalUsd)}
@@ -206,32 +208,39 @@ export const Balances = ({
       {/*  */}
 
       <div className="mt-5 min-h-[340px] w-full">
-        {!loading && activeAddresses.length && currentTableData.length ? (
-          <>
-            <BalancesDesktopTable
-              tableData={currentTableData}
-              setTokenForPortfolio={setTokenForPortfolio}
-            />
-            <BalancesMobileTable
-              tableData={currentTableData}
-              setTokenForPortfolio={setTokenForPortfolio}
-            />
-          </>
-        ) : Boolean(searchValue) ? (
-          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-token bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">{t("token_not_found")}</span>
-          </div>
-        ) : (
-          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-list bg-no-repeat bg-right-top max-md:bg-size-180">
-            <span className="text-secondary-text">{t("no_assets")}</span>
-          </div>
-        )}
-
-        {loading ? (
-          <div className="flex justify-center items-center h-full min-h-[550px]">
+        {isInitialLoading ? (
+          <div className="flex justify-center items-center h-full min-h-[340px]">
             <Preloader type="awaiting" size={48} />
           </div>
-        ) : null}
+        ) : hasError && !hasBalanceData ? (
+          <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1">
+            <span className="text-secondary-text">{t("balances_error")}</span>
+          </div>
+        ) : (
+          <>
+            {hasError ? <p className="mb-3 text-14 text-red-light">{t("balances_error")}</p> : null}
+            {activeAddresses.length && currentTableData.length ? (
+              <>
+                <BalancesDesktopTable
+                  tableData={currentTableData}
+                  setTokenForPortfolio={setTokenForPortfolio}
+                />
+                <BalancesMobileTable
+                  tableData={currentTableData}
+                  setTokenForPortfolio={setTokenForPortfolio}
+                />
+              </>
+            ) : Boolean(searchValue) ? (
+              <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-token bg-no-repeat bg-right-top max-md:bg-size-180">
+                <span className="text-secondary-text">{t("token_not_found")}</span>
+              </div>
+            ) : (
+              <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-list bg-no-repeat bg-right-top max-md:bg-size-180">
+                <span className="text-secondary-text">{t("no_assets")}</span>
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       <DrawerDialog isOpen={isTokenInfoOpened} setIsOpen={handleClosTokenInfo}>

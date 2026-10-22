@@ -11,12 +11,18 @@ export type WalletBalances = {
 };
 interface WalletsBalancesStore {
   balances: WalletBalances[];
+  loadedKey: string | null;
+  hasError: boolean;
   setAllBalances: (walletsBalances: WalletBalances[]) => void;
   setWalletBalances: (walletBalance: WalletBalances) => void;
+  setBalanceStatus: (status: { loadedKey: string | null; hasError: boolean }) => void;
 }
 
 export const useWalletsBalances = create<WalletsBalancesStore>((set, get) => ({
   balances: [],
+  loadedKey: null,
+  hasError: false,
+  setBalanceStatus: (status) => set(status),
   setAllBalances: (walletsBalances) =>
     set((state) => ({
       balances: walletsBalances,
