@@ -1355,6 +1355,7 @@
     "loading": "加载中...",
     "lending_orders_count": "{count} 个借贷订单",
     "margin_positions_count": "{count} 个保证金仓位",
+    "orders_load_error": "无法加载借贷订单。",
     "positions_not_found": "未找到该地址的保证金仓位",
     "positions_here": "你的保证金仓位会显示在这里",
     "positions_connect": "搜索地址或连接钱包以查看保证金仓位",

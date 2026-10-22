@@ -1355,6 +1355,7 @@
     "loading": "A carregar...",
     "lending_orders_count": "{count} ordens de empréstimo",
     "margin_positions_count": "{count} posições de margem",
+    "orders_load_error": "Não foi possível carregar as ordens de empréstimo.",
     "positions_not_found": "Não foram encontradas posições de margem para este endereço",
     "positions_here": "As suas posições de margem vão aparecer aqui",
     "positions_connect": "Pesquise um endereço ou ligue a carteira para ver as posições de margem",

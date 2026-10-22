@@ -20,7 +20,7 @@ import { DexChainId } from "@/sdk_bi/chains";
 
 const queryOwner = gql(`
   query GetPositions($owner: String!) {
-    positions(where: {owner: $owner}, orderBy: createdAt, orderDirection: desc) {
+    positions(first: 1000, where: {owner: $owner}, orderBy: createdAt, orderDirection: desc) {
       ${GQL_POSITION_FIELDS}
       order {
         ${GQL_ORDER_FIELDS}

@@ -56,7 +56,7 @@ export default function LendingOrder({
   const { id } = use(params);
   const { address } = useAccount();
 
-  const { order, loading, refetch } = useOrder({ id: +id });
+  const { order, loading, refetch, error } = useOrder({ id: +id });
   const [tokenForPortfolio, setTokenForPortfolio] = useState<Token | null>(null);
   const chainId = useCurrentChainId();
 
@@ -80,6 +80,10 @@ export default function LendingOrder({
       ? [filterTokens(searchTradableTokenValue, order?.allowedTradingAssets || []), true]
       : [order?.allowedTradingAssets || [], false];
   }, [searchTradableTokenValue, order?.allowedTradingAssets]);
+
+  if (error) {
+    return <div className="text-24 p-5">{t("orders_load_error")}</div>;
+  }
 
   if (loading || !order) {
     return <div className="text-24 p-5">{t("order_loading")}</div>;
