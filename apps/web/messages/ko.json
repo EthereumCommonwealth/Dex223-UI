@@ -338,7 +338,7 @@
     "manage_title": "관리",
     "show_portfolio": "포트폴리오 보기",
     "reset_search": "검색 초기화 및 내 지갑 보기",
-    "add_wallet_placeholder": "주소 또는 도메인 추가",
+    "add_wallet_placeholder": "지갑 주소 추가",
     "add_wallet": "지갑 추가",
     "connect_wallet_placeholder": "포트폴리오를 보려면 주소를 추가하거나 지갑을 연결하세요",
     "search_placeholder": "지갑 주소 검색",
