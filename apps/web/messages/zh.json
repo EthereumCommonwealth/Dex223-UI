@@ -930,6 +930,7 @@
     "delete": "删除",
     "sort": "排序",
     "back": "返回",
+    "disconnect": "断开连接",
     "add": "添加",
     "recent_transactions": "最近交易",
     "network_fee_settings": "网络费用设置",
