@@ -1,4 +1,5 @@
 import { useTranslations } from "next-intl";
+import { useEffect, useRef, useState } from "react";
 import { useSwitchChain } from "wagmi";
 
 import Container from "@/components/atoms/Container";
@@ -12,11 +13,30 @@ export default function UnknownNetworkWarning() {
   const { isOpened, title, closeNoTokenListsEnabledWarning, openNoTokenListsEnabledWarning } =
     useUnknownNetworkWarningStore();
   const { switchChain } = useSwitchChain();
+  const bannerRef = useRef<HTMLDivElement>(null);
+  const [clearance, setClearance] = useState(0);
+  useEffect(() => {
+    if (!isOpened || !bannerRef.current) return;
+    const measure = () =>
+      setClearance((bannerRef.current?.offsetHeight ?? 0) + (window.innerWidth < 768 ? 48 : 0));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(bannerRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [isOpened]);
 
   return (
     <>
+      {isOpened && <div aria-hidden="true" style={{ height: clearance }} />}
       {isOpened && (
-        <div className="z-[1000] fixed w-full bg-orange-bg border-orange border-t shadow-notification shadow-orange-hover/30 bottom-12 md:bottom-0">
+        <div
+          ref={bannerRef}
+          className="z-[1000] fixed w-full bg-orange-bg border-orange border-t shadow-notification shadow-orange-hover/30 bottom-12 md:bottom-0"
+        >
           <Container gutter={false}>
             <div className="min-h-[80px] py-4 flex flex-col md:flex-row justify-between md:items-center items-start px-5">
               <div className="flex gap-3 items-center text-14 text-secondary-text md:text-16">
