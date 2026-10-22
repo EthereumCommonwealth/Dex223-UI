@@ -77,13 +77,15 @@ export const LiquidityPositions = ({
       .filter((id): id is string => Boolean(id)),
   );
   const reportedValues = positionIds.map((id) => positionValues[id]);
-  const liquidityTotalUsd = loading
-    ? null
-    : positionIds.length === 0
-      ? 0
-      : reportedValues.some((value) => value === undefined)
-        ? null
-        : combineUsd(reportedValues.map((value) => (value === undefined ? null : value)));
+  // No price index (unanchored chain or unsupported network) means no dollar value, even for zero.
+  const liquidityTotalUsd =
+    loading || !prices
+      ? null
+      : positionIds.length === 0
+        ? 0
+        : reportedValues.some((value) => value === undefined)
+          ? null
+          : combineUsd(reportedValues.map((value) => (value === undefined ? null : value)));
   const walletsWithPositions = walletsPositions.filter((wallet) => wallet.positions.length > 0);
 
   const currentTableData: WalletPositions[] = searchValue
