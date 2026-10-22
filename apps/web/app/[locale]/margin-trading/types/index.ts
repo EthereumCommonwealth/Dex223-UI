@@ -61,6 +61,7 @@ export type LendingOrder = {
     formatted: string;
   };
   liquidationRewardAsset: Currency;
+  liquidationRewardAddress?: Address;
   liquidationRewardAssetStandard: Standard;
 
   collateralAddresses: Address[];

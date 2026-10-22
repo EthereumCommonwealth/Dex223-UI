@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import SimpleBar from "simplebar-react";
-import { parseUnits } from "viem";
+import { formatUnits, parseUnits } from "viem";
 
 import timestampToDateString from "@/app/[locale]/margin-trading/helpers/timestampToDateString";
 import useCreateMarginPosition, {
@@ -66,16 +66,12 @@ function CreateMarginPositionActionButton({
   } = useCreateMarginPositionStatusStore();
   const { values } = useCreateMarginPositionConfigStore();
 
-  const orderedHashes =
-    values.collateralToken &&
-    order.liquidationRewardAsset.equals(values.collateralToken) &&
-    values.collateralTokenStandard === Standard.ERC20
-      ? [approveBorrowHash, borrowHash]
-      : [
-          values.collateralTokenStandard === Standard.ERC20 ? approveBorrowHash : transferHash,
-          approveLiquidationFeeHash,
-          borrowHash,
-        ];
+  const hashesByStep: Partial<Record<CreateMarginPositionStatus, `0x${string}` | undefined>> = {
+    [CreateMarginPositionStatus.PENDING_APPROVE_BORROW]: approveBorrowHash,
+    [CreateMarginPositionStatus.PENDING_TRANSFER]: transferHash,
+    [CreateMarginPositionStatus.PENDING_APPROVE_LIQUIDATION_FEE]: approveLiquidationFeeHash,
+    [CreateMarginPositionStatus.PENDING_BORROW]: borrowHash,
+  };
 
   const { allSteps: marginSteps } = useCreatePositionApproveSteps(order);
 
@@ -86,7 +82,7 @@ function CreateMarginPositionActionButton({
           <OperationStepRow
             key={index}
             iconName={step.iconName}
-            hash={orderedHashes[index]}
+            hash={hashesByStep[step.pending]}
             statusTextMap={step.textMap}
             status={operationStatusToStepStatus({
               currentStatus: status,
@@ -132,8 +128,18 @@ export default function ReviewBorrowDialog({
   const { positionId, setPositionId } = useNewlyCreatedPositionId();
 
   const isFeeAndCollateralSame = useMemo(() => {
-    return values.collateralToken?.equals(order.liquidationRewardAsset);
-  }, [order.liquidationRewardAsset, values.collateralToken]);
+    return (
+      !values.collateralToken?.isNative &&
+      values.collateralTokenStandard === Standard.ERC20 &&
+      order.liquidationRewardAssetStandard === Standard.ERC20 &&
+      values.collateralToken?.equals(order.liquidationRewardAsset)
+    );
+  }, [
+    order.liquidationRewardAsset,
+    order.liquidationRewardAssetStandard,
+    values.collateralToken,
+    values.collateralTokenStandard,
+  ]);
 
   const [amountToApprove, setAmountToApprove] = useState(values.collateralAmount);
   const [feeAmountToApprove, setFeeAmountToApprove] = useState(
@@ -147,10 +153,19 @@ export default function ReviewBorrowDialog({
 
     if (isFeeAndCollateralSame) {
       setAmountToApprove(
-        (+values.collateralAmount + +order.liquidationRewardAmount.formatted).toString(),
+        formatUnits(
+          parseUnits(values.collateralAmount, values.collateralToken?.decimals ?? 18) +
+            order.liquidationRewardAmount.value,
+          values.collateralToken?.decimals ?? 18,
+        ),
       );
     }
-  }, [isFeeAndCollateralSame, order.liquidationRewardAmount.formatted, values.collateralAmount]);
+  }, [
+    isFeeAndCollateralSame,
+    order.liquidationRewardAmount.value,
+    values.collateralAmount,
+    values.collateralToken?.decimals,
+  ]);
 
   const chainId = useCurrentChainId();
 
@@ -158,6 +173,7 @@ export default function ReviewBorrowDialog({
   const isFinalStatus = useMemo(
     () =>
       status === CreateMarginPositionStatus.SUCCESS ||
+      status === CreateMarginPositionStatus.ERROR_TRANSFER ||
       status === CreateMarginPositionStatus.ERROR_BORROW ||
       status === CreateMarginPositionStatus.ERROR_APPROVE_BORROW ||
       status === CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE,
@@ -379,48 +395,56 @@ export default function ReviewBorrowDialog({
             </div>
             {isFeeAndCollateralSame ? (
               <>
-                {values.collateralToken && (
-                  <ApproveAmountConfig
-                    amountToApprove={amountToApprove}
-                    setAmountToApprove={setAmountToApprove}
-                    minAmount={
-                      parseUnits(values.collateralAmount, values.collateralToken?.decimals ?? 18) +
-                      order.liquidationRewardAmount.value
-                    }
-                    isEditApproveActive={isEditApproveActive}
-                    setEditApproveActive={setEditApproveActive}
-                    asset={values.collateralToken}
-                  />
-                )}
-              </>
-            ) : (
-              <>
-                <>
-                  {values.collateralToken && (
+                {values.collateralToken &&
+                  !order.liquidationRewardAsset.isNative &&
+                  order.liquidationRewardAssetStandard === Standard.ERC20 && (
                     <ApproveAmountConfig
                       amountToApprove={amountToApprove}
                       setAmountToApprove={setAmountToApprove}
-                      minAmount={parseUnits(
-                        values.collateralAmount,
-                        values.collateralToken?.decimals ?? 18,
-                      )}
+                      minAmount={
+                        parseUnits(
+                          values.collateralAmount,
+                          values.collateralToken?.decimals ?? 18,
+                        ) + order.liquidationRewardAmount.value
+                      }
                       isEditApproveActive={isEditApproveActive}
                       setEditApproveActive={setEditApproveActive}
                       asset={values.collateralToken}
                     />
                   )}
+              </>
+            ) : (
+              <>
+                <>
+                  {values.collateralToken &&
+                    !values.collateralToken.isNative &&
+                    values.collateralTokenStandard === Standard.ERC20 && (
+                      <ApproveAmountConfig
+                        amountToApprove={amountToApprove}
+                        setAmountToApprove={setAmountToApprove}
+                        minAmount={parseUnits(
+                          values.collateralAmount,
+                          values.collateralToken?.decimals ?? 18,
+                        )}
+                        isEditApproveActive={isEditApproveActive}
+                        setEditApproveActive={setEditApproveActive}
+                        asset={values.collateralToken}
+                      />
+                    )}
                 </>
                 <>
-                  {values.collateralToken && (
-                    <ApproveAmountConfig
-                      amountToApprove={feeAmountToApprove}
-                      setAmountToApprove={setFeeAmountToApprove}
-                      minAmount={order.liquidationRewardAmount.value}
-                      isEditApproveActive={isEditApproveFeeActive}
-                      setEditApproveActive={setEditApproveFeeActive}
-                      asset={order.liquidationRewardAsset}
-                    />
-                  )}
+                  {values.collateralToken &&
+                    !order.liquidationRewardAsset.isNative &&
+                    order.liquidationRewardAssetStandard === Standard.ERC20 && (
+                      <ApproveAmountConfig
+                        amountToApprove={feeAmountToApprove}
+                        setAmountToApprove={setFeeAmountToApprove}
+                        minAmount={order.liquidationRewardAmount.value}
+                        isEditApproveActive={isEditApproveFeeActive}
+                        setEditApproveActive={setEditApproveFeeActive}
+                        asset={order.liquidationRewardAsset}
+                      />
+                    )}
                 </>
               </>
             )}
