@@ -1355,6 +1355,8 @@
     "loading": "Загрузка...",
     "lending_orders_count": "{count} кредитных заявок",
     "margin_positions_count": "{count} маржинальных позиций",
+    "deposit_amount_required": "Введите сумму депозита",
+    "deposit_currency_limit_reached": "Для этой позиции уже достигнут лимит валют",
     "positions_not_found": "Маржинальные позиции для этого адреса не найдены",
     "positions_here": "Здесь появятся ваши маржинальные позиции",
     "positions_connect": "Найдите адрес или подключите кошелёк, чтобы увидеть маржинальные позиции",

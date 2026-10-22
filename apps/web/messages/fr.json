@@ -1355,6 +1355,8 @@
     "loading": "Chargement...",
     "lending_orders_count": "{count} ordres de prêt",
     "margin_positions_count": "{count} positions sur marge",
+    "deposit_amount_required": "Saisissez un montant à déposer",
+    "deposit_currency_limit_reached": "Cette position a déjà atteint sa limite de devises",
     "positions_not_found": "Aucune position sur marge pour cette adresse",
     "positions_here": "Vos positions sur marge apparaîtront ici",
     "positions_connect": "Recherchez une adresse ou connectez votre portefeuille pour voir les positions sur marge",

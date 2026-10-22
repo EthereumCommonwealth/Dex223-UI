@@ -1355,6 +1355,8 @@
     "loading": "A carregar...",
     "lending_orders_count": "{count} ordens de empréstimo",
     "margin_positions_count": "{count} posições de margem",
+    "deposit_amount_required": "Introduza um montante para depositar",
+    "deposit_currency_limit_reached": "Esta posição já atingiu o limite de moedas",
     "positions_not_found": "Não foram encontradas posições de margem para este endereço",
     "positions_here": "As suas posições de margem vão aparecer aqui",
     "positions_connect": "Pesquise um endereço ou ligue a carteira para ver as posições de margem",
