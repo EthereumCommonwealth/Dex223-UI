@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Añadir dirección del monedero",
     "add_wallet": "Añadir monedero",
     "connect_wallet_placeholder": "Añade una dirección o conecta un monedero para ver la cartera",
+    "unsupported_network": "Este monedero está en una red que no es compatible. Cambia a una red compatible para ver saldos, posiciones y depósitos.",
     "select_wallet_placeholder": "Selecciona un monedero para ver esta cartera",
     "search_placeholder": "Buscar dirección de monedero",
     "balances_title": "Activos del monedero",
