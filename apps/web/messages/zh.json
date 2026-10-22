@@ -392,6 +392,7 @@
     "unknown": "未知",
     "margin_building": "保证金仓位页面正在建设中",
     "lending_building": "借贷订单页面正在建设中",
+    "info_label": "更多信息",
     "margin_tooltip": "这个数值是你所有活跃保证金仓位中资产的总和。这些资产在保证金模块智能合约里，所属仓位关闭之前无法提取。",
     "wallet_assets_tooltip": "这个数值是你全部资产余额的美元总和。不包括保证金余额。",
     "liquidity_tooltip": "这个数值是你在所有 DEX223 资金池合约中提供的流动性资产总和。",
