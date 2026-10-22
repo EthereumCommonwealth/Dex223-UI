@@ -392,6 +392,7 @@
     "unknown": "Desconocido",
     "margin_building": "La página de posiciones de margen está en construcción",
     "lending_building": "La página de órdenes de préstamo está en construcción",
+    "info_label": "Más información",
     "margin_tooltip": "Esta cifra es la suma de los activos de tus posiciones de margen activas. Esos activos están en el contrato del módulo de margen y no se pueden retirar hasta que se cierre la posición a la que pertenecen.",
     "wallet_assets_tooltip": "Esta cifra es la suma de tus saldos de activos, en USD. No incluye los saldos de margen.",
     "liquidity_tooltip": "Esta cifra es la suma de los activos que aportaste como liquidez en todos los contratos de pool de DEX223.",
