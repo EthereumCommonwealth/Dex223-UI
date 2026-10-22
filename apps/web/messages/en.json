@@ -1369,6 +1369,8 @@
     "orders_load_error": "Lending orders could not be loaded.",
     "orders_no_results": "No results found. Adjust your filters and try again",
     "orders_none_yet": "No lending orders yet",
+    "position_not_found": "This margin position could not be found",
+    "order_not_found": "This lending order could not be found",
     "positions_not_found": "No margin positions found for this address",
     "positions_here": "Your margin positions will appear here",
     "positions_connect": "Search by address or connect wallet to view margin positions",

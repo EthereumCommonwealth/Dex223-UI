@@ -1358,6 +1358,8 @@
     "orders_load_error": "无法加载借贷订单。",
     "orders_no_results": "未找到结果。请调整筛选条件后重试",
     "orders_none_yet": "暂无借贷订单",
+    "position_not_found": "未找到此保证金仓位",
+    "order_not_found": "未找到此借贷订单",
     "positions_not_found": "未找到该地址的保证金仓位",
     "positions_here": "你的保证金仓位会显示在这里",
     "positions_connect": "搜索地址或连接钱包以查看保证金仓位",

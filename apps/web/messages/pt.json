@@ -1358,6 +1358,8 @@
     "orders_load_error": "Não foi possível carregar as ordens de empréstimo.",
     "orders_no_results": "Nenhum resultado encontrado. Ajuste os filtros e tente novamente",
     "orders_none_yet": "Ainda não há ordens de empréstimo",
+    "position_not_found": "Esta posição de margem não foi encontrada",
+    "order_not_found": "Esta ordem de empréstimo não foi encontrada",
     "positions_not_found": "Não foram encontradas posições de margem para este endereço",
     "positions_here": "As suas posições de margem vão aparecer aqui",
     "positions_connect": "Pesquise um endereço ou ligue a carteira para ver as posições de margem",

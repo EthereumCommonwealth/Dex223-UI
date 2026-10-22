@@ -1358,6 +1358,8 @@
     "orders_load_error": "No se pudieron cargar las órdenes de préstamo.",
     "orders_no_results": "No se encontraron resultados. Ajusta los filtros e inténtalo de nuevo",
     "orders_none_yet": "Todavía no hay órdenes de préstamo",
+    "position_not_found": "No se ha encontrado esta posición de margen",
+    "order_not_found": "No se ha encontrado esta orden de préstamo",
     "positions_not_found": "No se encontraron posiciones de margen para esta dirección",
     "positions_here": "Tus posiciones de margen aparecerán aquí",
     "positions_connect": "Busca por dirección o conecta el monedero para ver las posiciones de margen",

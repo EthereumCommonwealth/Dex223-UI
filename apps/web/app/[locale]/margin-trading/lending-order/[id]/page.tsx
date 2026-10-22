@@ -13,6 +13,7 @@ import {
   InactiveMarginPositionCard,
   LendingPositionCard,
 } from "@/app/[locale]/margin-trading/components/MarginPositionCard";
+import MarginRecordMissing from "@/app/[locale]/margin-trading/components/MarginRecordMissing";
 import {
   OrderInfoBlock,
   OrderInfoCard,
@@ -56,7 +57,7 @@ export default function LendingOrder({
   const { id } = use(params);
   const { address } = useAccount();
 
-  const { order, loading, refetch } = useOrder({ id: +id });
+  const { order, loading, refetch, error } = useOrder({ id: +id });
   const [tokenForPortfolio, setTokenForPortfolio] = useState<Token | null>(null);
   const chainId = useCurrentChainId();
 
@@ -81,8 +82,17 @@ export default function LendingOrder({
       : [order?.allowedTradingAssets || [], false];
   }, [searchTradableTokenValue, order?.allowedTradingAssets]);
 
-  if (loading || !order) {
+  if (error) {
+    return <div className="text-24 p-5">{t("orders_load_error")}</div>;
+  }
+
+  if (loading) {
     return <div className="text-24 p-5">{t("order_loading")}</div>;
+  }
+  if (!order) {
+    return (
+      <MarginRecordMissing title={t("order_not_found")} backLabel={t("back_to_lending_orders")} />
+    );
   }
 
   return (
