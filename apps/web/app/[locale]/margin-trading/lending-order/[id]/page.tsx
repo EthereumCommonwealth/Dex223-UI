@@ -9,11 +9,11 @@ import SimpleBar from "simplebar-react";
 import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
-import MarginRecordMissing from "@/app/[locale]/margin-trading/components/MarginRecordMissing";
 import {
   InactiveMarginPositionCard,
   LendingPositionCard,
 } from "@/app/[locale]/margin-trading/components/MarginPositionCard";
+import MarginRecordMissing from "@/app/[locale]/margin-trading/components/MarginRecordMissing";
 import {
   OrderInfoBlock,
   OrderInfoCard,
@@ -87,10 +87,7 @@ export default function LendingOrder({
   }
   if (!order) {
     return (
-      <MarginRecordMissing
-        title={t("order_not_found")}
-        backLabel={t("back_to_lending_orders")}
-      />
+      <MarginRecordMissing title={t("order_not_found")} backLabel={t("back_to_lending_orders")} />
     );
   }
 
