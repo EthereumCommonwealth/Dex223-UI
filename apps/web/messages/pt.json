@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Adicionar endereço da carteira",
     "add_wallet": "Adicionar carteira",
     "connect_wallet_placeholder": "Adicione um endereço ou ligue uma carteira para ver o portfólio",
+    "balances_error": "Não foi possível carregar os saldos.",
     "unsupported_network": "Esta carteira está numa rede que não é suportada. Mude para uma rede suportada para ver saldos, posições e depósitos.",
     "select_wallet_placeholder": "Selecione uma carteira para ver este portfólio",
     "search_placeholder": "Pesquisar endereço de carteira",
