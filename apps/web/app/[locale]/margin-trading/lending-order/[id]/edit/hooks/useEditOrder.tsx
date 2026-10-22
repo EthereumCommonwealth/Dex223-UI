@@ -117,7 +117,6 @@ export default function useEditOrder() {
     loanAmount,
     liquidationFeeToken,
     liquidationFeeForLiquidator,
-    liquidationFeeForLender,
     liquidationMode,
     minimumBorrowingAmount,
     orderCurrencyLimit,
