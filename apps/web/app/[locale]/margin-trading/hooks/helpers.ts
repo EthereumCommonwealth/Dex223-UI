@@ -163,7 +163,7 @@ export function serializeGqlOrder(
       ),
     },
     balance: BigInt(balance),
-    positionDuration: duration,
+    positionDuration: Number(duration),
     liquidationRewardAsset: gqlTokenToCurrency(gqlOrder.liquidationRewardAssetToken, chainId),
     baseAsset: gqlTokenToCurrency(gqlOrder.baseAssetToken, chainId),
     baseAssetStandard:
