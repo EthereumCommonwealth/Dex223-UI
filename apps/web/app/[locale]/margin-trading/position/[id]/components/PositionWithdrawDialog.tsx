@@ -129,7 +129,7 @@ export default function PositionWithdrawDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-[min(600px,calc(100vw-2rem))] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <p className="text-secondary-text mb-4">{t("position_withdraw_hint")}</p>

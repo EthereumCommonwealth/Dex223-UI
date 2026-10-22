@@ -77,7 +77,7 @@ export default function LiquidateForm({ position }: { position: MarginPosition }
   const { expectedBalance, actualBalance } = usePositionStatus(position);
 
   return (
-    <div className="w-[600px] bg-primary-bg rounded-5 card-spacing-x card-spacing-b">
+    <div className="w-[min(600px,calc(100vw-2rem))] bg-primary-bg rounded-5 card-spacing-x card-spacing-b">
       <div className="h-[60px] mb-2.5 flex justify-between items-center -mx-3">
         <IconButton
           variant={IconButtonVariant.BACK}

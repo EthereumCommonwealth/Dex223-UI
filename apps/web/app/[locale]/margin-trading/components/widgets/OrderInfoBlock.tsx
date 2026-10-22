@@ -91,7 +91,13 @@ export function OrderInfoBlock({
   return (
     <div>
       <h3 className="text-20 font-medium mb-3 text-secondary-text">{title}</h3>
-      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${cards.length}, 1fr)` }}>
+      <div
+        className={clsx(
+          "grid gap-3",
+          cards.length === 2 && "sm:grid-cols-2",
+          cards.length >= 3 && "sm:grid-cols-2 xl:grid-cols-3",
+        )}
+      >
         {cards.map((card, index) => (
           <OrderInfoCard {...card} key={index} />
         ))}

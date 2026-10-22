@@ -10,9 +10,9 @@ export default function ActivePositionTimeframeBlock({ position }: { position: M
   const t = useTranslations("Margin");
 
   return (
-    <div className="bg-primary-bg rounded-5 px-10 pt-4 pb-5 flex flex-col gap-3 mb-5">
+    <div className="bg-primary-bg rounded-5 px-4 sm:px-10 pt-4 pb-5 flex flex-col gap-3 mb-5">
       <h3 className="text-20 text-secondary-text font-medium">{t("time_frame")}</h3>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <OrderInfoCard
           value={t("duration_days", {
             count: (position.deadline - position.createdAt) / 60 / 60 / 24,

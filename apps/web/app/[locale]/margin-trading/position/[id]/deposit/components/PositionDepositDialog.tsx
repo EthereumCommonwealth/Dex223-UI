@@ -208,7 +208,7 @@ export default function PositionDepositDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-[min(600px,calc(100vw-2rem))] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <ReadonlyTokenAmountCard
