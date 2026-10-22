@@ -35,9 +35,10 @@ export const LiquidityPositions = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const walletsWithPositions = walletsPositions.filter((wallet) => wallet.positions.length > 0);
 
   const currentTableData: WalletPositions[] = searchValue
-    ? walletsPositions
+    ? walletsWithPositions
         .map((value) => {
           const positions = value.positions.filter(({ tokenId }) => {
             if (!tokenId) return false;
@@ -50,7 +51,7 @@ export const LiquidityPositions = ({
           };
         })
         .filter((value) => !!value)
-    : walletsPositions;
+    : walletsWithPositions;
 
   return (
     <>
@@ -80,7 +81,11 @@ export const LiquidityPositions = ({
                   <span className="text-14 lg:text-16 text-secondary-text">
                     {t("provided_liq_balance")}
                   </span>
-                  <Tooltip iconSize={20} text={t("liquidity_tooltip")} />
+                  <Tooltip
+                    iconSize={20}
+                    triggerLabel={t("info_label")}
+                    text={t("liquidity_tooltip")}
+                  />
                 </div>
                 <span className="text-24 lg:text-32 font-medium">$ —</span>
               </>
@@ -137,7 +142,7 @@ export const LiquidityPositions = ({
               </Button>
             </Link>
 
-            {currentTableData.length > 0 && (
+            {(currentTableData.length > 0 || searchValue.length > 0) && (
               <SearchInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -160,7 +165,7 @@ export const LiquidityPositions = ({
             <LiquidityPositionsDesktopTable tableData={currentTableData} isLoading={loading} />
             <LiquidityPositionsMobileTable tableData={currentTableData} />
           </>
-        ) : Boolean(searchValue) ? (
+        ) : Boolean(searchValue) && !loading ? (
           <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-pools bg-right-top bg-no-repeat max-md:bg-size-180">
             <span className="text-secondary-text">{t("liq_not_found")}</span>
           </div>
