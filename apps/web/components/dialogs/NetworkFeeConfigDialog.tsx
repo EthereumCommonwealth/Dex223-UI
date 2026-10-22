@@ -86,7 +86,7 @@ function getInitialCustomValue(
 type HandleApplyArgs =
   | { option: GasOption.CHEAP }
   | { option: GasOption.FAST }
-  | { option: GasOption.CUSTOM; gasSettings: GasSettings; gasLimit: bigint };
+  | { option: GasOption.CUSTOM; gasSettings: GasSettings };
 
 const gasOptionTooltipKey: Record<GasOption, "cheap_tooltip" | "fast_tooltip" | "custom_tooltip"> =
   {
@@ -214,6 +214,14 @@ function NetworkFeeDialogContent({
       gasLimit: customGasLimit ? customGasLimit.toString() : estimatedGas.toString(),
     },
     onSubmit: (values, formikHelpers) => {
+      const useCustomGasLimit =
+        isAdvanced && values.gasPriceOption === GasOption.CUSTOM && estimatedGas > 0n;
+      if (
+        useCustomGasLimit &&
+        (!/^\d+$/.test(values.gasLimit) || BigInt(values.gasLimit) < estimatedGas)
+      )
+        return;
+
       if (values.gasPriceOption !== GasOption.CUSTOM) {
         handleApply({ option: values.gasPriceOption });
       } else {
@@ -228,7 +236,6 @@ function NetworkFeeDialogContent({
               maxFeePerGas: parseGwei(values.maxFeePerGas),
               maxPriorityFeePerGas: parseGwei(values.maxPriorityFeePerGas),
             },
-            gasLimit: BigInt(values.gasLimit),
           });
           // }
         } else {
@@ -240,16 +247,13 @@ function NetworkFeeDialogContent({
                 model: GasFeeModel.LEGACY,
                 gasPrice: parseGwei(values.gasPrice),
               },
-              gasLimit: BigInt(values.gasLimit),
             });
           }
           // }
         }
-
-        if (isAdvanced) {
-          setCustomGasLimit(BigInt(values.gasLimit));
-        }
       }
+      // An unavailable estimate leaves gas-limit estimation to the wallet.
+      setCustomGasLimit(useCustomGasLimit ? BigInt(values.gasLimit) : undefined);
 
       setIsOpen(false);
       addToast(tSwap("settings_applied"));
@@ -271,7 +275,10 @@ function NetworkFeeDialogContent({
     maxFeePerGas: values.maxFeePerGas,
     maxPriorityFeePerGas: values.maxPriorityFeePerGas,
     gasPrice: values.gasPrice,
-    gasLimit: values.gasLimit,
+    gasLimit:
+      isAdvanced && values.gasPriceOption === GasOption.CUSTOM
+        ? values.gasLimit
+        : estimatedGas.toString(),
     estimatedGas,
   });
 
@@ -304,23 +311,32 @@ function NetworkFeeDialogContent({
 
   const { price } = useUSDPrice(wrappedTokens[chainId]?.address0);
 
-  console.log(price);
-  console.log(estimatedGas);
-
   return (
     <form className="max-md:h-[calc(100%-60px)]" onSubmit={handleSubmit}>
       <div className="max-md:h-[calc(100%-80px)] overflow-auto flex flex-col gap-2 card-spacing-x">
         {gasOptions.map((_gasOption) => {
-          const gasPriceETH = formatFloat(formatEther(getGasPriceGwei(_gasOption) * estimatedGas));
-
-          const gasPriceUSD = price
-            ? `~ $${formatFloat(price * +gasPriceETH)}`
-            : t("unknown_price");
+          const gasPriceGwei = getGasPriceGwei(_gasOption);
+          const gasLimit =
+            _gasOption === GasOption.CUSTOM && isAdvanced && /^\d+$/.test(values.gasLimit)
+              ? BigInt(values.gasLimit)
+              : estimatedGas;
+          const gasPriceETH =
+            estimatedGas > 0n && gasLimit > 0n && gasPriceGwei > 0n
+              ? formatFloat(formatEther(gasPriceGwei * gasLimit))
+              : undefined;
+          const gasPriceUSD =
+            price && gasPriceETH !== undefined
+              ? `~ $${formatFloat(price * +gasPriceETH)}`
+              : t("unknown_price");
           return (
             <GasOptionRadioButton
               key={_gasOption}
-              gasPriceGWEI={`${formatFloat(formatGwei(getGasPriceGwei(_gasOption)))} GWEI`}
-              gasPriceCurrency={`${gasPriceETH} ${nativeCurrency.symbol}`}
+              gasPriceGWEI={
+                gasPriceGwei > 0n ? `${formatFloat(formatGwei(gasPriceGwei))} GWEI` : "—"
+              }
+              gasPriceCurrency={
+                gasPriceETH !== undefined ? `${gasPriceETH} ${nativeCurrency.symbol}` : "—"
+              }
               gasPriceUSD={gasPriceUSD}
               tooltipText={t(gasOptionTooltipKey[_gasOption])}
               title={t(gasOptionTitleKey[_gasOption])}

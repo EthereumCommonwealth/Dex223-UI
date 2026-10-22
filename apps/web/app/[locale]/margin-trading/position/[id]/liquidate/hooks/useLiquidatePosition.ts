@@ -1,6 +1,8 @@
 import { useCallback } from "react";
 import { usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+
 import {
   PositionLiquidateStatus,
   usePositionLiquidateStatusStore,
@@ -15,6 +17,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("liquidatePosition");
 
   const { setStatus, setPositionLiquidateHash, setPositionFreezeHash } =
     usePositionLiquidateStatusStore();
@@ -37,6 +40,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
       address: MARGIN_TRADING_ADDRESS[chainId],
       functionName: "liquidate",
       args: [BigInt(position.id), position.order.owner],
+      ...gasOverrides,
     });
     setStatus(PositionLiquidateStatus.LOADING_FREEZE);
     setPositionFreezeHash(positionFreezeHash);
@@ -49,6 +53,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
         address: MARGIN_TRADING_ADDRESS[chainId],
         functionName: "liquidate",
         args: [BigInt(position.id), position.order.owner],
+        ...gasOverrides,
       });
       setPositionLiquidateHash(positionLiquidateHash);
       setStatus(PositionLiquidateStatus.LOADING_LIQUIDATE);
@@ -67,6 +72,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
     }
   }, [
     chainId,
+    gasOverrides,
     position,
     publicClient,
     setPositionFreezeHash,

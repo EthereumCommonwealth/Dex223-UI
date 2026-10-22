@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Address,
   encodeAbiParameters,
@@ -18,20 +18,15 @@ import {
 } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/stores/useEditOrderStatusStore";
 import { OrderDepositStatus } from "@/app/[locale]/margin-trading/lending-order/[id]/stores/useDepositOrderStatusStore";
 import { TradingTokensInputMode } from "@/app/[locale]/margin-trading/lending-order/create/steps/types";
-import {
-  useCreateOrderGasLimitStore,
-  useCreateOrderGasPriceStore,
-} from "@/app/[locale]/margin-trading/lending-order/create/stores/useSwapGasSettingsStore";
 import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
-import { getGasSettings } from "@/functions/gasSettings";
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
 import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS } from "@/sdk_bi/addresses";
-import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import {
   GasFeeModel,
   RecentTransactionTitleTemplate,
@@ -106,9 +101,7 @@ export default function useEditOrder() {
 
   const { addRecentTransaction } = useRecentTransactionsStore();
 
-  const { customGasLimit } = useCreateOrderGasLimitStore();
-  const { gasPriceOption, gasPriceSettings } = useCreateOrderGasPriceStore();
-  const { baseFee, priorityFee, gasPrice } = useGlobalFees();
+  const { gas: customGasLimit, ...gasSettings } = useMarginWriteGas("editOrder");
   const {
     tradingTokens,
     loanToken,
@@ -126,17 +119,6 @@ export default function useEditOrder() {
     leverage,
     priceSource,
   } = useEditOrderParams();
-
-  const gasSettings = useMemo(() => {
-    return getGasSettings({
-      baseFee,
-      chainId,
-      gasPrice,
-      priorityFee,
-      gasPriceOption,
-      gasPriceSettings,
-    });
-  }, [baseFee, chainId, gasPrice, priorityFee, gasPriceOption, gasPriceSettings]);
 
   const { address } = useAccount();
   useEffect(() => {
@@ -229,6 +211,8 @@ export default function useEditOrder() {
           address: MARGIN_TRADING_ADDRESS[chainId],
           functionName: "multicall",
           args: [actionsToUpdate],
+          ...(gasSettings ?? {}),
+          ...(customGasLimit ? { gas: customGasLimit } : {}),
           account: undefined,
         });
         setStatus(EditOrderStatus.LOADING_MODIFY);
@@ -287,6 +271,8 @@ export default function useEditOrder() {
       addRecentTransaction,
       address,
       chainId,
+      customGasLimit,
+      gasSettings,
       interestRatePerMonth,
       leverage,
       liquidationFeeForLiquidator,

@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { Address, getAbiItem, parseUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import {
   OrderDepositStatus,
   useDepositOrderStatusStore,
@@ -37,6 +38,7 @@ export default function useOrderDeposit({
   const { setStatus, setDepositHash, setApproveHash, setTransferHash } =
     useDepositOrderStatusStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("depositOrder");
   const { data: walletClient } = useWalletClient();
 
   const { address } = useAccount();
@@ -77,6 +79,7 @@ export default function useOrderDeposit({
         };
 
         const depositOrderHash = await walletClient.writeContract({
+          ...gasOverrides,
           ...nativeParams,
           account: undefined,
         });
@@ -129,7 +132,15 @@ export default function useOrderDeposit({
             setStatus(OrderDepositStatus.PENDING_APPROVE);
             const approveResult = await approveA({
               customAmount: parseUnits(amountToApprove, currency.decimals ?? 18),
-              // customGasSettings: gasSettings,
+              customGasSettings:
+                "gasPrice" in gasOverrides
+                  ? { gasPrice: gasOverrides.gasPrice }
+                  : "maxFeePerGas" in gasOverrides
+                    ? {
+                        maxFeePerGas: gasOverrides.maxFeePerGas,
+                        maxPriorityFeePerGas: gasOverrides.maxPriorityFeePerGas,
+                      }
+                    : undefined,
             });
 
             if (!approveResult?.success) {
@@ -163,6 +174,7 @@ export default function useOrderDeposit({
           };
 
           const _firstDepositHash = await walletClient.writeContract({
+            ...gasOverrides,
             ..._params,
             account: undefined,
           });
@@ -220,6 +232,7 @@ export default function useOrderDeposit({
 
         try {
           const depositOrderHash = await walletClient.writeContract({
+            ...gasOverrides,
             ...params,
             account: undefined,
           });
@@ -277,6 +290,7 @@ export default function useOrderDeposit({
       amount,
       approveA,
       chainId,
+      gasOverrides,
       currency,
       isAllowedA,
       orderId,

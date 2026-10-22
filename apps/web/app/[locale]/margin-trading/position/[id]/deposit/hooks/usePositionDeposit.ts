@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { Address, getAbiItem, parseUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+
 import { OrderDepositStatus } from "@/app/[locale]/margin-trading/lending-order/[id]/stores/useDepositOrderStatusStore";
 import {
   PositionDepositStatus,
@@ -39,6 +41,7 @@ export default function usePositionDeposit({
   const { setStatus, setDepositHash, setApproveHash, setTransferHash } =
     useDepositPositionStatusStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("depositPosition");
   const { data: walletClient } = useWalletClient();
 
   const publicClient = usePublicClient();
@@ -105,6 +108,7 @@ export default function usePositionDeposit({
 
         const _firstDepositHash = await walletClient.writeContract({
           ..._params,
+          ...gasOverrides,
           account: undefined,
         });
         setStatus(PositionDepositStatus.LOADING_TRANSFER);
@@ -168,6 +172,7 @@ export default function usePositionDeposit({
           ),
           parseUnits(amount, currency.decimals ?? 18),
         ],
+        ...gasOverrides,
         account: undefined,
       });
       setStatus(PositionDepositStatus.LOADING_DEPOSIT);
@@ -186,6 +191,7 @@ export default function usePositionDeposit({
       amount,
       approveA,
       chainId,
+      gasOverrides,
       currency.decimals,
       currency.wrapped.address0,
       position.assetAddresses,

@@ -2,6 +2,8 @@ import { useCallback } from "react";
 import { encodeFunctionData, parseUnits } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+
 import { calculateInterestRate } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/hooks/useEditOrder";
 import {
   PositionWithdrawStatus,
@@ -17,6 +19,7 @@ import { Currency } from "@/sdk_bi/entities/currency";
 export default function usePositionWithdraw({ position }: { position: MarginPosition }) {
   const { setStatus } = useWithdrawPositionStatusStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("withdrawPosition");
   const { data: walletClient } = useWalletClient();
 
   const publicClient = usePublicClient();
@@ -48,6 +51,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
         });
 
       const withdrawPositionHash = await walletClient.writeContract({
+        ...gasOverrides,
         abi: MARGIN_MODULE_ABI,
         address: MARGIN_TRADING_ADDRESS[chainId],
         functionName: "multicall",
@@ -69,7 +73,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     }
 
     return;
-  }, [chainId, position.assetsWithBalances, position.id, publicClient, setStatus, walletClient]);
+  }, [chainId, gasOverrides, position.assetsWithBalances, position.id, publicClient, setStatus, walletClient]);
 
   return { handlePositionWithdraw };
 }

@@ -2,6 +2,8 @@ import { useCallback, useMemo } from "react";
 import { Address, getAbiItem, parseEventLogs, parseUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+
 import { useCreateMarginPositionConfigStore } from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/stores/useCreateMarginPositionConfigStore";
 import {
   CreateMarginPositionStatus,
@@ -164,6 +166,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("borrow");
   const { address } = useAccount();
   const { setPositionId } = useNewlyCreatedPositionId();
 
@@ -256,6 +259,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
 
         const _firstDepositHash = await walletClient.writeContract({
           ..._params,
+          ...gasOverrides,
           account: undefined,
         });
         setStatus(CreateMarginPositionStatus.LOADING_TRANSFER);
@@ -356,6 +360,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
       };
       const takeLoanHash = await walletClient.writeContract({
         ...params,
+        ...gasOverrides,
         account: undefined,
       });
 
@@ -418,6 +423,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
       }
     },
     [
+      gasOverrides,
       values,
       walletClient,
       publicClient,

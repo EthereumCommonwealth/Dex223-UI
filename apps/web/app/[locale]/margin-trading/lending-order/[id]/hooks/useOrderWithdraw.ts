@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { getAbiItem, parseUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import {
   OrderWithdrawStatus,
   useWithdrawOrderStatusStore,
@@ -31,6 +32,7 @@ export default function useOrderWithdraw({
 }) {
   const { setStatus, setWithdrawHash } = useWithdrawOrderStatusStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("withdrawOrder");
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
 
@@ -58,6 +60,7 @@ export default function useOrderWithdraw({
 
     try {
       const withdrawHash = await walletClient.writeContract({
+        ...gasOverrides,
         ...params,
         account: undefined,
       });
@@ -111,6 +114,7 @@ export default function useOrderWithdraw({
 
     return;
   }, [
+    gasOverrides,
     addRecentTransaction,
     address,
     amountToWithdraw,

@@ -36,7 +36,7 @@ import IconButton, {
   IconButtonVariant,
   IconSize,
 } from "@/components/buttons/IconButton";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
 import { ORACLE_ABI } from "@/config/abis/oracle";
@@ -851,7 +851,7 @@ export default function BorrowPage({
                     href={`/${locale}/margin-trading/lending-order/${orderId}`}
                   />
                 </div>
-                <GasSettingsBlock />
+                <MarginGasSettings operation="borrow" />
                 {/*<pre>{JSON.stringify(errors, null, 2)}</pre>*/}
 
                 <Button

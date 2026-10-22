@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { getAbiItem } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import {
   OpenOrderStatus,
   useOpenOrderStatusStore,
@@ -27,6 +28,7 @@ export default function useOrderOpen({ order }: { order: LendingOrder }) {
   const publicClient = usePublicClient();
   const { addRecentTransaction } = useRecentTransactionsStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("openOrder");
   const { address } = useAccount();
 
   const handleOrderOpen = useCallback(
@@ -50,6 +52,7 @@ export default function useOrderOpen({ order }: { order: LendingOrder }) {
         };
 
         const hash = await walletClient.writeContract({
+          ...gasOverrides,
           ...params,
         });
 
@@ -110,6 +113,7 @@ export default function useOrderOpen({ order }: { order: LendingOrder }) {
       setOpenOrderHash,
       addRecentTransaction,
       chainId,
+      gasOverrides,
       order.baseAsset.symbol,
       order.baseAsset?.logoURI,
       setErrorType,

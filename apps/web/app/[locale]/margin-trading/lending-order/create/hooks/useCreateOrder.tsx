@@ -116,7 +116,8 @@ export default function useCreateOrder() {
   const { setOrderId } = useNewlyCreatedOrderId();
 
   const { address } = useAccount();
-  const { customGasLimit } = useCreateOrderGasLimitStore();
+  const { customGasLimit: configuredGasLimit, estimatedGas } = useCreateOrderGasLimitStore();
+  const customGasLimit = estimatedGas > 0n ? configuredGasLimit : undefined;
   const { gasPriceOption, gasPriceSettings } = useCreateOrderGasPriceStore();
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
   const {
@@ -239,6 +240,8 @@ export default function useCreateOrder() {
 
       const addTokenListAndCreateOrderHash = await walletClient.writeContract({
         ...multicallParams,
+        ...(gasSettings ?? {}),
+        ...(customGasLimit ? { gas: customGasLimit } : {}),
         account: undefined,
       });
 
@@ -312,6 +315,8 @@ export default function useCreateOrder() {
 
           const depositOrderHash = await walletClient.writeContract({
             ...nativeParams,
+            ...(gasSettings ?? {}),
+            ...(customGasLimit ? { gas: customGasLimit } : {}),
             account: undefined,
           });
           setStatus(CreateOrderStatus.LOADING_DEPOSIT);
@@ -360,7 +365,7 @@ export default function useCreateOrder() {
             setStatus(CreateOrderStatus.PENDING_APPROVE);
             const approveResult = await approveA({
               customAmount: parseUnits(amountToApprove, params.loanToken.decimals ?? 18),
-              // customGasSettings: gasSettings,
+              customGasSettings: gasSettings,
             });
 
             if (!approveResult?.success) {
@@ -394,6 +399,8 @@ export default function useCreateOrder() {
 
             const _firstDepositHash = await walletClient.writeContract({
               ..._params,
+              ...(gasSettings ?? {}),
+              ...(customGasLimit ? { gas: customGasLimit } : {}),
               account: undefined,
             });
             setStatus(CreateOrderStatus.LOADING_TRANSFER);
@@ -451,6 +458,8 @@ export default function useCreateOrder() {
               createOrderLog.args.orderId,
               parseUnits(loanAmount, params.loanToken.decimals ?? 18),
             ],
+            ...(gasSettings ?? {}),
+            ...(customGasLimit ? { gas: customGasLimit } : {}),
             account: undefined,
           });
           setStatus(CreateOrderStatus.LOADING_DEPOSIT);
@@ -511,6 +520,8 @@ export default function useCreateOrder() {
       approveA,
       chainId,
       collateralTokens,
+      customGasLimit,
+      gasSettings,
       interestRatePerMonth,
       leverage,
       liquidationFeeForLiquidator,

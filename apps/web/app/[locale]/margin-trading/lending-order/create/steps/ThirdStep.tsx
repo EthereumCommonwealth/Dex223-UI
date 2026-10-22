@@ -5,6 +5,7 @@ import React from "react";
 import { formatEther, formatGwei } from "viem";
 import * as Yup from "yup";
 
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import LiquidationFeeConfig from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationFeeConfig";
 import LiquidationInitiatorSelect from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationInitiatorSelect";
 import LiquidationOracleSelect from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationOracleSelect";
@@ -17,7 +18,6 @@ import { OrderActionMode, OrderActionStep } from "@/app/[locale]/margin-trading/
 import { InputWithArrows } from "@/components/atoms/Input";
 import TextField from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import { formatFloat } from "@/functions/formatFloat";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 
@@ -114,7 +114,9 @@ export default function ThirdStep({
           />
           <LiquidationOracleSelect />
 
-          <GasSettingsBlock />
+          <MarginGasSettings
+            operation={mode === OrderActionMode.CREATE ? "createOrder" : "editOrder"}
+          />
 
           {/*<pre>{JSON.stringify(errors, null, 2)}</pre>*/}
 

@@ -39,15 +39,16 @@ export default function GasLimitField({
   return (
     <>
       <TextField
+        disabled={estimatedGas <= 0n}
         colorScheme={colorScheme}
         isNumeric
         decimalScale={0}
-        placeholder={t("gas_limit")}
+        placeholder={estimatedGas > 0n ? t("gas_limit") : t("configure_automatically")}
         label={t("gas_limit")}
         name="gasLimit"
         id="gasLimit"
         tooltipText={t("gas_limit_tooltip")}
-        value={value}
+        value={estimatedGas > 0n ? value : ""}
         onChange={onChange}
         onBlur={onBlur}
         isError={!!gasLimitError}
@@ -55,8 +56,9 @@ export default function GasLimitField({
           <div className="flex items-center gap-1">
             <button
               type="button"
+              disabled={estimatedGas <= 0n}
               onClick={(e) => {
-                setFieldValue(estimatedGas ? estimatedGas.toString() : "100000");
+                setFieldValue(estimatedGas.toString());
               }}
               className={
                 {
@@ -67,7 +69,7 @@ export default function GasLimitField({
             >
               {t("estimated")}
             </button>{" "}
-            {estimatedGas ? estimatedGas?.toString() : 100000} Gwei
+            {estimatedGas > 0n ? estimatedGas.toString() : "—"}
           </div>
         }
         inputSize={InputSize.DEFAULT}

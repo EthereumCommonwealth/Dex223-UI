@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { getAbiItem } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import {
   PositionCloseStatus,
   usePositionCloseStatusStore,
@@ -22,6 +23,7 @@ import {
 export default function usePositionClose({ position }: { position: MarginPosition }) {
   const { setStatus, setPositionCloseHash } = usePositionCloseStatusStore();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("closePosition");
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
   const publicClient = usePublicClient();
@@ -47,6 +49,7 @@ export default function usePositionClose({ position }: { position: MarginPositio
     };
 
     const closePositionHash = await walletClient.writeContract({
+      ...gasOverrides,
       ...params,
       account: undefined,
     });
@@ -95,6 +98,7 @@ export default function usePositionClose({ position }: { position: MarginPositio
 
     return;
   }, [
+    gasOverrides,
     addRecentTransaction,
     address,
     chainId,
