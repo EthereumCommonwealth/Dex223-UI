@@ -1,5 +1,6 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
+import { ServerError, ServerParseError } from "@apollo/client";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
@@ -464,6 +465,11 @@ export default function PoolsTable({
     filter,
   });
   const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(chainId);
+  // The Graph's WAF answers some search text (e.g. "or 1=1") with a 403 before the
+  // query runs. Treat that as no matching pools instead of a load failure.
+  const searchBlocked =
+    Boolean(filter?.searchString) &&
+    (error?.networkError as ServerError | ServerParseError | undefined)?.statusCode === 403;
 
   const poolAddresses = useMemo(
     () =>
@@ -546,7 +552,7 @@ export default function PoolsTable({
           </div>
         )}
         <>
-          {error && pools.length === 0 ? (
+          {error && !searchBlocked && pools.length === 0 ? (
             <div className="min-h-[340px] bg-primary-bg flex flex-col gap-4 items-center justify-center w-full rounded-5 px-4 text-center">
               <p className="text-secondary-text">{t("pools_load_error")}</p>
               <Button
