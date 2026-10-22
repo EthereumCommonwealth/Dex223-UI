@@ -185,15 +185,15 @@ const ManageWalletsContent = ({
   setSearchValue: (value: string) => void;
 }) => {
   const tWallet = useTranslations("Wallet");
+  const tA11y = useTranslations("A11y");
   const t = useTranslations("Portfolio");
   const { isConnected } = useAccount();
   const { disconnect } = useDisconnect();
 
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
   const {
-    setAllWalletActive,
+    setEveryWalletActive,
     removeWallet,
-    isAllWalletActive,
     showFromSearch,
     setShowFromSearch,
     addWallet,
@@ -201,6 +201,7 @@ const ManageWalletsContent = ({
   } = usePortfolioStore();
 
   const { wallets, setIsWalletActive } = usePortfolioWallets();
+  const allSelected = wallets.length > 0 && wallets.every((wallet) => wallet.isActive);
   const [content, setContent] = useState<ManageWalletsPopoverContent>(
     wallets.length || showFromSearch ? "list" : "add",
   );
@@ -349,9 +350,9 @@ const ManageWalletsContent = ({
               <div className="flex justify-between text-secondary-text text-16 font-medium px-4 md:px-5">
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
-                  onClick={() => setAllWalletActive()}
+                  onClick={() => setEveryWalletActive(!allSelected)}
                 >
-                  {isAllWalletActive ? t("deselect_all") : t("select_all")}
+                  {allSelected ? t("deselect_all") : t("select_all")}
                 </span>
                 <span
                   className="py-2 cursor-pointer hocus:text-green-hover"
@@ -382,7 +383,7 @@ const ManageWalletsContent = ({
                     handleChange={(event) => {
                       setIsWalletActive(address, event.target.checked);
                     }}
-                    id="isActive"
+                    id={`wallet-active-${address}`}
                   />
                   <Image
                     width={40}
@@ -452,6 +453,7 @@ const ManageWalletsContent = ({
                   {isConnectedWallet ? (
                     <IconButton
                       iconName="logout"
+                      aria-label={tA11y("disconnect")}
                       className="text-secondary-text"
                       variant={IconButtonVariant.BACK}
                       onClick={() => {
@@ -569,6 +571,7 @@ export function Portfolio() {
 
   const { activeTab, setActiveTab } = usePortfolioActiveTabStore();
   const { showFromSearch, hasSearchWallet, addWallet } = usePortfolioStore();
+  const { wallets } = usePortfolioWallets();
   const [searchValue, setSearchValue] = useState("");
 
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
@@ -658,10 +661,12 @@ export function Portfolio() {
               ) : (
                 <div className="min-h-[72px] md:min-h-[40px] flex flex-col items-start md:flex-row md:items-center gap-3 w-full relative -mt-5 md:mt-0 pt-1 pb-4 md:py-0 px-4 lg:px-5 lg:pb-0">
                   <span className="text-secondary-text flex pr-[80px] md:pr-0 md:w-full md:mr-auto text-16 items-center">
-                    {t("connect_wallet_placeholder")}
+                    {wallets.length > 0
+                      ? t("select_wallet_placeholder")
+                      : t("connect_wallet_placeholder")}
                   </span>
                   {/* The obvious next step: open the same connect flow as the header button. */}
-                  {!isConnected && (
+                  {wallets.length === 0 && !isConnected && (
                     <Button
                       size={ButtonSize.MEDIUM}
                       colorScheme={ButtonColor.LIGHT_GREEN}
