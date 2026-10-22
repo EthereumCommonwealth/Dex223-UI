@@ -35,16 +35,14 @@ import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePortfolioSearchParams } from "@/hooks/usePortfolioSearchParams";
 import { useTokens } from "@/hooks/useTokenLists";
-import { useUSDPrice } from "@/hooks/useUSDPrice";
 import addToast from "@/other/toast";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
 import { Balances } from "./components/Balances";
 import { LendingOrders } from "./components/LendingOrders";
 import { LiquidityPositions } from "./components/LiquidityPositions";
 import { MarginPositions } from "./components/MarginPositions";
 import { usePortfolioNetworkSupported } from "./lib/network";
-import { formatPortfolioUsd, walletHoldingsUsd } from "./lib/usd";
+import { formatPortfolioUsd, usePortfolioPrices, walletHoldingsUsd } from "./lib/usd";
 import { useActiveWalletBalances } from "./stores/balances.hooks";
 import { useActiveAddresses, usePortfolioWallets } from "./stores/hooks";
 import {
@@ -55,7 +53,7 @@ import {
 import { useWalletsBalances } from "./stores/useWalletsBalances";
 
 function WalletUsd({ address }: { address: string }) {
-  const prices = useUSDPriceStore((state) => state.prices);
+  const prices = usePortfolioPrices();
   const balances = useWalletsBalances((state) => state.balances);
   const tokens = useTokens();
   const value = useMemo(() => {
@@ -593,7 +591,6 @@ export function Portfolio() {
   const [searchValue, setSearchValue] = useState("");
 
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
-  useUSDPrice(undefined);
   // One poller for the whole page; the sections read the shared store. Nothing is
   // fetched on a network this build does not support.
   useActiveWalletBalances({ searchValue, setSearchValue, enabled: networkSupported });

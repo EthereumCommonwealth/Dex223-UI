@@ -15,9 +15,8 @@ import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolio
 import { formatFloat } from "@/functions/formatFloat";
 import usePositions from "@/hooks/usePositions";
 import { Currency } from "@/sdk_bi/entities/currency";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
-import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
+import { formatPortfolioUsd, holdingsUsd, tokenUsdPrice, usePortfolioPrices } from "../../lib/usd";
 import { useActiveWalletBalances } from "../../stores/balances.hooks";
 import { BalancesDesktopTable, BalancesMobileTable } from "./BalancesTable";
 
@@ -57,7 +56,7 @@ export const Balances = ({
   };
 
   const { positions } = usePositions();
-  const prices = useUSDPriceStore((state) => state.prices);
+  const prices = usePortfolioPrices();
   // The page polls balances; this call only reads the shared store.
   const { tokenBalances, activeAddresses, isInitialLoading, hasError, hasBalanceData } =
     useActiveWalletBalances({
@@ -71,15 +70,25 @@ export const Balances = ({
     setSearchValue: setAddressSearch,
   });
 
-  const rowsWithUsd = tokenBalances.map((row) => ({
-    ...row,
-    usd: combineUsd([
-      holdingUsd(prices, row.token, row.amountERC20 || BigInt(0)),
-      holdingUsd(prices, row.token, row.amountERC223 || BigInt(0)),
-    ]),
-  }));
+  const rowsWithUsd = tokenBalances.map((row) => {
+    const holdings = [
+      { token: row.token, amount: row.amountERC20 || BigInt(0) },
+      { token: row.token, amount: row.amountERC223 || BigInt(0) },
+    ];
+    return {
+      ...row,
+      holdings,
+      // A row with no price shows "–" even when empty, never $0.00.
+      usd: tokenUsdPrice(prices, row.token) === null ? null : holdingsUsd(prices, holdings),
+    };
+  });
   const walletTotalUsd =
-    isInitialLoading || !hasBalanceData ? null : combineUsd(rowsWithUsd.map((row) => row.usd));
+    isInitialLoading || !hasBalanceData
+      ? null
+      : holdingsUsd(
+          prices,
+          rowsWithUsd.flatMap((row) => row.holdings),
+        );
 
   const currentTableData = rowsWithUsd
     .filter((value) => filterTable({ searchValue, value }))
@@ -104,13 +113,15 @@ export const Balances = ({
 
   const depositedTotalUsd = useMemo(() => {
     if (isLoading) return null;
-    const values: Array<number | null> = [];
-    for (const walletDeposites of deposites) {
-      for (const deposite of walletDeposites.deposites) {
-        values.push(holdingUsd(prices, deposite.token, deposite.deposited));
-      }
-    }
-    return combineUsd(values);
+    return holdingsUsd(
+      prices,
+      deposites.flatMap((walletDeposites) =>
+        walletDeposites.deposites.map((deposite) => ({
+          token: deposite.token,
+          amount: deposite.deposited,
+        })),
+      ),
+    );
   }, [deposites, isLoading, prices]);
 
   return (

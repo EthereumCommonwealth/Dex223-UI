@@ -13,9 +13,14 @@ import Svg from "@/components/atoms/Svg";
 import Button, { ButtonSize } from "@/components/buttons/Button";
 import { PositionInfo, usePositionFromPositionInfo } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
-import { combineUsd, formatPortfolioUsd, positionValueUsd } from "../../lib/usd";
+import {
+  combineUsd,
+  formatPortfolioUsd,
+  PortfolioPrices,
+  positionValueUsd,
+  usePortfolioPrices,
+} from "../../lib/usd";
 import { useActiveWalletsPositions } from "../../stores/positions.hooks";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 import {
@@ -25,13 +30,14 @@ import {
 
 function PositionValueReporter({
   positionInfo,
+  prices,
   onValue,
 }: {
   positionInfo: PositionInfo;
+  prices: PortfolioPrices;
   onValue: (id: string, value: number | null) => void;
 }) {
   const position = usePositionFromPositionInfo(positionInfo);
-  const prices = useUSDPriceStore((state) => state.prices);
   const id = positionInfo.tokenId?.toString() ?? "";
   const value = positionValueUsd(prices, position);
 
@@ -58,6 +64,7 @@ export const LiquidityPositions = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const prices = usePortfolioPrices();
   const [positionValues, setPositionValues] = useState<Record<string, number | null | undefined>>(
     {},
   );
@@ -102,6 +109,7 @@ export const LiquidityPositions = ({
           <PositionValueReporter
             key={position.tokenId?.toString()}
             positionInfo={position}
+            prices={prices}
             onValue={onPositionValue}
           />
         )),

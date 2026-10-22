@@ -15,15 +15,25 @@ import {
   usePositionRangeStatus,
 } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
-import { formatPortfolioUsd, positionFeesUsd, positionValueUsd } from "../../lib/usd";
+import {
+  formatPortfolioUsd,
+  PortfolioPrices,
+  positionFeesUsd,
+  positionValueUsd,
+  usePortfolioPrices,
+} from "../../lib/usd";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 
-const PositionTableItemDesktop = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+const PositionTableItemDesktop = ({
+  positionInfo,
+  prices,
+}: {
+  positionInfo: PositionInfo;
+  prices: PortfolioPrices;
+}) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
-  const prices = useUSDPriceStore((state) => state.prices);
   const { inRange, removed } = usePositionRangeStatus({ position });
   const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
   const feesUsd = formatPortfolioUsd(
@@ -103,6 +113,7 @@ export const LiquidityPositionsDesktopTable = ({
   isLoading: boolean;
 }) => {
   const t = useTranslations("Portfolio");
+  const prices = usePortfolioPrices();
   return (
     <div className="hidden lg:grid px-5 rounded-5 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,1.33fr),_minmax(87px,2.67fr),_minmax(55px,1.33fr),_minmax(50px,1.33fr),_minmax(50px,1.33fr)] pb-2.5 relative">
       {isLoading ? (
@@ -187,7 +198,11 @@ export const LiquidityPositionsDesktopTable = ({
             return (
               <React.Fragment key={index}>
                 {positions.map((position) => (
-                  <PositionTableItemDesktop key={position.tokenId} positionInfo={position} />
+                  <PositionTableItemDesktop
+                    key={position.tokenId}
+                    positionInfo={position}
+                    prices={prices}
+                  />
                 ))}
               </React.Fragment>
             );
@@ -196,10 +211,15 @@ export const LiquidityPositionsDesktopTable = ({
   );
 };
 
-const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo }) => {
+const PositionTableItemMobile = ({
+  positionInfo,
+  prices,
+}: {
+  positionInfo: PositionInfo;
+  prices: PortfolioPrices;
+}) => {
   const t = useTranslations("Portfolio");
   const position = usePositionFromPositionInfo(positionInfo);
-  const prices = useUSDPriceStore((state) => state.prices);
   const { inRange, removed } = usePositionRangeStatus({ position });
   const valueUsd = formatPortfolioUsd(positionValueUsd(prices, position));
   const feesUsd = formatPortfolioUsd(
@@ -257,13 +277,19 @@ const PositionTableItemMobile = ({ positionInfo }: { positionInfo: PositionInfo 
 };
 
 export const LiquidityPositionsMobileTable = ({ tableData }: { tableData: WalletPositions[] }) => {
+  const prices = usePortfolioPrices();
+
   return (
     <div className="flex lg:hidden flex-col gap-4">
       {tableData?.map(({ positions }, index: number) => {
         return (
           <React.Fragment key={index}>
             {positions.map((position) => (
-              <PositionTableItemMobile key={position.tokenId} positionInfo={position} />
+              <PositionTableItemMobile
+                key={position.tokenId}
+                positionInfo={position}
+                prices={prices}
+              />
             ))}
           </React.Fragment>
         );

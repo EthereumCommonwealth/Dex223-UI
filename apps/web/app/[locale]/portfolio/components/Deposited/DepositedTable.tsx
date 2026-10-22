@@ -21,17 +21,13 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { Standard } from "@/sdk_bi/standard";
 import { useRevokeDialogStatusStore } from "@/stores/useRevokeDialogStatusStore";
 import { useRevokeStatusStore } from "@/stores/useRevokeStatusStore";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
-import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
+import { formatPortfolioUsd, holdingUsd, PortfolioPrices, usePortfolioPrices } from "../../lib/usd";
 import { WalletDeposite } from "../../stores/useWalletsDeposites";
 
-function useDepositRowUsd(deposite: WalletDeposite) {
-  const prices = useUSDPriceStore((state) => state.prices);
-  return combineUsd([
-    holdingUsd(prices, deposite.token, deposite.approved),
-    holdingUsd(prices, deposite.token, deposite.deposited),
-  ]);
+// Only the deposited amount is value held by the contract. An approval is not an asset.
+function depositRowUsd(prices: PortfolioPrices, deposite: WalletDeposite) {
+  return holdingUsd(prices, deposite.token, deposite.deposited);
 }
 
 const DepositedTokenTableItem = ({
@@ -41,6 +37,7 @@ const DepositedTokenTableItem = ({
   onWithdrawDetailsClick,
   setIsWithdrawDetailsOpened,
   isOdd,
+  prices,
 }: {
   deposite: WalletDeposite;
   walletAddresses: Address[];
@@ -48,11 +45,12 @@ const DepositedTokenTableItem = ({
   onWithdrawDetailsClick: () => void;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
   isOdd: boolean;
+  prices: PortfolioPrices;
 }) => {
   const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
-  const rowUsd = useDepositRowUsd(deposite);
+  const rowUsd = depositRowUsd(prices, deposite);
 
   return (
     <>
@@ -136,6 +134,7 @@ export const DesktopTable = ({
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
 }) => {
   let line = -1;
+  const prices = usePortfolioPrices();
   const { status: revokeStatus } = useRevokeStatusStore();
   const t = useTranslations("Portfolio");
   const { setIsOpenedRevokeDialog, standard } = useRevokeDialogStatusStore();
@@ -190,6 +189,7 @@ export const DesktopTable = ({
                 setTokenForPortfolio(deposite.token);
               }}
               setIsWithdrawDetailsOpened={setIsWithdrawDetailsOpened}
+              prices={prices}
             />
           );
         })}
@@ -204,18 +204,20 @@ const DepositedTokenMobileTableItem = ({
   onDetailsClick,
   onWithdrawDetailsClick,
   setIsWithdrawDetailsOpened,
+  prices,
 }: {
   deposite: WalletDeposite;
   walletAddress: Address;
   onDetailsClick: () => void;
   onWithdrawDetailsClick: () => void;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
+  prices: PortfolioPrices;
 }) => {
   const t = useTranslations("Portfolio");
   const chainId = useCurrentChainId();
   const { address } = useAccount();
   const isMobile = useMediaQuery({ query: "(max-width: 640px)" });
-  const rowUsd = useDepositRowUsd(deposite);
+  const rowUsd = depositRowUsd(prices, deposite);
 
   return (
     <>
@@ -318,6 +320,8 @@ export const MobileTable = ({
   setTokenForWithdraw: any;
   setIsWithdrawDetailsOpened: (isOpened: boolean) => void;
 }) => {
+  const prices = usePortfolioPrices();
+
   return (
     <>
       <div className="flex lg:hidden flex-col gap-4">
@@ -334,6 +338,7 @@ export const MobileTable = ({
                 setTokenForPortfolio(deposite.token);
               }}
               setIsWithdrawDetailsOpened={setIsWithdrawDetailsOpened}
+              prices={prices}
             />
           );
         })}

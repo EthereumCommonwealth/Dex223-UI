@@ -13,9 +13,8 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import { SearchInput } from "@/components/atoms/Input";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
 import { Token } from "@/sdk_bi/entities/token";
-import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
-import { combineUsd, formatPortfolioUsd, holdingUsd } from "../../lib/usd";
+import { formatPortfolioUsd, holdingsUsd, usePortfolioPrices } from "../../lib/usd";
 import { useActiveWalletsDeposites } from "../../stores/deposites.hooks";
 import { DesktopTable, MobileTable } from "./DepositedTable";
 import { TableData, WithdrawDesktopTable, WithdrawMobileTable } from "./DepositedWithdrawTable";
@@ -57,20 +56,19 @@ export const Deposited = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
-  const prices = useUSDPriceStore((state) => state.prices);
+  const prices = usePortfolioPrices();
   const { approvedTotalUsd, depositedTotalUsd } = useMemo(() => {
     if (isLoading) return { approvedTotalUsd: null, depositedTotalUsd: null };
-    const approved: Array<number | null> = [];
-    const deposited: Array<number | null> = [];
-    for (const walletDeposites of deposites) {
-      for (const deposite of walletDeposites.deposites) {
-        approved.push(holdingUsd(prices, deposite.token, deposite.approved));
-        deposited.push(holdingUsd(prices, deposite.token, deposite.deposited));
-      }
-    }
+    const rows = deposites.flatMap((walletDeposites) => walletDeposites.deposites);
     return {
-      approvedTotalUsd: combineUsd(approved),
-      depositedTotalUsd: combineUsd(deposited),
+      approvedTotalUsd: holdingsUsd(
+        prices,
+        rows.map((deposite) => ({ token: deposite.token, amount: deposite.approved })),
+      ),
+      depositedTotalUsd: holdingsUsd(
+        prices,
+        rows.map((deposite) => ({ token: deposite.token, amount: deposite.deposited })),
+      ),
     };
   }, [deposites, isLoading, prices]);
 

@@ -85,10 +85,11 @@ export const useActiveWalletBalances = ({
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
   const tokens = useTokens();
   const { balances, setAllBalances, loadedKey, hasError, setBalanceStatus } = useWalletsBalances();
-  const addressKey = activeAddresses
+  // Keyed by chain too, so balances read on the previous network never count as loaded.
+  const addressKey = `${chainId}:${activeAddresses
     .map((address) => address.toLowerCase())
     .sort()
-    .join(",");
+    .join(",")}`;
 
   useEffect(() => {
     if (!enabled) return;
