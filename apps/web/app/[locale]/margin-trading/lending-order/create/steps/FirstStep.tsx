@@ -41,6 +41,7 @@ const fixedPeriodSchema = Yup.object({
   positionDuration: Yup.number()
     .typeError("Must be a number")
     .required("Duration required")
+    .moreThan(0, "Duration must be greater than zero")
     .max(182, "Maximum duration is 182 days"),
 }).noUnknown();
 
