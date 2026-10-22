@@ -341,6 +341,7 @@
     "add_wallet_placeholder": "Добавьте адрес кошелька",
     "add_wallet": "Добавить кошелёк",
     "connect_wallet_placeholder": "Добавьте адрес или подключите кошелёк, чтобы увидеть портфель",
+    "select_wallet_placeholder": "Выберите кошелёк, чтобы посмотреть этот портфель",
     "search_placeholder": "Поиск по адресу кошелька",
     "balances_title": "Активы кошелька",
     "balances_search_placeholder": "Поиск по названию или вставьте адрес",

@@ -569,6 +569,7 @@ export function Portfolio() {
 
   const { activeTab, setActiveTab } = usePortfolioActiveTabStore();
   const { showFromSearch, hasSearchWallet, addWallet } = usePortfolioStore();
+  const { wallets } = usePortfolioWallets();
   const [searchValue, setSearchValue] = useState("");
 
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
@@ -651,10 +652,12 @@ export function Portfolio() {
           ) : (
             <div className="min-h-[72px] md:min-h-[40px] flex flex-col items-start md:flex-row md:items-center gap-3 w-full relative -mt-5 md:mt-0 pt-1 pb-4 md:py-0 px-4 lg:px-5 lg:pb-0">
               <span className="text-secondary-text flex pr-[80px] md:pr-0 md:w-full md:mr-auto text-16 items-center">
-                {t("connect_wallet_placeholder")}
+                {wallets.length > 0
+                  ? t("select_wallet_placeholder")
+                  : t("connect_wallet_placeholder")}
               </span>
               {/* The obvious next step: open the same connect flow as the header button. */}
-              {!isConnected && (
+              {wallets.length === 0 && !isConnected && (
                 <Button
                   size={ButtonSize.MEDIUM}
                   colorScheme={ButtonColor.LIGHT_GREEN}
