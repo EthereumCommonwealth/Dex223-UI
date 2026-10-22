@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { formatUnits } from "viem";
 
+import { useMarginSwapPositionStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore";
 import PositionHealthStatus from "@/app/[locale]/margin-trading/components/widgets/PositionHealthStatus";
 import usePositionLiquidationCost from "@/app/[locale]/margin-trading/hooks/usePositionLiquidationCost";
 import usePositionStatus from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionStatus";
@@ -12,7 +13,7 @@ import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import Button, { ButtonColor } from "@/components/buttons/Button";
 import { formatFloat } from "@/functions/formatFloat";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 
 function BalanceCard({ position }: { position: MarginPosition }) {
   const t = useTranslations("Margin");
@@ -56,6 +57,8 @@ export default function ActivePositionMainInfoBlock({
   const t = useTranslations("Margin");
   const { formatted } = usePositionLiquidationCost(position);
   const nativeCurrency = useNativeCurrency();
+  const router = useRouter();
+  const { setMarginSwapPositionId } = useMarginSwapPositionStore();
 
   const { expectedBalance, actualBalance } = usePositionStatus(position);
 
@@ -86,11 +89,16 @@ export default function ActivePositionMainInfoBlock({
           <PositionHealthStatus health={health} />
         </div>
         <div className="flex items-center gap-2 justify-end">
-          <Link className={subjectToLiquidation ? "pointer-events-none" : ""} href={"/margin-swap"}>
-            <Button colorScheme={ButtonColor.LIGHT_GREEN} disabled={subjectToLiquidation} fullWidth>
-              {t("trade")}
-            </Button>
-          </Link>
+          <Button
+            colorScheme={ButtonColor.LIGHT_GREEN}
+            disabled={subjectToLiquidation}
+            onClick={() => {
+              setMarginSwapPositionId(Number(position.id));
+              router.push("/margin-swap");
+            }}
+          >
+            {t("trade")}
+          </Button>
           <Link href={`/margin-trading/position/${position.id}/deposit`}>
             <Button
               colorScheme={subjectToLiquidation ? ButtonColor.LIGHT_RED : ButtonColor.LIGHT_GREEN}
