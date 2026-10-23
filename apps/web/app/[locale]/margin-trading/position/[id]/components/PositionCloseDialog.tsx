@@ -178,7 +178,7 @@ export default function PositionCloseDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("close_margin_position")} />
-      <div className={clsx(" card-spacing-x card-spacing-b w-[min(600px,calc(100vw-2rem))]")}>
+      <div className={clsx(" card-spacing-x card-spacing-b w-full md:w-[600px]")}>
         {!!baseAssetAmount && !!expectedBalance && baseAssetAmount > expectedBalance ? (
           <>
             <div>

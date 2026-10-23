@@ -95,7 +95,7 @@ export function OrderInfoBlock({
         className={clsx(
           "grid gap-3",
           cards.length === 2 && "sm:grid-cols-2",
-          cards.length >= 3 && "sm:grid-cols-2 xl:grid-cols-3",
+          cards.length >= 3 && "sm:grid-cols-2 lg:grid-cols-3",
         )}
       >
         {cards.map((card, index) => (

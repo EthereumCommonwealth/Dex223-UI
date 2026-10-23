@@ -212,7 +212,7 @@ export default function ReviewBorrowDialog({
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("review_borrow")} />
 
-      <div className="card-spacing-x card-spacing-b w-[min(600px,calc(100vw-2rem))]">
+      <div className="card-spacing-x card-spacing-b w-full md:w-[600px]">
         {!isFinalStatus && (
           <>
             <InputLabel inputSize={InputSize.LARGE} label={t("you_send")} />

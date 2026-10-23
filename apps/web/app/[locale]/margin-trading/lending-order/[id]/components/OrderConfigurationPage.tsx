@@ -95,7 +95,7 @@ export default function OrderConfigurationPage({
 
   return (
     <>
-      <div className="rounded-3 bg-primary-bg w-[min(600px,calc(100vw-2rem))] mx-auto">
+      <div className="rounded-3 bg-primary-bg w-full max-w-[600px] mx-auto">
         <div className="py-1.5 px-6 flex justify-between items-center">
           <Link href="/margin-trading">
             <IconButton iconName="back" />
