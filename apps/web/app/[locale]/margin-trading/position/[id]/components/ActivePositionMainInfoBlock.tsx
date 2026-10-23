@@ -30,11 +30,11 @@ function BalanceCard({ position }: { position: MarginPosition }) {
         </div>
 
         <p className="font-medium text-20">
-          {actualBalance
+          {actualBalance != null
             ? formatFloat(formatUnits(actualBalance, position.loanAsset.decimals))
             : t("loading")}{" "}
           /{" "}
-          {expectedBalance
+          {expectedBalance != null
             ? formatFloat(formatUnits(expectedBalance, position.loanAsset.decimals))
             : t("loading")}
           <span className="text-secondary-text"> {position.loanAsset.symbol}</span>
