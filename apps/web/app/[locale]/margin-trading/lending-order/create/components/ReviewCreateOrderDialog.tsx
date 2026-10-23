@@ -276,7 +276,7 @@ export default function ReviewCreateOrderDialog({
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("create_lending_order")} />
 
-      <div className="card-spacing-x card-spacing-b min-w-[600px]">
+      <div className="card-spacing-x card-spacing-b w-full md:w-auto md:min-w-[600px]">
         {status !== CreateOrderStatus.ERROR_CONFIRM_ORDER &&
           status !== CreateOrderStatus.ERROR_APPROVE &&
           status !== CreateOrderStatus.SUCCESS && (
