@@ -1356,6 +1356,8 @@
     "lending_orders_count": "{count} ordens de empréstimo",
     "margin_positions_count": "{count} posições de margem",
     "orders_load_error": "Não foi possível carregar as ordens de empréstimo.",
+    "orders_no_results": "Nenhum resultado encontrado. Ajuste os filtros e tente novamente",
+    "orders_none_yet": "Ainda não há ordens de empréstimo",
     "position_not_found": "Esta posição de margem não foi encontrada",
     "order_not_found": "Esta ordem de empréstimo não foi encontrada",
     "positions_not_found": "Não foram encontradas posições de margem para este endereço",
