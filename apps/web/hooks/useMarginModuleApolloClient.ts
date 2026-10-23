@@ -1,7 +1,8 @@
-import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from "@apollo/client";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { useMemo } from "react";
 
+import { isMarginDeployed } from "@/config/modules";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { DexChainId } from "@/sdk_bi/chains";
 
@@ -38,30 +39,23 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const clients = new Map<DexChainId, ApolloClient<unknown>>();
+
+function getMarginClient(chainId: DexChainId) {
+  const uri = marginModuleUrlMap[chainId];
+  if (!uri || !isMarginDeployed(chainId)) return undefined;
+  let client = clients.get(chainId);
+  if (!client) {
+    client = new ApolloClient({
+      cache: new InMemoryCache(),
+      link: authLink.concat(new HttpLink({ uri })),
+    });
+    clients.set(chainId, client);
+  }
+  return client;
+}
+
 export default function useMarginModuleApolloClient() {
   const chainId = useCurrentChainId();
-
-  const authMiddleware = useMemo(() => {
-    return new ApolloLink((operation, forward) => {
-      operation.setContext(() => ({
-        uri: marginModuleUrlMap[chainId],
-      }));
-
-      return forward(operation);
-    });
-  }, [chainId]);
-
-  return useMemo(() => {
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      link: authLink.concat(
-        concat(
-          authMiddleware,
-          new HttpLink({
-            uri: marginModuleUrlMap[chainId],
-          }),
-        ),
-      ),
-    });
-  }, [authMiddleware, chainId]);
+  return useMemo(() => getMarginClient(chainId), [chainId]);
 }
