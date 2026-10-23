@@ -1355,6 +1355,8 @@
     "loading": "A carregar...",
     "lending_orders_count": "{count} ordens de empréstimo",
     "margin_positions_count": "{count} posições de margem",
+    "deposit_amount_required": "Introduza um montante para depositar",
+    "deposit_currency_limit_reached": "Esta posição já atingiu o limite de moedas",
     "orders_load_error": "Não foi possível carregar as ordens de empréstimo.",
     "orders_no_results": "Nenhum resultado encontrado. Ajuste os filtros e tente novamente",
     "orders_none_yet": "Ainda não há ordens de empréstimo",
