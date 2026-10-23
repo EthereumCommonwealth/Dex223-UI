@@ -2,6 +2,7 @@
 import { PropsWithChildren } from "react";
 
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
+import BottomNotifications from "@/components/common/BottomNotifications";
 import ConfirmInWalletAlert from "@/components/dialogs/ConfirmInWalletAlert";
 import ConfirmInWalletDialog from "@/components/dialogs/ConfirmInWalletDialog";
 import ConnectWalletDialog from "@/components/dialogs/ConnectWalletDialog";
@@ -22,10 +23,12 @@ export default function DialogsProvider({ children }: PropsWithChildren) {
       <FeedbackDialog />
       <TokenPortfolioDialog />
 
-      <ConfirmInWalletAlert />
-      <NoTokenListsEnabledWarning />
+      <BottomNotifications>
+        <ConfirmInWalletAlert />
+        <NoTokenListsEnabledWarning />
+        <UnknownNetworkWarning />
+      </BottomNotifications>
       <ManageTokensDialog />
-      <UnknownNetworkWarning />
       <MintTestTokensDialog />
       <ConnectWalletDialog />
     </>
