@@ -11,8 +11,7 @@ const marginModuleUrlMap: Record<DexChainId, string> = {
     "https://gateway.thegraph.com/api/subgraphs/id/4Zk7s54TCuxMvJVWMzDax5QRsGVRTPoXmw58gKqzZGQi",
   [DexChainId.SEPOLIA]:
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-sepolia/version/latest",
-  [DexChainId.BSC_TESTNET]:
-    "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
+  [DexChainId.BSC_TESTNET]: "",
   [DexChainId.EOS]: "",
   [DexChainId.BASE]: "",
   [DexChainId.BSC]: "",
