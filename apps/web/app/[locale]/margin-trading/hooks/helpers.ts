@@ -1,12 +1,11 @@
 import { Address, formatUnits, Hash } from "viem";
 
 import { LendingOrder, MarginPosition } from "@/app/[locale]/margin-trading/types";
-import { ORACLE_ADDRESS } from "@/sdk_bi/addresses";
+import { ORACLE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { NativeCoin } from "@/sdk_bi/entities/ether";
 import { Token } from "@/sdk_bi/entities/token";
-import { wrappedTokens } from "@/sdk_bi/entities/weth9";
 import { Standard } from "@/sdk_bi/standard";
 
 export type GqlToken = {
@@ -129,7 +128,7 @@ export type GqlRecentTransaction = {
 };
 
 export function gqlTokenToCurrency(gqlToken: GqlToken, chainId: DexChainId): Currency {
-  if (gqlToken.addressERC20.toLowerCase() === wrappedTokens[chainId].address0.toLowerCase()) {
+  if (gqlToken.addressERC20.toLowerCase() === ZERO_ADDRESS) {
     return NativeCoin.onChain(chainId);
   }
 
@@ -154,6 +153,7 @@ export function serializeGqlOrder(
   return {
     ...rest,
     oracle: gqlOrder.oracle || ORACLE_ADDRESS[chainId],
+    liquidationRewardAddress: gqlOrder.liquidationRewardAsset,
     minLoan: BigInt(minLoan),
     liquidationRewardAmount: {
       value: BigInt(liquidationRewardAmount),
@@ -183,7 +183,8 @@ export function serializeGqlOrder(
       gqlTokenToCurrency(tradingToken, chainId),
     ),
     liquidationRewardAssetStandard:
-      gqlOrder.liquidationRewardAsset === gqlOrder.liquidationRewardAssetToken.addressERC20
+      gqlOrder.liquidationRewardAsset.toLowerCase() ===
+      gqlOrder.liquidationRewardAssetToken.addressERC20.toLowerCase()
         ? Standard.ERC20
         : Standard.ERC223,
     createdAt: +createdAt,
