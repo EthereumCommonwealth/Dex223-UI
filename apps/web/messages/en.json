@@ -1366,6 +1366,8 @@
     "loading": "Loading...",
     "lending_orders_count": "{count} lending orders",
     "margin_positions_count": "{count} margin positions",
+    "deposit_amount_required": "Enter an amount to deposit",
+    "deposit_currency_limit_reached": "This position is already at its currency limit",
     "orders_load_error": "Lending orders could not be loaded.",
     "orders_no_results": "No results found. Adjust your filters and try again",
     "orders_none_yet": "No lending orders yet",

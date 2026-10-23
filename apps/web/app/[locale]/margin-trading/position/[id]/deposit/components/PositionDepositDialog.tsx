@@ -182,7 +182,8 @@ export default function PositionDepositDialog({
     () =>
       status === PositionDepositStatus.SUCCESS ||
       status === PositionDepositStatus.ERROR_DEPOSIT ||
-      status === PositionDepositStatus.ERROR_APPROVE,
+      status === PositionDepositStatus.ERROR_APPROVE ||
+      status === PositionDepositStatus.ERROR_TRANSFER,
     [status],
   );
 
