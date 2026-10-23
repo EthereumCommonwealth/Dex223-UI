@@ -148,7 +148,7 @@ export default function ClosedPositionWithdrawDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <InputLabel

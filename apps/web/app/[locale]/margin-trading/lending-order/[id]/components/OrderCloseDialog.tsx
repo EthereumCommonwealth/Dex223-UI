@@ -138,7 +138,7 @@ export default function OrderCloseDialog({
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("close_lending_order")} />
       {order ? (
-        <div className="card-spacing-x card-spacing-b min-w-[600px]">
+        <div className="card-spacing-x card-spacing-b w-full md:w-auto md:min-w-[600px]">
           {isInitialStatus && (
             <>
               <div className="flex items-center justify-between gap-2 mb-4">

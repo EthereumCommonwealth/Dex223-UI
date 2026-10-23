@@ -69,7 +69,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
   ]);
 
   return (
-    <div className="w-[600px] card-spacing-x card-spacing-b bg-primary-bg rounded-5">
+    <div className="w-full max-w-[600px] card-spacing-x card-spacing-b bg-primary-bg rounded-5">
       <>
         <div className="flex justify-between items-center mb-2.5 pt-1.5">
           <h3 className="font-bold text-20">{t("deposit")}</h3>
