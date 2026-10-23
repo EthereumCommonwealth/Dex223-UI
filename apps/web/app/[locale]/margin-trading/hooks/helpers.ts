@@ -218,10 +218,20 @@ export function serializeGqlPosition(
     loanAsset: gqlTokenToCurrency(baseAssetToken, chainId),
     assetAddresses: assets.map((asset) => ({ ...asset, balance: BigInt(asset.balance) })),
     assets: assetsTokens.map((tradingToken: GqlToken) => gqlTokenToCurrency(tradingToken, chainId)),
-    assetsWithBalances: assetsTokens.map((tradingToken: GqlToken) => ({
-      asset: gqlTokenToCurrency(tradingToken, chainId),
-      balance: assets.find((asset: any) => asset.address === tradingToken.addressERC20)?.balance,
-    })),
+    assetsWithBalances: assetsTokens.map((tradingToken: GqlToken) => {
+      const addresses = new Set([
+        tradingToken.addressERC20.toLowerCase(),
+        tradingToken.addressERC223.toLowerCase(),
+      ]);
+      return {
+        asset: gqlTokenToCurrency(tradingToken, chainId),
+        balance: assets.reduce(
+          (sum, asset) =>
+            addresses.has(asset.address.toLowerCase()) ? sum + BigInt(asset.balance) : sum,
+          0n,
+        ),
+      };
+    }),
     collateralAsset: gqlTokenToCurrency(collateralToken, chainId),
     collateralAmount: BigInt(collateralAmount),
     initialLeverage: +leverage,

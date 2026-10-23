@@ -1,9 +1,8 @@
 import { useCallback } from "react";
-import { encodeFunctionData, parseUnits } from "viem";
+import { encodeFunctionData } from "viem";
 import { usePublicClient, useWalletClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
-import { calculateInterestRate } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/hooks/useEditOrder";
 import {
   PositionWithdrawStatus,
   useWithdrawPositionStatusStore,
@@ -12,8 +11,7 @@ import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS } from "@/sdk_bi/addresses";
-import { Currency } from "@/sdk_bi/entities/currency";
+import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 
 export default function usePositionWithdraw({ position }: { position: MarginPosition }) {
   const { setStatus } = useWithdrawPositionStatusStore();
@@ -36,18 +34,24 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
     setStatus(PositionWithdrawStatus.PENDING_WITHDRAW);
 
     try {
-      const encodedWithdrawData = position.assetsWithBalances
-        .filter((asset) => !!asset.balance)
-        .map((assetWithBalance) => {
+      // Preserve the exact on-chain address, including ERC-223 and native assets.
+      const encodedWithdrawData = position.assetAddresses
+        .filter((asset) => asset.balance > 0n)
+        .map((asset) => {
           return encodeFunctionData({
             abi: MARGIN_MODULE_ABI,
             functionName: "positionWithdraw",
             args: [
               BigInt(position.id), // _orderId
-              assetWithBalance.asset.wrapped.address0,
+              asset.address,
             ],
           });
         });
+
+      if (encodedWithdrawData.length === 0) {
+        setStatus(PositionWithdrawStatus.ERROR_WITHDRAW);
+        return;
+      }
 
       const withdrawPositionHash = await walletClient.writeContract({
         ...gasOverrides,
@@ -75,7 +79,7 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
   }, [
     chainId,
     gasOverrides,
-    position.assetsWithBalances,
+    position.assetAddresses,
     position.id,
     position.isClosed,
     publicClient,

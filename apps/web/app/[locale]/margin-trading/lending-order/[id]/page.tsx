@@ -333,7 +333,7 @@ export default function LendingOrder({
               {
                 title: t("ltv"),
                 tooltipText: t("ltv_tooltip"),
-                value: "-",
+                value: order.leverage > 0 ? `${formatFloat((1 - 1 / order.leverage) * 100)}%` : "—",
                 bg: "ltv",
               },
             ]}
