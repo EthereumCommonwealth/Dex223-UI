@@ -211,14 +211,16 @@ function NetworkFeeDialogContent({
       ),
       gasPriceOption,
       gasPriceModel: gasPriceSettings.model,
-      gasLimit: customGasLimit ? customGasLimit.toString() : estimatedGas.toString(),
+      gasLimit: (customGasLimit || estimatedGas || "").toString(),
     },
     onSubmit: (values, formikHelpers) => {
       const useCustomGasLimit =
-        isAdvanced && values.gasPriceOption === GasOption.CUSTOM && estimatedGas > 0n;
+        isAdvanced && values.gasPriceOption === GasOption.CUSTOM && values.gasLimit !== "";
       if (
         useCustomGasLimit &&
-        (!/^\d+$/.test(values.gasLimit) || BigInt(values.gasLimit) < estimatedGas)
+        (!/^\d+$/.test(values.gasLimit) ||
+          BigInt(values.gasLimit) <= 0n ||
+          BigInt(values.gasLimit) < estimatedGas)
       )
         return;
 
@@ -252,7 +254,7 @@ function NetworkFeeDialogContent({
           // }
         }
       }
-      // An unavailable estimate leaves gas-limit estimation to the wallet.
+      // An empty limit leaves estimation to the wallet, even when no preview is available.
       setCustomGasLimit(useCustomGasLimit ? BigInt(values.gasLimit) : undefined);
 
       setIsOpen(false);
@@ -278,7 +280,9 @@ function NetworkFeeDialogContent({
     gasLimit:
       isAdvanced && values.gasPriceOption === GasOption.CUSTOM
         ? values.gasLimit
-        : estimatedGas.toString(),
+        : estimatedGas > 0n
+          ? estimatedGas.toString()
+          : "",
     estimatedGas,
   });
 
@@ -321,7 +325,7 @@ function NetworkFeeDialogContent({
               ? BigInt(values.gasLimit)
               : estimatedGas;
           const gasPriceETH =
-            estimatedGas > 0n && gasLimit > 0n && gasPriceGwei > 0n
+            gasLimit > 0n && gasPriceGwei > 0n
               ? formatFloat(formatEther(gasPriceGwei * gasLimit))
               : undefined;
           const gasPriceUSD =

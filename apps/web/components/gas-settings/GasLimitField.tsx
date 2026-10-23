@@ -39,7 +39,6 @@ export default function GasLimitField({
   return (
     <>
       <TextField
-        disabled={estimatedGas <= 0n}
         colorScheme={colorScheme}
         isNumeric
         decimalScale={0}
@@ -48,7 +47,7 @@ export default function GasLimitField({
         name="gasLimit"
         id="gasLimit"
         tooltipText={t("gas_limit_tooltip")}
-        value={estimatedGas > 0n ? value : ""}
+        value={value}
         onChange={onChange}
         onBlur={onBlur}
         isError={!!gasLimitError}

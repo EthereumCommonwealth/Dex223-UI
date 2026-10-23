@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 import { getAbiItem } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import {
   PositionCloseStatus,
   usePositionCloseStatusStore,
@@ -24,10 +26,19 @@ export default function usePositionClose({ position }: { position: MarginPositio
   const { setStatus, setPositionCloseHash } = usePositionCloseStatusStore();
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("closePosition");
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("closePosition");
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { addRecentTransaction } = useRecentTransactionsStore();
+
+  useMarginGasEstimate("closePosition", () => {
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "positionClose",
+      args: [BigInt(position.id), true],
+    };
+  });
 
   const handlePositionClose = useCallback(async () => {
     // Never build a transaction against the zero address on chains without a margin deployment.
@@ -39,64 +50,67 @@ export default function usePositionClose({ position }: { position: MarginPositio
       return;
     }
 
-    setStatus(PositionCloseStatus.PENDING_CLOSE);
+    try {
+      setStatus(PositionCloseStatus.PENDING_CLOSE);
 
-    const params = {
-      abi: MARGIN_MODULE_ABI,
-      address: MARGIN_TRADING_ADDRESS[chainId],
-      functionName: "positionClose" as const,
-      args: [BigInt(position.id), true] as const,
-    };
+      const params = {
+        abi: MARGIN_MODULE_ABI,
+        address: MARGIN_TRADING_ADDRESS[chainId],
+        functionName: "positionClose" as const,
+        args: [BigInt(position.id), true] as const,
+      };
 
-    const closePositionHash = await walletClient.writeContract({
-      ...gasOverrides,
-      ...params,
-      account: undefined,
-    });
-    setStatus(PositionCloseStatus.LOADING_CLOSE);
-    setPositionCloseHash(closePositionHash);
+      const closePositionHash = await walletClient.writeContract({
+        ...gasOverrides,
+        ...params,
+        account: undefined,
+      });
+      setStatus(PositionCloseStatus.LOADING_CLOSE);
+      setPositionCloseHash(closePositionHash);
 
-    const transaction = await getTransactionWithRetries({
-      hash: closePositionHash,
-      publicClient,
-    });
-
-    const nonce = transaction.nonce;
-
-    addRecentTransaction(
-      {
+      const transaction = await getTransactionWithRetries({
         hash: closePositionHash,
-        nonce,
-        chainId,
-        gas: {
-          model: GasFeeModel.EIP1559,
-          gas: "0",
-          maxFeePerGas: undefined,
-          maxPriorityFeePerGas: undefined,
-        },
-        params: {
-          ...stringifyObject(params),
-          abi: [getAbiItem({ name: "positionClose", abi: MARGIN_MODULE_ABI })],
-        },
-        title: {
-          template: RecentTransactionTitleTemplate.CLOSE_MARGIN_POSITION,
-          symbol: position.loanAsset.symbol!,
-          positionId: position.id,
-          logoURI: position.loanAsset?.logoURI || "/images/tokens/placeholder.svg",
-        },
-      },
-      address,
-    );
+        publicClient,
+      });
 
-    const receipt = await publicClient.waitForTransactionReceipt({ hash: closePositionHash });
+      const nonce = transaction.nonce;
 
-    if (receipt.status === "success") {
-      setStatus(PositionCloseStatus.SUCCESS);
-    } else {
+      addRecentTransaction(
+        {
+          hash: closePositionHash,
+          nonce,
+          chainId,
+          gas: {
+            model: GasFeeModel.EIP1559,
+            gas: "0",
+            maxFeePerGas: undefined,
+            maxPriorityFeePerGas: undefined,
+          },
+          params: {
+            ...stringifyObject(params),
+            abi: [getAbiItem({ name: "positionClose", abi: MARGIN_MODULE_ABI })],
+          },
+          title: {
+            template: RecentTransactionTitleTemplate.CLOSE_MARGIN_POSITION,
+            symbol: position.loanAsset.symbol!,
+            positionId: position.id,
+            logoURI: position.loanAsset?.logoURI || "/images/tokens/placeholder.svg",
+          },
+        },
+        address,
+      );
+
+      const receipt = await publicClient.waitForTransactionReceipt({ hash: closePositionHash });
+
+      if (receipt.status === "success") {
+        setStatus(PositionCloseStatus.SUCCESS);
+      } else {
+        setStatus(PositionCloseStatus.ERROR_CLOSE);
+      }
+    } catch (error) {
+      console.error(error);
       setStatus(PositionCloseStatus.ERROR_CLOSE);
     }
-
-    return;
   }, [
     gasOverrides,
     addRecentTransaction,

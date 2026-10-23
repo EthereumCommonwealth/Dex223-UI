@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 import { Address, getAbiItem, parseUnits } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import {
   OrderDepositStatus,
   useDepositOrderStatusStore,
@@ -39,7 +41,7 @@ export default function useOrderDeposit({
     useDepositOrderStatusStore();
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("depositOrder");
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("depositOrder");
 
   const { address } = useAccount();
   const publicClient = usePublicClient();
@@ -54,6 +56,24 @@ export default function useOrderDeposit({
     token: currency,
     contractAddress: MARGIN_TRADING_ADDRESS[chainId],
     amountToCheck: parseUnits(amount, currency?.decimals ?? 18),
+  });
+
+  useMarginGasEstimate("depositOrder", () => {
+    if (!amount || parseUnits(amount, currency.decimals) <= 0n) return;
+    if (currency.isNative)
+      return {
+        abi: MARGIN_MODULE_ABI,
+        address: MARGIN_TRADING_ADDRESS[chainId],
+        functionName: "orderDepositWETH9",
+        args: [BigInt(orderId), getTokenAddressForStandard(currency, standard)],
+        value: parseUnits(amount, currency.decimals),
+      };
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "orderDepositToken",
+      args: [BigInt(orderId), parseUnits(amount, currency.decimals)],
+    };
   });
 
   const handleOrderDeposit = useCallback(
@@ -132,15 +152,7 @@ export default function useOrderDeposit({
             setStatus(OrderDepositStatus.PENDING_APPROVE);
             const approveResult = await approveA({
               customAmount: parseUnits(amountToApprove, currency.decimals ?? 18),
-              customGasSettings:
-                "gasPrice" in gasOverrides
-                  ? { gasPrice: gasOverrides.gasPrice }
-                  : "maxFeePerGas" in gasOverrides
-                    ? {
-                        maxFeePerGas: gasOverrides.maxFeePerGas,
-                        maxPriorityFeePerGas: gasOverrides.maxPriorityFeePerGas,
-                      }
-                    : undefined,
+              customGasSettings: gasOverrides,
             });
 
             if (!approveResult?.success) {

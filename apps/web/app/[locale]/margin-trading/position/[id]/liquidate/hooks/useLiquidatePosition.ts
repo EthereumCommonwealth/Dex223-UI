@@ -1,7 +1,9 @@
 import { useCallback } from "react";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import {
   PositionLiquidateStatus,
   usePositionLiquidateStatusStore,
@@ -15,12 +17,22 @@ import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 const MAX_FREEZE_DURATION = 3600n;
 
 export default function useLiquidatePosition(position: MarginPosition) {
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("liquidatePosition");
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("liquidatePosition");
   const { setStatus, setPositionLiquidateHash, setPositionFreezeHash } =
     usePositionLiquidateStatusStore();
+
+  useMarginGasEstimate("liquidatePosition", () => {
+    if (position.isLiquidated) return;
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "liquidate",
+      args: [BigInt(position.id), position.order.owner],
+    };
+  });
 
   const handleLiquidatePosition = useCallback(async () => {
     if (!isMarginDeployed(chainId) || !walletClient || !publicClient || !position) return;

@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 import { Address, getAbiItem, parseUnits } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import { OrderDepositStatus } from "@/app/[locale]/margin-trading/lending-order/[id]/stores/useDepositOrderStatusStore";
 import {
   PositionDepositStatus,
@@ -26,6 +28,39 @@ import {
   useRecentTransactionsStore,
 } from "@/stores/useRecentTransactionsStore";
 
+export function usePositionDepositGasEstimate({
+  position,
+  amount,
+  currency,
+  standard,
+}: {
+  position: MarginPosition;
+  amount: string;
+  currency: Currency | undefined;
+  standard: Standard;
+}) {
+  const chainId = useCurrentChainId();
+  useMarginGasEstimate("depositPosition", () => {
+    if (!currency || !amount || parseUnits(amount, currency.decimals) <= 0n) return;
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "positionDeposit",
+      args: [
+        BigInt(position.id),
+        getTokenAddressForStandard(currency, standard),
+        BigInt(
+          position.order.allowedTradingAddresses.findIndex(
+            (asset) =>
+              asset.toLowerCase() === getTokenAddressForStandard(currency, standard).toLowerCase(),
+          ),
+        ),
+        parseUnits(amount, currency.decimals),
+      ],
+    };
+  });
+}
+
 export default function usePositionDeposit({
   position,
   amount,
@@ -41,7 +76,7 @@ export default function usePositionDeposit({
     useDepositPositionStatusStore();
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("depositPosition");
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("depositPosition");
 
   const publicClient = usePublicClient();
   const { address } = useAccount();
@@ -57,6 +92,8 @@ export default function usePositionDeposit({
 
   const { addRecentTransaction } = useRecentTransactionsStore();
 
+  usePositionDepositGasEstimate({ position, amount, currency, standard });
+
   const handlePositionDeposit = useCallback(
     async (amountToApprove: string) => {
       // Never build a transaction against the zero address on chains without a margin deployment.
@@ -68,135 +105,145 @@ export default function usePositionDeposit({
         return;
       }
 
-      if (standard === Standard.ERC20 && !currency.isNative) {
-        setStatus(PositionDepositStatus.PENDING_APPROVE);
-        const approveResult = await approveA({
-          customAmount: parseUnits(amountToApprove, currency.decimals ?? 18),
-          // customGasSettings: gasSettings,
-        });
+      let failureStatus = PositionDepositStatus.ERROR_DEPOSIT;
+      try {
+        if (standard === Standard.ERC20 && !currency.isNative) {
+          failureStatus = PositionDepositStatus.ERROR_APPROVE;
+          setStatus(PositionDepositStatus.PENDING_APPROVE);
+          const approveResult = await approveA({
+            customAmount: parseUnits(amountToApprove, currency.decimals ?? 18),
+            customGasSettings: gasOverrides,
+          });
 
-        if (!approveResult?.success) {
-          setStatus(PositionDepositStatus.ERROR_APPROVE);
-          return;
+          if (!approveResult?.success) {
+            setStatus(PositionDepositStatus.ERROR_APPROVE);
+            return;
+          }
+
+          setStatus(PositionDepositStatus.LOADING_APPROVE);
+
+          const approveReceipt = await publicClient.waitForTransactionReceipt({
+            hash: approveResult.hash,
+          });
+
+          if (approveReceipt.status !== "success") {
+            setStatus(PositionDepositStatus.ERROR_APPROVE);
+            return;
+          }
         }
 
-        setStatus(PositionDepositStatus.LOADING_APPROVE);
+        if (standard === Standard.ERC223 && !currency.isNative) {
+          failureStatus = PositionDepositStatus.ERROR_TRANSFER;
+          setStatus(PositionDepositStatus.PENDING_TRANSFER);
+          const _params = {
+            account: address as Address,
+            abi: ERC223_ABI,
+            functionName: "transfer" as const,
+            address: currency.wrapped.address1 as Address,
+            args: [
+              MARGIN_TRADING_ADDRESS[chainId as DexChainId],
+              parseUnits(amount, currency.decimals ?? 18),
+            ] as const,
+          };
 
-        const approveReceipt = await publicClient.waitForTransactionReceipt({
-          hash: approveResult.hash,
-        });
+          const _firstDepositHash = await walletClient.writeContract({
+            ..._params,
+            ...gasOverrides,
+            account: undefined,
+          });
+          setStatus(PositionDepositStatus.LOADING_TRANSFER);
+          setTransferHash(_firstDepositHash);
 
-        if (approveReceipt.status !== "success") {
-          setStatus(PositionDepositStatus.ERROR_APPROVE);
-          return;
+          const transaction = await getTransactionWithRetries({
+            hash: _firstDepositHash,
+            publicClient,
+          });
+
+          const nonce = transaction.nonce;
+
+          addRecentTransaction(
+            {
+              hash: _firstDepositHash,
+              nonce,
+              chainId,
+              gas: {
+                model: GasFeeModel.EIP1559,
+                gas: "0",
+                maxFeePerGas: undefined,
+                maxPriorityFeePerGas: undefined,
+              },
+              params: {
+                ...stringifyObject(_params),
+                abi: [getAbiItem({ name: "transfer", abi: ERC223_ABI })],
+              },
+              title: {
+                symbol: currency.symbol!,
+                template: RecentTransactionTitleTemplate.TRANSFER,
+                amount: amount,
+                logoURI: currency?.logoURI || "/images/tokens/placeholder.svg",
+              },
+            },
+            address,
+          );
+
+          const receipt = await publicClient.waitForTransactionReceipt({ hash: _firstDepositHash });
+
+          if (receipt.status !== "success") {
+            setStatus(PositionDepositStatus.ERROR_TRANSFER);
+            return;
+          }
         }
-      }
 
-      if (standard === Standard.ERC223 && !currency.isNative) {
-        setStatus(PositionDepositStatus.PENDING_TRANSFER);
-        const _params = {
-          account: address as Address,
-          abi: ERC223_ABI,
-          functionName: "transfer" as const,
-          address: currency.wrapped.address1 as Address,
+        failureStatus = PositionDepositStatus.ERROR_DEPOSIT;
+        setStatus(PositionDepositStatus.PENDING_DEPOSIT);
+
+        const depositOrderHash = await walletClient.writeContract({
+          abi: MARGIN_MODULE_ABI,
+          address: MARGIN_TRADING_ADDRESS[chainId],
+          functionName: "positionDeposit",
           args: [
-            MARGIN_TRADING_ADDRESS[chainId as DexChainId],
+            BigInt(position.id),
+            getTokenAddressForStandard(currency, standard),
+            BigInt(
+              position.order.allowedTradingAddresses.findIndex(
+                (asset) =>
+                  asset.toLowerCase() ===
+                  getTokenAddressForStandard(currency, standard).toLowerCase(),
+              ),
+            ),
             parseUnits(amount, currency.decimals ?? 18),
-          ] as const,
-        };
-
-        const _firstDepositHash = await walletClient.writeContract({
-          ..._params,
+          ],
           ...gasOverrides,
           account: undefined,
         });
-        setStatus(PositionDepositStatus.LOADING_TRANSFER);
-        setTransferHash(_firstDepositHash);
+        setStatus(PositionDepositStatus.LOADING_DEPOSIT);
 
-        const transaction = await getTransactionWithRetries({
-          hash: _firstDepositHash,
-          publicClient,
-        });
+        const receipt = await publicClient.waitForTransactionReceipt({ hash: depositOrderHash });
 
-        const nonce = transaction.nonce;
-
-        addRecentTransaction(
-          {
-            hash: _firstDepositHash,
-            nonce,
-            chainId,
-            gas: {
-              model: GasFeeModel.EIP1559,
-              gas: "0",
-              maxFeePerGas: undefined,
-              maxPriorityFeePerGas: undefined,
-            },
-            params: {
-              ...stringifyObject(_params),
-              abi: [getAbiItem({ name: "transfer", abi: ERC223_ABI })],
-            },
-            title: {
-              symbol: currency.symbol!,
-              template: RecentTransactionTitleTemplate.TRANSFER,
-              amount: amount,
-              logoURI: currency?.logoURI || "/images/tokens/placeholder.svg",
-            },
-          },
-          address,
-        );
-
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: _firstDepositHash });
-
-        if (receipt.status !== "success") {
-          setStatus(PositionDepositStatus.ERROR_TRANSFER);
-          return;
+        if (receipt.status === "success") {
+          setStatus(PositionDepositStatus.SUCCESS);
+        } else {
+          setStatus(PositionDepositStatus.ERROR_DEPOSIT);
         }
+      } catch (error) {
+        console.error(error);
+        setStatus(failureStatus);
       }
-
-      setStatus(PositionDepositStatus.PENDING_DEPOSIT);
-
-      const depositOrderHash = await walletClient.writeContract({
-        abi: MARGIN_MODULE_ABI,
-        address: MARGIN_TRADING_ADDRESS[chainId],
-        functionName: "positionDeposit",
-        args: [
-          BigInt(position.id),
-          getTokenAddressForStandard(currency, standard),
-          BigInt(
-            position.order.allowedTradingAddresses.findIndex(
-              (asset) =>
-                asset.toLowerCase() ===
-                getTokenAddressForStandard(currency, standard).toLowerCase(),
-            ),
-          ),
-          parseUnits(amount, currency.decimals ?? 18),
-        ],
-        ...gasOverrides,
-        account: undefined,
-      });
-      setStatus(PositionDepositStatus.LOADING_DEPOSIT);
-
-      const receipt = await publicClient.waitForTransactionReceipt({ hash: depositOrderHash });
-
-      if (receipt.status === "success") {
-        setStatus(PositionDepositStatus.SUCCESS);
-      } else {
-        setStatus(PositionDepositStatus.ERROR_DEPOSIT);
-      }
-
-      return;
     },
     [
+      addRecentTransaction,
+      address,
       amount,
       approveA,
       chainId,
       gasOverrides,
-      currency.decimals,
-      currency.wrapped.address0,
-      position.assetAddresses,
+      currency,
       position.id,
+      position.order.allowedTradingAddresses,
       publicClient,
       setStatus,
+      setTransferHash,
+      standard,
       walletClient,
     ],
   );

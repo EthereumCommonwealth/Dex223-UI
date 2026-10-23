@@ -1,8 +1,10 @@
 import { useCallback } from "react";
 import { encodeFunctionData } from "viem";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import {
   PositionWithdrawStatus,
   useWithdrawPositionStatusStore,
@@ -17,9 +19,29 @@ export default function usePositionWithdraw({ position }: { position: MarginPosi
   const { setStatus } = useWithdrawPositionStatusStore();
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("withdrawPosition");
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("withdrawPosition");
 
   const publicClient = usePublicClient();
+
+  useMarginGasEstimate("withdrawPosition", () => {
+    if (!position.isClosed) return;
+    const calls = position.assetAddresses
+      .filter((asset) => asset.balance > 0n)
+      .map((asset) =>
+        encodeFunctionData({
+          abi: MARGIN_MODULE_ABI,
+          functionName: "positionWithdraw",
+          args: [BigInt(position.id), asset.address],
+        }),
+      );
+    if (!calls.length) return;
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "multicall",
+      args: [calls],
+    };
+  });
 
   const handlePositionWithdraw = useCallback(async () => {
     // Never build a transaction against the zero address on chains without a margin deployment.

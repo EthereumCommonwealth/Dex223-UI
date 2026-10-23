@@ -6,15 +6,21 @@ import { formatEther, formatGwei } from "viem";
 import * as Yup from "yup";
 
 import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import { useEditOrderRequest } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/hooks/useEditOrder";
 import LiquidationFeeConfig from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationFeeConfig";
 import LiquidationInitiatorSelect from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationInitiatorSelect";
 import LiquidationOracleSelect from "@/app/[locale]/margin-trading/lending-order/create/components/LiquidationOracleSelect";
+import { useCreateOrderRequest } from "@/app/[locale]/margin-trading/lending-order/create/hooks/useCreateOrder";
 import {
   LiquidationMode,
   LiquidationType,
 } from "@/app/[locale]/margin-trading/lending-order/create/steps/types";
 import { ThirdStepValues } from "@/app/[locale]/margin-trading/lending-order/create/stores/useCreateOrderConfigStore";
-import { OrderActionMode, OrderActionStep } from "@/app/[locale]/margin-trading/types";
+import {
+  LendingOrder,
+  OrderActionMode,
+  OrderActionStep,
+} from "@/app/[locale]/margin-trading/types";
 import { InputWithArrows } from "@/components/atoms/Input";
 import TextField from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
@@ -55,13 +61,31 @@ export const thirdStepSchema = Yup.object().shape({
     .required("Fee for lender is required"),
 });
 
+function CreateOrderGasSettings({ values }: { values: ThirdStepValues }) {
+  useCreateOrderRequest(values);
+  return <MarginGasSettings operation="createOrder" />;
+}
+
+function EditOrderGasSettings({
+  order,
+  values,
+}: {
+  order?: LendingOrder;
+  values: ThirdStepValues;
+}) {
+  useEditOrderRequest(order, values);
+  return <MarginGasSettings operation="editOrder" />;
+}
+
 export default function ThirdStep({
+  order,
   mode,
   openPreviewDialog,
   setStep,
   thirdStepValues,
   setThirdStepValues,
 }: {
+  order?: LendingOrder;
   mode: OrderActionMode;
   openPreviewDialog: () => void;
   thirdStepValues: ThirdStepValues;
@@ -114,9 +138,11 @@ export default function ThirdStep({
           />
           <LiquidationOracleSelect />
 
-          <MarginGasSettings
-            operation={mode === OrderActionMode.CREATE ? "createOrder" : "editOrder"}
-          />
+          {mode === OrderActionMode.CREATE ? (
+            <CreateOrderGasSettings values={values} />
+          ) : (
+            <EditOrderGasSettings order={order} values={values} />
+          )}
 
           {/*<pre>{JSON.stringify(errors, null, 2)}</pre>*/}
 

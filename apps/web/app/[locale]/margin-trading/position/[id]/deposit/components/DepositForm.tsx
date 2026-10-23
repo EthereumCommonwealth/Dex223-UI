@@ -3,6 +3,7 @@ import React, { useCallback, useMemo, useState } from "react";
 
 import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import PositionDepositDialog from "@/app/[locale]/margin-trading/position/[id]/deposit/components/PositionDepositDialog";
+import { usePositionDepositGasEstimate } from "@/app/[locale]/margin-trading/position/[id]/deposit/hooks/usePositionDeposit";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { InputSize } from "@/components/atoms/Input";
@@ -24,6 +25,12 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
   const [isDepositDialogOpened, setIsDepositDialogOpened] = useState(false);
   const [assetToDeposit, setAssetToDeposit] = useState<Currency | undefined>(undefined);
   const [assetToDepositStandard, setAssetToDepositStandard] = useState(Standard.ERC20);
+  usePositionDepositGasEstimate({
+    position,
+    amount: amountToDeposit,
+    currency: assetToDeposit,
+    standard: assetToDepositStandard,
+  });
 
   const handlePick = useCallback((token: Currency) => {
     setAssetToDeposit(token);

@@ -21,6 +21,7 @@ const createSettings = () => ({
   useLimit: createGasLimitStore(),
   useMode: createGasModeStore(),
   chainId: undefined as number | undefined,
+  requestKey: undefined as string | undefined,
 });
 
 // A custom limit for a withdrawal must not override a later borrow or create-order call.
@@ -30,6 +31,7 @@ export const marginGasStores = {
     useLimit: useCreateOrderGasLimitStore,
     useMode: useCreateOrderGasModeStore,
     chainId: undefined as number | undefined,
+    requestKey: undefined as string | undefined,
   },
   editOrder: createSettings(),
   borrow: createSettings(),
@@ -45,7 +47,7 @@ export const marginGasStores = {
 
 export type MarginGasOperation = keyof typeof marginGasStores;
 
-function useOperationStores(operation: MarginGasOperation) {
+export function useOperationStores(operation: MarginGasOperation) {
   const chainId = useCurrentChainId();
   const stores = marginGasStores[operation];
   useEffect(() => {
@@ -53,6 +55,7 @@ function useOperationStores(operation: MarginGasOperation) {
       stores.usePrice.getState().updateDefaultState(chainId);
       stores.useLimit.getState().setCustomGasLimit(undefined);
       stores.useLimit.getState().setEstimatedGas(0n);
+      stores.requestKey = undefined;
       stores.chainId = chainId;
     }
   }, [chainId, stores]);
@@ -63,35 +66,22 @@ export function useMarginWriteGas(operation: MarginGasOperation) {
   const chainId = useCurrentChainId();
   const stores = useOperationStores(operation);
   const { gasPriceOption, gasPriceSettings } = stores.usePrice();
-  const { customGasLimit: configuredGasLimit, estimatedGas } = stores.useLimit();
-  const customGasLimit = estimatedGas > 0n ? configuredGasLimit : undefined;
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
+  const settingsChainId = stores.chainId;
 
   return useMemo(
     () =>
-      stores.chainId !== chainId
-        ? {}
-        : {
-            ...(getGasSettings({
-              baseFee,
-              chainId,
-              gasPrice,
-              priorityFee,
-              gasPriceOption,
-              gasPriceSettings,
-            }) ?? {}),
-            ...(customGasLimit ? { gas: customGasLimit } : {}),
-          },
-    [
-      stores,
-      baseFee,
-      chainId,
-      customGasLimit,
-      gasPrice,
-      gasPriceOption,
-      gasPriceSettings,
-      priorityFee,
-    ],
+      settingsChainId === chainId
+        ? getGasSettings({
+            baseFee,
+            chainId,
+            gasPrice,
+            priorityFee,
+            gasPriceOption,
+            gasPriceSettings,
+          })
+        : undefined,
+    [settingsChainId, baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings, priorityFee],
   );
 }
 
@@ -102,13 +92,7 @@ export default function MarginGasSettings({ operation }: { operation: MarginGasO
   const { baseFee, gasPrice } = useGlobalFees();
   const { gasPriceOption, gasPriceSettings, setGasPriceOption, setGasPriceSettings } =
     stores.usePrice();
-  const {
-    customGasLimit: configuredGasLimit,
-    estimatedGas,
-    setCustomGasLimit,
-    setEstimatedGas,
-  } = stores.useLimit();
-  const customGasLimit = estimatedGas > 0n ? configuredGasLimit : undefined;
+  const { customGasLimit, estimatedGas, setCustomGasLimit, setEstimatedGas } = stores.useLimit();
   const { isAdvanced, setIsAdvanced } = stores.useMode();
 
   const formattedGasPrice = getFormattedGasPrice({

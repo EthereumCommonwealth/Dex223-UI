@@ -16,6 +16,7 @@ import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGa
 import timestampToDateString from "@/app/[locale]/margin-trading/helpers/timestampToDateString";
 import { useOrder } from "@/app/[locale]/margin-trading/hooks/useOrder";
 import ReviewBorrowDialog from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/components/ReviewBorrowDialog";
+import { useBorrowGasEstimate } from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/hooks/useCreateMarginPosition";
 import { useCreateMarginPositionConfigStore } from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/stores/useCreateMarginPositionConfigStore";
 import { calculatePeriodInterestRate } from "@/app/[locale]/margin-trading/lending-order/[id]/helpers/calculatePeriodInterestRate";
 import LendingOrderDetailsRow from "@/app/[locale]/margin-trading/lending-order/create/components/LendingOrderDetailsRow";
@@ -312,6 +313,7 @@ export default function BorrowPage({
   });
 
   const { values, touched, setFieldValue, errors, handleSubmit, validateForm } = formik;
+  useBorrowGasEstimate(order, values);
 
   const updateFromCollateral = useCallback(
     async (collateralAmount: string, leverage: string, ratioOverride?: number) => {

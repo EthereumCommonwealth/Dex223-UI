@@ -49,8 +49,10 @@ export default function useNetworkFeeGasValidation({
   }, [gasPrice, t, values.gasPrice]);
 
   const gasLimitError = useMemo(() => {
-    if (values.estimatedGas <= 0n) return undefined;
-    return !/^\d+$/.test(values.gasLimit) || BigInt(values.gasLimit) < values.estimatedGas
+    if (values.gasLimit === "") return undefined;
+    return !/^\d+$/.test(values.gasLimit) ||
+      BigInt(values.gasLimit) <= 0n ||
+      BigInt(values.gasLimit) < values.estimatedGas
       ? t("gas_limit_too_low")
       : undefined;
   }, [t, values.gasLimit, values.estimatedGas]);
