@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 import { formatUnits } from "viem";
+import { useAccount } from "wagmi";
 
 import { useMarginSwapPositionStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore";
 import PositionHealthStatus from "@/app/[locale]/margin-trading/components/widgets/PositionHealthStatus";
@@ -57,6 +58,7 @@ export default function ActivePositionMainInfoBlock({
   const t = useTranslations("Margin");
   const { formatted } = usePositionLiquidationCost(position);
   const nativeCurrency = useNativeCurrency();
+  const { address } = useAccount();
   const router = useRouter();
   const { setMarginSwapPositionId } = useMarginSwapPositionStore();
 
@@ -75,8 +77,8 @@ export default function ActivePositionMainInfoBlock({
   }, [actualBalance, expectedBalance]);
 
   return (
-    <div className="py-5 px-10 bg-primary-bg rounded-5 mb-5">
-      <div className="grid grid-cols-2 items-center mb-3 gap-3">
+    <div className="py-5 px-4 sm:px-10 bg-primary-bg rounded-5 mb-5">
+      <div className="grid grid-cols-1 lg:grid-cols-2 items-center mb-3 gap-3">
         <div className="flex items-center gap-2 justify-between">
           <div className="flex items-center gap-2">
             <Image width={32} height={32} src="/images/tokens/placeholder.svg" alt="" />
@@ -88,12 +90,14 @@ export default function ActivePositionMainInfoBlock({
           </div>
           <PositionHealthStatus health={health} />
         </div>
-        <div className="flex items-center gap-2 justify-end">
+        <div className="flex flex-wrap items-center gap-2 justify-end">
           <Button
             colorScheme={ButtonColor.LIGHT_GREEN}
-            disabled={subjectToLiquidation}
+            disabled={
+              subjectToLiquidation || address?.toLowerCase() !== position.owner.toLowerCase()
+            }
             onClick={() => {
-              setMarginSwapPositionId(Number(position.id));
+              setMarginSwapPositionId(position.id);
               router.push("/margin-swap");
             }}
           >
@@ -131,7 +135,7 @@ export default function ActivePositionMainInfoBlock({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <BalanceCard position={position} />
         <GradientCard className="px-5 py-3">
           <div className="">
