@@ -1,14 +1,14 @@
 import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useState } from "react";
-import { formatEther, formatGwei } from "viem";
-import { useAccount } from "wagmi";
 
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import PositionDepositDialog from "@/app/[locale]/margin-trading/position/[id]/deposit/components/PositionDepositDialog";
+import { usePositionDepositGasEstimate } from "@/app/[locale]/margin-trading/position/[id]/deposit/hooks/usePositionDeposit";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { InputSize } from "@/components/atoms/Input";
 import TextField, { InputLabel } from "@/components/atoms/TextField";
-import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import Button from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import TokenInput from "@/components/common/TokenInput";
 import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
@@ -25,6 +25,12 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
   const [isDepositDialogOpened, setIsDepositDialogOpened] = useState(false);
   const [assetToDeposit, setAssetToDeposit] = useState<Currency | undefined>(undefined);
   const [assetToDepositStandard, setAssetToDepositStandard] = useState(Standard.ERC20);
+  usePositionDepositGasEstimate({
+    position,
+    amount: amountToDeposit,
+    currency: assetToDeposit,
+    standard: assetToDepositStandard,
+  });
 
   const handlePick = useCallback((token: Currency) => {
     setAssetToDeposit(token);
@@ -94,36 +100,8 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
           </div>
         </div>
 
-        <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
-          <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
-            <p className="flex flex-col text-tertiary-text">
-              <span>{t("gas_price")}</span>
-              <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
-            </p>
-
-            <p className="flex flex-col text-tertiary-text">
-              <span>{t("gas_limit")}</span>
-              <span>{329000}</span>
-            </p>
-            <p className="flex flex-col">
-              <span className="text-tertiary-text">{t("network_fee")}</span>
-              <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
-            </p>
-          </div>
-          <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
-            <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-              {t("cheap")}
-            </span>
-            <Button
-              colorScheme={ButtonColor.LIGHT_GREEN}
-              size={ButtonSize.EXTRA_SMALL}
-              onClick={() => null}
-              fullWidth={false}
-              className="rounded-5"
-            >
-              {t("edit")}
-            </Button>
-          </div>
+        <div className="mt-5">
+          <MarginGasSettings operation="depositPosition" />
         </div>
 
         {assetToDeposit ? (

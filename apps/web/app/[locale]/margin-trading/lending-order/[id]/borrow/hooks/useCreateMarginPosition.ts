@@ -1,7 +1,10 @@
 import { useCallback, useMemo } from "react";
 import { Address, getAbiItem, parseEventLogs, parseUnits } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import { useCreateMarginPositionConfigStore } from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/stores/useCreateMarginPositionConfigStore";
 import {
   CreateMarginPositionStatus,
@@ -150,6 +153,34 @@ export function useCreatePositionApproveSteps(order: LendingOrder): {
   return { allSteps: [...approveSteps, borrowStep], approveSteps };
 }
 
+export function useBorrowGasEstimate(
+  order: LendingOrder | undefined,
+  values: ReturnType<typeof useCreateMarginPositionConfigStore.getState>["values"],
+) {
+  const chainId = useCurrentChainId();
+  useMarginGasEstimate("borrow", () => {
+    const token = values.collateralToken;
+    if (!order || !token || !values.collateralAmount || !values.borrowAmount) return;
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "takeLoan",
+      args: [
+        BigInt(order.id),
+        parseUnits(values.borrowAmount, order.baseAsset.decimals),
+        BigInt(
+          order.collateralAddresses.findIndex(
+            (asset) =>
+              asset.toLowerCase() ===
+              getTokenAddressForStandard(token, values.collateralTokenStandard).toLowerCase(),
+          ),
+        ),
+        parseUnits(values.collateralAmount, token.decimals),
+      ],
+    };
+  });
+}
+
 export default function useCreateMarginPosition(order: LendingOrder) {
   const {
     setStatus,
@@ -161,9 +192,10 @@ export default function useCreateMarginPosition(order: LendingOrder) {
 
   const { addRecentTransaction } = useRecentTransactionsStore();
   const { values } = useCreateMarginPositionConfigStore();
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("borrow");
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
+  const gasOverrides = useMarginWriteGas("borrow");
   const { address } = useAccount();
   const { setPositionId } = useNewlyCreatedPositionId();
 
@@ -190,6 +222,8 @@ export default function useCreateMarginPosition(order: LendingOrder) {
     amountToCheck: order.liquidationRewardAmount.value,
   });
 
+  useBorrowGasEstimate(order, values);
+
   const handleCreateMarginPosition = useCallback(
     async (orderId: string, amountToApprove: string, feeAmountToApprove: string) => {
       // Never build a transaction against the zero address on chains without a margin deployment.
@@ -207,217 +241,232 @@ export default function useCreateMarginPosition(order: LendingOrder) {
         return;
       }
 
-      if (
-        !values.collateralToken?.isNative &&
-        !isAllowedA &&
-        values.collateralTokenStandard === Standard.ERC20
-      ) {
-        setStatus(CreateMarginPositionStatus.PENDING_APPROVE_BORROW);
+      let failureStatus = CreateMarginPositionStatus.ERROR_BORROW;
+      try {
+        if (
+          !values.collateralToken?.isNative &&
+          !isAllowedA &&
+          values.collateralTokenStandard === Standard.ERC20
+        ) {
+          failureStatus = CreateMarginPositionStatus.ERROR_APPROVE_BORROW;
+          setStatus(CreateMarginPositionStatus.PENDING_APPROVE_BORROW);
 
-        const approveResult = await approveA({
-          customAmount: parseUnits(amountToApprove, values.collateralToken?.decimals ?? 18),
-          // customGasSettings: gasSettings,
-        });
+          const approveResult = await approveA({
+            customAmount: parseUnits(amountToApprove, values.collateralToken?.decimals ?? 18),
+            customGasSettings: gasOverrides,
+          });
 
-        if (!approveResult?.success) {
-          setStatus(CreateMarginPositionStatus.ERROR_APPROVE_BORROW);
-          return;
+          if (!approveResult?.success) {
+            setStatus(CreateMarginPositionStatus.ERROR_APPROVE_BORROW);
+            return;
+          }
+          setApproveBorrowHash(approveResult.hash);
+
+          setStatus(CreateMarginPositionStatus.LOADING_APPROVE_BORROW);
+
+          const approveReceipt = await publicClient.waitForTransactionReceipt({
+            hash: approveResult.hash,
+          });
+
+          if (approveReceipt.status !== "success") {
+            setStatus(CreateMarginPositionStatus.ERROR_APPROVE_BORROW);
+            return;
+          }
         }
-        setApproveBorrowHash(approveResult.hash);
 
-        setStatus(CreateMarginPositionStatus.LOADING_APPROVE_BORROW);
+        if (
+          !values.collateralToken?.isNative &&
+          !isAllowedA &&
+          values.collateralTokenStandard === Standard.ERC223
+        ) {
+          failureStatus = CreateMarginPositionStatus.ERROR_TRANSFER;
+          setStatus(CreateMarginPositionStatus.PENDING_TRANSFER);
+          const _params = {
+            account: address as Address,
+            abi: ERC223_ABI,
+            functionName: "transfer" as const,
+            address: values.collateralToken.wrapped.address1 as Address,
+            args: [
+              MARGIN_TRADING_ADDRESS[chainId as DexChainId],
+              parseUnits(values.collateralAmount, values.collateralToken.decimals ?? 18),
+            ] as const,
+          };
 
-        const approveReceipt = await publicClient.waitForTransactionReceipt({
-          hash: approveResult.hash,
-        });
+          const _firstDepositHash = await walletClient.writeContract({
+            ..._params,
+            ...gasOverrides,
+            account: undefined,
+          });
+          setStatus(CreateMarginPositionStatus.LOADING_TRANSFER);
+          setTransferHash(_firstDepositHash);
 
-        if (approveReceipt.status !== "success") {
-          setStatus(CreateMarginPositionStatus.ERROR_APPROVE_BORROW);
-          return;
+          const transaction = await getTransactionWithRetries({
+            hash: _firstDepositHash,
+            publicClient,
+          });
+
+          const nonce = transaction.nonce;
+
+          // addRecentTransaction(
+          //   {
+          //     hash: _firstDepositHash,
+          //     nonce,
+          //     chainId,
+          //     gas: {
+          //       model: GasFeeModel.EIP1559,
+          //       gas: "0",
+          //       maxFeePerGas: undefined,
+          //       maxPriorityFeePerGas: undefined,
+          //     },
+          //     params: {
+          //       ...stringifyObject(_params),
+          //       abi: [getAbiItem({ name: "transfer", abi: ERC223_ABI })],
+          //     },
+          //     title: {
+          //       symbol: values.collateralToken?.symbol!,
+          //       template: RecentTransactionTitleTemplate.TRANSFER,
+          //       amount: a,
+          //       logoURI: currency?.logoURI || "/images/tokens/placeholder.svg",
+          //     },
+          //   },
+          //   address,
+          // );
+
+          const receipt = await publicClient.waitForTransactionReceipt({ hash: _firstDepositHash });
+
+          if (receipt.status !== "success") {
+            setStatus(CreateMarginPositionStatus.ERROR_TRANSFER);
+            return;
+          }
         }
-      }
 
-      if (
-        !values.collateralToken?.isNative &&
-        !isAllowedA &&
-        values.collateralTokenStandard === Standard.ERC223
-      ) {
-        setStatus(CreateMarginPositionStatus.PENDING_TRANSFER);
-        const _params = {
-          account: address as Address,
-          abi: ERC223_ABI,
-          functionName: "transfer" as const,
-          address: values.collateralToken.wrapped.address1 as Address,
+        if (
+          (!order.liquidationRewardAsset?.isNative &&
+            !isAllowedB &&
+            !values.collateralToken?.equals(order.liquidationRewardAsset)) ||
+          values.collateralTokenStandard === Standard.ERC223
+        ) {
+          failureStatus = CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE;
+          setStatus(CreateMarginPositionStatus.PENDING_APPROVE_LIQUIDATION_FEE);
+
+          const approveResult = await approveB({
+            customAmount: parseUnits(feeAmountToApprove, order.liquidationRewardAsset.decimals),
+            customGasSettings: gasOverrides,
+          });
+
+          if (!approveResult?.success) {
+            setStatus(CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE);
+            return;
+          }
+
+          setStatus(CreateMarginPositionStatus.LOADING_APPROVE_LIQUIDATION_FEE);
+
+          const approveReceipt = await publicClient.waitForTransactionReceipt({
+            hash: approveResult.hash,
+          });
+
+          setApproveLiquidationFeeHash(approveResult.hash);
+
+          if (approveReceipt.status !== "success") {
+            setStatus(CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE);
+            return;
+          }
+        }
+
+        failureStatus = CreateMarginPositionStatus.ERROR_BORROW;
+        setStatus(CreateMarginPositionStatus.PENDING_BORROW);
+
+        const params = {
+          abi: MARGIN_MODULE_ABI,
+          address: MARGIN_TRADING_ADDRESS[chainId],
+          functionName: "takeLoan" as const,
           args: [
-            MARGIN_TRADING_ADDRESS[chainId as DexChainId],
-            parseUnits(values.collateralAmount, values.collateralToken.decimals ?? 18),
+            BigInt(orderId),
+            parseUnits(values.borrowAmount.toString(), order.baseAsset.decimals),
+            BigInt(
+              order.collateralAddresses.findIndex(
+                (address) =>
+                  getTokenAddressForStandard(
+                    values.collateralToken!,
+                    values.collateralTokenStandard,
+                  ).toLowerCase() === address.toLowerCase(),
+              ),
+            ),
+            parseUnits(values.collateralAmount.toString(), values.collateralToken?.decimals ?? 18),
           ] as const,
         };
-
-        const _firstDepositHash = await walletClient.writeContract({
-          ..._params,
+        const takeLoanHash = await walletClient.writeContract({
+          ...params,
+          ...gasOverrides,
           account: undefined,
         });
-        setStatus(CreateMarginPositionStatus.LOADING_TRANSFER);
-        setTransferHash(_firstDepositHash);
+
+        setBorrowHash(takeLoanHash);
 
         const transaction = await getTransactionWithRetries({
-          hash: _firstDepositHash,
+          hash: takeLoanHash,
           publicClient,
         });
 
         const nonce = transaction.nonce;
 
-        // addRecentTransaction(
-        //   {
-        //     hash: _firstDepositHash,
-        //     nonce,
-        //     chainId,
-        //     gas: {
-        //       model: GasFeeModel.EIP1559,
-        //       gas: "0",
-        //       maxFeePerGas: undefined,
-        //       maxPriorityFeePerGas: undefined,
-        //     },
-        //     params: {
-        //       ...stringifyObject(_params),
-        //       abi: [getAbiItem({ name: "transfer", abi: ERC223_ABI })],
-        //     },
-        //     title: {
-        //       symbol: values.collateralToken?.symbol!,
-        //       template: RecentTransactionTitleTemplate.TRANSFER,
-        //       amount: a,
-        //       logoURI: currency?.logoURI || "/images/tokens/placeholder.svg",
-        //     },
-        //   },
-        //   address,
-        // );
+        addRecentTransaction(
+          {
+            hash: takeLoanHash,
+            nonce,
+            chainId,
+            gas: {
+              model: GasFeeModel.EIP1559,
+              gas: "0",
+              maxFeePerGas: undefined,
+              maxPriorityFeePerGas: undefined,
+            },
+            params: {
+              ...stringifyObject(params),
+              abi: [getAbiItem({ name: "takeLoan", abi: MARGIN_MODULE_ABI })],
+            },
+            title: {
+              symbolBorrowed: order.baseAsset.symbol!,
+              symbolFee: order.liquidationRewardAsset.symbol!,
+              symbolCollateral: values.collateralToken!.symbol!,
+              amountBorrowed: values.borrowAmount,
+              amountFee: order.liquidationRewardAmount.formatted,
+              amountCollateral: values.collateralAmount,
+              template: RecentTransactionTitleTemplate.CREATE_MARGIN_POSITION,
+              logoURI: order.baseAsset?.logoURI || "/images/tokens/placeholder.svg",
+            },
+          },
+          address,
+        );
 
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: _firstDepositHash });
-
-        if (receipt.status !== "success") {
-          setStatus(CreateMarginPositionStatus.ERROR_TRANSFER);
-          return;
-        }
-      }
-
-      if (
-        (!order.liquidationRewardAsset?.isNative &&
-          !isAllowedB &&
-          !values.collateralToken?.equals(order.liquidationRewardAsset)) ||
-        values.collateralTokenStandard === Standard.ERC223
-      ) {
-        setStatus(CreateMarginPositionStatus.PENDING_APPROVE_LIQUIDATION_FEE);
-
-        const approveResult = await approveB({
-          customAmount: parseUnits(feeAmountToApprove, order.liquidationRewardAsset.decimals),
-          // customGasSettings: gasSettings,
-        });
-
-        if (!approveResult?.success) {
-          setStatus(CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE);
-          return;
-        }
-
-        setStatus(CreateMarginPositionStatus.LOADING_APPROVE_LIQUIDATION_FEE);
-
-        const approveReceipt = await publicClient.waitForTransactionReceipt({
-          hash: approveResult.hash,
-        });
-
-        setApproveLiquidationFeeHash(approveResult.hash);
-
-        if (approveReceipt.status !== "success") {
-          setStatus(CreateMarginPositionStatus.ERROR_APPROVE_LIQUIDATION_FEE);
-          return;
-        }
-      }
-
-      setStatus(CreateMarginPositionStatus.PENDING_BORROW);
-
-      const params = {
-        abi: MARGIN_MODULE_ABI,
-        address: MARGIN_TRADING_ADDRESS[chainId],
-        functionName: "takeLoan" as const,
-        args: [
-          BigInt(orderId),
-          parseUnits(values.borrowAmount.toString(), order.baseAsset.decimals),
-          BigInt(
-            order.collateralAddresses.findIndex(
-              (address) =>
-                getTokenAddressForStandard(
-                  values.collateralToken!,
-                  values.collateralTokenStandard,
-                ).toLowerCase() === address.toLowerCase(),
-            ),
-          ),
-          parseUnits(values.collateralAmount.toString(), values.collateralToken?.decimals ?? 18),
-        ] as const,
-      };
-      const takeLoanHash = await walletClient.writeContract({
-        ...params,
-        account: undefined,
-      });
-
-      setBorrowHash(takeLoanHash);
-
-      const transaction = await getTransactionWithRetries({
-        hash: takeLoanHash,
-        publicClient,
-      });
-
-      const nonce = transaction.nonce;
-
-      addRecentTransaction(
-        {
+        setStatus(CreateMarginPositionStatus.LOADING_BORROW);
+        const takeLoanReceipt = await publicClient.waitForTransactionReceipt({
           hash: takeLoanHash,
-          nonce,
-          chainId,
-          gas: {
-            model: GasFeeModel.EIP1559,
-            gas: "0",
-            maxFeePerGas: undefined,
-            maxPriorityFeePerGas: undefined,
-          },
-          params: {
-            ...stringifyObject(params),
-            abi: [getAbiItem({ name: "takeLoan", abi: MARGIN_MODULE_ABI })],
-          },
-          title: {
-            symbolBorrowed: order.baseAsset.symbol!,
-            symbolFee: order.liquidationRewardAsset.symbol!,
-            symbolCollateral: values.collateralToken!.symbol!,
-            amountBorrowed: values.borrowAmount,
-            amountFee: order.liquidationRewardAmount.formatted,
-            amountCollateral: values.collateralAmount,
-            template: RecentTransactionTitleTemplate.CREATE_MARGIN_POSITION,
-            logoURI: order.baseAsset?.logoURI || "/images/tokens/placeholder.svg",
-          },
-        },
-        address,
-      );
+        });
 
-      setStatus(CreateMarginPositionStatus.LOADING_BORROW);
-      const takeLoanReceipt = await publicClient.waitForTransactionReceipt({ hash: takeLoanHash });
+        const parsedEventLog = parseEventLogs({
+          abi: MARGIN_MODULE_ABI,
+          logs: takeLoanReceipt.logs,
+        });
 
-      const parsedEventLog = parseEventLogs({
-        abi: MARGIN_MODULE_ABI,
-        logs: takeLoanReceipt.logs,
-      });
+        const createPositionLog = parsedEventLog.find((log) => log.eventName === "PositionOpened");
 
-      const createPositionLog = parsedEventLog.find((log) => log.eventName === "PositionOpened");
+        if (createPositionLog) {
+          setPositionId(Number(createPositionLog.args.positionId));
+        }
 
-      if (createPositionLog) {
-        setPositionId(Number(createPositionLog.args.positionId));
-      }
-
-      if (takeLoanReceipt.status === "success") {
-        setStatus(CreateMarginPositionStatus.SUCCESS);
-      } else {
-        setStatus(CreateMarginPositionStatus.ERROR_BORROW);
+        if (takeLoanReceipt.status === "success") {
+          setStatus(CreateMarginPositionStatus.SUCCESS);
+        } else {
+          setStatus(CreateMarginPositionStatus.ERROR_BORROW);
+        }
+      } catch (error) {
+        console.error(error);
+        setStatus(failureStatus);
       }
     },
     [
+      gasOverrides,
       values,
       walletClient,
       publicClient,
