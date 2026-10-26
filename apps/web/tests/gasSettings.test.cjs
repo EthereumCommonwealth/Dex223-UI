@@ -37,6 +37,12 @@ const contract = "0x2222222222222222222222222222222222222222";
 const abi = parseAbi(["function act(uint256 id) payable", "function deposit(uint256 id)"]);
 const request = { abi, address: contract, functionName: "act", args: [1n] };
 const chainId = 11155111;
+const tokenStandards = load("sdk_bi/standard.ts");
+const { Standard } = tokenStandards;
+const assetFunding = load(`${marginRoot}helpers/assetFunding.ts`, {
+  "@/sdk_bi/addresses": { ZERO_ADDRESS: "0x0000000000000000000000000000000000000000" },
+  "@/sdk_bi/standard": tokenStandards,
+});
 const key = (tx = request, chain = chainId, address = account) =>
   marginGas.getMarginGasRequestKey(tx, chain, address);
 
@@ -373,15 +379,20 @@ function liquidationHarness({
   liquidatable = true,
   timestamp = 100n,
   receiptStatus = "success",
+  openAfterLiquidation = false,
 } = {}) {
   const h = walletHarness();
   const states = [];
   const events = [];
+  let positionReads = 0;
   const publicClient = {
     readContract: async ({ functionName }) => {
       if (functionName === "subjectToLiquidation") return liquidatable;
+      positionReads++;
       const position = [];
-      position[6] = alive;
+      const needsFreeze = frozenTime === 0n || timestamp - frozenTime > 3600n;
+      const liquidationSent = h.sent.length >= (needsFreeze ? 2 : 1);
+      position[6] = liquidationSent ? openAfterLiquidation : alive;
       position[7] = frozenTime;
       return position;
     },
@@ -422,7 +433,15 @@ function liquidationHarness({
     functionName: "liquidate",
     args: [1n, account],
   });
-  return { ...h, run: useLiquidate(position).handleLiquidatePosition, states, events };
+  return {
+    ...h,
+    run: useLiquidate(position).handleLiquidatePosition,
+    states,
+    events,
+    get positionReads() {
+      return positionReads;
+    },
+  };
 }
 
 test("fresh liquidation waits for a later block and applies the custom limit only to freeze", async () => {
@@ -459,6 +478,18 @@ test("a failed freeze never sends the liquidation transaction", async () => {
   }
   assert.equal(h.sent.length, 1);
   assert.equal(h.states.at(-1), liquidationStatus.ERROR_FREEZE);
+});
+
+test("a successful receipt that only re-freezes an open position is not liquidation success", async (t) => {
+  t.mock.method(console, "error", () => {});
+  for (const frozenTime of [0n, 99n]) {
+    const h = liquidationHarness({ frozenTime, openAfterLiquidation: true });
+    await h.run();
+    assert.equal(h.sent.length, frozenTime === 0n ? 2 : 1);
+    assert.equal(h.positionReads, frozenTime === 0n ? 3 : 2);
+    assert.equal(h.states.at(-1), liquidationStatus.ERROR_LIQUIDATE);
+    assert.ok(!h.states.includes(liquidationStatus.SUCCESS));
+  }
 });
 
 test("withdrawal keeps exact ERC-223/native addresses and excludes zero balances", async () => {
@@ -604,12 +635,14 @@ function flowHarness() {
   const token = {
     isNative: true,
     decimals: 18,
+    address0: account,
+    address1: contract,
     wrapped: { address0: account, address1: contract },
     equals: () => true,
   };
   const values = {
     collateralToken: token,
-    collateralTokenStandard: 0,
+    collateralTokenStandard: Standard.ERC20,
     collateralAmount: "1",
     borrowAmount: "1",
   };
@@ -633,6 +666,7 @@ function flowHarness() {
         },
       }),
     },
+    "@/app/[locale]/margin-trading/helpers/assetFunding": assetFunding,
     "@/app/[locale]/margin-trading/position/[id]/stores/usePositionCloseStatusStore": {
       PositionCloseStatus: closeStatus,
       usePositionCloseStatusStore: statusStore,
@@ -657,10 +691,7 @@ function flowHarness() {
     "@/hooks/useAllowance": { useStoreAllowance: () => ({ isAllowed: true }) },
     "@/hooks/useCurrentChainId": { default: () => chainId },
     "@/sdk_bi/addresses": { MARGIN_TRADING_ADDRESS: { [chainId]: contract } },
-    "@/sdk_bi/standard": {
-      Standard: { ERC20: 0, ERC223: 1 },
-      getTokenAddressForStandard: () => account,
-    },
+    "@/sdk_bi/standard": tokenStandards,
     "@/stores/useRecentTransactionsStore": {
       useRecentTransactionsStore: () => ({ addRecentTransaction() {} }),
     },
@@ -679,12 +710,17 @@ function flowHarness() {
     liquidationRewardAsset: token,
     liquidationRewardAmount: { value: 0n },
     baseAsset: token,
-    collateralAddresses: [account],
+    collateralAddresses: [account, contract],
+    currencyLimit: 2,
   };
   const position = {
     id: 1,
+    owner: account,
+    isClosed: false,
+    isLiquidated: false,
+    assetAddresses: [],
     loanAsset: token,
-    order: { ...order, allowedTradingAddresses: [account] },
+    order: { ...order, allowedTradingAddresses: [account, contract] },
   };
   return {
     mocks,
@@ -709,9 +745,12 @@ test("gas validation errors leave close, deposit and borrow in a retryable error
   try {
     await close({ position }).handlePositionClose();
     assert.equal(states.at(-1), closeStatus.ERROR_CLOSE);
-    await deposit({ position, amount: "1", currency: token, standard: 0 }).handlePositionDeposit(
-      "1",
-    );
+    await deposit({
+      position,
+      amount: "1",
+      currency: { ...token, isNative: false },
+      standard: Standard.ERC20,
+    }).handlePositionDeposit("1");
     assert.equal(states.at(-1), depositStatus.ERROR_DEPOSIT);
     await borrow(order).handleCreateMarginPosition("1", "1", "0");
     assert.equal(states.at(-1), borrowStatus.ERROR_BORROW);
@@ -726,16 +765,123 @@ test("borrow and deposit previews use live form values and target the main margi
   h.estimateBorrow(h.order, {
     ...h.values,
     collateralToken: token,
-    collateralTokenStandard: 1,
+    collateralTokenStandard: Standard.ERC223,
     collateralAmount: "2",
   });
   assert.equal(h.previews.borrow.functionName, "takeLoan");
   assert.equal(h.previews.borrow.args[3], 2n * 10n ** 18n);
-  h.estimateDeposit({ position: h.position, amount: "3", currency: token, standard: 1 });
+  h.estimateDeposit({
+    position: h.position,
+    amount: "3",
+    currency: token,
+    standard: Standard.ERC223,
+  });
   assert.equal(h.previews.depositPosition.functionName, "positionDeposit");
   assert.equal(h.previews.depositPosition.args[3], 3n * 10n ** 18n);
   assert.equal(h.previews.borrow.address, contract);
   assert.equal(h.previews.depositPosition.address, contract);
+});
+
+function positionDepositHarness({ standard = Standard.ERC20, isAllowed = true } = {}) {
+  const flow = flowHarness();
+  const h = walletHarness();
+  const approvals = [];
+  const currency = { ...flow.token, isNative: false, decimals: 6 };
+  const position = {
+    ...flow.position,
+    order: {
+      ...flow.position.order,
+      allowedTradingAddresses: ["0x3333333333333333333333333333333333333333", account, contract],
+    },
+  };
+  let preview;
+  const useDeposit = load(`${marginRoot}position/[id]/deposit/hooks/usePositionDeposit.ts`, {
+    ...flow.mocks,
+    wagmi: {
+      useAccount: () => ({ address: account }),
+      usePublicClient: () => ({
+        waitForTransactionReceipt: async () => ({ status: "success" }),
+      }),
+    },
+    "@/app/[locale]/margin-trading/components/MarginGasSettings": {
+      useMarginWriteGas: () => h.fees,
+    },
+    "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate": {
+      default: (operation, build) => {
+        preview = build();
+        h.stores.requestKey = key(preview);
+      },
+    },
+    "@/app/[locale]/margin-trading/hooks/useMarginWalletClient": {
+      default: () => ({ data: h.wallet }),
+    },
+    "@/app/[locale]/margin-trading/position/[id]/stores/usePositionDepositStatusStore": {
+      PositionDepositStatus: depositStatus,
+      useDepositPositionStatusStore: () => ({
+        setStatus: (value) => flow.states.push(value),
+        setApproveHash() {},
+        setTransferHash() {},
+        setDepositHash() {},
+      }),
+    },
+    "@/config/abis/erc223": load("config/abis/erc223.ts"),
+    "@/functions/getTransactionWithRetries": {
+      getTransactionWithRetries: async () => ({ nonce: 1 }),
+    },
+    "@/hooks/useAllowance": {
+      useStoreAllowance: () => ({
+        isAllowed,
+        writeTokenApprove: async (params) => {
+          approvals.push(params);
+          return { success: true, hash: "0xapprove" };
+        },
+      }),
+    },
+    "@/stores/useRecentTransactionsStore": {
+      useRecentTransactionsStore: () => ({ addRecentTransaction() {} }),
+      stringifyObject: () => ({}),
+      GasFeeModel: { EIP1559: "EIP1559" },
+      RecentTransactionTitleTemplate: { TRANSFER: "TRANSFER" },
+    },
+  }).default;
+  const run = useDeposit({ position, currency, standard, amount: "1.25" }).handlePositionDeposit;
+  return { ...h, preview, approvals, states: flow.states, run: () => run("1.25") };
+}
+
+for (const isAllowed of [true, false]) {
+  test(`ERC-20 deposit preview matches the write with allowance ${isAllowed}`, async () => {
+    const h = positionDepositHarness({ isAllowed });
+    await h.run();
+    assert.equal(h.sent.length, 1);
+    assert.equal(key(h.preview), key(h.sent[0]));
+    assert.deepEqual(h.sent[0].args, [1n, account, 1n, 1_250_000n]);
+    assert.equal(h.sent[0].gas, 150_000n);
+    assert.equal(h.limit.customGasLimit, undefined);
+    assert.equal(h.approvals.length, isAllowed ? 0 : 1);
+    if (!isAllowed) {
+      assert.deepEqual(h.approvals[0].customGasSettings, h.fees);
+      assert.equal(h.approvals[0].customGasSettings.gas, undefined);
+    }
+    assert.equal(h.states.at(-1), depositStatus.SUCCESS);
+  });
+}
+
+test("ERC-223 transfer keeps fee prices while the matching deposit consumes its custom limit", async () => {
+  const h = positionDepositHarness({ standard: Standard.ERC223 });
+  await h.run();
+  assert.deepEqual(
+    h.sent.map((tx) => tx.functionName),
+    ["transfer", "positionDeposit"],
+  );
+  assert.equal(h.sent[0].gas, undefined);
+  assert.equal(h.sent[0].maxFeePerGas, h.fees.maxFeePerGas);
+  assert.equal(h.sent[0].maxPriorityFeePerGas, h.fees.maxPriorityFeePerGas);
+  assert.equal(key(h.preview), key(h.sent[1]));
+  assert.deepEqual(h.sent[1].args, [1n, contract, 2n, 1_250_000n]);
+  assert.equal(h.sent[1].gas, 150_000n);
+  assert.equal(h.limit.customGasLimit, undefined);
+  assert.equal(h.approvals.length, 0);
+  assert.equal(h.states.at(-1), depositStatus.SUCCESS);
 });
 
 test("create and edit estimates include unsaved third-step values without modifying the saved form", () => {

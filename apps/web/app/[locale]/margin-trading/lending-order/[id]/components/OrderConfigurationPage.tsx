@@ -103,7 +103,7 @@ export default function OrderConfigurationPage({
 
   return (
     <>
-      <div className="rounded-3 bg-primary-bg w-[600px] mx-auto">
+      <div className="rounded-3 bg-primary-bg w-full max-w-[600px] mx-auto">
         <div className="py-1.5 px-6 flex justify-between items-center">
           <Link href="/margin-trading">
             <IconButton iconName="back" />
@@ -118,15 +118,18 @@ export default function OrderConfigurationPage({
             onClick={() => setShowRecentTransactions(!showRecentTransactions)}
           />
         </div>
-        <div className="pb-10 px-10">
-          <div className="flex justify-between mb-5 items-center gap-5">
+        <div className="pb-10 px-4 sm:px-10">
+          <div className="flex justify-between mb-5 items-center gap-2 sm:gap-5">
             {[OrderActionStep.FIRST, OrderActionStep.SECOND, OrderActionStep.THIRD].map((_step) => {
               return (
                 <React.Fragment key={_step}>
-                  <div className="flex items-center gap-2" key={_step}>
+                  <div
+                    className="flex min-w-0 flex-col sm:flex-row items-center gap-1 sm:gap-2"
+                    key={_step}
+                  >
                     <span
                       className={clsx(
-                        "w-8 h-8  rounded-full text-18 flex items-center justify-center border  ",
+                        "w-8 h-8 shrink-0 rounded-full text-18 flex items-center justify-center border",
                         _step === step
                           ? "border-green bg-green-bg"
                           : "border-quaternary-bg bg-quaternary-bg text-tertiary-text",
@@ -136,7 +139,7 @@ export default function OrderConfigurationPage({
                     </span>
                     <span
                       className={clsx(
-                        "text-18",
+                        "text-12 sm:text-18 text-center",
                         _step === step ? "text-primary-text" : "text-tertiary-text",
                       )}
                     >

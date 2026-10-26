@@ -314,7 +314,7 @@ export default function ReviewEditOrderDialog({
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={"Review changes"} />
 
-      <div className="card-spacing-x card-spacing-b w-[600px]">
+      <div className="card-spacing-x card-spacing-b w-full md:w-[600px]">
         {isFinalStatus && (
           <div className="pb-3 border-b border-secondary-border mb-4">
             <div className="mx-auto w-[80px] h-[80px] flex items-center justify-center relative mb-5">

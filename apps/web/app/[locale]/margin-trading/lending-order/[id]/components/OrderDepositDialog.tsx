@@ -261,7 +261,7 @@ export default function OrderDepositDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {status === OrderDepositStatus.INITIAL ? (
           <>
             <p className="text-secondary-text mb-4">{t("deposit_hint")}</p>

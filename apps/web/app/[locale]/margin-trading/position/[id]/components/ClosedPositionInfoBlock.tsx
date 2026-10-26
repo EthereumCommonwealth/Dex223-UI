@@ -24,7 +24,7 @@ export default function ClosedPositionInfoBlock({
   }, [position.assetsWithBalances]);
 
   return (
-    <div className="flex flex-col gap-5 px-10 py-5 bg-primary-bg rounded-5">
+    <div className="flex flex-col gap-5 px-4 sm:px-10 py-5 bg-primary-bg rounded-5">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Image width={40} height={40} src="/images/tokens/placeholder.svg" alt="" />

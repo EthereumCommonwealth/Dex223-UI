@@ -1,11 +1,11 @@
-import { useCallback } from "react";
-import { Address, getAbiItem, parseUnits } from "viem";
+import { useCallback, useMemo } from "react";
+import { getAbiItem, parseUnits } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import { getMarginAssetAddress } from "@/app/[locale]/margin-trading/helpers/assetFunding";
 import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
 import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
-import { OrderDepositStatus } from "@/app/[locale]/margin-trading/lending-order/[id]/stores/useDepositOrderStatusStore";
 import {
   PositionDepositStatus,
   useDepositPositionStatusStore,
@@ -18,9 +18,8 @@ import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
-import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
-import { getTokenAddressForStandard, Standard } from "@/sdk_bi/standard";
+import { Standard } from "@/sdk_bi/standard";
 import {
   GasFeeModel,
   RecentTransactionTitleTemplate,
@@ -41,22 +40,25 @@ export function usePositionDepositGasEstimate({
 }) {
   const chainId = useCurrentChainId();
   useMarginGasEstimate("depositPosition", () => {
-    if (!currency || !amount || parseUnits(amount, currency.decimals) <= 0n) return;
+    if (
+      !currency ||
+      currency.isNative ||
+      !amount.trim() ||
+      position.isClosed ||
+      position.isLiquidated
+    )
+      return;
+    const parsedAmount = parseUnits(amount, currency.decimals);
+    const depositAddress = getMarginAssetAddress(currency, standard);
+    const assetIndex = position.order.allowedTradingAddresses.findIndex(
+      (asset) => asset.toLowerCase() === depositAddress.toLowerCase(),
+    );
+    if (parsedAmount <= 0n || assetIndex < 0) return;
     return {
       abi: MARGIN_MODULE_ABI,
       address: MARGIN_TRADING_ADDRESS[chainId],
       functionName: "positionDeposit",
-      args: [
-        BigInt(position.id),
-        getTokenAddressForStandard(currency, standard),
-        BigInt(
-          position.order.allowedTradingAddresses.findIndex(
-            (asset) =>
-              asset.toLowerCase() === getTokenAddressForStandard(currency, standard).toLowerCase(),
-          ),
-        ),
-        parseUnits(amount, currency.decimals),
-      ],
+      args: [BigInt(position.id), depositAddress, BigInt(assetIndex), parsedAmount],
     };
   });
 }
@@ -77,94 +79,87 @@ export default function usePositionDeposit({
   const chainId = useCurrentChainId();
   const gasOverrides = useMarginWriteGas("depositPosition");
   const { data: walletClient } = useMarginWalletClient("depositPosition");
-
   const publicClient = usePublicClient();
   const { address } = useAccount();
-  const {
-    isAllowed: isAllowedA,
-    writeTokenApprove: approveA,
-    updateAllowance,
-  } = useStoreAllowance({
-    token: currency,
-    contractAddress: MARGIN_TRADING_ADDRESS[chainId],
-    amountToCheck: parseUnits(amount, currency?.decimals ?? 18),
-  });
-
   const { addRecentTransaction } = useRecentTransactionsStore();
+  const parsedAmount = useMemo(() => {
+    try {
+      return amount.trim() ? parseUnits(amount, currency.decimals) : null;
+    } catch {
+      return null;
+    }
+  }, [amount, currency.decimals]);
+  const depositAddress = getMarginAssetAddress(currency, standard);
+  const assetIndex = position.order.allowedTradingAddresses.findIndex(
+    (asset) => asset.toLowerCase() === depositAddress.toLowerCase(),
+  );
+  const { isAllowed, writeTokenApprove } = useStoreAllowance({
+    token: standard === Standard.ERC20 && !currency.isNative ? currency : undefined,
+    contractAddress: MARGIN_TRADING_ADDRESS[chainId],
+    amountToCheck: parsedAmount,
+  });
 
   usePositionDepositGasEstimate({ position, amount, currency, standard });
 
   const handlePositionDeposit = useCallback(
     async (amountToApprove: string) => {
-      // Never build a transaction against the zero address on chains without a margin deployment.
-      if (!isMarginDeployed(chainId)) {
-        return;
-      }
-
-      if (!walletClient || !publicClient || !address) {
+      if (!isMarginDeployed(chainId) || !walletClient || !publicClient || !address) return;
+      // positionDeposit is nonpayable and only the owner of an open position can call it.
+      const existingAsset = position.assetAddresses.some(
+        (asset) => asset.address.toLowerCase() === depositAddress.toLowerCase(),
+      );
+      if (
+        !parsedAmount ||
+        parsedAmount <= 0n ||
+        currency.isNative ||
+        assetIndex < 0 ||
+        position.isClosed ||
+        position.isLiquidated ||
+        position.owner.toLowerCase() !== address.toLowerCase() ||
+        (!existingAsset && position.assetAddresses.length >= position.order.currencyLimit)
+      ) {
+        setStatus(PositionDepositStatus.ERROR_DEPOSIT);
         return;
       }
 
       let failureStatus = PositionDepositStatus.ERROR_DEPOSIT;
       try {
-        if (standard === Standard.ERC20 && !currency.isNative) {
+        if (standard === Standard.ERC20 && !isAllowed) {
+          const approvalAmount = parseUnits(amountToApprove, currency.decimals);
+          if (approvalAmount < parsedAmount) throw new Error("Approval is too small");
           failureStatus = PositionDepositStatus.ERROR_APPROVE;
           setStatus(PositionDepositStatus.PENDING_APPROVE);
-          const approveResult = await approveA({
-            customAmount: parseUnits(amountToApprove, currency.decimals ?? 18),
+          const result = await writeTokenApprove({
+            customAmount: approvalAmount,
             customGasSettings: gasOverrides,
           });
-
-          if (!approveResult?.success) {
-            setStatus(PositionDepositStatus.ERROR_APPROVE);
-            return;
-          }
-
+          if (!result?.success) throw new Error("Approval failed");
+          setApproveHash(result.hash);
           setStatus(PositionDepositStatus.LOADING_APPROVE);
-
-          const approveReceipt = await publicClient.waitForTransactionReceipt({
-            hash: approveResult.hash,
-          });
-
-          if (approveReceipt.status !== "success") {
-            setStatus(PositionDepositStatus.ERROR_APPROVE);
-            return;
-          }
+          if (
+            (await publicClient.waitForTransactionReceipt({ hash: result.hash })).status !==
+            "success"
+          )
+            throw new Error("Approval failed");
         }
-
-        if (standard === Standard.ERC223 && !currency.isNative) {
+        if (standard === Standard.ERC223) {
           failureStatus = PositionDepositStatus.ERROR_TRANSFER;
           setStatus(PositionDepositStatus.PENDING_TRANSFER);
-          const _params = {
-            account: address as Address,
+          const hash = await walletClient.writeContract({
             abi: ERC223_ABI,
-            functionName: "transfer" as const,
-            address: currency.wrapped.address1 as Address,
-            args: [
-              MARGIN_TRADING_ADDRESS[chainId as DexChainId],
-              parseUnits(amount, currency.decimals ?? 18),
-            ] as const,
-          };
-
-          const _firstDepositHash = await walletClient.writeContract({
-            ..._params,
+            address: depositAddress,
+            functionName: "transfer",
+            args: [MARGIN_TRADING_ADDRESS[chainId], parsedAmount],
             ...gasOverrides,
             account: undefined,
           });
+          setTransferHash(hash);
           setStatus(PositionDepositStatus.LOADING_TRANSFER);
-          setTransferHash(_firstDepositHash);
-
-          const transaction = await getTransactionWithRetries({
-            hash: _firstDepositHash,
-            publicClient,
-          });
-
-          const nonce = transaction.nonce;
-
+          const transaction = await getTransactionWithRetries({ hash, publicClient });
           addRecentTransaction(
             {
-              hash: _firstDepositHash,
-              nonce,
+              hash,
+              nonce: transaction.nonce,
               chainId,
               gas: {
                 model: GasFeeModel.EIP1559,
@@ -173,58 +168,44 @@ export default function usePositionDeposit({
                 maxPriorityFeePerGas: undefined,
               },
               params: {
-                ...stringifyObject(_params),
+                ...stringifyObject({
+                  address: depositAddress,
+                  functionName: "transfer",
+                  args: [MARGIN_TRADING_ADDRESS[chainId], parsedAmount],
+                }),
                 abi: [getAbiItem({ name: "transfer", abi: ERC223_ABI })],
               },
               title: {
                 symbol: currency.symbol!,
                 template: RecentTransactionTitleTemplate.TRANSFER,
-                amount: amount,
-                logoURI: currency?.logoURI || "/images/tokens/placeholder.svg",
+                amount,
+                logoURI: currency.logoURI || "/images/tokens/placeholder.svg",
               },
             },
             address,
           );
-
-          const receipt = await publicClient.waitForTransactionReceipt({ hash: _firstDepositHash });
-
-          if (receipt.status !== "success") {
-            setStatus(PositionDepositStatus.ERROR_TRANSFER);
-            return;
-          }
+          if ((await publicClient.waitForTransactionReceipt({ hash })).status !== "success")
+            throw new Error("Transfer failed");
         }
 
         failureStatus = PositionDepositStatus.ERROR_DEPOSIT;
         setStatus(PositionDepositStatus.PENDING_DEPOSIT);
-
-        const depositOrderHash = await walletClient.writeContract({
+        const hash = await walletClient.writeContract({
           abi: MARGIN_MODULE_ABI,
           address: MARGIN_TRADING_ADDRESS[chainId],
           functionName: "positionDeposit",
-          args: [
-            BigInt(position.id),
-            getTokenAddressForStandard(currency, standard),
-            BigInt(
-              position.order.allowedTradingAddresses.findIndex(
-                (asset) =>
-                  asset.toLowerCase() ===
-                  getTokenAddressForStandard(currency, standard).toLowerCase(),
-              ),
-            ),
-            parseUnits(amount, currency.decimals ?? 18),
-          ],
+          args: [BigInt(position.id), depositAddress, BigInt(assetIndex), parsedAmount],
           ...gasOverrides,
           account: undefined,
         });
+        setDepositHash(hash);
         setStatus(PositionDepositStatus.LOADING_DEPOSIT);
-
-        const receipt = await publicClient.waitForTransactionReceipt({ hash: depositOrderHash });
-
-        if (receipt.status === "success") {
-          setStatus(PositionDepositStatus.SUCCESS);
-        } else {
-          setStatus(PositionDepositStatus.ERROR_DEPOSIT);
-        }
+        const receipt = await publicClient.waitForTransactionReceipt({ hash });
+        setStatus(
+          receipt.status === "success"
+            ? PositionDepositStatus.SUCCESS
+            : PositionDepositStatus.ERROR_DEPOSIT,
+        );
       } catch (error) {
         console.error(error);
         setStatus(failureStatus);
@@ -232,19 +213,24 @@ export default function usePositionDeposit({
     },
     [
       addRecentTransaction,
-      address,
       amount,
-      approveA,
-      chainId,
-      gasOverrides,
       currency,
-      position.id,
-      position.order.allowedTradingAddresses,
+      address,
+      assetIndex,
+      chainId,
+      depositAddress,
+      gasOverrides,
+      isAllowed,
+      parsedAmount,
+      position,
       publicClient,
+      setApproveHash,
+      setDepositHash,
       setStatus,
       setTransferHash,
       standard,
       walletClient,
+      writeTokenApprove,
     ],
   );
 

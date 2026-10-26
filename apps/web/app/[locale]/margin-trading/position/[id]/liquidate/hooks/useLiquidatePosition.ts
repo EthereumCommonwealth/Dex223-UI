@@ -95,11 +95,10 @@ export default function useLiquidatePosition(position: MarginPosition) {
       setPositionLiquidateHash(hash);
       setStatus(PositionLiquidateStatus.LOADING_LIQUIDATE);
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
-      setStatus(
-        receipt.status === "success"
-          ? PositionLiquidateStatus.SUCCESS
-          : PositionLiquidateStatus.ERROR_LIQUIDATE,
-      );
+      if (receipt.status !== "success") throw new Error("Liquidation failed");
+      const after = await readPosition();
+      if (after[6]) throw new Error("Position is still open; retry liquidation after the freeze");
+      setStatus(PositionLiquidateStatus.SUCCESS);
     } catch (error) {
       console.error(error);
       setStatus(failureStatus);
