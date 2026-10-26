@@ -193,7 +193,7 @@ export default function ConfirmCreateTokenDialog({
               <span className="text-14 text-secondary-text">{t("total_supply")}</span>
 
               <div className="flex items-center gap-1">
-                <span>{+createTokenSettings.totalSupply}</span>
+                <span>{createTokenSettings.totalSupply}</span>
                 <span className="text-14 text-secondary-text">{createTokenSettings.symbol}</span>
               </div>
             </div>

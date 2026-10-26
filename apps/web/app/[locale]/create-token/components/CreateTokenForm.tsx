@@ -107,8 +107,12 @@ export default function CreateTokenForm() {
       <Formik
         initialValues={createTokenSettings}
         onSubmit={(values) => {
+          setCreateTokenSettings({
+            ...values,
+            name: values.name.trim(),
+            symbol: values.symbol.trim(),
+          });
           setIsOpen(true);
-          setCreateTokenSettings(values);
         }}
         validationSchema={getCreateTokenSchema(t)}
       >
