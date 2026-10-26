@@ -11,6 +11,7 @@ import {
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import { useTrade } from "@/app/[locale]/swap/hooks/useTrade";
+import { readSwapReceipt, swapOutcomeFromReceipt } from "@/app/[locale]/swap/lib/readSwapReceipt";
 import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
 import {
   useSwapGasLimitStore,
@@ -417,16 +418,13 @@ export default function useSwap() {
 
           let approveReceipt;
           try {
-            approveReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            approveReceipt = await readSwapReceipt(publicClient, result.hash);
           } catch (e) {
-            // Approve was broadcast; keep LOADING_APPROVE rather than reporting a failure.
             console.error(e);
-            return;
+            approveReceipt = null;
           }
 
-          if (approveReceipt.status === "reverted") {
+          if (!approveReceipt || approveReceipt.status === "reverted") {
             setSwapStatus(SwapStatus.APPROVE_ERROR);
             return;
           }
@@ -450,6 +448,7 @@ export default function useSwap() {
       openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
       let hash;
+      let gasToUse: bigint | undefined;
 
       try {
         const estimatedGas = await publicClient.estimateContractGas({
@@ -457,7 +456,7 @@ export default function useSwap() {
           ...swapParams,
         } as any);
 
-        const gasToUse = customGasLimit ? customGasLimit : estimatedGas + BigInt(30000); // set custom gas here if user changed it
+        gasToUse = customGasLimit ? customGasLimit : estimatedGas + BigInt(30000); // set custom gas here if user changed it
 
         let _request;
         try {
@@ -534,29 +533,23 @@ export default function useSwap() {
 
             let receipt;
             try {
-              receipt = await publicClient.waitForTransactionReceipt({ hash });
+              receipt = await readSwapReceipt(publicClient, hash);
             } catch (e) {
-              // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
-              // mean it failed. Keep LOADING and let the recent-transaction tracker settle it.
               console.error(e);
-              return;
+              receipt = null;
             }
-            updateAllowance();
-            if (receipt.status === "success") {
+
+            const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
+            if (outcome === "success") {
+              updateAllowance();
               setSwapStatus(SwapStatus.SUCCESS);
-            }
-
-            if (receipt.status === "reverted") {
+            } else {
               setSwapStatus(SwapStatus.ERROR);
-
-              const ninetyEightPercent = (gasToUse * BigInt(98)) / BigInt(100);
-
-              if (receipt.gasUsed >= ninetyEightPercent && receipt.gasUsed <= gasToUse) {
-                setErrorType(SwapError.OUT_OF_GAS);
-              } else {
-                setErrorType(SwapError.UNKNOWN);
-              }
+              setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
             }
+          } else {
+            setErrorType(SwapError.UNKNOWN);
+            setSwapStatus(SwapStatus.ERROR);
           }
         } else {
           setSwapStatus(SwapStatus.INITIAL);
@@ -564,7 +557,21 @@ export default function useSwap() {
       } catch (e) {
         console.error(e);
         if (hash) {
-          // Already broadcast: don't report failure for a tx that may still succeed.
+          let receipt = null;
+          try {
+            receipt = await publicClient.getTransactionReceipt({ hash });
+          } catch (readError) {
+            console.error(readError);
+          }
+
+          const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
+          if (outcome === "success") {
+            updateAllowance();
+            setSwapStatus(SwapStatus.SUCCESS);
+          } else {
+            setSwapStatus(SwapStatus.ERROR);
+            setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
+          }
           return;
         }
         addToast("Error while executing contract", "error");
