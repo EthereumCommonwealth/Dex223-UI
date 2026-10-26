@@ -182,7 +182,8 @@ export default function PositionDepositDialog({
     () =>
       status === PositionDepositStatus.SUCCESS ||
       status === PositionDepositStatus.ERROR_DEPOSIT ||
-      status === PositionDepositStatus.ERROR_APPROVE,
+      status === PositionDepositStatus.ERROR_APPROVE ||
+      status === PositionDepositStatus.ERROR_TRANSFER,
     [status],
   );
 
@@ -208,7 +209,7 @@ export default function PositionDepositDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <ReadonlyTokenAmountCard

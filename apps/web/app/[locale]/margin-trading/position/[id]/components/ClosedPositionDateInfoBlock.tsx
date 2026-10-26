@@ -12,7 +12,7 @@ export default function ClosedPositionDateInfoBlock({ position }: { position: Ma
   const t = useTranslations("Margin");
   const chainId = useCurrentChainId();
   return (
-    <div className="rounded-5 gap-x-5 gap-y-4 bg-primary-bg px-10 pt-4 pb-5 mb-5">
+    <div className="rounded-5 gap-x-5 gap-y-4 bg-primary-bg px-4 sm:px-10 pt-4 pb-5 mb-5">
       <OrderInfoBlock
         title={t("closing_details")}
         cards={[

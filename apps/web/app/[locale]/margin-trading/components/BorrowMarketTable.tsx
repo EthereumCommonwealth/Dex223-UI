@@ -49,7 +49,6 @@ export function HeaderItem({
 }) {
   return (
     <div
-      role={handleSort && "button"}
       onClick={() => {
         if (handleSort) handleSort(field);
       }}
@@ -118,6 +117,7 @@ function formatOrderAmount(raw: string) {
 }
 
 function formatOrderDuration(seconds: number, t: ReturnType<typeof useTranslations<"Margin">>) {
+  seconds = Number(seconds);
   if (!Number.isFinite(seconds) || seconds <= 0) {
     return t("duration_zero");
   }
@@ -368,7 +368,7 @@ export default function BorrowMarketTable({
                             {o.leverage}x
                           </div>
                           <div className=" h-[56px] flex items-center group-hocus:bg-tertiary-bg duration-200 pr-2">
-                            {Math.floor(o.interestRate / 100)}%
+                            {formatFloat(Number(o.interestRate) / 100, { trimZero: true })}%
                           </div>
                           <div className="h-[56px] min-w-0 flex items-center whitespace-nowrap group-hocus:bg-tertiary-bg duration-200 pr-2">
                             {formatOrderDuration(o.positionDuration, t)}
@@ -501,10 +501,10 @@ export default function BorrowMarketTable({
       {!loading && !orders?.length && (
         <div className="bg-primary-bg rounded-5 h-[340px] flex items-center justify-center text-secondary-text bg-empty-no-borrow-found bg-no-repeat bg-right-top">
           {error
-            ? "Lending orders could not be loaded."
+            ? t("orders_load_error")
             : isFilterActive
-              ? "No results found. Adjust your filters and try again"
-              : "No lending orders yet"}
+              ? t("orders_no_results")
+              : t("orders_none_yet")}
         </div>
       )}
     </>

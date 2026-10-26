@@ -32,11 +32,11 @@ function BalanceCard({ position }: { position: MarginPosition }) {
         </div>
 
         <p className="font-medium text-20">
-          {actualBalance
+          {actualBalance != null
             ? formatFloat(formatUnits(actualBalance, position.loanAsset.decimals))
             : t("loading")}{" "}
           /{" "}
-          {expectedBalance
+          {expectedBalance != null
             ? formatFloat(formatUnits(expectedBalance, position.loanAsset.decimals))
             : t("loading")}
           <span className="text-secondary-text"> {position.loanAsset.symbol}</span>
@@ -48,11 +48,9 @@ function BalanceCard({ position }: { position: MarginPosition }) {
 
 export default function ActivePositionMainInfoBlock({
   position,
-  setIsWithdrawDialogOpened,
   setIsCloseDialogOpened,
 }: {
   position: MarginPosition;
-  setIsWithdrawDialogOpened: (isOpened: boolean) => void;
   setIsCloseDialogOpened: (isOpened: boolean) => void;
 }) {
   const t = useTranslations("Margin");
@@ -93,6 +91,7 @@ export default function ActivePositionMainInfoBlock({
         <div className="flex flex-wrap items-center gap-2 justify-end">
           <Button
             colorScheme={ButtonColor.LIGHT_GREEN}
+            fullWidth
             disabled={
               subjectToLiquidation || address?.toLowerCase() !== position.owner.toLowerCase()
             }
@@ -117,13 +116,6 @@ export default function ActivePositionMainInfoBlock({
             </Link>
           ) : (
             <>
-              <Button
-                disabled={!position.isClosed}
-                colorScheme={ButtonColor.LIGHT_GREEN}
-                onClick={() => setIsWithdrawDialogOpened(true)}
-              >
-                {t("withdraw")}
-              </Button>
               <Button
                 colorScheme={ButtonColor.LIGHT_GREEN}
                 onClick={() => setIsCloseDialogOpened(true)}

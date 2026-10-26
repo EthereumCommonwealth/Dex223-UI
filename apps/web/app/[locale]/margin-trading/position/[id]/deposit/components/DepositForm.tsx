@@ -1,13 +1,13 @@
 import { useTranslations } from "next-intl";
 import React, { useCallback, useMemo, useState } from "react";
-import { formatEther, formatGwei } from "viem";
-import { useAccount } from "wagmi";
+import { formatEther, formatGwei, parseUnits } from "viem";
 
+import { getMarginAssetAddress } from "@/app/[locale]/margin-trading/helpers/assetFunding";
 import PositionDepositDialog from "@/app/[locale]/margin-trading/position/[id]/deposit/components/PositionDepositDialog";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import { useSwapRecentTransactionsStore } from "@/app/[locale]/swap/stores/useSwapRecentTransactions";
 import { InputSize } from "@/components/atoms/Input";
-import TextField, { InputLabel } from "@/components/atoms/TextField";
+import { HelperText, InputLabel } from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize } from "@/components/buttons/IconButton";
 import TokenInput from "@/components/common/TokenInput";
@@ -28,7 +28,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
 
   const handlePick = useCallback((token: Currency) => {
     setAssetToDeposit(token);
-    // setTokenAStandard(Standard.ERC20);
+    setAssetToDepositStandard(Standard.ERC20);
 
     setIsOpenedTokenPick(false);
   }, []);
@@ -40,12 +40,36 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
     refetch: refetchABalance,
   } = useTokenBalances(assetToDeposit);
 
-  const isCurrencyLimitReached = useMemo(() => {
-    return position.assets.length === position.order.currencyLimit;
-  }, [position.assets.length, position.order.currencyLimit]);
+  const validationError = useMemo(() => {
+    if (!assetToDeposit || !amountToDeposit.trim()) return t("deposit_amount_required");
+    try {
+      const amount = parseUnits(amountToDeposit, assetToDeposit.decimals);
+      if (amount <= 0n) return t("deposit_amount_required");
+      const balance = assetToDepositStandard === Standard.ERC223 ? tokenA1Balance : tokenA0Balance;
+      if (!balance || amount > balance.value) return t("insufficient_balance");
+      const address = getMarginAssetAddress(assetToDeposit, assetToDepositStandard);
+      const existing = position.assetAddresses.some(
+        (asset) => asset.address.toLowerCase() === address.toLowerCase(),
+      );
+      if (!existing && position.assetAddresses.length >= position.order.currencyLimit)
+        return t("deposit_currency_limit_reached");
+      return undefined;
+    } catch {
+      return t("deposit_amount_required");
+    }
+  }, [
+    amountToDeposit,
+    assetToDeposit,
+    assetToDepositStandard,
+    position.assetAddresses,
+    position.order.currencyLimit,
+    t,
+    tokenA0Balance,
+    tokenA1Balance,
+  ]);
 
   return (
-    <div className="w-[600px] card-spacing-x card-spacing-b bg-primary-bg rounded-5">
+    <div className="w-full max-w-[600px] card-spacing-x card-spacing-b bg-primary-bg rounded-5">
       <>
         <div className="flex justify-between items-center mb-2.5 pt-1.5">
           <h3 className="font-bold text-20">{t("deposit")}</h3>
@@ -94,6 +118,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
           </div>
         </div>
 
+        {assetToDeposit && validationError ? <HelperText error={validationError} /> : null}
         <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
           <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
             <p className="flex flex-col text-tertiary-text">
@@ -127,7 +152,11 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
         </div>
 
         {assetToDeposit ? (
-          <Button onClick={() => setIsDepositDialogOpened(true)} fullWidth>
+          <Button
+            disabled={Boolean(validationError)}
+            onClick={() => setIsDepositDialogOpened(true)}
+            fullWidth
+          >
             {t("deposit_symbol", { symbol: assetToDeposit.symbol })}
           </Button>
         ) : (
@@ -151,7 +180,7 @@ export default function DepositForm({ position }: { position: MarginPosition }) 
           handlePick={handlePick}
           isOpen={isOpenedTokenPick}
           setIsOpen={setIsOpenedTokenPick}
-          availableTokens={position.order.allowedTradingAssets}
+          availableTokens={position.order.allowedTradingAssets.filter((asset) => !asset.isNative)}
         />
       </>
     </div>
