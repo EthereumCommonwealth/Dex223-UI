@@ -1,6 +1,6 @@
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { useSwapTokensStore } from "@/app/[locale]/swap/stores/useSwapTokensStore";
 import { currencyToQueryParam, findCurrencyByQuery } from "@/functions/findCurrencyByQuery";
@@ -42,8 +42,11 @@ export const useSwapSearchParams = () => {
   const chainId = useCurrentChainId();
   const { tokens, isLoading: arePoolTokensLoading } = useSwapTokens();
 
-  const { tokenA, tokenB, setTokenA, setTokenB, setTokenAStandard, setTokenBStandard } =
+  const { tokenA, tokenB, setTokenA, setTokenB, setTokenAStandard, setTokenBStandard, reset } =
     useSwapTokensStore();
+  const previousChainId = useRef(chainId);
+  // A chain change must not reuse the previous chain's tokenA/tokenB query.
+  const ignoreQueryRef = useRef(false);
 
   const currentPath = useMemo(() => {
     return searchParams.toString() ? pathname + "?" + searchParams.toString() : pathname;
@@ -68,11 +71,24 @@ export const useSwapSearchParams = () => {
   }, [pathname, searchParams, tokenA, tokenB]);
 
   useEffect(() => {
+    const chainChanged = previousChainId.current !== chainId;
+    if (chainChanged) {
+      previousChainId.current = chainId;
+      ignoreQueryRef.current = true;
+      reset();
+      if (isInitialized) {
+        setIsInitialized(false);
+        return;
+      }
+    }
+
     // Wait for pool tokens too, so a pair linked from the Pools page resolves even when a token
     // is in no enabled list.
     if (!isInitialized && tokens.length > 1 && !arePoolTokensLoading) {
-      const queryTokenA = searchParams.get(SwapQueryParams.tokenA);
-      const queryTokenB = searchParams.get(SwapQueryParams.tokenB);
+      const ignoreQuery = ignoreQueryRef.current;
+      ignoreQueryRef.current = false;
+      const queryTokenA = ignoreQuery ? null : searchParams.get(SwapQueryParams.tokenA);
+      const queryTokenB = ignoreQuery ? null : searchParams.get(SwapQueryParams.tokenB);
 
       const defaultTokenB = DEFAULT_SWAP_TOKEN_B[chainId];
       if (!queryTokenA && !queryTokenB && defaultTokenB) {
@@ -111,6 +127,7 @@ export const useSwapSearchParams = () => {
     setTokenB,
     setTokenAStandard,
     setTokenBStandard,
+    reset,
     isInitialized,
     arePoolTokensLoading,
   ]);
