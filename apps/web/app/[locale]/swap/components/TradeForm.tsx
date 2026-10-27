@@ -38,8 +38,8 @@ import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/u
 import { networks } from "@/config/networks";
 import { currencyToQueryParam } from "@/functions/findCurrencyByQuery";
 import { formatFloat } from "@/functions/formatFloat";
-import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { getGasSettings } from "@/functions/gasSettings";
+import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
