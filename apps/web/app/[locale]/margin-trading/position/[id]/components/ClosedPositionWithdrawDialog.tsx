@@ -148,7 +148,7 @@ export default function ClosedPositionWithdrawDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <InputLabel
@@ -158,7 +158,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div
@@ -216,7 +216,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div
@@ -286,7 +286,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {withdrawnAssets
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div

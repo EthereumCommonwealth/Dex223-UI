@@ -82,7 +82,7 @@ export default async function RootLayout({ children, params }: PropsWithChildren
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData(locale)) }}
       />
       <Providers messages={messages} locale={locale}>
-        <div className="grid h-[100dvh] grid-rows-layout grid-cols-[minmax(0,1fr)]">
+        <div className="grid min-h-[100dvh] grid-rows-layout grid-cols-[minmax(0,1fr)] pb-[var(--bottom-notifications-height,0px)]">
           <Header />
           <div>{children}</div>
           <Footer />

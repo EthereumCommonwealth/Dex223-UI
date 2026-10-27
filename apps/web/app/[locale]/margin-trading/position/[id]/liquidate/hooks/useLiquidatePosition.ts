@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import {
   PositionLiquidateStatus,
@@ -15,13 +15,15 @@ const MAX_FREEZE_DURATION = 3600n;
 
 export default function useLiquidatePosition(position: MarginPosition) {
   const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
   const { setStatus, setPositionLiquidateHash, setPositionFreezeHash } =
     usePositionLiquidateStatusStore();
 
   const handleLiquidatePosition = useCallback(async () => {
-    if (!isMarginDeployed(chainId) || !walletClient || !publicClient || !position) return;
+    if (!isMarginDeployed(chainId) || !walletClient || !publicClient || !position || !address)
+      return;
     let failureStatus = PositionLiquidateStatus.ERROR_LIQUIDATE;
     try {
       const readPosition = () =>
@@ -50,7 +52,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
           abi: MARGIN_MODULE_ABI,
           address: MARGIN_TRADING_ADDRESS[chainId],
           functionName: "liquidate",
-          args: [BigInt(position.id), position.order.owner],
+          args: [BigInt(position.id), address],
         });
 
       // Fresh positions and expired freezes need a freeze call; a live freeze only needs liquidation.
@@ -90,6 +92,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
       setStatus(failureStatus);
     }
   }, [
+    address,
     chainId,
     position,
     publicClient,

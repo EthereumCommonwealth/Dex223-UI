@@ -49,7 +49,7 @@ export default function ActivePositionAssetsBlock({ position }: { position: Marg
   const tokenLists = useTokenLists();
 
   return (
-    <div className="bg-primary-bg rounded-5 px-10 pt-4 pb-5 flex flex-col gap-3 mb-5">
+    <div className="bg-primary-bg rounded-5 px-4 sm:px-10 pt-4 pb-5 flex flex-col gap-3 mb-5">
       <h3 className="text-20 text-secondary-text font-medium">{t("assets")}</h3>
 
       <div className="bg-tertiary-bg rounded-3 px-5 pb-5 pt-2">
