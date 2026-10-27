@@ -162,7 +162,10 @@ export default function ConfirmCreateTokenDialog({
   } = useCreateToken(createTokenSettings);
   const isInitialStatus = useMemo(() => status === CreateTokenStatus.INITIAL, [status]);
   const isFinalStatus = useMemo(
-    () => status === CreateTokenStatus.SUCCESS || status === CreateTokenStatus.ERROR_CREATE_TOKEN,
+    () =>
+      status === CreateTokenStatus.SUCCESS ||
+      status === CreateTokenStatus.ERROR_CREATE_TOKEN ||
+      status === CreateTokenStatus.ERROR_CREATE_WRAPPER,
     [status],
   );
 
