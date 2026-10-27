@@ -478,6 +478,7 @@
     "any_token_short": "Tout voir",
     "sell_hint": "Envoyez l'actif sélectionné depuis votre portefeuille connecté vers Onramp pour recevoir du fiat.",
     "sell_hint_any": "Choisissez l'actif dans le widget Onramp, puis envoyez-le depuis votre portefeuille connecté pour recevoir du fiat.",
+    "sell_paused": "La vente de D223 via Onramp est suspendue le temps de résoudre un problème de dépôt avec Onramp. N'envoyez pas de D223 à Onramp. La vente d'ETH, d'USDC et d'USDT fonctionne toujours.",
     "swap_hint": "Échangez des cryptos prises en charge dans Onramp, puis revenez trader sur DEX223.",
     "receiving_wallet": "Portefeuille de réception",
     "sending_wallet": "Portefeuille d'envoi",
