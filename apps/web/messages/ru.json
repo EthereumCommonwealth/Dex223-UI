@@ -1399,8 +1399,6 @@
     "select_token": "Выбрать токен",
     "fee_for_liquidator": "Комиссия ликвидации (для ликвидатора)",
     "fee_for_liquidator_tooltip": "Комиссия адресу, который ликвидирует позицию.",
-    "fee_for_lender": "Комиссия ликвидации (для кредитора)",
-    "fee_for_lender_tooltip": "Дополнительная комиссия кредитору при ликвидации позиции.",
     "may_initiate_liquidation": "Может начать ликвидацию",
     "anyone": "Любой",
     "specified_addresses": "Указанные адреса",

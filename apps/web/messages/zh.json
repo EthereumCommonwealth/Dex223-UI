@@ -1399,8 +1399,6 @@
     "select_token": "选择代币",
     "fee_for_liquidator": "清算费用（给清算人）",
     "fee_for_liquidator_tooltip": "支付给清算仓位地址的费用。",
-    "fee_for_lender": "清算费用（给出借人）",
-    "fee_for_lender_tooltip": "仓位被清算时额外支付给出借人的费用。",
     "may_initiate_liquidation": "可发起清算",
     "anyone": "任何人",
     "specified_addresses": "指定地址",

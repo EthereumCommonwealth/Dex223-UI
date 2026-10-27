@@ -1399,8 +1399,6 @@
     "select_token": "Sélectionner un jeton",
     "fee_for_liquidator": "Frais de liquidation (pour le liquidateur)",
     "fee_for_liquidator_tooltip": "Frais versés à l’adresse qui liquide une position.",
-    "fee_for_lender": "Frais de liquidation (pour le prêteur)",
-    "fee_for_lender_tooltip": "Frais supplémentaires versés au prêteur lorsqu’une position est liquidée.",
     "may_initiate_liquidation": "Peut initier la liquidation",
     "anyone": "N’importe qui",
     "specified_addresses": "Adresses spécifiées",

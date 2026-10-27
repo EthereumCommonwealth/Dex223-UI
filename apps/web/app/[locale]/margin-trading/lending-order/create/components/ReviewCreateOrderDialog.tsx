@@ -252,7 +252,6 @@ export default function ReviewCreateOrderDialog({
     loanAmount,
     liquidationFeeToken,
     liquidationFeeForLiquidator,
-    liquidationFeeForLender,
     liquidationMode,
     minimumBorrowingAmount,
     orderCurrencyLimit,

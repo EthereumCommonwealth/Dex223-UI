@@ -1399,8 +1399,6 @@
     "select_token": "Seleccionar token",
     "fee_for_liquidator": "Comisión de liquidación (para el liquidador)",
     "fee_for_liquidator_tooltip": "Comisión pagada a la dirección que liquida una posición.",
-    "fee_for_lender": "Comisión de liquidación (para el prestamista)",
-    "fee_for_lender_tooltip": "Comisión extra pagada al prestamista cuando se liquida una posición.",
     "may_initiate_liquidation": "Puede iniciar la liquidación",
     "anyone": "Cualquiera",
     "specified_addresses": "Direcciones especificadas",

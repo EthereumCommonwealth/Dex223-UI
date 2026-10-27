@@ -1410,8 +1410,6 @@
     "select_token": "Select token",
     "fee_for_liquidator": "Liquidation fee (for liquidator)",
     "fee_for_liquidator_tooltip": "Fee paid to the address that liquidates a position.",
-    "fee_for_lender": "Liquidation fee (for lender)",
-    "fee_for_lender_tooltip": "Extra fee paid to the lender when a position is liquidated.",
     "may_initiate_liquidation": "May initiate liquidation",
     "anyone": "Anyone",
     "specified_addresses": "Specified addresses",

@@ -1399,8 +1399,6 @@
     "select_token": "토큰 선택",
     "fee_for_liquidator": "청산 수수료 (청산인)",
     "fee_for_liquidator_tooltip": "포지션을 청산하는 주소에 지급되는 수수료입니다.",
-    "fee_for_lender": "청산 수수료 (대여자)",
-    "fee_for_lender_tooltip": "포지션이 청산될 때 대여자에게 지급되는 추가 수수료입니다.",
     "may_initiate_liquidation": "청산을 시작할 수 있는 주체",
     "anyone": "누구나",
     "specified_addresses": "지정된 주소",
