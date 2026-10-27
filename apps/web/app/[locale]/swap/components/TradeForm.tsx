@@ -14,6 +14,7 @@ import SwapDetails from "@/app/[locale]/swap/components/SwapDetails";
 import SwapSettingsDialog from "@/app/[locale]/swap/components/SwapSettingsDialog";
 import { useSwapEstimatedGas, useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
 import { useTrade, useTradeComputation } from "@/app/[locale]/swap/hooks/useTrade";
+import { nativeMaxAmount, swapGasUnits } from "@/app/[locale]/swap/lib/nativeMaxAmount";
 import { useConfirmConvertDialogStore } from "@/app/[locale]/swap/stores/useConfirmConvertDialogOpened";
 import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
 import { Field, useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
@@ -37,6 +38,7 @@ import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/u
 import { networks } from "@/config/networks";
 import { currencyToQueryParam } from "@/functions/findCurrencyByQuery";
 import { formatFloat } from "@/functions/formatFloat";
+import { getGasSettings } from "@/functions/gasSettings";
 import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
@@ -491,6 +493,52 @@ export default function TradeForm({
     return undefined;
   }, [baseFee, estimatedGas, gasPriceOption, gasPriceSettings, priorityFee]);
 
+  const nativeGasPrice = useMemo(() => {
+    const settings = getGasSettings({
+      baseFee,
+      chainId,
+      gasPrice,
+      priorityFee,
+      gasPriceOption,
+      gasPriceSettings,
+    });
+
+    if (!settings) {
+      return undefined;
+    }
+
+    if ("maxFeePerGas" in settings) {
+      return settings.maxFeePerGas;
+    }
+
+    return settings.gasPrice;
+  }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings, priorityFee]);
+
+  const nativeMaxTypedValue = useMemo(() => {
+    if (!tokenA?.isNative || !tokenA0Balance) {
+      return undefined;
+    }
+
+    return nativeMaxAmount({
+      balance: tokenA0Balance.value,
+      decimals: tokenA0Balance.decimals,
+      gasUnits: swapGasUnits(estimatedGas, customGasLimit),
+      gasPrice: nativeGasPrice,
+    });
+  }, [customGasLimit, estimatedGas, nativeGasPrice, tokenA, tokenA0Balance]);
+
+  const applyNativeMax = useCallback(() => {
+    // Fees are still loading. Leave whatever the user already typed.
+    if (nativeGasPrice === undefined || nativeGasPrice <= BigInt(0)) {
+      return;
+    }
+
+    setTypedValue({
+      typedValue: nativeMaxTypedValue ?? "",
+      field: Field.CURRENCY_A,
+    });
+  }, [nativeGasPrice, nativeMaxTypedValue, setTypedValue]);
+
   const _isMobile = useMediaQuery({ query: "(max-width: 767px)" });
   const nativeCurrency = useNativeCurrency();
   const { price } = useUSDPrice(wrappedTokens[chainId]?.address0);
@@ -565,6 +613,10 @@ export default function TradeForm({
           (Boolean(tokenA0Balance?.value) && tokenAStandard === Standard.ERC20) ||
           (Boolean(tokenA1Balance?.value) && tokenAStandard === Standard.ERC223)
             ? () => {
+                if (tokenA?.isNative && tokenAStandard === Standard.ERC20) {
+                  applyNativeMax();
+                  return;
+                }
                 if (tokenA0Balance && tokenAStandard === Standard.ERC20) {
                   setTypedValue({
                     typedValue: tokenA0Balance.formatted,
@@ -621,7 +673,13 @@ export default function TradeForm({
             typedValue === formatUnits(tokenA1Balance.value / BigInt(2), tokenA1Balance.decimals))
         }
         isMax={
-          (tokenAStandard === Standard.ERC20 &&
+          (tokenA?.isNative &&
+            tokenAStandard === Standard.ERC20 &&
+            nativeMaxTypedValue !== undefined &&
+            nativeMaxTypedValue !== "" &&
+            typedValue === nativeMaxTypedValue) ||
+          (!tokenA?.isNative &&
+            tokenAStandard === Standard.ERC20 &&
             typedValue !== "0" &&
             tokenA0Balance &&
             typedValue === tokenA0Balance.formatted) ||
