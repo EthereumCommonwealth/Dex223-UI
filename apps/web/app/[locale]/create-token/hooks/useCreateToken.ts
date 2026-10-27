@@ -98,7 +98,7 @@ export default function useCreateToken(createTokenSettings: {
   const { data: walletClient } = useWalletClient();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
-  const { address: accountAddress } = useAccount();
+  const { address: accountAddress, chainId: walletChainId } = useAccount();
   const { status, setStatus, setCreateTokenHash, setCreateWrapperHash } =
     useCreateTokenStatusStore();
   const { addRecentTransaction } = useRecentTransactionsStore();
@@ -120,7 +120,7 @@ export default function useCreateToken(createTokenSettings: {
   }, [baseFee, chainId, gasPrice, priorityFee, gasPriceOption, gasPriceSettings]);
 
   const handleCreateToken = useCallback(async () => {
-    if (!walletClient || !publicClient || !accountAddress) {
+    if (!walletClient || !publicClient || !accountAddress || walletChainId !== chainId) {
       return;
     }
 
@@ -308,6 +308,7 @@ export default function useCreateToken(createTokenSettings: {
     setCreateTokenHash,
     setCreateWrapperHash,
     setStatus,
+    walletChainId,
     walletClient,
   ]);
 
