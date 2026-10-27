@@ -474,6 +474,7 @@
     "any_token_short": "Ver todos",
     "sell_hint": "Envie o ativo selecionado da sua carteira conectada para o Onramp para receber fiat.",
     "sell_hint_any": "Escolha o ativo no widget do Onramp e envie-o da sua carteira conectada para receber fiat.",
+    "sell_paused": "A venda de D223 pela Onramp está pausada enquanto resolvemos um problema de depósito com a Onramp. Não envie D223 para a Onramp. A venda de ETH, USDC e USDT continua funcionando.",
     "swap_hint": "Troque criptomoedas suportadas no Onramp e volte para negociar no DEX223.",
     "receiving_wallet": "Carteira de recebimento",
     "sending_wallet": "Carteira de envio",

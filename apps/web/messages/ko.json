@@ -474,6 +474,7 @@
     "any_token_short": "전체 보기",
     "sell_hint": "선택한 자산을 연결된 지갑에서 Onramp로 보내 법정화폐를 받으세요.",
     "sell_hint_any": "Onramp 위젯에서 자산을 선택한 뒤 연결된 지갑에서 보내 법정화폐를 받으세요.",
+    "sell_paused": "Onramp 입금 문제를 해결하는 동안 Onramp를 통한 D223 판매가 일시 중지되었습니다. Onramp로 D223을 보내지 마세요. ETH, USDC, USDT 판매는 계속 이용할 수 있습니다.",
     "swap_hint": "Onramp에서 지원 암호화폐를 스왑한 뒤 DEX223으로 돌아와 거래하세요.",
     "receiving_wallet": "수령 지갑",
     "sending_wallet": "보내는 지갑",
