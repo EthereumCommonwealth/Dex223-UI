@@ -95,16 +95,6 @@ export default function LiquidationFeeConfig({
         onChange={(e) => setFieldValue("liquidationFeeForLiquidator", e.target.value)}
         error={touched.liquidationFeeForLiquidator && errors.liquidationFeeForLiquidator}
       />
-      <TextField
-        disabled
-        label={t("fee_for_lender")}
-        tooltipText={t("fee_for_lender_tooltip")}
-        placeholder={t("fee_for_lender")}
-        internalText={values.liquidationFeeToken?.symbol}
-        value={values.liquidationFeeForLender}
-        onChange={(e) => setFieldValue("liquidationFeeForLender", e.target.value)}
-        error={touched.liquidationFeeForLender && errors.liquidationFeeForLender}
-      />
 
       <PickTokenDialog
         handlePick={handlePick}

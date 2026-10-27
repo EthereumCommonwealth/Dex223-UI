@@ -1407,8 +1407,6 @@
     "select_token": "Selecionar token",
     "fee_for_liquidator": "Taxa de liquidação (para o liquidatário)",
     "fee_for_liquidator_tooltip": "Taxa paga ao endereço que liquida uma posição.",
-    "fee_for_lender": "Taxa de liquidação (para o mutuante)",
-    "fee_for_lender_tooltip": "Taxa extra paga ao mutuante quando uma posição é liquidada.",
     "may_initiate_liquidation": "Pode iniciar a liquidação",
     "anyone": "Qualquer pessoa",
     "specified_addresses": "Endereços especificados",
