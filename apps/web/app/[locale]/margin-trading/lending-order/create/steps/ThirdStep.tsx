@@ -49,10 +49,6 @@ export const thirdStepSchema = Yup.object().shape({
   liquidationFeeForLiquidator: Yup.number()
     .typeError("Fee for liquidator must be a number")
     .required("Fee for liquidator is required"),
-
-  liquidationFeeForLender: Yup.number()
-    .typeError("Fee for lender must be a number")
-    .required("Fee for lender is required"),
 });
 
 export default function ThirdStep({

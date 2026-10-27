@@ -31,7 +31,7 @@ import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
-import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS } from "@/sdk_bi/addresses";
+import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 import { getTokenAddressForStandard, Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
@@ -123,7 +123,6 @@ export default function useCreateOrder() {
     loanAmount,
     liquidationFeeToken,
     liquidationFeeForLiquidator,
-    liquidationFeeForLender,
     liquidationMode,
     minimumBorrowingAmount,
     orderCurrencyLimit,
@@ -220,7 +219,9 @@ export default function useCreateOrder() {
               liquidationFeeForLiquidator,
               liquidationFeeToken.decimals,
             ),
-            liquidationRewardAsset: liquidationFeeToken.wrapped.address0,
+            liquidationRewardAsset: liquidationFeeToken.isNative
+              ? ZERO_ADDRESS
+              : liquidationFeeToken.wrapped.address0,
             asset: getTokenAddressForStandard(loanToken, loanTokenStandard),
             deadline: Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000),
             currencyLimit: Number(orderCurrencyLimit),

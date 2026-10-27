@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import {
   PositionLiquidateStatus,
@@ -13,6 +13,7 @@ import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 
 export default function useLiquidatePosition(position: MarginPosition) {
   const { data: walletClient } = useWalletClient();
+  const { address } = useAccount();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
 
@@ -25,7 +26,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
       return;
     }
 
-    if (!position || !walletClient || !publicClient) {
+    if (!position || !walletClient || !publicClient || !address) {
       return;
     }
 
@@ -36,7 +37,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
       abi: MARGIN_MODULE_ABI,
       address: MARGIN_TRADING_ADDRESS[chainId],
       functionName: "liquidate",
-      args: [BigInt(position.id), position.order.owner],
+      args: [BigInt(position.id), address],
     });
     setStatus(PositionLiquidateStatus.LOADING_FREEZE);
     setPositionFreezeHash(positionFreezeHash);
@@ -48,7 +49,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
         abi: MARGIN_MODULE_ABI,
         address: MARGIN_TRADING_ADDRESS[chainId],
         functionName: "liquidate",
-        args: [BigInt(position.id), position.order.owner],
+        args: [BigInt(position.id), address],
       });
       setPositionLiquidateHash(positionLiquidateHash);
       setStatus(PositionLiquidateStatus.LOADING_LIQUIDATE);
@@ -66,6 +67,7 @@ export default function useLiquidatePosition(position: MarginPosition) {
       setStatus(PositionLiquidateStatus.ERROR_FREEZE);
     }
   }, [
+    address,
     chainId,
     position,
     publicClient,
