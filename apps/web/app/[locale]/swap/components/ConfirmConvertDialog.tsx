@@ -37,8 +37,8 @@ import IconButton from "@/components/buttons/IconButton";
 import { networks } from "@/config/networks";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
-import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import { getGasSettings } from "@/functions/gasSettings";
+import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
@@ -508,8 +508,7 @@ export default function ConfirmConvertDialog() {
     );
   }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings, priorityFee]);
 
-  const computedGasSpending =
-    feePerGas !== undefined ? formatFloat(formatGwei(feePerGas)) : "0";
+  const computedGasSpending = feePerGas !== undefined ? formatFloat(formatGwei(feePerGas)) : "0";
   const computedGasSpendingETH =
     feePerGas !== undefined ? formatFloat(formatEther(feePerGas * gasUnits)) : "0";
 
