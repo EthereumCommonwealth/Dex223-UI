@@ -384,6 +384,7 @@ export default function RecentTransaction({
 }) {
   const t = useTranslations("RecentTransactions");
   const { handleSpeedUp, handleCancel, replacement } = useTransactionSpeedUpDialogStore();
+  showSpeedUp = showSpeedUp && transaction.nonce !== undefined;
 
   return (
     <div

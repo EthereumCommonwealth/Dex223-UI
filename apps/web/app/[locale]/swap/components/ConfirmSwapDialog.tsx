@@ -477,7 +477,11 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
     isRevertedApprove,
   } = useSwapStatus();
 
-  const { status: swapStatus, setStatus: setSwapStatus } = useSwapStatusStore();
+  const {
+    status: swapStatus,
+    setStatus: setSwapStatus,
+    isReceiptUnavailable,
+  } = useSwapStatusStore();
 
   const { estimatedGas, customGasLimit } = useSwapGasLimitStore();
 
@@ -590,7 +594,7 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
   // Closing mid-swap no longer means watching a spinner: the swap keeps running and a
   // compact tracker takes over in the corner until it settles.
   const closeDialog = () => {
-    if (isInFlight && tokenA && tokenB && !isConversion) {
+    if (isInFlight && !isReceiptUnavailable && tokenA && tokenB && !isConversion) {
       showTracker({
         symbolA: tokenA.symbol ?? "",
         symbolB: tokenB.symbol ?? "",
@@ -611,6 +615,12 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
   }, [isSuccessSwap, resetAmounts, isOpen, isConversion]);
 
   useEffect(() => {
+    // A missing receipt is still pending in recent transactions, not a failed swap to retry.
+    if (isReceiptUnavailable && !isOpen && !isConversion) {
+      hideTracker();
+      setSwapStatus(SwapStatus.INITIAL);
+      return;
+    }
     // While the tracker shows this swap it owns the reset, so its result stays visible.
     if (
       (isSuccessSwap || isRevertedSwap || isRevertedApprove) &&
@@ -623,6 +633,8 @@ export default function ConfirmSwapDialog({ trade }: { trade: Trade<any, any, an
       }, 400);
     }
   }, [
+    hideTracker,
+    isReceiptUnavailable,
     isConversion,
     isOpen,
     isRevertedApprove,
