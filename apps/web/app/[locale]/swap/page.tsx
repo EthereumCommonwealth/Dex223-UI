@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 
 import ConfirmConvertDialog from "@/app/[locale]/swap/components/ConfirmConvertDialog";
 import TradeForm from "@/app/[locale]/swap/components/TradeForm";
@@ -25,17 +25,23 @@ export default function SwapPage() {
 
   const chainId = useCurrentChainId();
 
-  const { tokenA, tokenB, reset: resetTokens } = useSwapTokensStore();
+  const { tokenA, tokenB } = useSwapTokensStore();
 
   // Symbols and chain only - never addresses or amounts. See lib/analytics.ts.
   useSwapAnalytics({ tokenIn: tokenA?.symbol, tokenOut: tokenB?.symbol, chainId });
 
   const { reset: resetAmount } = useSwapAmountsStore();
+  const previousChainId = useRef(chainId);
 
+  // The first render must keep the pair useSwapSearchParams just applied. A later chain
+  // change still clears the typed amount; that hook clears the tokens and selects again.
   useEffect(() => {
-    resetTokens();
+    if (previousChainId.current === chainId) {
+      return;
+    }
+    previousChainId.current = chainId;
     resetAmount();
-  }, [chainId, resetAmount, resetTokens]);
+  }, [chainId, resetAmount]);
 
   const { visible: chartVisible, setVisible: setChartVisible } = useTradingChartStore();
   const { trade } = useTrade();
