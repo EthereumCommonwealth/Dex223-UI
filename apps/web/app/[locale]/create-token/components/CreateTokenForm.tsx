@@ -26,6 +26,7 @@ import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog"
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { ERC223_TOKEN_DEPLOYER_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 
 import {
@@ -67,9 +68,11 @@ function getCreateTokenSchema(t: ReturnType<typeof useTranslations>) {
 
 export default function CreateTokenForm() {
   const chainId = useCurrentChainId();
+  const isDeployerAvailable = ERC223_TOKEN_DEPLOYER_ADDRESS[chainId] !== ZERO_ADDRESS;
   const { isOpen, setIsOpen } = useCreateTokenDialogStore();
   const [createTokenSettings, setCreateTokenSettings] = useState(initialCreateTokenSettings);
-  const { isConnected } = useAccount();
+  const { isConnected, chainId: walletChainId } = useAccount();
+  const isWalletChainMatched = walletChainId === chainId;
 
   const t = useTranslations("CreateToken");
   const tWallet = useTranslations("Wallet");
@@ -107,8 +110,14 @@ export default function CreateTokenForm() {
       <Formik
         initialValues={createTokenSettings}
         onSubmit={(values) => {
+          if (!isDeployerAvailable || !isWalletChainMatched) return;
+
+          setCreateTokenSettings({
+            ...values,
+            name: values.name.trim(),
+            symbol: values.symbol.trim(),
+          });
           setIsOpen(true);
-          setCreateTokenSettings(values);
         }}
         validationSchema={getCreateTokenSchema(t)}
       >
@@ -182,7 +191,9 @@ export default function CreateTokenForm() {
             {isConnected ? (
               <Button
                 disabled={
-                  Object.keys(props.touched).length > 0 && Object.keys(props.errors).length > 0
+                  !isDeployerAvailable ||
+                  !isWalletChainMatched ||
+                  (Object.keys(props.touched).length > 0 && Object.keys(props.errors).length > 0)
                 }
                 fullWidth
               >

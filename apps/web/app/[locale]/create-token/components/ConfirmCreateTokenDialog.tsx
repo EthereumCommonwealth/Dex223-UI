@@ -153,10 +153,19 @@ export default function ConfirmCreateTokenDialog({
   const chainId = useCurrentChainId();
   const { isOpen, setIsOpen } = useCreateTokenDialogStore();
   const { status, setStatus } = useCreateTokenStatusStore();
-  const { handleCreateToken, setTokenAddress, tokenAddress } = useCreateToken(createTokenSettings);
+  const {
+    handleCreateToken,
+    setTokenAddress,
+    tokenAddress,
+    isReceiptUnavailable,
+    setIsReceiptUnavailable,
+  } = useCreateToken(createTokenSettings);
   const isInitialStatus = useMemo(() => status === CreateTokenStatus.INITIAL, [status]);
   const isFinalStatus = useMemo(
-    () => status === CreateTokenStatus.SUCCESS || status === CreateTokenStatus.ERROR_CREATE_TOKEN,
+    () =>
+      status === CreateTokenStatus.SUCCESS ||
+      status === CreateTokenStatus.ERROR_CREATE_TOKEN ||
+      status === CreateTokenStatus.ERROR_CREATE_WRAPPER,
     [status],
   );
 
@@ -166,13 +175,29 @@ export default function ConfirmCreateTokenDialog({
   );
 
   useEffect(() => {
+    if (!isOpen && (status === CreateTokenStatus.ERROR_CREATE_TOKEN || isReceiptUnavailable)) {
+      setStatus(CreateTokenStatus.INITIAL);
+      setTokenAddress(null);
+      setIsReceiptUnavailable(false);
+      return;
+    }
+
     if (isFinalStatus && !isOpen) {
-      setTimeout(() => {
+      const timeout = setTimeout(() => {
         setStatus(CreateTokenStatus.INITIAL);
         setTokenAddress(null);
       }, 400);
+      return () => clearTimeout(timeout);
     }
-  }, [isFinalStatus, isOpen, setStatus, setTokenAddress, status]);
+  }, [
+    isFinalStatus,
+    isOpen,
+    isReceiptUnavailable,
+    setIsReceiptUnavailable,
+    setStatus,
+    setTokenAddress,
+    status,
+  ]);
 
   const network = useMemo(() => {
     return networks.find((t) => t.chainId === chainId);
@@ -193,7 +218,7 @@ export default function ConfirmCreateTokenDialog({
               <span className="text-14 text-secondary-text">{t("total_supply")}</span>
 
               <div className="flex items-center gap-1">
-                <span>{+createTokenSettings.totalSupply}</span>
+                <span>{createTokenSettings.totalSupply}</span>
                 <span className="text-14 text-secondary-text">{createTokenSettings.symbol}</span>
               </div>
             </div>

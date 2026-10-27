@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 import React, { use, useMemo, useState } from "react";
 
+import MarginRecordMissing from "@/app/[locale]/margin-trading/components/MarginRecordMissing";
 import useMarginPositionById from "@/app/[locale]/margin-trading/hooks/useMarginPosition";
 import ActivePositionAssetsBlock from "@/app/[locale]/margin-trading/position/[id]/components/ActivePositionAssetsBlock";
 import ActivePositionMainInfoBlock from "@/app/[locale]/margin-trading/position/[id]/components/ActivePositionMainInfoBlock";
@@ -42,8 +43,16 @@ export default function MarginPositionPage({
   const [isWithdrawDialogOpened, setIsWithdrawDialogOpened] = useState(false);
   const [isLiquidateDialogOpened, setIsLiquidateDialogOpened] = useState(false);
 
-  if (loading || !position) {
+  if (loading) {
     return t("loading");
+  }
+  if (!position) {
+    return (
+      <MarginRecordMissing
+        title={t("position_not_found")}
+        backLabel={t("back_to_margin_positions")}
+      />
+    );
   }
 
   return (
@@ -58,7 +67,7 @@ export default function MarginPositionPage({
 
         <h1 className="text-40 font-medium mb-3">{t("margin_position_details")}</h1>
 
-        <div className="flex items-center gap-3 mb-5">
+        <div className="flex flex-wrap items-center gap-3 mb-5">
           <div className="bg-primary-bg rounded-2 flex items-center gap-1 pl-5 pr-4 py-1 min-h-12 text-tertiary-text">
             {t("owner")}:{" "}
             <ExternalTextLink
@@ -84,7 +93,6 @@ export default function MarginPositionPage({
               <ActivePositionMainInfoBlock
                 position={position}
                 setIsCloseDialogOpened={setIsCloseDialogOpened}
-                setIsWithdrawDialogOpened={setIsWithdrawDialogOpened}
               />
               <ActivePositionParametersBlock position={position} />
               <ActivePositionTimeframeBlock position={position} />
