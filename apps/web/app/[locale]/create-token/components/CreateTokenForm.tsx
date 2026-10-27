@@ -112,8 +112,12 @@ export default function CreateTokenForm() {
         onSubmit={(values) => {
           if (!isDeployerAvailable || !isWalletChainMatched) return;
 
+          setCreateTokenSettings({
+            ...values,
+            name: values.name.trim(),
+            symbol: values.symbol.trim(),
+          });
           setIsOpen(true);
-          setCreateTokenSettings(values);
         }}
         validationSchema={getCreateTokenSchema(t)}
       >
