@@ -380,10 +380,12 @@ function liquidationHarness({
   timestamp = 100n,
   receiptStatus = "success",
   openAfterLiquidation = false,
+  connected = true,
 } = {}) {
   const h = walletHarness();
   const states = [];
   const events = [];
+  let preview;
   let positionReads = 0;
   const publicClient = {
     readContract: async ({ functionName }) => {
@@ -404,11 +406,19 @@ function liquidationHarness({
   };
   const useLiquidate = load(`${marginRoot}position/[id]/liquidate/hooks/useLiquidatePosition.ts`, {
     react: { useCallback: (fn) => fn },
-    wagmi: { usePublicClient: () => publicClient },
+    wagmi: {
+      useAccount: () => ({ address: connected ? account : undefined }),
+      usePublicClient: () => publicClient,
+    },
     "@/app/[locale]/margin-trading/components/MarginGasSettings": {
       useMarginWriteGas: () => h.fees,
     },
-    "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate": { default: () => {} },
+    "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate": {
+      default: (operation, build) => {
+        preview = build();
+        h.stores.requestKey = preview ? key(preview) : undefined;
+      },
+    },
     "@/app/[locale]/margin-trading/hooks/useMarginWalletClient": {
       default: () => ({ data: h.wallet }),
     },
@@ -426,16 +436,11 @@ function liquidationHarness({
     "@/hooks/useCurrentChainId": { default: () => chainId },
     "@/sdk_bi/addresses": { MARGIN_TRADING_ADDRESS: { [chainId]: contract } },
   }).default;
-  const position = { id: 1, order: { owner: account }, isLiquidated: false };
-  h.stores.requestKey = key({
-    abi: marginAbi,
-    address: contract,
-    functionName: "liquidate",
-    args: [1n, account],
-  });
+  const position = { id: 1, order: { owner: contract }, isLiquidated: false };
   return {
     ...h,
     run: useLiquidate(position).handleLiquidatePosition,
+    preview,
     states,
     events,
     get positionReads() {
@@ -443,6 +448,30 @@ function liquidationHarness({
     },
   };
 }
+
+test("liquidation preview and writes use the connected wallet as reward receiver", async () => {
+  const h = liquidationHarness();
+  await h.run();
+  assert.deepEqual(h.preview.args, [1n, account]);
+  assert.equal(h.sent.length, 2);
+  for (const tx of h.sent) {
+    assert.deepEqual(tx.args, [1n, account]);
+    assert.equal(key(tx), key(h.preview));
+    assert.equal(tx.maxFeePerGas, h.fees.maxFeePerGas);
+    assert.equal(tx.maxPriorityFeePerGas, h.fees.maxPriorityFeePerGas);
+  }
+  assert.equal(h.sent[0].gas, 150_000n);
+  assert.equal(h.sent[1].gas, undefined);
+});
+
+test("disconnected liquidation neither previews nor submits a transaction", async () => {
+  const h = liquidationHarness({ connected: false });
+  await h.run();
+  assert.equal(h.preview, undefined);
+  assert.equal(h.positionReads, 0);
+  assert.equal(h.sent.length, 0);
+  assert.equal(h.states.length, 0);
+});
 
 test("fresh liquidation waits for a later block and applies the custom limit only to freeze", async () => {
   const h = liquidationHarness();
