@@ -30,7 +30,7 @@ import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
-import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS } from "@/sdk_bi/addresses";
+import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import {
   GasFeeModel,
@@ -195,7 +195,7 @@ export default function useEditOrder() {
           leverage, // _leverage
           ORACLE_ADDRESS[chainId], // _oracle
           parseUnits(liquidationFeeForLiquidator, liquidationFeeToken.decimals), // _liquidationRewardAmount
-          liquidationFeeToken.wrapped.address0, // _liquidationRewardAsset
+          liquidationFeeToken.isNative ? ZERO_ADDRESS : liquidationFeeToken.wrapped.address0, // _liquidationRewardAsset
           Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000), // _deadline
         ],
       });
