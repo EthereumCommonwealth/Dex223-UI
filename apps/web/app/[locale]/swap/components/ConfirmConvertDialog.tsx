@@ -455,7 +455,11 @@ export default function ConfirmConvertDialog() {
     isRevertedApprove,
   } = useSwapStatus();
 
-  const { status: swapStatus, setStatus: setSwapStatus } = useSwapStatusStore();
+  const {
+    status: swapStatus,
+    setStatus: setSwapStatus,
+    isReceiptUnavailable,
+  } = useSwapStatusStore();
 
   const { estimatedGas, customGasLimit } = useSwapGasLimitStore();
 
@@ -518,12 +522,17 @@ export default function ConfirmConvertDialog() {
   }, [isSuccessSwap, resetAmounts, isOpen, isConversion]);
 
   useEffect(() => {
+    if (isReceiptUnavailable && !isOpen && isConversion) {
+      setSwapStatus(SwapStatus.INITIAL);
+      return;
+    }
     if ((isSuccessSwap || isRevertedSwap || isRevertedApprove) && !isOpen && isConversion) {
       setTimeout(() => {
         setSwapStatus(SwapStatus.INITIAL);
       }, 400);
     }
   }, [
+    isReceiptUnavailable,
     isConversion,
     isOpen,
     isRevertedApprove,

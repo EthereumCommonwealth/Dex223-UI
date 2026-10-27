@@ -8,7 +8,11 @@ type ReceiptClient = {
 export async function readSwapReceipt(
   client: ReceiptClient,
   hash: Hash,
+  error?: unknown,
 ): Promise<TransactionReceipt | null> {
+  const carried = receiptOnError(error);
+  if (carried) return carried;
+
   try {
     return await client.waitForTransactionReceipt({ hash });
   } catch (error) {
@@ -30,9 +34,9 @@ export async function readSwapReceipt(
 export function swapOutcomeFromReceipt(
   receipt: { status: "success" | "reverted"; gasUsed: bigint } | null,
   gasLimit?: bigint,
-): "success" | "out_of_gas" | "failed" {
+): "success" | "out_of_gas" | "failed" | "pending" {
   if (!receipt) {
-    return "failed";
+    return "pending";
   }
 
   if (receipt.status === "success") {

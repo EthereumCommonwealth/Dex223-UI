@@ -207,7 +207,8 @@ export type IRecentTransaction = {
   id: Address;
   status: RecentTransactionStatus;
   hash: Address;
-  nonce: number;
+  // Broadcasts can be tracked by hash before RPC transaction metadata is available.
+  nonce?: number;
   chainId: number;
   gas: { gas: string } & RecentTransactionGasLimit;
   params: IncreaseLiquidityParams | SwapParams | RemoveLiquidityParams | ApproveTokenParams;

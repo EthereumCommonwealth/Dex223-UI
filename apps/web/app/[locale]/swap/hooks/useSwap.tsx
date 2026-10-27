@@ -347,6 +347,7 @@ export default function useSwap() {
     setSwapHash,
     setApproveHash,
     setErrorType,
+    setIsReceiptUnavailable,
   } = useSwapStatusStore();
 
   const { openConfirmInWalletAlert, closeConfirmInWalletAlert } = useConfirmInWalletAlertStore();
@@ -394,6 +395,15 @@ export default function useSwap() {
 
   const handleSwap = useCallback(
     async (amountToApprove: string) => {
+      const currentStatus = useSwapStatusStore.getState().status;
+      if (
+        currentStatus === SwapStatus.PENDING_APPROVE ||
+        currentStatus === SwapStatus.LOADING_APPROVE ||
+        currentStatus === SwapStatus.PENDING ||
+        currentStatus === SwapStatus.LOADING
+      )
+        return;
+
       if (!publicClient || !tokenA) {
         return;
       }
@@ -424,7 +434,12 @@ export default function useSwap() {
             approveReceipt = null;
           }
 
-          if (!approveReceipt || approveReceipt.status === "reverted") {
+          if (!approveReceipt) {
+            setIsReceiptUnavailable(true);
+            return;
+          }
+
+          if (approveReceipt.status === "reverted") {
             setSwapStatus(SwapStatus.APPROVE_ERROR);
             return;
           }
@@ -449,6 +464,19 @@ export default function useSwap() {
 
       let hash;
       let gasToUse: bigint | undefined;
+
+      const applyReceiptOutcome = (receipt: Awaited<ReturnType<typeof readSwapReceipt>>) => {
+        const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
+        if (outcome === "pending") {
+          setIsReceiptUnavailable(true);
+        } else if (outcome === "success") {
+          updateAllowance();
+          setSwapStatus(SwapStatus.SUCCESS);
+        } else {
+          setSwapStatus(SwapStatus.ERROR);
+          setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
+        }
+      };
 
       try {
         const estimatedGas = await publicClient.estimateContractGas({
@@ -487,95 +515,69 @@ export default function useSwap() {
           setSwapHash(hash);
           setSwapStatus(SwapStatus.LOADING);
 
-          const transaction = await getTransactionWithRetries({ hash, publicClient });
-          if (transaction) {
-            const nonce = transaction.nonce;
-
-            addRecentTransaction(
-              {
-                hash,
-                nonce,
-                chainId,
-                gas: {
-                  ...stringifyObject({ ...gasSettings, model: gasPriceSettings.model }),
-                  gas: gasToUse.toString(),
-                },
-                params: {
-                  ...stringifyObject(swapParams),
-                  abi: [
-                    getAbiItem({
-                      name: swapParams.functionName,
-                      abi: swapParams.abi,
-                      args: swapParams.args as any,
-                    }),
-                  ],
-                },
-                title: isConversion
-                  ? {
-                      symbol: tokenA.symbol!,
-                      template: RecentTransactionTitleTemplate.CONVERT,
-                      amount: typedValue,
-                      logoURI: tokenA?.logoURI || "/images/tokens/placeholder.svg",
-                      standard: tokenBStandard,
-                    }
-                  : {
-                      symbol0: tokenA.symbol!,
-                      symbol1: tokenB.symbol!,
-                      template: RecentTransactionTitleTemplate.SWAP,
-                      amount0: typedValue,
-                      amount1: output,
-                      logoURI0: tokenA?.logoURI || "/images/tokens/placeholder.svg",
-                      logoURI1: tokenB?.logoURI || "/images/tokens/placeholder.svg",
-                    },
-              },
-              address,
-            );
-
-            let receipt;
-            try {
-              receipt = await readSwapReceipt(publicClient, hash);
-            } catch (e) {
-              console.error(e);
-              receipt = null;
-            }
-
-            const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
-            if (outcome === "success") {
-              updateAllowance();
-              setSwapStatus(SwapStatus.SUCCESS);
-            } else {
-              setSwapStatus(SwapStatus.ERROR);
-              setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
-            }
-          } else {
-            setErrorType(SwapError.UNKNOWN);
-            setSwapStatus(SwapStatus.ERROR);
+          // Record the broadcast even if the RPC cannot return transaction metadata yet.
+          let transaction;
+          try {
+            transaction = await getTransactionWithRetries({ hash, publicClient });
+          } catch (error) {
+            console.error(error);
           }
+          const nonce = transaction?.nonce;
+
+          addRecentTransaction(
+            {
+              hash,
+              nonce,
+              chainId,
+              gas: {
+                ...stringifyObject({ ...gasSettings, model: gasPriceSettings.model }),
+                gas: gasToUse.toString(),
+              },
+              params: {
+                ...stringifyObject(swapParams),
+                abi: [
+                  getAbiItem({
+                    name: swapParams.functionName,
+                    abi: swapParams.abi,
+                    args: swapParams.args as any,
+                  }),
+                ],
+              },
+              title: isConversion
+                ? {
+                    symbol: tokenA.symbol!,
+                    template: RecentTransactionTitleTemplate.CONVERT,
+                    amount: typedValue,
+                    logoURI: tokenA?.logoURI || "/images/tokens/placeholder.svg",
+                    standard: tokenBStandard,
+                  }
+                : {
+                    symbol0: tokenA.symbol!,
+                    symbol1: tokenB.symbol!,
+                    template: RecentTransactionTitleTemplate.SWAP,
+                    amount0: typedValue,
+                    amount1: output,
+                    logoURI0: tokenA?.logoURI || "/images/tokens/placeholder.svg",
+                    logoURI1: tokenB?.logoURI || "/images/tokens/placeholder.svg",
+                  },
+            },
+            address,
+          );
+
+          applyReceiptOutcome(await readSwapReceipt(publicClient, hash));
         } else {
           setSwapStatus(SwapStatus.INITIAL);
         }
       } catch (e) {
         console.error(e);
+        closeConfirmInWalletAlert();
         if (hash) {
-          let receipt = null;
-          try {
-            receipt = await publicClient.getTransactionReceipt({ hash });
-          } catch (readError) {
-            console.error(readError);
-          }
-
-          const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
-          if (outcome === "success") {
-            updateAllowance();
-            setSwapStatus(SwapStatus.SUCCESS);
-          } else {
-            setSwapStatus(SwapStatus.ERROR);
-            setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
-          }
+          setSwapHash(hash);
+          setSwapStatus(SwapStatus.LOADING);
+          applyReceiptOutcome(await readSwapReceipt(publicClient, hash, e));
           return;
         }
         addToast("Error while executing contract", "error");
-        closeConfirmInWalletAlert();
         setSwapStatus(SwapStatus.INITIAL);
       }
     },
@@ -607,6 +609,7 @@ export default function useSwap() {
       tokenBStandard,
       updateAllowance,
       setErrorType,
+      setIsReceiptUnavailable,
     ],
   );
 
