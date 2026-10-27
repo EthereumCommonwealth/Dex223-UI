@@ -3,7 +3,9 @@ import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import React, { useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, isAddress } from "viem";
+import { useAccount } from "wagmi";
 
+import { useMarginSwapPositionStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore";
 import { SimpleInfoBlock } from "@/app/[locale]/margin-trading/components/widgets/OrderInfoBlock";
 import usePositionClose from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionClose";
 import usePositionStatus from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionStatus";
@@ -28,7 +30,7 @@ import OperationStepRow, {
 } from "@/components/common/OperationStepRow";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
-import { Link } from "@/i18n/routing";
+import { useRouter } from "@/i18n/routing";
 
 type StepTextMap = {
   [key in OperationStepStatus]: string;
@@ -114,6 +116,9 @@ export default function PositionCloseDialog({
   position: MarginPosition;
 }) {
   const t = useTranslations("Margin");
+  const { address } = useAccount();
+  const router = useRouter();
+  const { setMarginSwapPositionId } = useMarginSwapPositionStore();
   const { status } = usePositionCloseStatusStore();
 
   const isInitialStatus = useMemo(() => status === PositionCloseStatus.INITIAL, [status]);
@@ -415,9 +420,17 @@ export default function PositionCloseDialog({
               })}
             />
             <div className="mt-1">
-              <Link href="/margin-swap">
-                <Button fullWidth>{t("go_to_margin_swap")}</Button>
-              </Link>
+              <Button
+                fullWidth
+                disabled={address?.toLowerCase() !== position.owner.toLowerCase()}
+                onClick={() => {
+                  setMarginSwapPositionId(position.id);
+                  setIsOpen(false);
+                  router.push("/margin-swap");
+                }}
+              >
+                {t("go_to_margin_swap")}
+              </Button>
             </div>
           </div>
         )}
