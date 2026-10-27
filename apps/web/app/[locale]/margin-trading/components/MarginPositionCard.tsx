@@ -7,6 +7,7 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "rea
 import { formatUnits, parseUnits } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 
+import { useMarginSwapPositionStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore";
 import PositionProgressBar from "@/app/[locale]/margin-trading/components/PositionProgressBar";
 import {
   InfoBlockWithBorder,
@@ -26,7 +27,7 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 
 import PositionAsset from "./widgets/PositionAsset";
 
@@ -347,6 +348,8 @@ export function calcLeverageFormattedFromBigints({
 
 export function LendingPositionCard({ position }: Props) {
   const t = useTranslations("Margin");
+  const router = useRouter();
+  const { setMarginSwapPositionId } = useMarginSwapPositionStore();
   const { expectedBalance, actualBalance } = usePositionStatus(position);
   const [positionToClose, setPositionToClose] = useState<MarginPosition | undefined>();
 
@@ -585,14 +588,17 @@ export function LendingPositionCard({ position }: Props) {
         <div className="grid grid-cols-2 gap-3 items-center mb-5 w-full">
           <div className="grid grid-cols-3">{renderLiquidationInfoBlocks()}</div>
           <div className="grid grid-cols-4 gap-3">
-            <Link
-              className={subjectToLiquidation ? "pointer-events-none" : ""}
-              href={"/margin-swap"}
+            <Button
+              disabled={subjectToLiquidation}
+              fullWidth
+              colorScheme={buttonsColor}
+              onClick={() => {
+                setMarginSwapPositionId(position.id);
+                router.push("/margin-swap");
+              }}
             >
-              <Button disabled={subjectToLiquidation} fullWidth colorScheme={buttonsColor}>
-                {t("trade")}
-              </Button>
-            </Link>
+              {t("trade")}
+            </Button>
             <Link href={`/margin-trading/position/${position.id}/deposit`}>
               <Button fullWidth colorScheme={buttonsColor}>
                 {t("deposit")}
