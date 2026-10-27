@@ -201,7 +201,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
             setStatus(CreateMarginPositionStatus.PENDING_APPROVE_BORROW);
             const result = await approveCollateral({
               customAmount: collateralApproval,
-              });
+            });
             if (!result?.success) throw new Error("Collateral approval failed");
             setApproveBorrowHash(result.hash);
             setStatus(CreateMarginPositionStatus.LOADING_APPROVE_BORROW);
@@ -234,7 +234,7 @@ export default function useCreateMarginPosition(order: LendingOrder) {
             } else {
               const result = await approveFee({
                 customAmount: feeApproval,
-                  });
+              });
               if (!result?.success) throw new Error("Fee approval failed");
               hash = result.hash;
             }

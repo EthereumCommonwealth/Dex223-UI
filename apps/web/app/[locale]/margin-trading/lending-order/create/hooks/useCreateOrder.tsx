@@ -221,20 +221,18 @@ export default function useCreateOrder() {
               liquidationFeeToken.decimals,
             ),
             liquidationRewardAsset: liquidationFeeToken.isNative
-                ? ZERO_ADDRESS
-                : liquidationFeeToken.wrapped.address0,
+              ? ZERO_ADDRESS
+              : liquidationFeeToken.wrapped.address0,
             asset: getTokenAddressForStandard(loanToken, loanTokenStandard),
             deadline: Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000),
             currencyLimit: Number(orderCurrencyLimit),
             leverage,
             oracle: ORACLE_ADDRESS[chainId],
-            collateral: collateralTokens.flatMap<Address>((token) => {
+            collateral: collateralTokens.flatMap((token) => {
               if (tradingTokens.includeERC223Trading) {
-                return token.isNative
-                  ? [ZERO_ADDRESS]
-                  : [token.wrapped.address0, token.wrapped.address1];
+                return [token.wrapped.address0, token.wrapped.address1];
               }
-              return [token.isNative ? ZERO_ADDRESS : token.wrapped.address0];
+              return [token.wrapped.address0];
             }),
           },
         ],
