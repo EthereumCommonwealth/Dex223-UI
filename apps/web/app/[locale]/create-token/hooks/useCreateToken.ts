@@ -236,7 +236,7 @@ export default function useCreateToken(createTokenSettings: {
         if (deployTokenLog) {
           setTokenAddress(deployTokenLog.args.token);
           try {
-            await handleImport(deployTokenLog.args.token, chainId);
+            await handleImport(deployTokenLog.args.token, chainId, createTokenSettings.imageURL);
           } catch (e) {
             console.log(e);
             console.log("Failed to import token to user custom tokenlist");

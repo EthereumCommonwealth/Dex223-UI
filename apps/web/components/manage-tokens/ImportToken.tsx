@@ -82,7 +82,7 @@ export function useImportToken() {
   const publicClient = usePublicClient();
 
   const handleImport = useCallback(
-    async (tokenAddressToImport: Address, chainId: DexChainId) => {
+    async (tokenAddressToImport: Address, chainId: DexChainId, imageURL?: string) => {
       const calls = [
         {
           abi: ERC20_ABI,
@@ -172,6 +172,7 @@ export function useImportToken() {
         return;
       }
 
+      const logoURI = imageURL?.trim();
       const token = new Token(
         chainId,
         erc20AddressToImport as Address,
@@ -179,7 +180,9 @@ export function useImportToken() {
         decimals as number,
         symbol as string,
         name as string,
-        "/images/tokens/placeholder.svg",
+        logoURI && /^(https|ipfs):\/\/\S+$/i.test(logoURI)
+          ? logoURI
+          : "/images/tokens/placeholder.svg",
       );
 
       const currentCustomList = tokenLists?.find((t) => t.id === `custom-${chainId}`);
