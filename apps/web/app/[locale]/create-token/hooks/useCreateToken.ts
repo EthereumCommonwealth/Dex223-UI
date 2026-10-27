@@ -103,6 +103,7 @@ export default function useCreateToken(createTokenSettings: {
     useCreateTokenStatusStore();
   const { addRecentTransaction } = useRecentTransactionsStore();
   const [tokenAddress, setTokenAddress] = useState<string | null>(null);
+  const [isReceiptUnavailable, setIsReceiptUnavailable] = useState(false);
   const { handleImport } = useImportToken();
   const { baseFee, priorityFee, gasPrice } = useGlobalFees();
   const { customGasLimit } = useCreateTokenGasLimitStore();
@@ -124,6 +125,7 @@ export default function useCreateToken(createTokenSettings: {
       return;
     }
 
+    setIsReceiptUnavailable(false);
     setStatus(CreateTokenStatus.PENDING_CREATE_TOKEN);
 
     let hash: `0x${string}` | undefined;
@@ -212,8 +214,14 @@ export default function useCreateToken(createTokenSettings: {
           deployReceipt = await publicClient.waitForTransactionReceipt({ hash });
         } catch (e) {
           // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
-          // mean it failed. Keep LOADING_CREATE_TOKEN and let the recent-transaction tracker settle it.
+          // mean it failed. Let the tracker settle it, but allow the dialog to reset on close.
           console.error(e);
+          setIsReceiptUnavailable(true);
+          return;
+        }
+
+        if (deployReceipt.status === "reverted") {
+          setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
           return;
         }
 
@@ -235,13 +243,7 @@ export default function useCreateToken(createTokenSettings: {
           }
 
           if (!createTokenSettings.createERC20) {
-            if (deployReceipt.status === "success") {
-              setStatus(CreateTokenStatus.SUCCESS);
-            }
-
-            if (deployReceipt.status === "reverted") {
-              setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
-            }
+            setStatus(CreateTokenStatus.SUCCESS);
           } else {
             let wrapperHash: `0x${string}` | undefined;
             try {
@@ -280,12 +282,15 @@ export default function useCreateToken(createTokenSettings: {
               setStatus(CreateTokenStatus.ERROR_CREATE_WRAPPER);
             }
           }
+        } else {
+          setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
         }
       }
     } catch (e) {
       if (hash) {
         // Already broadcast: don't report failure for a tx that may still succeed.
         console.error(e);
+        setIsReceiptUnavailable(true);
         return;
       }
       setStatus(CreateTokenStatus.ERROR_CREATE_TOKEN);
@@ -311,5 +316,11 @@ export default function useCreateToken(createTokenSettings: {
     walletClient,
   ]);
 
-  return { handleCreateToken, tokenAddress, setTokenAddress };
+  return {
+    handleCreateToken,
+    tokenAddress,
+    setTokenAddress,
+    isReceiptUnavailable,
+    setIsReceiptUnavailable,
+  };
 }
