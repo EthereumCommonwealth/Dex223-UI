@@ -2,6 +2,7 @@ import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
 
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import useOrderWithdraw from "@/app/[locale]/margin-trading/lending-order/[id]/hooks/useOrderWithdraw";
 import {
   OrderWithdrawStatus,
@@ -17,7 +18,6 @@ import Svg from "@/components/atoms/Svg";
 import TextField, { InputLabel } from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import RadioButton from "@/components/buttons/RadioButton";
-import GasSettingsBlock from "@/components/common/GasSettingsBlock";
 import OperationStepRow, {
   OperationRows,
   operationStatusToStepStatus,
@@ -204,7 +204,7 @@ export default function OrderWithdrawDialog({
               </div>
             </div>
 
-            <GasSettingsBlock />
+            <MarginGasSettings operation="withdrawOrder" />
           </>
         )}
         {isFinalStatus && (

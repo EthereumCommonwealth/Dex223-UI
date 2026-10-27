@@ -1,8 +1,11 @@
 import { useCallback, useMemo } from "react";
 import { getAbiItem, parseUnits } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
+import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import { getMarginAssetAddress } from "@/app/[locale]/margin-trading/helpers/assetFunding";
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import {
   PositionDepositStatus,
   useDepositPositionStatusStore,
@@ -24,6 +27,42 @@ import {
   useRecentTransactionsStore,
 } from "@/stores/useRecentTransactionsStore";
 
+export function usePositionDepositGasEstimate({
+  position,
+  amount,
+  currency,
+  standard,
+}: {
+  position: MarginPosition;
+  amount: string;
+  currency: Currency | undefined;
+  standard: Standard;
+}) {
+  const chainId = useCurrentChainId();
+  useMarginGasEstimate("depositPosition", () => {
+    if (
+      !currency ||
+      currency.isNative ||
+      !amount.trim() ||
+      position.isClosed ||
+      position.isLiquidated
+    )
+      return;
+    const parsedAmount = parseUnits(amount, currency.decimals);
+    const depositAddress = getMarginAssetAddress(currency, standard);
+    const assetIndex = position.order.allowedTradingAddresses.findIndex(
+      (asset) => asset.toLowerCase() === depositAddress.toLowerCase(),
+    );
+    if (parsedAmount <= 0n || assetIndex < 0) return;
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "positionDeposit",
+      args: [BigInt(position.id), depositAddress, BigInt(assetIndex), parsedAmount],
+    };
+  });
+}
+
 export default function usePositionDeposit({
   position,
   amount,
@@ -38,7 +77,8 @@ export default function usePositionDeposit({
   const { setStatus, setDepositHash, setApproveHash, setTransferHash } =
     useDepositPositionStatusStore();
   const chainId = useCurrentChainId();
-  const { data: walletClient } = useWalletClient();
+  const gasOverrides = useMarginWriteGas("depositPosition");
+  const { data: walletClient } = useMarginWalletClient("depositPosition");
   const publicClient = usePublicClient();
   const { address } = useAccount();
   const { addRecentTransaction } = useRecentTransactionsStore();
@@ -58,6 +98,8 @@ export default function usePositionDeposit({
     contractAddress: MARGIN_TRADING_ADDRESS[chainId],
     amountToCheck: parsedAmount,
   });
+
+  usePositionDepositGasEstimate({ position, amount, currency, standard });
 
   const handlePositionDeposit = useCallback(
     async (amountToApprove: string) => {
@@ -89,6 +131,7 @@ export default function usePositionDeposit({
           setStatus(PositionDepositStatus.PENDING_APPROVE);
           const result = await writeTokenApprove({
             customAmount: approvalAmount,
+            customGasSettings: gasOverrides,
           });
           if (!result?.success) throw new Error("Approval failed");
           setApproveHash(result.hash);
@@ -107,6 +150,7 @@ export default function usePositionDeposit({
             address: depositAddress,
             functionName: "transfer",
             args: [MARGIN_TRADING_ADDRESS[chainId], parsedAmount],
+            ...gasOverrides,
             account: undefined,
           });
           setTransferHash(hash);
@@ -151,6 +195,7 @@ export default function usePositionDeposit({
           address: MARGIN_TRADING_ADDRESS[chainId],
           functionName: "positionDeposit",
           args: [BigInt(position.id), depositAddress, BigInt(assetIndex), parsedAmount],
+          ...gasOverrides,
           account: undefined,
         });
         setDepositHash(hash);
@@ -174,6 +219,7 @@ export default function usePositionDeposit({
       assetIndex,
       chainId,
       depositAddress,
+      gasOverrides,
       isAllowed,
       parsedAmount,
       position,
