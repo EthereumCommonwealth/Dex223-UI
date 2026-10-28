@@ -6,6 +6,7 @@ import { clsxMerge } from "@/functions/clsxMerge";
 
 import { DEMO_D223_PER_USDT } from "../../flows";
 import DemoAction from "../DemoAction";
+import { DemoChip, DemoChipButton } from "../DemoChip";
 import { DemoTokenLogo } from "../DemoTokenBox";
 import {
   DEMO_TARGET,
@@ -40,7 +41,7 @@ export default function LiquidityStage(props: StageProps) {
 
   return (
     <DemoCard>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="flex -space-x-2">
             <DemoTokenLogo symbol="USDT" size={28} />
@@ -48,11 +49,7 @@ export default function LiquidityStage(props: StageProps) {
           </span>
           <h3 className="text-20 font-bold">{tf("pair")}</h3>
         </div>
-        {added && (
-          <span className="text-12 rounded-full bg-green-bg text-green px-2 py-0.5">
-            {tf("in_range")}
-          </span>
-        )}
+        {added && <DemoChip tone="success">{tf("in_range")}</DemoChip>}
       </div>
 
       <div className="flex flex-col gap-2">
@@ -89,21 +86,20 @@ export default function LiquidityStage(props: StageProps) {
       </div>
 
       <div className={clsxMerge("flex flex-col gap-2", !feePicked && "opacity-40")}>
-        <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <span className="text-secondary-text font-medium">{tf("price_range")}</span>
-          <button
-            type="button"
+          <DemoChipButton
             {...(settingRange ? DEMO_TARGET : {})}
             onClick={settingRange ? () => onAction() : undefined}
+            size="medium"
+            tone={rangeSet ? "success" : "neutral"}
             className={clsxMerge(
-              "text-14 rounded-full px-3 py-1 border duration-200",
-              rangeSet ? "border-green text-green" : "border-secondary-border text-secondary-text",
               demoHighlight(settingRange),
               settingRange && pulse && "animate-pulse",
             )}
           >
             {tf("suggested")}
-          </button>
+          </DemoChipButton>
         </div>
         <div className="grid grid-cols-2 gap-2">
           {[
