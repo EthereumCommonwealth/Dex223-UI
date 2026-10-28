@@ -36,7 +36,7 @@ export default function ConvertStage(props: StageProps) {
   const tf = useTranslations("Demo.flows.convert");
   const format = useDemoNumber();
 
-  const value = Number(amount.replace(/,/g, "")) || 0;
+  const value = Number(amount) || 0;
   const reverse = stepKey === "back";
   const from = reverse ? "ERC-223" : "ERC-20";
   const to = reverse ? "ERC-20" : "ERC-223";
