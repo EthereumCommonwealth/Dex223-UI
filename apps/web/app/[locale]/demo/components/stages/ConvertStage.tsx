@@ -51,7 +51,7 @@ export default function ConvertStage(props: StageProps) {
   return (
     <DemoCard>
       <h3 className="text-20 font-bold">{tf("card_title")}</h3>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-1 min-[400px]:grid-cols-2 gap-2">
         {(
           [
             ["ERC-20", "ERC-223"],
@@ -68,7 +68,7 @@ export default function ConvertStage(props: StageProps) {
               onClick={isTarget ? () => onAction() : undefined}
               aria-pressed={isActive}
               className={clsxMerge(
-                "rounded-2 px-3 py-2 text-14 font-medium border duration-200",
+                "min-h-10 rounded-2 px-2 py-2 text-12 xl:text-14 font-medium border duration-200 whitespace-nowrap",
                 isActive ? "bg-green-bg border-green" : "bg-secondary-bg border-transparent",
                 demoHighlight(isTarget),
                 isTarget && pulse && "animate-pulse",

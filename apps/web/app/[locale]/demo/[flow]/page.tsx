@@ -55,7 +55,7 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
   const router = useRouter();
   const formatNumber = useDemoNumber();
   const flow = getDemoFlow(flowId)!;
-  const { balances, changeBalances, completeFlow } = useHydratedDemoStore();
+  const { balances, canChangeBalances, changeBalances, completeFlow } = useHydratedDemoStore();
 
   const [index, setIndex] = useState(0);
   const [doneSteps, setDoneSteps] = useState<Set<number>>(new Set());
@@ -107,11 +107,16 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
         later(() => setToast(null), 3000);
         return;
       }
+      if (delta && !canChangeBalances(delta)) return;
 
       setToast(null);
       setPulse(false);
       const finish = () => {
-        if (delta) changeBalances(delta);
+        // The wallet may have changed while the simulated signature was pending.
+        if (delta && !changeBalances(delta)) {
+          setStatus("idle");
+          return;
+        }
         setDoneSteps((prev) => new Set(prev).add(index));
         setStatus("done");
       };
@@ -122,7 +127,17 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
         finish();
       }
     },
-    [status, overBalance, amountInvalid, t, later, step.sign, changeBalances, index],
+    [
+      status,
+      overBalance,
+      amountInvalid,
+      t,
+      later,
+      step.sign,
+      canChangeBalances,
+      changeBalances,
+      index,
+    ],
   );
 
   const passed = useCallback(
@@ -195,7 +210,7 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
             />
             <div
               onClickCapture={handleStageClick}
-              className="flex-1 min-w-0 rounded-5 border border-dashed border-secondary-border bg-secondary-bg/50 p-4 md:p-8 flex flex-col items-center gap-3"
+              className="flex-1 min-w-0 rounded-5 border border-dashed border-secondary-border bg-secondary-bg/50 p-3 sm:p-4 md:p-8 lg:p-4 xl:p-8 flex flex-col items-center gap-3"
             >
               {toast && (
                 // Sticks to the top of the stage while scrolling, so it never covers the

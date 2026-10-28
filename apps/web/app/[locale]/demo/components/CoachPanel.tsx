@@ -7,6 +7,8 @@ import Svg from "@/components/atoms/Svg";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { clsxMerge } from "@/functions/clsxMerge";
 
+import { DemoChip } from "./DemoChip";
+
 type Props = {
   flowTitle: string;
   stepNumber: number;
@@ -27,7 +29,7 @@ function Progress({ stepNumber, total }: { stepNumber: number; total: number }) 
         <span
           key={i}
           className={clsxMerge(
-            "h-2 rounded-full",
+            "h-2 rounded-5",
             i + 1 === stepNumber ? "w-6" : "w-2",
             i + 1 <= stepNumber ? "bg-green" : "bg-tertiary-bg",
           )}
@@ -118,13 +120,11 @@ export default function CoachPanel(props: Props) {
     <>
       <aside
         aria-live="polite"
-        className="max-lg:hidden w-[400px] flex-shrink-0 sticky top-5 bg-primary-bg rounded-5 p-5 flex flex-col gap-4 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
+        className="max-lg:hidden w-[320px] xl:w-[400px] flex-shrink-0 sticky top-5 bg-primary-bg rounded-5 p-5 flex flex-col gap-4 shadow-[0_8px_40px_-12px_rgba(0,0,0,0.6)]"
       >
         <div className="flex items-center justify-between gap-3">
           <span className="text-14 font-medium text-secondary-text">{flowTitle}</span>
-          <span className="text-12 rounded-full border border-secondary-border px-2 py-0.5 text-secondary-text whitespace-nowrap">
-            {t("step_of", { current: stepNumber, total })}
-          </span>
+          <DemoChip>{t("step_of", { current: stepNumber, total })}</DemoChip>
         </div>
         <h2 className="text-20 font-bold">{title}</h2>
         <p className="text-secondary-text">{body}</p>
@@ -145,12 +145,10 @@ export default function CoachPanel(props: Props) {
           aria-expanded={!collapsed}
           aria-label={collapsed ? t("show_coach") : t("hide_coach")}
         >
-          <span className="h-1 w-10 rounded-full bg-tertiary-bg" />
+          <span className="h-1 w-10 rounded-5 bg-tertiary-bg" />
           <span className="flex w-full items-center justify-between gap-3 text-left">
             <span className="text-18 font-bold">{title}</span>
-            <span className="text-12 rounded-full border border-secondary-border px-2 py-0.5 text-secondary-text whitespace-nowrap">
-              {t("step_short", { current: stepNumber, total })}
-            </span>
+            <DemoChip>{t("step_short", { current: stepNumber, total })}</DemoChip>
           </span>
         </button>
         {!collapsed && (
