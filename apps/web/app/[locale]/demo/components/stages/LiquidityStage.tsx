@@ -1,10 +1,11 @@
 "use client";
 
+import Alert from "@repo/ui/alert";
 import { useTranslations } from "next-intl";
 
 import { clsxMerge } from "@/functions/clsxMerge";
 
-import { DEMO_D223_PER_USDT } from "../../flows";
+import { DEMO_D223_PER_USDT, DEMO_LIQUIDITY_DEPOSIT } from "../../flows";
 import DemoAction from "../DemoAction";
 import { DemoTokenLogo } from "../DemoTokenBox";
 import {
@@ -24,10 +25,9 @@ const TIERS = [
   { fee: "1%", key: "t1" },
 ] as const;
 
-const DEPOSIT_USDT = 100;
-
 export default function LiquidityStage(props: StageProps) {
-  const { stepKey, stepNumber, status, pulse, passed, onAction } = props;
+  const { stepKey, stepNumber, status, pulse, balances, passed, onAction } = props;
+  const t = useTranslations("Demo");
   const tf = useTranslations("Demo.flows.liquidity");
   const format = useDemoNumber();
 
@@ -36,7 +36,14 @@ export default function LiquidityStage(props: StageProps) {
   const added = passed("add");
   const pickingFee = stepKey === "fee" && status === "idle";
   const settingRange = stepKey === "range" && status === "idle";
-  const d223 = DEPOSIT_USDT * DEMO_D223_PER_USDT;
+  const { usdt20, d223 } = DEMO_LIQUIDITY_DEPOSIT;
+  const shortfalls =
+    stepKey === "add" && status === "idle"
+      ? [
+          { symbol: "USDT", required: usdt20, balance: balances.usdt20 },
+          { symbol: "D223", required: d223, balance: balances.d223 },
+        ].filter(({ required, balance }) => balance < required)
+      : [];
 
   return (
     <DemoCard>
@@ -128,11 +135,23 @@ export default function LiquidityStage(props: StageProps) {
         <span className="text-secondary-text font-medium">{tf("deposit")}</span>
         <DemoDetails
           rows={[
-            ["USDT", rangeSet ? format(DEPOSIT_USDT) : "—"],
+            ["USDT", rangeSet ? format(usdt20) : "—"],
             ["D223", rangeSet ? format(d223) : "—"],
           ]}
         />
       </div>
+
+      {shortfalls.map(({ symbol, required, balance }) => (
+        <Alert
+          key={symbol}
+          type="error"
+          text={tf("insufficient_deposit", {
+            symbol,
+            required: format(required, 4),
+            balance: format(balance, 4),
+          })}
+        />
+      ))}
 
       <DemoAction
         label={tf("add_button")}
@@ -141,7 +160,12 @@ export default function LiquidityStage(props: StageProps) {
         pulse={pulse}
         stepNumber={stepNumber}
         hint={tf("steps.add.hint")}
-        onClick={() => onAction({ usdt20: -DEPOSIT_USDT, d223: -d223 })}
+        disabledLabel={
+          shortfalls.length
+            ? t("insufficient", { symbol: shortfalls.map(({ symbol }) => symbol).join(" / ") })
+            : null
+        }
+        onClick={() => onAction({ usdt20: -usdt20, d223: -d223 })}
       />
     </DemoCard>
   );
