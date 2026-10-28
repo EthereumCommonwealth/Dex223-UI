@@ -181,7 +181,7 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
             />
             <div
               onClickCapture={handleStageClick}
-              className="flex-1 min-w-0 rounded-5 border border-dashed border-secondary-border bg-secondary-bg/50 p-4 md:p-8 flex flex-col items-center gap-3"
+              className="flex-1 min-w-0 rounded-5 border border-dashed border-secondary-border bg-secondary-bg/50 p-3 sm:p-4 md:p-8 lg:p-4 xl:p-8 flex flex-col items-center gap-3"
             >
               {toast && (
                 // Sticks to the top of the stage while scrolling, so it never covers the
