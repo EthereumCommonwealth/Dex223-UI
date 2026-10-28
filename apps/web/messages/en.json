@@ -2239,6 +2239,7 @@
         "suggested": "Use suggested range",
         "deposit": "Deposit",
         "add_button": "Add liquidity",
+        "insufficient_deposit": "This deposit requires {required} {symbol}, but your demo wallet has {balance} {symbol}.",
         "in_range": "In range"
       },
       "listing": {
