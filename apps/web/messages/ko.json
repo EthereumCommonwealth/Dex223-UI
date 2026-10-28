@@ -1305,6 +1305,10 @@
     "minting": "발행 중",
     "mint": "토큰 발행",
     "minted": "발행되었습니다",
+    "mint_failed": "발행에 실패했습니다",
+    "mint_failed_reason": "발행에 실패했습니다: {reason}",
+    "mint_reverted": "발행 트랜잭션이 되돌려졌습니다",
+    "none_mintable": "테스트 토큰은 요청 시 지급됩니다. <discord>Discord</discord>에서 요청하세요. 네이티브 코인을 {symbol}(으)로 래핑하려면 {symbol} 컨트랙트 {address}에 예치하세요. {symbol}은 발행할 수 없습니다.",
     "bad_data": "데이터가 올바르지 않습니다"
   },
   "Margin": {

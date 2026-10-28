@@ -1316,6 +1316,10 @@
     "minting": "Minting in progress",
     "mint": "Mint tokens",
     "minted": "Minted successfully",
+    "mint_failed": "Mint failed",
+    "mint_failed_reason": "Mint failed: {reason}",
+    "mint_reverted": "The mint transaction reverted",
+    "none_mintable": "Test tokens are sent on request. Ask in <discord>Discord</discord>. To wrap the native coin into {symbol}, deposit it into the {symbol} contract {address}. {symbol} cannot be minted.",
     "bad_data": "The data is not valid"
   },
   "Margin": {

@@ -1305,6 +1305,10 @@
     "minting": "Acuñación en curso",
     "mint": "Acuñar tokens",
     "minted": "Acuñado con éxito",
+    "mint_failed": "No se pudo acuñar",
+    "mint_failed_reason": "No se pudo acuñar: {reason}",
+    "mint_reverted": "La transacción de acuñación revirtió",
+    "none_mintable": "Los tokens de prueba se envían bajo solicitud. Pídelos en <discord>Discord</discord>. Para convertir la moneda nativa en {symbol}, deposítala en el contrato {symbol} {address}. {symbol} no se puede acuñar.",
     "bad_data": "Los datos no son válidos"
   },
   "Margin": {

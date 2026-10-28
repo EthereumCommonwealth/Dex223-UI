@@ -1305,6 +1305,10 @@
     "minting": "Émission en cours",
     "mint": "Émettre des jetons",
     "minted": "Jetons émis avec succès",
+    "mint_failed": "Échec de l'émission",
+    "mint_failed_reason": "Échec de l'émission : {reason}",
+    "mint_reverted": "La transaction d'émission a été annulée",
+    "none_mintable": "Les jetons de test sont envoyés sur demande. Demandez-les sur <discord>Discord</discord>. Pour envelopper la monnaie native en {symbol}, déposez-la dans le contrat {symbol} {address}. {symbol} ne peut pas être émis.",
     "bad_data": "Les données ne sont pas valides"
   },
   "Margin": {
