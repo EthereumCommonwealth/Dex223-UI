@@ -1305,6 +1305,10 @@
     "minting": "Emissão em curso",
     "mint": "Emitir tokens",
     "minted": "Tokens emitidos com sucesso",
+    "mint_failed": "Falha ao emitir",
+    "mint_failed_reason": "Falha ao emitir: {reason}",
+    "mint_reverted": "A transação de emissão foi revertida",
+    "none_mintable": "Os tokens de teste são enviados mediante pedido. Peça no <discord>Discord</discord>. Para converter a moeda nativa em {symbol}, deposite-a no contrato {symbol} {address}. {symbol} não pode ser emitido.",
     "bad_data": "Os dados não são válidos"
   },
   "Margin": {

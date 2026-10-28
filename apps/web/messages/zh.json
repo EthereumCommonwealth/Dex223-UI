@@ -1305,6 +1305,10 @@
     "minting": "正在铸造",
     "mint": "铸造代币",
     "minted": "铸造成功",
+    "mint_failed": "铸造失败",
+    "mint_failed_reason": "铸造失败：{reason}",
+    "mint_reverted": "铸造交易已回滚",
+    "none_mintable": "测试代币需申请发放，请在 <discord>Discord</discord> 申请。要将原生币包装为 {symbol}，请将其存入 {symbol} 合约 {address}。{symbol} 无法铸造。",
     "bad_data": "数据无效"
   },
   "Margin": {
