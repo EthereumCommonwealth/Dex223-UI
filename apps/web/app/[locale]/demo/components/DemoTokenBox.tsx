@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
+import { NumericFormat } from "react-number-format";
 
 import { clsxMerge } from "@/functions/clsxMerge";
 
@@ -73,12 +74,14 @@ export default function DemoTokenBox({
       <span className="text-14 text-secondary-text">{label}</span>
       <div className="flex items-center justify-between gap-3">
         {onAmountChange ? (
-          <input
+          <NumericFormat
             data-demo-free=""
             inputMode="decimal"
             aria-label={label}
             value={amount}
-            onChange={(e) => onAmountChange(e.target.value.replace(/[^\d.,]/g, ""))}
+            allowedDecimalSeparators={[","]}
+            allowNegative={false}
+            onValueChange={({ value }) => onAmountChange(value)}
             className="bg-transparent outline-none text-24 md:text-32 font-bold w-full min-w-0"
           />
         ) : (

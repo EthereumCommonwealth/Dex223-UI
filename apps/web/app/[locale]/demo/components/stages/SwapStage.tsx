@@ -57,7 +57,7 @@ export default function SwapStage(props: StageProps) {
   const tf = useTranslations("Demo.flows.swap");
   const format = useDemoNumber();
 
-  const value = Number(amount.replace(/,/g, "")) || 0;
+  const value = Number(amount) || 0;
   const receive = value * DEMO_D223_PER_USDT;
 
   if (stepKey === "compare") {

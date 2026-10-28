@@ -66,10 +66,12 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
   const [pulse, setPulse] = useState(false);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
 
-  useEffect(() => {
-    const pending = timers.current;
-    return () => pending.forEach(clearTimeout);
+  const cancelPendingTimers = useCallback(() => {
+    timers.current.forEach(clearTimeout);
+    timers.current = [];
   }, []);
+
+  useEffect(() => cancelPendingTimers, [cancelPendingTimers]);
 
   const later = useCallback((fn: () => void, ms: number) => {
     timers.current.push(setTimeout(fn, ms));
@@ -80,22 +82,34 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
 
   const goTo = useCallback(
     (next: number) => {
+      cancelPendingTimers();
       const target = flow.steps[next];
       setIndex(next);
       setStatus(!target.action || doneSteps.has(next) ? "done" : "idle");
       setToast(null);
+      setPulse(false);
     },
-    [doneSteps, flow.steps],
+    [cancelPendingTimers, doneSteps, flow.steps],
   );
 
   const limit = status === "idle" ? spendLimit(flowId, step.key, balances) : null;
-  const parsedAmount = Number(amount.replace(/,/g, ""));
+  const parsedAmount = Number(amount);
   const amountInvalid = !!limit && (!amount || !Number.isFinite(parsedAmount) || parsedAmount <= 0);
   const overBalance = limit && parsedAmount > limit.balance ? limit : null;
 
   const onAction = useCallback(
     (delta?: Partial<DemoBalances>) => {
-      if (status !== "idle" || overBalance || amountInvalid) return;
+      if (status !== "idle" || overBalance) return;
+      if (amountInvalid) {
+        setToast(t("enter_amount"));
+        setPulse(true);
+        later(() => setPulse(false), 1000);
+        later(() => setToast(null), 3000);
+        return;
+      }
+
+      setToast(null);
+      setPulse(false);
       const finish = () => {
         if (delta) changeBalances(delta);
         setDoneSteps((prev) => new Set(prev).add(index));
@@ -108,7 +122,7 @@ function DemoRunner({ flowId }: { flowId: DemoFlowId }) {
         finish();
       }
     },
-    [status, overBalance, amountInvalid, step.sign, later, changeBalances, index],
+    [status, overBalance, amountInvalid, t, later, step.sign, changeBalances, index],
   );
 
   const passed = useCallback(

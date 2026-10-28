@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Svg from "@/components/atoms/Svg";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
@@ -37,6 +37,15 @@ function Progress({ stepNumber, total }: { stepNumber: number; total: number }) 
   );
 }
 
+function CoachTip({ children }: { children: string }) {
+  return (
+    <p className="flex gap-2 rounded-3 bg-green-bg p-3 text-14">
+      <Svg iconName="check" size={20} className="text-green flex-shrink-0" />
+      {children}
+    </p>
+  );
+}
+
 function Actions({
   nextLabel,
   nextDisabled,
@@ -67,6 +76,43 @@ export default function CoachPanel(props: Props) {
   const t = useTranslations("Demo");
   const { flowTitle, stepNumber, total, title, body, tip } = props;
   const [collapsed, setCollapsed] = useState(false);
+  const mobileCoachRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const coach = mobileCoachRef.current;
+    if (!coach) return;
+
+    let frame: number | undefined;
+    const keepTargetVisible = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const target = document.querySelector<HTMLElement>("[data-demo-target]");
+        if (!target || !coach.getClientRects().length) return;
+
+        const targetRect = target.getBoundingClientRect();
+        const coachTop = coach.getBoundingClientRect().top;
+        const gap = 16;
+
+        if (targetRect.top < gap) {
+          window.scrollBy({ top: targetRect.top - gap, behavior: "auto" });
+        } else if (targetRect.bottom > coachTop - gap) {
+          window.scrollBy({ top: targetRect.bottom - coachTop + gap, behavior: "auto" });
+        }
+      });
+    };
+
+    keepTargetVisible();
+    window.addEventListener("resize", keepTargetVisible);
+    const observer =
+      typeof ResizeObserver === "undefined" ? undefined : new ResizeObserver(keepTargetVisible);
+    observer?.observe(coach);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      window.removeEventListener("resize", keepTargetVisible);
+      observer?.disconnect();
+    };
+  }, [collapsed, stepNumber]);
 
   return (
     <>
@@ -82,19 +128,15 @@ export default function CoachPanel(props: Props) {
         </div>
         <h2 className="text-20 font-bold">{title}</h2>
         <p className="text-secondary-text">{body}</p>
-        {tip && (
-          <p className="flex gap-2 rounded-3 bg-green-bg p-3 text-14">
-            <Svg iconName="check" size={20} className="text-green flex-shrink-0" />
-            {tip}
-          </p>
-        )}
+        {tip && <CoachTip>{tip}</CoachTip>}
         <Progress stepNumber={stepNumber} total={total} />
         <Actions {...props} />
       </aside>
 
       <aside
+        ref={mobileCoachRef}
         aria-live="polite"
-        className="lg:hidden fixed inset-x-0 bottom-[64px] md:bottom-0 z-[86] bg-primary-bg rounded-t-5 px-4 pt-2 pb-4 flex flex-col gap-3 shadow-[0_-8px_40px_-12px_rgba(0,0,0,0.8)]"
+        className="lg:hidden fixed inset-x-0 bottom-[64px] md:bottom-0 z-[86] max-h-[calc(100dvh-64px)] md:max-h-[100dvh] overflow-y-auto overscroll-contain bg-primary-bg rounded-t-5 px-4 pt-2 pb-4 flex flex-col gap-3 shadow-[0_-8px_40px_-12px_rgba(0,0,0,0.8)]"
       >
         <button
           type="button"
@@ -114,6 +156,7 @@ export default function CoachPanel(props: Props) {
         {!collapsed && (
           <>
             <p className="text-14 text-secondary-text">{body}</p>
+            {tip && <CoachTip>{tip}</CoachTip>}
             <Actions {...props} />
           </>
         )}
