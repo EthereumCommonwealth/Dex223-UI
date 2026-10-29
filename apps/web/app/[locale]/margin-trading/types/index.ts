@@ -45,6 +45,7 @@ export type MarginPosition = {
   collateralAmount: bigint;
   collateralAsset: Currency;
   initialLeverage: number;
+  frozenTime: number;
 };
 
 export type LendingOrder = {

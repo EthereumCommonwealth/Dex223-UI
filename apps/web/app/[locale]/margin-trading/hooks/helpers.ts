@@ -44,6 +44,7 @@ export type GqlPosition = {
   collateralToken: GqlToken;
   collateralAmount: bigint;
   leverage: number;
+  frozenTime?: string | number | null;
 };
 
 export type GqlOrder = {
@@ -207,6 +208,7 @@ export function serializeGqlPosition(
     collateralAmount,
     collateralToken,
     leverage,
+    frozenTime,
     ...rest
   } = gqlPosition;
 
@@ -236,6 +238,7 @@ export function serializeGqlPosition(
     collateralAsset: gqlTokenToCurrency(collateralToken, chainId),
     collateralAmount: BigInt(collateralAmount),
     initialLeverage: +leverage,
+    frozenTime: frozenTime ? Number(frozenTime) : 0,
   };
 }
 
