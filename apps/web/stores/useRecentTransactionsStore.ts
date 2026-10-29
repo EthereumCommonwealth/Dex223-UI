@@ -34,6 +34,7 @@ export enum RecentTransactionTitleTemplate {
   CLOSE_MARGIN_POSITION,
   TRANSFER,
   FREEZE_MARGIN_POSITION,
+  UNFREEZE_MARGIN_POSITION,
   LIQUIDATE_MARGIN_POSITION,
   MARGIN_SWAP,
   WITHDRAW_FROM_CLOSED_POSITION,
@@ -172,6 +173,9 @@ export type IRecentTransactionTitle =
     } & MarginPositionTitle)
   | ({
       template: RecentTransactionTitleTemplate.FREEZE_MARGIN_POSITION;
+    } & MarginPositionTitle)
+  | ({
+      template: RecentTransactionTitleTemplate.UNFREEZE_MARGIN_POSITION;
     } & MarginPositionTitle)
   | ({
       template: RecentTransactionTitleTemplate.WITHDRAW_FROM_CLOSED_POSITION;

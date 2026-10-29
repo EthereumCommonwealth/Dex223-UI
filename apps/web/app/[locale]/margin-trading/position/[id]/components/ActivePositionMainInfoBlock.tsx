@@ -7,8 +7,12 @@ import { formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import { useMarginSwapPositionStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore";
+import FrozenBadge from "@/app/[locale]/margin-trading/components/FrozenBadge";
+import FrozenPositionActions from "@/app/[locale]/margin-trading/components/FrozenPositionActions";
 import PositionHealthStatus from "@/app/[locale]/margin-trading/components/widgets/PositionHealthStatus";
 import usePositionLiquidationCost from "@/app/[locale]/margin-trading/hooks/usePositionLiquidationCost";
+import usePositionLiquidationState from "@/app/[locale]/margin-trading/hooks/usePositionLiquidationState";
+import FrozenPositionAlert from "@/app/[locale]/margin-trading/position/[id]/components/FrozenPositionAlert";
 import usePositionStatus from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionStatus";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
 import Button, { ButtonColor } from "@/components/buttons/Button";
@@ -61,6 +65,8 @@ export default function ActivePositionMainInfoBlock({
   const { setMarginSwapPositionId } = useMarginSwapPositionStore();
 
   const { expectedBalance, actualBalance } = usePositionStatus(position);
+  const { isFrozen, isLiquidatable, isLiquidatableKnown, frozenTime } =
+    usePositionLiquidationState(position);
 
   const health = useMemo(() => {
     if (!expectedBalance || !actualBalance) {
@@ -74,6 +80,8 @@ export default function ActivePositionMainInfoBlock({
     return actualBalance != null && expectedBalance != null && actualBalance <= expectedBalance;
   }, [actualBalance, expectedBalance]);
 
+  const atRisk = isLiquidatableKnown ? isLiquidatable : subjectToLiquidation;
+
   return (
     <div className="py-5 px-4 sm:px-10 bg-primary-bg rounded-5 mb-5">
       <div className="grid grid-cols-1 lg:grid-cols-2 items-center mb-3 gap-3">
@@ -85,47 +93,68 @@ export default function ActivePositionMainInfoBlock({
               {t("status_active")}
               <div className="w-2 h-2 rounded-full bg-green" />
             </div>
+            {isFrozen && <FrozenBadge />}
           </div>
           <PositionHealthStatus health={health} />
         </div>
         <div className="flex flex-wrap items-center gap-2 justify-end">
-          <Button
-            colorScheme={ButtonColor.LIGHT_GREEN}
-            fullWidth
-            disabled={
-              subjectToLiquidation || address?.toLowerCase() !== position.owner.toLowerCase()
-            }
-            onClick={() => {
-              setMarginSwapPositionId(position.id);
-              router.push("/margin-swap");
-            }}
-          >
-            {t("trade")}
-          </Button>
-          <Link href={`/margin-trading/position/${position.id}/deposit`}>
-            <Button
-              colorScheme={subjectToLiquidation ? ButtonColor.LIGHT_RED : ButtonColor.LIGHT_GREEN}
-            >
-              {t("deposit")}
-            </Button>
-          </Link>
-
-          {subjectToLiquidation ? (
-            <Link href={`/margin-trading/position/${position.id}/liquidate`}>
-              <Button colorScheme={ButtonColor.RED}>{t("liquidate")}</Button>
-            </Link>
+          {isFrozen ? (
+            <FrozenPositionActions
+              position={position}
+              isLiquidatable={isLiquidatable}
+              isKnown={isLiquidatableKnown}
+              tradeDisabled={address?.toLowerCase() !== position.owner.toLowerCase()}
+              onTrade={() => {
+                setMarginSwapPositionId(position.id);
+                router.push("/margin-swap");
+              }}
+              onClose={() => setIsCloseDialogOpened(true)}
+            />
           ) : (
             <>
               <Button
                 colorScheme={ButtonColor.LIGHT_GREEN}
-                onClick={() => setIsCloseDialogOpened(true)}
+                fullWidth
+                disabled={atRisk || address?.toLowerCase() !== position.owner.toLowerCase()}
+                onClick={() => {
+                  setMarginSwapPositionId(position.id);
+                  router.push("/margin-swap");
+                }}
               >
-                {t("close")}
+                {t("trade")}
               </Button>
+              <Link href={`/margin-trading/position/${position.id}/deposit`}>
+                <Button colorScheme={atRisk ? ButtonColor.LIGHT_RED : ButtonColor.LIGHT_GREEN}>
+                  {t("deposit")}
+                </Button>
+              </Link>
+
+              {atRisk ? (
+                <Link href={`/margin-trading/position/${position.id}/liquidate`}>
+                  <Button colorScheme={ButtonColor.RED}>{t("liquidate")}</Button>
+                </Link>
+              ) : (
+                <Button
+                  colorScheme={ButtonColor.LIGHT_GREEN}
+                  onClick={() => setIsCloseDialogOpened(true)}
+                >
+                  {t("close")}
+                </Button>
+              )}
             </>
           )}
         </div>
       </div>
+
+      {isFrozen && (
+        <FrozenPositionAlert
+          position={position}
+          frozenTime={frozenTime}
+          isLiquidatable={isLiquidatable}
+          isKnown={isLiquidatableKnown}
+          actualBalance={actualBalance}
+        />
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <BalanceCard position={position} />
