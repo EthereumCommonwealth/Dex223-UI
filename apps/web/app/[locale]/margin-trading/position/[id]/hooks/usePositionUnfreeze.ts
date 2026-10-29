@@ -15,7 +15,10 @@ import {
   useRecentTransactionsStore,
 } from "@/stores/useRecentTransactionsStore";
 
-export default function usePositionUnfreeze(position: MarginPosition) {
+export default function usePositionUnfreeze(
+  position: MarginPosition,
+  onSuccess?: () => void | Promise<unknown>,
+) {
   const chainId = useCurrentChainId();
   const { data: walletClient } = useWalletClient();
   const { address } = useAccount();
@@ -73,8 +76,14 @@ export default function usePositionUnfreeze(position: MarginPosition) {
         address,
       );
 
-      await publicClient.waitForTransactionReceipt({ hash });
-    } catch {
+      const receipt = await publicClient.waitForTransactionReceipt({ hash });
+      if (receipt.status === "success") {
+        await onSuccess?.();
+      } else {
+        console.error("Unfreeze transaction reverted", hash);
+      }
+    } catch (error) {
+      console.error("Failed to unfreeze margin position", error);
     } finally {
       setPending(false);
     }
@@ -85,6 +94,7 @@ export default function usePositionUnfreeze(position: MarginPosition) {
     pending,
     position.id,
     position.loanAsset?.logoURI,
+    onSuccess,
     position.loanAsset.symbol,
     publicClient,
     walletClient,

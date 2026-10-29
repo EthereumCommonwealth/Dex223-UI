@@ -30,6 +30,7 @@ export default function FrozenPositionActions({
   isKnown,
   onTrade,
   onClose,
+  onUnfrozen,
   tradeDisabled,
 }: {
   position: MarginPosition;
@@ -37,10 +38,11 @@ export default function FrozenPositionActions({
   isKnown: boolean;
   onTrade: () => void;
   onClose: () => void;
+  onUnfrozen: () => void | Promise<unknown>;
   tradeDisabled: boolean;
 }) {
   const t = useTranslations("Margin");
-  const { unfreeze, pending } = usePositionUnfreeze(position);
+  const { unfreeze, pending } = usePositionUnfreeze(position, onUnfrozen);
   const closeBlocked = !isKnown || isLiquidatable;
   const closeTooltip = isKnown && isLiquidatable ? t("frozen_close_tooltip") : undefined;
 

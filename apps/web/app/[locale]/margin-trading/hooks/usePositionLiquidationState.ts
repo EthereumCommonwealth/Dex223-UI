@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useReadContract } from "wagmi";
 
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
@@ -11,7 +12,7 @@ export default function usePositionLiquidationState(position: MarginPosition) {
   const open = !position.isClosed && !position.isLiquidated;
   const enabled = isMarginDeployed(chainId) && open;
 
-  const { data: onChainPosition } = useReadContract({
+  const { data: onChainPosition, refetch: refetchPosition } = useReadContract({
     abi: MARGIN_MODULE_ABI,
     address: MARGIN_TRADING_ADDRESS[chainId],
     functionName: "positions",
@@ -23,6 +24,7 @@ export default function usePositionLiquidationState(position: MarginPosition) {
     data: subjectToLiquidation,
     isFetched,
     isError,
+    refetch: refetchLiquidation,
   } = useReadContract({
     abi: MARGIN_MODULE_ABI,
     address: MARGIN_TRADING_ADDRESS[chainId],
@@ -30,6 +32,10 @@ export default function usePositionLiquidationState(position: MarginPosition) {
     args: [BigInt(position.id)],
     query: { enabled },
   });
+
+  const refetch = useCallback(() => {
+    return Promise.all([refetchPosition(), refetchLiquidation()]);
+  }, [refetchLiquidation, refetchPosition]);
 
   const frozenTime =
     onChainPosition !== undefined ? Number(onChainPosition[7]) : Number(position.frozenTime || 0);
@@ -39,5 +45,6 @@ export default function usePositionLiquidationState(position: MarginPosition) {
     isFrozen: open && frozenTime > 0,
     isLiquidatable: Boolean(subjectToLiquidation),
     isLiquidatableKnown: enabled && isFetched && !isError,
+    refetch,
   };
 }

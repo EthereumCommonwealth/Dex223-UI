@@ -3,11 +3,10 @@ import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 
 import {
+  accruedLiquidationLevel,
   formatFrozenAt,
   formatGroupedAmount,
   formatMaintenancePercent,
-  fullDurationInterest,
-  liquidationLevel,
 } from "@/app/[locale]/margin-trading/helpers/liquidationMath";
 import useMaintenanceMarginBps from "@/app/[locale]/margin-trading/hooks/useMaintenanceMarginBps";
 import { MarginPosition } from "@/app/[locale]/margin-trading/types";
@@ -19,12 +18,14 @@ export default function FrozenPositionAlert({
   frozenTime,
   isLiquidatable,
   isKnown,
+  expectedBalance,
   actualBalance,
 }: {
   position: MarginPosition;
   frozenTime: number;
   isLiquidatable: boolean;
   isKnown: boolean;
+  expectedBalance: bigint | undefined;
   actualBalance: bigint | undefined;
 }) {
   const t = useTranslations("Margin");
@@ -32,22 +33,12 @@ export default function FrozenPositionAlert({
   const symbol = position.loanAsset.symbol || t("unknown");
 
   const level = useMemo(() => {
-    if (maintenanceBps === undefined) {
+    if (maintenanceBps === undefined || expectedBalance === undefined) {
       return undefined;
     }
 
-    const interest = fullDurationInterest(
-      position.loanAmount,
-      position.order.interestRate,
-      position.order.positionDuration,
-    );
-    return liquidationLevel(position.loanAmount, interest, maintenanceBps);
-  }, [
-    maintenanceBps,
-    position.loanAmount,
-    position.order.interestRate,
-    position.order.positionDuration,
-  ]);
+    return accruedLiquidationLevel(expectedBalance, maintenanceBps);
+  }, [expectedBalance, maintenanceBps]);
 
   const values = {
     frozenAt: frozenTime > 0 ? formatFrozenAt(frozenTime) : DASH,

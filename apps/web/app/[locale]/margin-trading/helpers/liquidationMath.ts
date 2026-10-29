@@ -23,6 +23,15 @@ export function liquidationLevel(
   return ((loanAmount + interest) * (BPS + maintenanceBps)) / BPS;
 }
 
+export function accruedLiquidationLevel(expectedBalance: bigint, maintenanceBps: bigint): bigint {
+  if (expectedBalance <= 0n) {
+    return 0n;
+  }
+
+  const numerator = expectedBalance * (BPS + maintenanceBps);
+  return (numerator + BPS - 1n) / BPS;
+}
+
 export function scaleDecimals(amount: bigint, fromDecimals: number, toDecimals: number): bigint {
   if (fromDecimals === toDecimals) {
     return amount;

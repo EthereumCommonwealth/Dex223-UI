@@ -65,7 +65,7 @@ export default function ActivePositionMainInfoBlock({
   const { setMarginSwapPositionId } = useMarginSwapPositionStore();
 
   const { expectedBalance, actualBalance } = usePositionStatus(position);
-  const { isFrozen, isLiquidatable, isLiquidatableKnown, frozenTime } =
+  const { isFrozen, isLiquidatable, isLiquidatableKnown, frozenTime, refetch } =
     usePositionLiquidationState(position);
 
   const health = useMemo(() => {
@@ -109,6 +109,7 @@ export default function ActivePositionMainInfoBlock({
                 router.push("/margin-swap");
               }}
               onClose={() => setIsCloseDialogOpened(true)}
+              onUnfrozen={refetch}
             />
           ) : (
             <>
@@ -152,6 +153,7 @@ export default function ActivePositionMainInfoBlock({
           frozenTime={frozenTime}
           isLiquidatable={isLiquidatable}
           isKnown={isLiquidatableKnown}
+          expectedBalance={expectedBalance}
           actualBalance={actualBalance}
         />
       )}

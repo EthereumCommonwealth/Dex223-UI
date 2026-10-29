@@ -354,7 +354,8 @@ export function LendingPositionCard({ position }: Props) {
   const router = useRouter();
   const { setMarginSwapPositionId } = useMarginSwapPositionStore();
   const { expectedBalance, actualBalance } = usePositionStatus(position);
-  const { isFrozen, isLiquidatable, isLiquidatableKnown } = usePositionLiquidationState(position);
+  const { isFrozen, isLiquidatable, isLiquidatableKnown, refetch } =
+    usePositionLiquidationState(position);
   const [positionToClose, setPositionToClose] = useState<MarginPosition | undefined>();
 
   const subjectToLiquidation = useMemo(() => {
@@ -631,6 +632,7 @@ export function LendingPositionCard({ position }: Props) {
                   router.push("/margin-swap");
                 }}
                 onClose={() => setPositionToClose(position)}
+                onUnfrozen={refetch}
               />
             ) : (
               <>
