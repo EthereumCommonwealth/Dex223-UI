@@ -88,7 +88,7 @@ function StandardOption({
         ) : (
           <span
             className={clsx(
-              "w-[calc(100%-55px)] table table-fixed",
+              "w-full md:w-[calc(100%-55px)] table table-fixed",
               standard === active ? "text-secondary-text" : "text-tertiary-text",
             )}
           >
@@ -152,14 +152,14 @@ export function StandardButton({
     <button
       type="button"
       className={clsxMerge(
-        "h-6 rounded-3 duration-200 flex items-center justify-center gap-1 px-2 min-w-[58px] max-md:w-full text-secondary-text",
+        "h-6 rounded-3 duration-200 flex items-center justify-center gap-1 px-2 min-w-[58px] max-md:w-full whitespace-nowrap text-secondary-text",
         selectedStandard === standard ? activeColorMap[colorScheme] : inactiveColorMap[colorScheme],
         disabled && standard === Standard.ERC20 && "bg-primary-bg shadow-none",
         disabled && "text-tertiary-text pointer-events-none",
       )}
       onClick={() => handleStandardSelect(standard)}
     >
-      <span className="md:hidden">{t("standard")}</span>
+      <span className="hidden xs:inline md:hidden">{t("standard")}</span>
       {standard}
     </button>
   );

@@ -1540,6 +1540,7 @@
     "unverified_oracle_button": "Oráculo de precios no verificado",
     "unverified_oracle_blocked": "Esta orden usa un oráculo de precios no verificado. El préstamo está desactivado para proteger tu garantía.",
     "leverage_borrow_tooltip": "Cuánto se apalanca este préstamo respecto a su garantía.",
+    "leverage_starts_hint": "Empieza en 2x: la garantía vale aproximadamente lo mismo que el préstamo. Un apalancamiento mayor necesita menos garantía, pero se liquida antes.",
     "deadline_borrow_tooltip": "Cuándo debe cerrarse esta posición prestada.",
     "review_borrow": "Revisar préstamo",
     "you_send": "Envías",
