@@ -351,7 +351,13 @@ export default function BorrowPage({
       ratioOverride?: number,
       collateralToken = values.collateralToken,
     ) => {
-      const nextValues = { ...values, collateralToken, collateralAmount, leverage, borrowAmount: "" };
+      const nextValues = {
+        ...values,
+        collateralToken,
+        collateralAmount,
+        leverage,
+        borrowAmount: "",
+      };
       const effectiveRatio = ratioOverride ?? ratio;
 
       if (collateralAmount !== "" && effectiveRatio && collateralToken) {
@@ -376,7 +382,13 @@ export default function BorrowPage({
       collateralToken = values.collateralToken,
     ) => {
       const B = parseFloat(borrowAmount);
-      const nextValues = { ...values, collateralToken, borrowAmount, leverage, collateralAmount: "" };
+      const nextValues = {
+        ...values,
+        collateralToken,
+        borrowAmount,
+        leverage,
+        collateralAmount: "",
+      };
       const effectiveRatio = ratioOverride ?? ratio;
 
       try {
@@ -517,9 +529,7 @@ export default function BorrowPage({
     values.collateralToken,
   ]);
 
-  const [leverageInput, setLeverageInput] = useState(
-    () => values.leverage.toString(),
-  );
+  const [leverageInput, setLeverageInput] = useState(() => values.leverage.toString());
   const leverageInitializedForOrder = useRef<string | null>(null);
 
   useLayoutEffect(() => {
@@ -542,7 +552,10 @@ export default function BorrowPage({
       const parsed = parseFloat(input.trim());
       const leverage = Math.min(
         order.leverage,
-        Math.max(1.01, Number.isFinite(parsed) ? parsed : Number(startingBorrowLeverage(order.leverage))),
+        Math.max(
+          1.01,
+          Number.isFinite(parsed) ? parsed : Number(startingBorrowLeverage(order.leverage)),
+        ),
       ).toString();
 
       setLeverageInput(leverage);
