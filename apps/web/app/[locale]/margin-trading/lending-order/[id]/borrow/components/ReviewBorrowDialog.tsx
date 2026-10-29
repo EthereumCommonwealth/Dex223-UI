@@ -7,6 +7,7 @@ import SimpleBar from "simplebar-react";
 import { formatUnits, parseUnits } from "viem";
 
 import timestampToDateString from "@/app/[locale]/margin-trading/helpers/timestampToDateString";
+import LiquidationRiskBlock from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/components/LiquidationRiskBlock";
 import useCreateMarginPosition, {
   useCreatePositionApproveSteps,
 } from "@/app/[locale]/margin-trading/lending-order/[id]/borrow/hooks/useCreateMarginPosition";
@@ -48,11 +49,13 @@ function CreateMarginPositionActionButton({
   order,
   amountToApprove,
   feeAmountToApprove,
+  confirmDisabled,
 }: {
   orderId: string;
   order: LendingOrder;
   amountToApprove: string;
   feeAmountToApprove: string;
+  confirmDisabled: boolean;
 }) {
   const t = useTranslations("Margin");
   const { handleCreateMarginPosition } = useCreateMarginPosition(order);
@@ -102,6 +105,7 @@ function CreateMarginPositionActionButton({
   return (
     <Button
       fullWidth
+      disabled={confirmDisabled}
       onClick={() => handleCreateMarginPosition(orderId, amountToApprove, feeAmountToApprove)}
     >
       {t("confirm_borrow")}
@@ -123,6 +127,7 @@ export default function ReviewBorrowDialog({
   const { values, setValues } = useCreateMarginPositionConfigStore();
   const { status, setStatus } = useCreateMarginPositionStatusStore();
   const [isEditApproveActive, setEditApproveActive] = React.useState(false);
+  const [riskAcknowledged, setRiskAcknowledged] = useState(false);
   const [isEditApproveFeeActive, setEditApproveFeeActive] = React.useState(false);
 
   const { positionId, setPositionId } = useNewlyCreatedPositionId();
@@ -183,6 +188,10 @@ export default function ReviewBorrowDialog({
     () => !isInitialStatus && !isFinalStatus,
     [isFinalStatus, isInitialStatus],
   );
+
+  useEffect(() => {
+    setRiskAcknowledged(false);
+  }, [isOpen]);
 
   useEffect(() => {
     if (isFinalStatus && !isOpen) {
@@ -526,11 +535,20 @@ export default function ReviewBorrowDialog({
             )}
           </div>
         )}
+        {!isFinalStatus && (
+          <LiquidationRiskBlock
+            order={order}
+            isOpen={isOpen}
+            acknowledged={riskAcknowledged}
+            onAcknowledgedChange={setRiskAcknowledged}
+          />
+        )}
         <CreateMarginPositionActionButton
           orderId={orderId}
           order={order}
           amountToApprove={amountToApprove}
           feeAmountToApprove={feeAmountToApprove}
+          confirmDisabled={!riskAcknowledged}
         />
       </div>
     </DrawerDialog>
