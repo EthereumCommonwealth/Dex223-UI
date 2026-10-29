@@ -1551,6 +1551,7 @@
     "unverified_oracle_button": "Unverified price oracle",
     "unverified_oracle_blocked": "This order uses an unverified price oracle. Borrowing is disabled to protect your collateral.",
     "leverage_borrow_tooltip": "How much this loan is leveraged against your collateral.",
+    "leverage_starts_hint": "Starts at 2x: collateral worth about the same as the loan. Higher leverage needs less collateral but is liquidated sooner.",
     "deadline_borrow_tooltip": "When this borrowed position must be closed.",
     "review_borrow": "Review borrow",
     "you_send": "You send",

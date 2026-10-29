@@ -1540,6 +1540,7 @@
     "unverified_oracle_button": "확인되지 않은 가격 오라클",
     "unverified_oracle_blocked": "이 주문은 확인되지 않은 가격 오라클을 사용합니다. 담보를 보호하기 위해 대출이 비활성화되었습니다.",
     "leverage_borrow_tooltip": "담보 대비 이 대출의 레버리지입니다.",
+    "leverage_starts_hint": "2배에서 시작합니다. 담보 가치는 대출금과 거의 같습니다. 레버리지가 높을수록 담보는 적게 필요하지만 더 빨리 청산됩니다.",
     "deadline_borrow_tooltip": "이 차입 포지션을 닫아야 하는 시점입니다.",
     "review_borrow": "차입 검토",
     "you_send": "보내는 금액",

@@ -232,10 +232,10 @@ export default function ReviewBorrowDialog({
         {!isFinalStatus && (
           <>
             <InputLabel inputSize={InputSize.LARGE} label={t("you_send")} />
-            <div className="grid grid-cols-2 gap-2">
-              <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4 text-14">
+            <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 mb-4">
+              <div className="bg-tertiary-bg rounded-3 py-4 px-3 sm:px-5 text-14 min-w-0">
                 <p className="text-secondary-text ">{t("collateral")}</p>
-                <div className="flex items-center gap-1 items-center my-1">
+                <div className="flex flex-wrap items-center gap-1 my-1 break-all">
                   <Image
                     className="mr-1"
                     src={"/images/tokens/placeholder.svg"}
@@ -254,9 +254,9 @@ export default function ReviewBorrowDialog({
                   />
                 </div>
               </div>
-              <div className="bg-tertiary-bg rounded-3 py-4 px-5 mb-4 text-14">
+              <div className="bg-tertiary-bg rounded-3 py-4 px-3 sm:px-5 text-14 min-w-0">
                 <p className="text-secondary-text ">{t("liquidation_fee")}</p>
-                <div className="flex items-center gap-1 items-center my-1">
+                <div className="flex flex-wrap items-center gap-1 my-1 break-all">
                   <Image
                     className="mr-1"
                     src={"/images/tokens/placeholder.svg"}
@@ -277,9 +277,9 @@ export default function ReviewBorrowDialog({
               </div>
             </div>
             <InputLabel inputSize={InputSize.LARGE} label={t("you_receive")} />
-            <div className="bg-tertiary-bg rounded-3 py-[14px] px-5 mb-4 text-14 flex items-center justify-between">
+            <div className="bg-tertiary-bg rounded-3 py-[14px] px-3 sm:px-5 mb-4 text-14 flex flex-wrap items-center justify-between gap-2 min-w-0">
               <p className="text-secondary-text ">{t("borrow")}</p>
-              <div className="flex items-center gap-1">
+              <div className="flex flex-wrap items-center gap-1 min-w-0 break-all">
                 <Image
                   className="mr-1"
                   src={"/images/tokens/placeholder.svg"}
@@ -350,19 +350,19 @@ export default function ReviewBorrowDialog({
               />
             </div>
             <div className="bg-tertiary-bg rounded-3 px-5 pb-5 pt-3">
-              <div className="flex justify-between mb-3 items-center">
-                <div className="flex items-center gap-2 mb-3">
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-3">
+                <div className="flex items-center gap-2 min-w-0">
                   <h3 className="text-tertiary-text flex items-center gap-1 text-14">
                     <Tooltip text={t("tokens_allowed_tooltip")} iconSize={20} />
                     {t("tokens_allowed_trading")}
                   </h3>
                 </div>
-                <div>
+                <div className="w-full sm:w-[180px] shrink-0">
                   <SearchInput
                     value={searchTradableTokenValue}
                     onChange={(e) => setSearchTradableTokenValue(e.target.value)}
                     placeholder={t("token_name")}
-                    className="h-8 text-14 w-[180px] rounded-2"
+                    className="h-8 text-14 w-full rounded-2"
                   />
                 </div>
               </div>
