@@ -6,17 +6,26 @@ import { formatEther, formatGwei } from "viem";
 
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { formatFloat } from "@/functions/formatFloat";
+import { GasOption } from "@/stores/factories/createGasPriceStore";
+
+const gasOptionTitleKey: Record<GasOption, "cheap" | "fast" | "custom"> = {
+  [GasOption.CHEAP]: "cheap",
+  [GasOption.FAST]: "fast",
+  [GasOption.CUSTOM]: "custom",
+};
 
 export default function GasSettingsBlock({
   handleClick,
   formattedGasPrice,
   customGasLimit = BigInt(0),
   estimatedGas = BigInt(0),
+  gasPriceOption = GasOption.CHEAP,
 }: {
   handleClick?: () => void;
   formattedGasPrice?: bigint;
   customGasLimit?: bigint;
   estimatedGas?: bigint;
+  gasPriceOption?: GasOption;
 }) {
   const t = useTranslations("GasSettings");
 
@@ -47,7 +56,7 @@ export default function GasSettingsBlock({
       </div>
       <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
         <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-          {t("cheap")}
+          {t(gasOptionTitleKey[gasPriceOption])}
         </span>
         <Button
           type="button"

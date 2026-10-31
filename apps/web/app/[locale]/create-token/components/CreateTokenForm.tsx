@@ -187,6 +187,7 @@ export default function CreateTokenForm() {
             </div>
 
             <GasSettingsBlock
+              gasPriceOption={gasPriceOption}
               customGasLimit={customGasLimit}
               estimatedGas={estimatedGas}
               formattedGasPrice={formattedGasPrice}
