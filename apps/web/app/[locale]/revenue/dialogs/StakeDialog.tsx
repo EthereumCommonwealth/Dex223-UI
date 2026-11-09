@@ -38,12 +38,12 @@ import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import useRecentTransactionByHash from "../hooks/useRecentTransactionByHash";
 import useRevenueContract from "../hooks/useRevenueContract";
 import { getTxErrorCategory } from "../lib/txError";
-import {
-  useClaimGasLimitStore,
-  useClaimGasModeStore,
-  useClaimGasPriceStore,
-} from "../stores/useClaimGasSettingsStore";
 import { StakeError, StakeStatus, useStakeDialogStore } from "../stores/useStakeDialogStore";
+import {
+  useStakeGasLimitStore,
+  useStakeGasModeStore,
+  useStakeGasPriceStore,
+} from "../stores/useStakeGasSettingsStore";
 
 export function useStakeStatus() {
   const { status: stakeStatus } = useStakeDialogStore();
@@ -428,12 +428,12 @@ const StakeDialog = () => {
     setGasPriceOption,
     setGasPriceSettings,
     updateDefaultState,
-  } = useClaimGasPriceStore();
+  } = useStakeGasPriceStore();
 
   const { estimatedGas, customGasLimit, setEstimatedGas, setCustomGasLimit } =
-    useClaimGasLimitStore();
+    useStakeGasLimitStore();
 
-  const { isAdvanced, setIsAdvanced } = useClaimGasModeStore();
+  const { isAdvanced, setIsAdvanced } = useStakeGasModeStore();
 
   const { baseFee, gasPrice } = useGlobalFees();
 
