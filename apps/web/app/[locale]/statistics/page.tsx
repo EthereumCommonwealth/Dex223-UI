@@ -3,11 +3,12 @@
 import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
-import { usePoolsData } from "@/app/[locale]/pools/hooks";
+import { usePoolPriceIndex, usePoolsData } from "@/app/[locale]/pools/hooks";
 import ChartRangeToggle from "@/app/[locale]/statistics/components/ChartRangeToggle";
 import PoolRows from "@/app/[locale]/statistics/components/PoolRows";
 import StatisticsShell from "@/app/[locale]/statistics/components/StatisticsShell";
 import ValueChart, { ValuePoint } from "@/app/[locale]/statistics/components/ValueChart";
+import { formatUsd, positiveUsd, sortPoolsByTvl } from "@/app/[locale]/statistics/formatLiquidity";
 import { useDex223DayData, useFactoryStats } from "@/app/[locale]/statistics/hooks";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -117,6 +118,7 @@ function OverviewCharts({ chainId }: { chainId: ReturnType<typeof useCurrentChai
 export default function StatisticsOverviewPage() {
   const t = useTranslations("Statistics");
   const chainId = useCurrentChainId();
+  const { priceIndex } = usePoolPriceIndex(chainId);
   const {
     data: factoryData,
     loading: factoryLoading,
@@ -133,7 +135,12 @@ export default function StatisticsOverviewPage() {
   });
 
   const factory = factoryData?.factories?.[0];
-  const pools = useMemo(() => poolsData?.pools ?? [], [poolsData?.pools]);
+  const factoryTvl = positiveUsd(factory?.totalValueLockedUSD);
+  const factoryVolume = positiveUsd(factory?.totalVolumeUSD);
+  const pools = useMemo(
+    () => sortPoolsByTvl(poolsData?.pools ?? [], priceIndex),
+    [poolsData?.pools, priceIndex],
+  );
   const loading = factoryLoading || poolsLoading;
   const hasError = Boolean(factoryError || poolsError);
   const hasFactory = Boolean(factory);
@@ -152,7 +159,9 @@ export default function StatisticsOverviewPage() {
               value={
                 loading && !factory
                   ? "—"
-                  : `$${formatNumberKilos(Number(factory?.totalValueLockedUSD ?? 0))}`
+                  : factoryTvl
+                    ? formatUsd(factoryTvl)
+                    : t("usd_unavailable")
               }
             />
             <StatCard
@@ -160,7 +169,9 @@ export default function StatisticsOverviewPage() {
               value={
                 loading && !factory
                   ? "—"
-                  : `$${formatNumberKilos(Number(factory?.totalVolumeUSD ?? 0))}`
+                  : factoryVolume
+                    ? formatUsd(factoryVolume)
+                    : t("usd_unavailable")
               }
             />
             <StatCard
@@ -199,7 +210,12 @@ export default function StatisticsOverviewPage() {
             ) : pools.length === 0 ? (
               <div className="px-5 py-8 text-center text-secondary-text">{t("no_pools")}</div>
             ) : (
-              <PoolRows pools={pools} chainId={chainId} tvlLabel={t("tvl")} />
+              <PoolRows
+                pools={pools}
+                chainId={chainId}
+                priceIndex={priceIndex}
+                tvlLabel={t("tvl")}
+              />
             )}
           </div>
         </>

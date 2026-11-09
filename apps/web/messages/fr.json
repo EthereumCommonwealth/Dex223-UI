@@ -772,6 +772,7 @@
     "loading": "Chargement des pools…",
     "no_pools": "Aucune pool trouvée sur ce réseau.",
     "unavailable": "Les statistiques sont indisponibles sur ce réseau pour le moment.",
+    "usd_unavailable": "Le prix en USD n'est pas disponible sur ce réseau.",
     "loading_tokens": "Chargement des jetons…",
     "no_tokens": "Aucun jeton trouvé sur ce réseau.",
     "token_not_found": "Jeton introuvable.",

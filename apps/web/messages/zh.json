@@ -772,6 +772,7 @@
     "loading": "正在加载流动性池…",
     "no_pools": "该网络暂无流动性池。",
     "unavailable": "该网络的统计数据暂时不可用。",
+    "usd_unavailable": "此网络上无法获得美元价格。",
     "loading_tokens": "正在加载代币…",
     "no_tokens": "该网络暂无代币。",
     "token_not_found": "未找到代币。",

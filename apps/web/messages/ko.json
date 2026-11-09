@@ -772,6 +772,7 @@
     "loading": "풀 불러오는 중…",
     "no_pools": "이 네트워크에서 풀을 찾을 수 없습니다.",
     "unavailable": "지금은 이 네트워크의 통계를 사용할 수 없습니다.",
+    "usd_unavailable": "이 네트워크에서는 USD 가격을 사용할 수 없습니다.",
     "loading_tokens": "토큰 불러오는 중…",
     "no_tokens": "이 네트워크에서 토큰을 찾을 수 없습니다.",
     "token_not_found": "토큰을 찾을 수 없습니다.",

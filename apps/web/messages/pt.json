@@ -772,6 +772,7 @@
     "loading": "A carregar pools…",
     "no_pools": "Nenhuma pool encontrada nesta rede.",
     "unavailable": "As estatísticas estão indisponíveis nesta rede neste momento.",
+    "usd_unavailable": "O preço em USD não está disponível nesta rede.",
     "loading_tokens": "A carregar tokens…",
     "no_tokens": "Nenhum token encontrado nesta rede.",
     "token_not_found": "Token não encontrado.",

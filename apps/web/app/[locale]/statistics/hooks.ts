@@ -12,8 +12,10 @@ export const FactoryStatsDocument = gql`
       poolCount
       txCount
       totalVolumeUSD
+      totalVolumeETH
       totalFeesUSD
       totalValueLockedUSD
+      totalValueLockedETH
     }
   }
 `;
@@ -72,6 +74,7 @@ export const TokensDataDocument = gql`
       symbol
       name
       addressERC223
+      totalValueLocked
       totalValueLockedUSD
       volumeUSD
       txCount
@@ -102,6 +105,7 @@ export const TokenDetailDocument = gql`
       name
       addressERC223
       decimals
+      totalValueLocked
       totalValueLockedUSD
       volumeUSD
       feesUSD
@@ -120,6 +124,10 @@ export const TokenDetailDocument = gql`
       feeTier
       totalValueLockedUSD
       totalValueLockedETH
+      totalValueLockedToken0
+      totalValueLockedToken1
+      token0Price
+      token1Price
       volumeUSD
       token0 {
         id

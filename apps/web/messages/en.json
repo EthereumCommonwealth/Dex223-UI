@@ -780,6 +780,7 @@
     "no_tokens": "No tokens found for this network.",
     "token_not_found": "Token not found.",
     "unavailable": "Statistics are unavailable for this network right now.",
+    "usd_unavailable": "USD price unavailable on this network.",
     "tab_overview": "Overview",
     "tab_tokens": "Tokens",
     "tab_pools": "Pools",
