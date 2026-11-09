@@ -63,14 +63,12 @@ function EditOrderActionButton({
   amountToApprove,
   order,
   disabled,
-  recreateTokenList,
 }: {
   amountToApprove: string;
   order: LendingOrder;
   disabled?: boolean;
-  recreateTokenList: boolean;
 }) {
-  const { handleEditOrder } = useEditOrder();
+  const { handleEditOrder } = useEditOrder(order);
 
   const { status, modifyOrderHash } = useEditOrderStatusStore();
   const { loanToken } = useEditOrderParams();
@@ -101,7 +99,7 @@ function EditOrderActionButton({
   }
 
   return (
-    <Button disabled={disabled} onClick={() => handleEditOrder(order, recreateTokenList)} fullWidth>
+    <Button disabled={disabled} onClick={() => handleEditOrder()} fullWidth>
       {disabled ? "No changes were made" : "Save changes"}
     </Button>
   );
@@ -285,8 +283,10 @@ export default function ReviewEditOrderDialog({
     order.liquidationRewardAmount.value,
     order.liquidationRewardAsset,
     order.minLoan,
+    order.positionDuration,
     orderCurrencyLimit,
     period.lendingOrderDeadline,
+    period.positionDuration,
     tradingTokens.allowedTokens,
     tradingTokens.includeERC223Trading,
   ]);
@@ -387,9 +387,6 @@ export default function ReviewEditOrderDialog({
           disabled={!modifiedOrderProperties.length}
           order={order}
           amountToApprove={amountToApprove}
-          recreateTokenList={Boolean(
-            modifiedOrderProperties.find((value) => value.id === "allowed-for-trading"),
-          )}
         />
       </div>
     </DrawerDialog>

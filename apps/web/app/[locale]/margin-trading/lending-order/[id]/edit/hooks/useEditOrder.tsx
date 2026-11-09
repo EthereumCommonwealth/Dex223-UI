@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect } from "react";
 import {
   Address,
   encodeAbiParameters,
@@ -9,8 +9,10 @@ import {
   keccak256,
   parseUnits,
 } from "viem";
-import { useAccount, usePublicClient, useWalletClient } from "wagmi";
+import { useAccount, usePublicClient } from "wagmi";
 
+import useMarginGasEstimate from "@/app/[locale]/margin-trading/hooks/useMarginGasEstimate";
+import useMarginWalletClient from "@/app/[locale]/margin-trading/hooks/useMarginWalletClient";
 import { useEditOrderConfigStore } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/stores/useEditOrderConfigStore";
 import {
   EditOrderStatus,
@@ -18,20 +20,15 @@ import {
 } from "@/app/[locale]/margin-trading/lending-order/[id]/edit/stores/useEditOrderStatusStore";
 import { OrderDepositStatus } from "@/app/[locale]/margin-trading/lending-order/[id]/stores/useDepositOrderStatusStore";
 import { TradingTokensInputMode } from "@/app/[locale]/margin-trading/lending-order/create/steps/types";
-import {
-  useCreateOrderGasLimitStore,
-  useCreateOrderGasPriceStore,
-} from "@/app/[locale]/margin-trading/lending-order/create/stores/useSwapGasSettingsStore";
+import { ThirdStepValues } from "@/app/[locale]/margin-trading/lending-order/create/stores/useCreateOrderConfigStore";
 import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
-import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
 import { MARGIN_TRADING_ADDRESS, ORACLE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
-import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import {
   GasFeeModel,
   RecentTransactionTitleTemplate,
@@ -81,9 +78,99 @@ export function calculateInterestRate(monthlyPct: number, _durationDays: number)
   return BigInt(Math.round(monthlyPct * 100));
 }
 
+export function useEditOrderRequest(order: LendingOrder | undefined, liveValues?: ThirdStepValues) {
+  const chainId = useCurrentChainId();
+  const {
+    tradingTokens,
+    loanToken,
+    collateralTokens,
+    liquidationFeeToken,
+    liquidationFeeForLiquidator,
+    minimumBorrowingAmount,
+    orderCurrencyLimit,
+    period,
+    interestRatePerMonth,
+    leverage,
+  } = { ...useEditOrderParams(), ...liveValues };
+
+  return useMarginGasEstimate("editOrder", () => {
+    if (
+      !order ||
+      !loanToken ||
+      !liquidationFeeToken ||
+      (tradingTokens.inputMode === TradingTokensInputMode.AUTOLISTING &&
+        !tradingTokens.tradingTokensAutoListing)
+    ) {
+      return;
+    }
+    const sortedAddresses =
+      tradingTokens.inputMode === TradingTokensInputMode.AUTOLISTING
+        ? [tradingTokens.tradingTokensAutoListing!.id]
+        : (sortAddresses(
+            tradingTokens.allowedTokens.flatMap((token) =>
+              tradingTokens.includeERC223Trading
+                ? [token.wrapped.address0, token.wrapped.address1]
+                : [token.wrapped.address0],
+            ),
+          ) as Address[]);
+    const encodedAddTokenListParams = encodeFunctionData({
+      abi: MARGIN_MODULE_ABI,
+      functionName: "addTokenlist",
+      args: [sortedAddresses, tradingTokens.inputMode === TradingTokensInputMode.AUTOLISTING],
+    });
+    const whitelistId = getWhitelistId(
+      sortedAddresses,
+      tradingTokens.inputMode === TradingTokensInputMode.AUTOLISTING,
+    );
+    const encodedModifyOrderParams = encodeFunctionData({
+      abi: MARGIN_MODULE_ABI,
+      functionName: "modifyOrder",
+      args: [
+        BigInt(order.id),
+        whitelistId,
+        calculateInterestRate(Number(interestRatePerMonth), Number(period.positionDuration)),
+        BigInt(Math.round(Number(period.positionDuration) * 24 * 60 * 60)),
+        parseUnits(minimumBorrowingAmount.toString(), loanToken.decimals),
+        Number(orderCurrencyLimit),
+        leverage,
+        ORACLE_ADDRESS[chainId],
+        parseUnits(liquidationFeeForLiquidator, liquidationFeeToken.decimals),
+        liquidationFeeToken.isNative ? ZERO_ADDRESS : liquidationFeeToken.wrapped.address0,
+        Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000),
+      ],
+    });
+    const encodedCollateralTokens = encodeFunctionData({
+      abi: MARGIN_MODULE_ABI,
+      functionName: "orderSetCollaterals",
+      args: [
+        BigInt(order.id),
+        collateralTokens.flatMap((token) => {
+          if (tradingTokens.includeERC223Trading) {
+            return [token.wrapped.address0, token.wrapped.address1];
+          }
+          return [token.wrapped.address0];
+        }),
+      ],
+    });
+    const recreateTokenList =
+      tradingTokens.allowedTokens.length !== order.allowedTradingAssets.length ||
+      tradingTokens.includeERC223Trading !== order.isErc223TradingAllowed;
+    const actionsToUpdate = recreateTokenList
+      ? [encodedAddTokenListParams, encodedModifyOrderParams, encodedCollateralTokens]
+      : [encodedModifyOrderParams, encodedCollateralTokens];
+
+    return {
+      abi: MARGIN_MODULE_ABI,
+      address: MARGIN_TRADING_ADDRESS[chainId],
+      functionName: "multicall" as const,
+      args: [actionsToUpdate],
+    };
+  });
+}
+
 export default function useEditOrder() {
   const t = useTranslations("Swap");
-  const { data: walletClient } = useWalletClient();
+  const { data: walletClient } = useMarginWalletClient("editOrder");
   const params = useEditOrderParams();
   const publicClient = usePublicClient();
   const chainId = useCurrentChainId();
@@ -101,10 +188,6 @@ export default function useEditOrder() {
   });
 
   const { addRecentTransaction } = useRecentTransactionsStore();
-
-  const { customGasLimit } = useCreateOrderGasLimitStore();
-  const { gasPriceOption, gasPriceSettings } = useCreateOrderGasPriceStore();
-  const { baseFee, priorityFee, gasPrice } = useGlobalFees();
   const {
     tradingTokens,
     loanToken,
@@ -121,17 +204,6 @@ export default function useEditOrder() {
     leverage,
     priceSource,
   } = useEditOrderParams();
-
-  const gasSettings = useMemo(() => {
-    return getGasSettings({
-      baseFee,
-      chainId,
-      gasPrice,
-      priorityFee,
-      gasPriceOption,
-      gasPriceSettings,
-    });
-  }, [baseFee, chainId, gasPrice, priorityFee, gasPriceOption, gasPriceSettings]);
 
   const { address } = useAccount();
   useEffect(() => {
