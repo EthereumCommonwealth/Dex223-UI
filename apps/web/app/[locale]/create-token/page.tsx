@@ -15,7 +15,6 @@ export default function DecreaseLiquidityPage() {
   const t = useTranslations("CreateToken");
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useCreateTokenRecentTransactionsStore();
-
   return (
     <Container>
       <div
