@@ -166,8 +166,11 @@ export function useTokenDetail(
     const rows = data?.tokenDayDatas ?? [];
     return [...rows]
       .map((row: { date: number; priceUSD: string; close: string }) => {
-        const value = Number(row.priceUSD) || Number(row.close) || 0;
-        if (!Number.isFinite(value) || value <= 0) return null;
+        const fromPrice = Number(row.priceUSD);
+        const fromClose = Number(row.close);
+        // A reported 0 is "no USD price", including Sepolia. Prefer a real close.
+        const value = fromPrice > 0 ? fromPrice : fromClose > 0 ? fromClose : NaN;
+        if (!Number.isFinite(value)) return null;
         return { date: row.date, value };
       })
       .filter((p): p is { date: number; value: number } => p !== null)
