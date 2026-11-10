@@ -251,7 +251,7 @@ export default function SendForm({ mode }: { mode: Mode }) {
   }
 
   return (
-    <form onSubmit={onSubmit} className="bg-primary-bg rounded-5 p-4 md:p-6 flex flex-col gap-4">
+    <form onSubmit={onSubmit} className="surface rounded-5 p-4 md:p-6 flex flex-col gap-4">
       <div className="flex gap-2 text-14">
         <Tab href="/send" active={mode === "send"} label={t("tab_send")} />
         <Tab href="/pay" active={mode === "pay"} label={t("tab_pay")} />
