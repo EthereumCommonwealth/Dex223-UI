@@ -176,7 +176,6 @@ export default function useCreateOrder() {
       if (
         !Number.isFinite(durationDays) ||
         durationDays <= 0 ||
-        durationDays > 182 ||
         !Number.isFinite(interestPercent) ||
         interestPercent < 0
       ) {
