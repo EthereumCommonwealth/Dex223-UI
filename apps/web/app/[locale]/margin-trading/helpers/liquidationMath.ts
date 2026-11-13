@@ -15,6 +15,39 @@ export function fullDurationInterest(
   return (loanAmount * rate * duration) / (BPS * SECONDS_IN_MONTH);
 }
 
+export function accruedCloseInterest(
+  loanAmount: bigint,
+  interestRate: bigint | number | string,
+  elapsedSeconds: bigint | number | string,
+): bigint {
+  const rate = BigInt(interestRate);
+  const elapsed = BigInt(elapsedSeconds);
+  if (loanAmount <= 0n || rate <= 0n || elapsed <= 0n) {
+    return 0n;
+  }
+
+  return ((loanAmount * rate) / BPS) * elapsed / SECONDS_IN_MONTH;
+}
+
+export function closedPositionProfit(
+  interest: bigint,
+  viewer: string | undefined,
+  borrower: string,
+  lender: string,
+): bigint {
+  const viewerLower = viewer?.toLowerCase();
+  const isLender = viewerLower === lender.toLowerCase();
+  const isBorrower = viewerLower === borrower.toLowerCase();
+
+  if (isLender && isBorrower) {
+    return 0n;
+  }
+  if (isLender) {
+    return interest;
+  }
+  return interest === 0n ? 0n : -interest;
+}
+
 export function liquidationLevel(
   loanAmount: bigint,
   interest: bigint,
