@@ -18,7 +18,7 @@ import { SearchInput } from "@/components/atoms/Input";
 import ScrollbarContainer from "@/components/atoms/ScrollbarContainer";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
-import { Check, rateToScore, TrustMarker, TrustRateCheck } from "@/components/badges/TrustBadge";
+import { TrustRowMarker } from "@/components/badges/TrustBadge";
 import Button, { ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize, IconButtonVariant } from "@/components/buttons/IconButton";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
@@ -61,28 +61,6 @@ interface Props {
   availableTokens?: Currency[];
 }
 
-function FoundInOtherListMarker() {
-  return (
-    <Tooltip
-      text="There is a token with a same name but different address"
-      renderTrigger={(ref, refProps) => {
-        return (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="rounded-full p-0.5 bg-primary-bg group-hocus:bg-tertiary-bg duration-200"
-            ref={ref.setReference}
-            {...refProps}
-          >
-            <div className="rounded-full p-0.5 flex items-center gap-1 cursor-pointer text-12 text-orange bg-orange-bg">
-              <Svg size={20} iconName="duplicate-found" />
-            </div>
-          </div>
-        );
-      }}
-    />
-  );
-}
-
 function Erc777Badge() {
   const t = useTranslations("ManageTokens");
 
@@ -123,17 +101,6 @@ function TokenRow({
   const {
     balance: { erc20Balance, erc223Balance },
   } = useTokenBalances(isTokenPinned ? currency : undefined);
-
-  const scoreObj = useMemo((): [number, boolean] | undefined => {
-    if (currency.isToken && currency.rate) {
-      return [
-        rateToScore(currency.rate),
-        currency.rate[Check.SAME_NAME_IN_OTHER_LIST] === TrustRateCheck.TRUE,
-      ];
-    }
-
-    return;
-  }, [currency]);
 
   const { price } = useUSDPrice(isTokenPinned ? currency.wrapped.address0 : undefined);
 
@@ -188,21 +155,8 @@ function TokenRow({
                   {currency.name}
                 </span>
                 <div className="flex relative items-center">
-                  {scoreObj && (
-                    <>
-                      {scoreObj[0] < 20 && (
-                        <>
-                          {currency.isToken && currency.rate && (
-                            <TrustMarker rate={currency?.rate} totalScore={scoreObj[0]} />
-                          )}
-                        </>
-                      )}
-                      {scoreObj[1] && (
-                        <div className={scoreObj[0] < 20 ? "-ml-2.5" : ""}>
-                          <FoundInOtherListMarker />
-                        </div>
-                      )}
-                    </>
+                  {currency.isToken && currency.trust && currency.trust.level !== "high" && (
+                    <TrustRowMarker token={currency} trust={currency.trust} />
                   )}
                 </div>
               </div>
