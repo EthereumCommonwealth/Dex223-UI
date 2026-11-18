@@ -147,7 +147,8 @@ function useTrustPopover() {
     onOpenChange: setIsOpen,
     placement: "top",
     whileElementsMounted: autoUpdate,
-    middleware: [offset(8), flip({ fallbackAxisSideDirection: "start" }), shift({ padding: 8 })],
+    // Above the tag; below it when there is no room (Figma 180:646).
+    middleware: [offset(8), flip({ fallbackPlacements: ["bottom"] }), shift({ padding: 8 })],
   });
 
   const { isMounted, styles: transitionStyles } = useTransitionStyles(context, {
