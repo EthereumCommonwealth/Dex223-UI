@@ -4,7 +4,7 @@ export const sepoliaDefaultList = {
   version: {
     major: 1,
     minor: 0,
-    patch: 9,
+    patch: 10,
   },
   logoURI: "/images/token-list-placeholder.svg",
   name: "DEX223 Sepolia Default",
@@ -44,6 +44,54 @@ export const sepoliaDefaultList = {
       "TOT4Z",
       "Total Test 4Z",
       "/images/tokens/placeholder.svg",
+    ),
+    // The Sepolia test tokens the app, the bots and the pools use. Each ERC-223 address is the
+    // converter's (0x5847…0D9F) wrapper for that ERC-20, checked on chain on 2026-11-18. Listed so
+    // they read as Official, not Not verified, on test-app.
+    new Token(
+      11155111,
+      "0xc7231d0F96e83cE98E0650fc4Be8Ca92e2E24cc5",
+      "0xD22051AccB04Cee5d5Eaed03aD032C3d8925Cdc3",
+      18,
+      "D223",
+      "Dex223 (test)",
+      "/images/tokens/placeholder.svg",
+    ),
+    new Token(
+      11155111,
+      "0x1DEf777468F76ed1E74fC87bD32334d3Ccb520d0",
+      "0x0a67Cc4D3Ac29a133a597b5Bef3fe9A6028ACad2",
+      18,
+      "RED",
+      "RED",
+      "/images/tokens/placeholder.svg",
+    ),
+    new Token(
+      11155111,
+      "0xB8e96EB2A094e889AaCC9491fa0538F28517CC33",
+      "0x4c0856DaA46928aE28d9A478bC13f3Cd90EeEcf7",
+      6,
+      "USDT",
+      "Tether USD (test v3)",
+      "/images/tokens/USDT.svg",
+    ),
+    new Token(
+      11155111,
+      "0xFC86A38E97F63852B49b61d44Eee4f937251ae1A",
+      "0x501bfF357609c160B56861EA4478B6592fB85657",
+      6,
+      "USDC",
+      "USD Coin (test v3)",
+      "/images/tokens/USDC.svg",
+    ),
+    new Token(
+      11155111,
+      "0xb16F35c0Ae2912430DAc15764477E179D9B9EbEa",
+      "0xdc31fbF5C6149e612A6a01eB30cE85906866A9DA",
+      18,
+      "WETH",
+      "Wrapped Ether",
+      "/images/tokens/ETH.svg",
     ),
   ],
 };
