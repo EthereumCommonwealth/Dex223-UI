@@ -2,7 +2,7 @@ export const DEFAULT_SLIPPAGE = 0.5;
 export const DEFAULT_DEADLINE = 20;
 
 // Mirrors the validation in the settings dialogs: slippage above 50% or at zero is
-// rejected there, and the deadline is limited to 1-4000 minutes.
+// rejected there, and the deadline is limited to 1-4000 whole minutes.
 const MAX_SLIPPAGE = 50;
 const MIN_DEADLINE = 1;
 const MAX_DEADLINE = 4000;
@@ -21,6 +21,13 @@ export function safeSlippage(value: unknown): number {
 
 export function safeDeadline(value: unknown): number {
   const n = Number(value);
-  if (!Number.isFinite(n) || n < MIN_DEADLINE || n > MAX_DEADLINE) return DEFAULT_DEADLINE;
+  if (!Number.isInteger(n) || n < MIN_DEADLINE || n > MAX_DEADLINE) return DEFAULT_DEADLINE;
   return n;
+}
+
+export function deadlineSeconds(userDeadline: number): number {
+  const minutes = Number.isFinite(userDeadline) ? userDeadline : DEFAULT_DEADLINE;
+  const seconds = Math.round(minutes * 60);
+  if (!Number.isSafeInteger(seconds) || seconds < 0) return DEFAULT_DEADLINE * 60;
+  return seconds;
 }
