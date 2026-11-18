@@ -645,7 +645,9 @@
     "footnote": "L’autolisting Free et les listes que vous importez n’augmentent jamais la confiance : n’importe qui peut y ajouter n’importe quel jeton.",
     "copy_address": "Copier l’adresse",
     "open_in_explorer": "Ouvrir dans l’explorateur",
-    "address_copied": "Adresse copiée"
+    "address_copied": "Adresse copiée",
+    "native_coin": "Monnaie native",
+    "lookalike_search_warning": "{count} jetons utilisent le nom ou le symbole du {symbol} officiel. Seul celui marqué Officiel figure dans la liste par défaut de DEX223. Vérifiez l’adresse du contrat avant de choisir."
   },
   "Liquidity": {
     "set_default": "Réinitialiser",
