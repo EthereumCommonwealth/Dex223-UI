@@ -168,7 +168,13 @@
     "confirm_margin_swap": "确认保证金兑换",
     "review_margin_swap": "查看保证金兑换",
     "successful_margin_swap": "保证金兑换成功",
-    "margin_swap_failed": "保证金兑换失败"
+    "margin_swap_failed": "保证金兑换失败",
+    "native_no_contract": "原生币，无合约",
+    "trust_not_verified_warning": "{symbol} 未经验证。它既不在 DEX223 默认列表中，也不在 Core 自动上市中，因此 DEX223 无法告诉您它是什么。兑换前请将其合约地址与项目官网或区块浏览器页面进行核对。",
+    "trust_lookalike_warning": "此 {symbol} 不是官方 {officialName}。它{match, select, name {名称相同} symbol {符号相同} other {名称和符号相同}}，但合约地址不同。官方 {officialSymbol}（ERC-20）：{address}。",
+    "use_official_token": "改用官方 {symbol}",
+    "trust_ack_not_verified": "我已检查 {symbols} 的合约地址",
+    "trust_ack_lookalike": "我了解 {symbols} 不是官方代币，但仍要兑换"
   },
   "Wallet": {
     "my_wallet": "我的钱包",
