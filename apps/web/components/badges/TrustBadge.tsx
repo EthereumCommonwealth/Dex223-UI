@@ -74,11 +74,14 @@ export function TrustAddress({
   full = false,
   danger = false,
   showExplorer = true,
+  chars = 6,
   className,
 }: {
   address: string;
   chainId: DexChainId;
   full?: boolean;
+  /** Characters kept at each end when not `full` (6 + 6 in rows, 12 + 12 in mobile dialogs). */
+  chars?: number;
   danger?: boolean;
   showExplorer?: boolean;
   className?: string;
@@ -95,7 +98,7 @@ export function TrustAddress({
           danger ? "text-red-light" : "text-secondary-text",
         )}
       >
-        {full ? value : truncateMiddle(value, { charsFromStart: 6, charsFromEnd: 6 })}
+        {full ? value : truncateMiddle(value, { charsFromStart: chars, charsFromEnd: chars })}
       </span>
       <Tooltip
         text={t("copy_address")}

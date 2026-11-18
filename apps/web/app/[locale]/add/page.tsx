@@ -29,6 +29,7 @@ import IconButton, {
 } from "@/components/buttons/IconButton";
 import RecentTransactions from "@/components/common/RecentTransactions";
 import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
+import ImportFromLinkDialog from "@/components/dialogs/ImportFromLinkDialog";
 import PickTokenDialog from "@/components/dialogs/PickTokenDialog";
 import { AllowanceStatus } from "@/hooks/useAllowance";
 import { usePoolsSearchParams } from "@/hooks/usePoolsSearchParams";
@@ -43,7 +44,8 @@ import { PriceRange } from "./components/PriceRange/PriceRange";
 import { useLiquidityPriceRangeStore } from "./stores/useLiquidityPriceRangeStore";
 
 export default function AddPoolPage() {
-  usePoolsSearchParams();
+  // Tokens named in an /add link wait for ImportFromLinkDialog; nothing is saved on load (#139).
+  const importFromLink = usePoolsSearchParams();
   const [isOpenedTokenPick, setIsOpenedTokenPick] = useState(false);
   const { isOpened: showRecentTransactions, setIsOpened: setShowRecentTransactions } =
     useAddLiquidityRecentTransactionsStore();
@@ -270,6 +272,7 @@ export default function AddPoolPage() {
         isOpen={isOpenedTokenPick}
         setIsOpen={setIsOpenedTokenPick}
       />
+      <ImportFromLinkDialog {...importFromLink} />
       <RevokeDialog />
       <ConfirmLiquidityDialog
         parsedAmounts={parsedAmounts}
