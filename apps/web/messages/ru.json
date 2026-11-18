@@ -168,7 +168,13 @@
     "confirm_margin_swap": "Подтвердить маржинальный обмен",
     "review_margin_swap": "Проверить маржинальный обмен",
     "successful_margin_swap": "Маржинальный обмен выполнен",
-    "margin_swap_failed": "Маржинальный обмен не удался"
+    "margin_swap_failed": "Маржинальный обмен не удался",
+    "native_no_contract": "Нативная монета, без контракта",
+    "trust_not_verified_warning": "{symbol} не проверен. Его нет ни в списке DEX223 по умолчанию, ни в автолистинге Core, поэтому DEX223 не может сказать, что это за токен. Перед обменом сравните адрес его контракта с сайтом проекта или его страницей в обозревателе.",
+    "trust_lookalike_warning": "Этот {symbol} не является официальным {officialName}. У него {match, select, name {то же название} symbol {тот же символ} other {то же название и символ}}, но другой адрес контракта. Официальный {officialSymbol} (ERC-20): {address}.",
+    "use_official_token": "Использовать официальный {symbol}",
+    "trust_ack_not_verified": "Я проверил {count, plural, one {адрес контракта} few {адреса контрактов} many {адреса контрактов} other {адреса контрактов}} {symbols}",
+    "trust_ack_lookalike": "Я понимаю, что {count, plural, one {этот {symbols} не официальный токен} few {{symbols} не официальные токены} many {{symbols} не официальные токены} other {{symbols} не официальные токены}}, и всё равно хочу обменять"
   },
   "Wallet": {
     "my_wallet": "Мой кошелёк",

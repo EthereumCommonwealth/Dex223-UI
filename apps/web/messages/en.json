@@ -518,7 +518,13 @@
     "confirm_margin_swap": "Confirm margin swap",
     "review_margin_swap": "Review margin swap",
     "successful_margin_swap": "Successful margin swap",
-    "margin_swap_failed": "Margin swap failed"
+    "margin_swap_failed": "Margin swap failed",
+    "native_no_contract": "Native coin, no contract",
+    "trust_not_verified_warning": "{symbol} is not verified. It is not in the DEX223 default list or on Core autolisting, so DEX223 cannot tell you what it is. Compare its contract address with the project's own website or explorer page before you swap.",
+    "trust_lookalike_warning": "This {symbol} is not the official {officialName}. It has {match, select, name {the same name} symbol {the same symbol} other {the same name and symbol}} but a different contract address. Official {officialSymbol} (ERC-20): {address}.",
+    "use_official_token": "Use official {symbol} instead",
+    "trust_ack_not_verified": "I checked the {symbols} contract {count, plural, one {address} other {addresses}}",
+    "trust_ack_lookalike": "I understand {count, plural, one {this {symbols} is not the official token} other {{symbols} are not the official tokens}} and I still want to swap"
   },
   "Liquidity": {
     "set_default": "Set default",
