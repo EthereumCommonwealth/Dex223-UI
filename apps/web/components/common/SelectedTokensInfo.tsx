@@ -7,6 +7,7 @@ import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import TrustBadge from "@/components/badges/TrustBadge";
 import IconButton from "@/components/buttons/IconButton";
 import { useTokenPortfolioDialogStore } from "@/components/dialogs/stores/useTokenPortfolioDialogStore";
+import { useTokenTrust } from "@/hooks/useTokenLists";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { Token } from "@/sdk_bi/entities/token";
 import { Standard } from "@/sdk_bi/standard";
@@ -54,6 +55,7 @@ function AddressPair({ token }: { token: Token }) {
 }
 export function SelectedTokenInfoItem({ token }: { token: Currency }) {
   const { handleOpen } = useTokenPortfolioDialogStore();
+  const trust = useTokenTrust(token);
 
   return (
     <div className="bg-tertiary-bg pt-2.5 pb-3.5 px-5 @container relative z-20 rounded-3">
@@ -100,7 +102,7 @@ export function SelectedTokenInfoItem({ token }: { token: Currency }) {
           </div>
           {token.isToken && (
             <div className="flex gap-2 items-center flex-shrink-0">
-              {token.rate && <TrustBadge rate={token?.rate} />}
+              <TrustBadge token={token} trust={trust} />
             </div>
           )}
         </div>
