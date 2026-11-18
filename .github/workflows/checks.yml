@@ -53,6 +53,11 @@ jobs:
         working-directory: apps/web
         run: node tests/swapReceipt.test.cjs
 
+      - name: Transaction deadline regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/transactionDeadline.test.cjs
+
       - name: API key proxy regressions
         if: matrix.app == 'web'
         working-directory: apps/web
@@ -82,6 +87,23 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/marginSwap.test.cjs
+
+      - name: Closed position interest regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/closedPositionInterest.test.cjs
+      - name: Native ETH refund regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/refundETH.test.cjs
+      - name: Listing contract regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/listingContracts.test.cjs
+      - name: Onramp widget message regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/onrampMessages.test.cjs
 
       - name: USDT approval regressions
         if: matrix.app == 'web'

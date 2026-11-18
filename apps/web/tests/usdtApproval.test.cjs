@@ -162,7 +162,10 @@ test("an existing USDT allowance is cleared and mined before the shown amount is
   assert.equal(writes[1].account, undefined);
   assert.deepEqual(result, { success: true, hash: writes[1].hash });
   assert.equal(flow.recent[0].title.amount, "10");
-  assert.equal(flow.calls.some((call) => call.op === "simulate"), false);
+  assert.equal(
+    flow.calls.some((call) => call.op === "simulate"),
+    false,
+  );
 });
 
 test("USDT with no allowance approves only the shown amount", async () => {
@@ -172,7 +175,10 @@ test("USDT with no allowance approves only the shown amount", async () => {
 
   assert.equal(writes.length, 1);
   assert.equal(writes[0].amount, tenUsdt);
-  assert.equal(flow.calls.some((call) => call.op === "wait" || call.op === "simulate"), false);
+  assert.equal(
+    flow.calls.some((call) => call.op === "wait" || call.op === "simulate"),
+    false,
+  );
   assert.equal(result.success, true);
   assert.equal(result.hash, writes[0].hash);
 });
@@ -201,7 +207,10 @@ test("a reverted or rejected USDT reset does not send the new approval", async (
 
   const rejected = harness({ allowance: 1n, rejectZero: true });
   assert.deepEqual(await rejected.run(), { success: false });
-  assert.equal(rejected.calls.some((call) => call.op === "write"), false);
+  assert.equal(
+    rejected.calls.some((call) => call.op === "write"),
+    false,
+  );
   assert.equal(rejected.toasts.length, 0);
 
   const timedOut = harness({ allowance: 1n, waitThrows: true });
@@ -218,7 +227,10 @@ test("other tokens still approve the shown amount in one simulated transaction",
   const result = await flow.run(tenUsdt, { gasPrice: 9n });
   const writes = flow.calls.filter((call) => call.op === "write");
 
-  assert.equal(flow.calls.some((call) => call.op === "wait"), false);
+  assert.equal(
+    flow.calls.some((call) => call.op === "wait"),
+    false,
+  );
   assert.equal(flow.calls.find((call) => call.op === "simulate").amount, tenUsdt);
   assert.equal(flow.calls.find((call) => call.op === "simulate").gasPrice, 9n);
   assert.equal(writes.length, 1);
@@ -234,7 +246,10 @@ test("an already sufficient allowance is not reset when approve is called again"
   const writes = flow.calls.filter((call) => call.op === "write");
   assert.equal(writes.length, 1);
   assert.equal(writes[0].amount, tenUsdt);
-  assert.equal(flow.calls.some((call) => call.op === "wait"), false);
+  assert.equal(
+    flow.calls.some((call) => call.op === "wait"),
+    false,
+  );
 });
 
 test("an estimate failure still asks the wallet for the shown USDT amount", async () => {
