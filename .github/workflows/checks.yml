@@ -78,6 +78,11 @@ jobs:
         working-directory: apps/web
         run: node tests/poolNeedsFetch.test.cjs
 
+      - name: Import from link regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/importLink.test.cjs
+
       - name: Margin deposit regressions
         if: matrix.app == 'web'
         working-directory: apps/web
