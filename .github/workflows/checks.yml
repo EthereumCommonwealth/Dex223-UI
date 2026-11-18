@@ -109,3 +109,8 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/usdtApproval.test.cjs
+
+      - name: Token trust regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrust.test.cjs
