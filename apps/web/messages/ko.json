@@ -639,7 +639,9 @@
     "footnote": "Free 자동 상장과 직접 가져온 목록은 신뢰 수준을 절대 높이지 않습니다. 누구나 어떤 토큰이든 추가할 수 있기 때문입니다.",
     "copy_address": "주소 복사",
     "open_in_explorer": "익스플로러에서 열기",
-    "address_copied": "주소가 복사되었습니다"
+    "address_copied": "주소가 복사되었습니다",
+    "native_coin": "네이티브 코인",
+    "lookalike_search_warning": "{count}개의 토큰이 공식 {symbol}의 이름 또는 심볼을 사용합니다. 공식으로 표시된 토큰만 DEX223 기본 목록에 있습니다. 선택하기 전에 컨트랙트 주소를 확인하세요."
   },
   "Liquidity": {
     "set_default": "기본값으로",
