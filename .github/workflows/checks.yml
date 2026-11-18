@@ -91,6 +91,10 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/refundETH.test.cjs
+      - name: Listing contract regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/listingContracts.test.cjs
       - name: Onramp widget message regressions
         if: matrix.app == 'web'
         working-directory: apps/web
