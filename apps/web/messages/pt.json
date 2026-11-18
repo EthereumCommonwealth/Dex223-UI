@@ -639,7 +639,9 @@
     "footnote": "A autolistagem Free e as listas que importa nunca aumentam a confiança: qualquer pessoa pode adicionar-lhes qualquer token.",
     "copy_address": "Copiar endereço",
     "open_in_explorer": "Abrir no explorador",
-    "address_copied": "Endereço copiado"
+    "address_copied": "Endereço copiado",
+    "native_coin": "Moeda nativa",
+    "lookalike_search_warning": "{count} tokens usam o nome ou o símbolo do {symbol} oficial. Apenas o marcado como Oficial está na lista predefinida do DEX223. Verifique o endereço do contrato antes de escolher."
   },
   "Liquidity": {
     "set_default": "Repor",
