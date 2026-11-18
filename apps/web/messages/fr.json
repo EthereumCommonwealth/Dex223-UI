@@ -168,7 +168,13 @@
     "confirm_margin_swap": "Confirmer l’échange sur marge",
     "review_margin_swap": "Vérifier l’échange sur marge",
     "successful_margin_swap": "Échange sur marge réussi",
-    "margin_swap_failed": "Échec de l’échange sur marge"
+    "margin_swap_failed": "Échec de l’échange sur marge",
+    "native_no_contract": "Monnaie native, pas de contrat",
+    "trust_not_verified_warning": "{symbol} n’est pas vérifié. Il ne figure ni dans la liste par défaut de DEX223 ni sur l’autolisting Core, donc DEX223 ne peut pas vous dire ce que c’est. Comparez l’adresse de son contrat avec le site du projet ou sa page sur l’explorateur avant d’échanger.",
+    "trust_lookalike_warning": "Ce {symbol} n’est pas le {officialName} officiel. Il a {match, select, name {le même nom} symbol {le même symbole} other {le même nom et le même symbole}} mais une autre adresse de contrat. {officialSymbol} officiel (ERC-20) : {address}.",
+    "use_official_token": "Utiliser le {symbol} officiel",
+    "trust_ack_not_verified": "J’ai vérifié {count, plural, one {l’adresse du contrat} other {les adresses des contrats}} {symbols}",
+    "trust_ack_lookalike": "Je comprends que {count, plural, one {ce {symbols} n’est pas le jeton officiel} other {{symbols} ne sont pas les jetons officiels}} et je veux quand même échanger"
   },
   "Wallet": {
     "my_wallet": "Mon portefeuille",

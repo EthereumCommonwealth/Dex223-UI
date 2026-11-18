@@ -98,6 +98,11 @@ jobs:
         working-directory: apps/web
         run: node tests/marginSwap.test.cjs
 
+      - name: Review swap trust gate regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/swapTrustGate.test.cjs
+
       - name: Closed position interest regressions
         if: matrix.app == 'web'
         working-directory: apps/web

@@ -168,7 +168,13 @@
     "confirm_margin_swap": "Confirmar intercambio de margen",
     "review_margin_swap": "Revisar intercambio de margen",
     "successful_margin_swap": "Intercambio de margen realizado",
-    "margin_swap_failed": "El intercambio de margen ha fallado"
+    "margin_swap_failed": "El intercambio de margen ha fallado",
+    "native_no_contract": "Moneda nativa, sin contrato",
+    "trust_not_verified_warning": "{symbol} no está verificado. No está en la lista predeterminada de DEX223 ni en el autolistado Core, así que DEX223 no puede decirte qué es. Compara su dirección de contrato con la web del proyecto o su página en el explorador antes de intercambiar.",
+    "trust_lookalike_warning": "Este {symbol} no es el {officialName} oficial. Tiene {match, select, name {el mismo nombre} symbol {el mismo símbolo} other {el mismo nombre y símbolo}} pero otra dirección de contrato. {officialSymbol} oficial (ERC-20): {address}.",
+    "use_official_token": "Usar el {symbol} oficial",
+    "trust_ack_not_verified": "He comprobado {count, plural, one {la dirección del contrato} other {las direcciones de los contratos}} de {symbols}",
+    "trust_ack_lookalike": "Entiendo que {count, plural, one {este {symbols} no es el token oficial} other {{symbols} no son los tokens oficiales}} y aun así quiero intercambiar"
   },
   "Wallet": {
     "my_wallet": "Mi monedero",
