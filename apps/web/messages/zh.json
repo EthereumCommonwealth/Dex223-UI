@@ -669,7 +669,9 @@
     "footnote": "Free 自动上市和您导入的列表永远不会提高信任等级：任何人都可以向其中添加任何代币。",
     "copy_address": "复制地址",
     "open_in_explorer": "在浏览器中打开",
-    "address_copied": "地址已复制"
+    "address_copied": "地址已复制",
+    "native_coin": "原生币",
+    "lookalike_search_warning": "有 {count} 个代币使用了官方 {symbol} 的名称或符号。只有标记为“官方”的代币在 DEX223 默认列表中。选择前请检查合约地址。"
   },
   "Liquidity": {
     "set_default": "恢复默认",

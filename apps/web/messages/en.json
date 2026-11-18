@@ -383,7 +383,9 @@
     "footnote": "Free autolisting and lists you import never raise trust: anyone can add any token to them.",
     "copy_address": "Copy address",
     "open_in_explorer": "Open in explorer",
-    "address_copied": "Address copied"
+    "address_copied": "Address copied",
+    "native_coin": "Native coin",
+    "lookalike_search_warning": "{count} tokens use the name or symbol of the official {symbol}. Only the one marked Official is in the DEX223 default list. Check the contract address before you pick."
   },
   "GasSettings": {
     "cheap_tooltip": "Gas values will be set to minimize the fee you pay. The transaction may stay pending longer before it confirms.",

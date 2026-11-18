@@ -53,6 +53,11 @@ jobs:
         working-directory: apps/web
         run: node tests/swapReceipt.test.cjs
 
+      - name: Token search trust order regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrustSearch.test.cjs
+
       - name: Transaction deadline regressions
         if: matrix.app == 'web'
         working-directory: apps/web
