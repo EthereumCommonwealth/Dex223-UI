@@ -6,11 +6,12 @@ import React, { useState } from "react";
 import DialogHeader from "@/components/atoms/DialogHeader";
 import DrawerDialog from "@/components/atoms/DrawerDialog";
 import Svg from "@/components/atoms/Svg";
+import { TrustAddress, TrustRowMarker } from "@/components/badges/TrustBadge";
 import Button, { ButtonColor } from "@/components/buttons/Button";
 import IconButton, { IconButtonVariant } from "@/components/buttons/IconButton";
 import { db } from "@/db/db";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { useTokenLists } from "@/hooks/useTokenLists";
+import { useTokenLists, useTokenTrust } from "@/hooks/useTokenLists";
 import addToast from "@/other/toast";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { Token } from "@/sdk_bi/entities/token";
@@ -25,6 +26,7 @@ export default function ManageTokenItem({
 }) {
   const t = useTranslations("ManageTokens");
   const lists = useTokenLists();
+  const trust = useTokenTrust(token);
 
   const [deleteOpened, setDeleteOpened] = useState(false);
 
@@ -41,9 +43,22 @@ export default function ManageTokenItem({
       <div className="flex justify-between py-1.5">
         <div className="flex gap-3 items-center">
           <Image className="rounded-2" width={40} height={40} src={token.logoURI || ""} alt="" />
-          <div className="flex flex-col">
-            <span>{token.name}</span>
-            <span className="text-secondary-text">{token.symbol}</span>
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="flex items-center gap-1.5 min-w-0">
+              <span className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                {token.name}
+              </span>
+              {token.isToken && <TrustRowMarker token={token} trust={trust} />}
+            </span>
+            <span className="flex items-center gap-1.5 text-14 min-w-0">
+              <span className="text-secondary-text">{token.symbol}</span>
+              {token.isToken && (
+                <>
+                  <span className="text-tertiary-text">·</span>
+                  <TrustAddress address={token.address0} chainId={token.chainId} />
+                </>
+              )}
+            </span>
           </div>
         </div>
         <div className="flex items-center gap-1">
