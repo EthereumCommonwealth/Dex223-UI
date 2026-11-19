@@ -105,6 +105,9 @@ export function Revenue() {
 
   const searchAddress =
     searchValue && isAddress(searchValue) ? (searchValue as Address) : undefined;
+  const viewingAnotherWallet = Boolean(
+    searchAddress && (!address || searchAddress.toLowerCase() !== address.toLowerCase()),
+  );
   const {
     userStaked,
     userStakingTimestamp,
@@ -226,6 +229,12 @@ export function Revenue() {
   useEffect(() => {
     setError(null);
   }, [searchValue, claimRewardsSearchValue]);
+
+  useEffect(() => {
+    if (viewingAnotherWallet) {
+      setSelectedTokens(new Set());
+    }
+  }, [viewingAnotherWallet]);
 
   const formatStakedAmount = (amount: unknown) => {
     if (!amount || typeof amount !== "bigint") return "0";
@@ -392,13 +401,13 @@ export function Revenue() {
                     <button
                       type="button"
                       onClick={handleStakeClick}
-                      disabled={isStakeActionLocked || !!searchAddress}
+                      disabled={isStakeActionLocked || viewingAnotherWallet}
                       className={clsx(
                         "border px-3 md:px-4 h-[40px] md:h-[48px] flex-1 md:flex-none md:min-w-[100px] rounded-3 text-12 md:text-14 font-medium transition-colors active:scale-95",
                         hasStaked
                           ? "border-yellow-light bg-[#4C483C] text-white cursor-pointer"
                           : "border-secondary-border bg-green text-black cursor-pointer hover:bg-green",
-                        (isStakeActionLocked || searchAddress) &&
+                        (isStakeActionLocked || viewingAnotherWallet) &&
                           "opacity-50 cursor-not-allowed hover:bg-tertiary-bg",
                       )}
                     >
@@ -415,13 +424,13 @@ export function Revenue() {
                       <button
                         type="button"
                         onClick={handleUnstakeClick}
-                        disabled={!canUnstake || !hasStaked || !!searchAddress}
+                        disabled={!canUnstake || !hasStaked || viewingAnotherWallet}
                         className={clsx(
                           "border px-3 md:px-4 h-[40px] md:h-[48px] flex-1 md:flex-none md:min-w-[100px] rounded-3 text-12 md:text-14 font-medium transition-colors active:scale-95",
                           hasStaked
                             ? "border-yellow-light bg-[#4C483C] text-white"
                             : "border border-green bg-transparent-bg text-secondary-text",
-                          !canUnstake || !hasStaked || searchAddress
+                          !canUnstake || !hasStaked || viewingAnotherWallet
                             ? "opacity-50 cursor-not-allowed"
                             : "cursor-pointer",
                         )}
@@ -478,24 +487,26 @@ export function Revenue() {
             </>
           )}
         </div>
-        {!searchAddress && typeof erc223Deposit === "bigint" && erc223Deposit > BigInt(0) && (
-          <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <span className="text-secondary-text text-12 md:text-14">
-              {t("deposit_reached", {
-                amount: formatUnits(erc223Deposit, 18),
-                symbol: stakingTokenSymbol,
-              })}
-            </span>
-            <Button
-              size={ButtonSize.EXTRA_SMALL}
-              colorScheme={ButtonColor.LIGHT_GREEN}
-              onClick={handleRecoverDeposit}
-              disabled={isTransactionPending}
-            >
-              {t("recover_deposit")}
-            </Button>
-          </div>
-        )}
+        {!viewingAnotherWallet &&
+          typeof erc223Deposit === "bigint" &&
+          erc223Deposit > BigInt(0) && (
+            <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <span className="text-secondary-text text-12 md:text-14">
+                {t("deposit_reached", {
+                  amount: formatUnits(erc223Deposit, 18),
+                  symbol: stakingTokenSymbol,
+                })}
+              </span>
+              <Button
+                size={ButtonSize.EXTRA_SMALL}
+                colorScheme={ButtonColor.LIGHT_GREEN}
+                onClick={handleRecoverDeposit}
+                disabled={isTransactionPending}
+              >
+                {t("recover_deposit")}
+              </Button>
+            </div>
+          )}
         {feeCollectorAddress && pendingPools.length > 0 && (
           <div className="mt-4 md:mt-5 w-full rounded-3 bg-primary-bg border border-quaternary-bg px-4 md:px-5 py-3 flex flex-col md:flex-row md:items-center justify-between gap-3">
             <span className="text-secondary-text text-12 md:text-14">
@@ -592,6 +603,7 @@ export function Revenue() {
               selectedTokens={selectedTokens}
               setSelectedTokens={handleSelectedTokens}
               isLoading={isLoadingUserData}
+              readOnly={viewingAnotherWallet}
             />
           )}
         </div>
