@@ -97,7 +97,7 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       sdkRef.current = instance;
 
       const handleTxEvents = (e: { type?: string; data?: TxCompletedPayload }) => {
-        if (e.type === "ONRAMP_WIDGET_TX_COMPLETED") {
+        if (e.type === "ONRAMP_WIDGET_TX_SUCCESSFUL") {
           onCompleted?.(e.data || {});
         } else if (e.type === "ONRAMP_WIDGET_TX_FAILED") {
           setError(t("tx_failed"));
