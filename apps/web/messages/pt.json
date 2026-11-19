@@ -181,6 +181,7 @@
     "install_metamask": "Instale a extensão MetaMask para continuar",
     "install_trust": "Instale a Trust Wallet para continuar",
     "install_coinbase": "Instale a Coinbase para continuar",
+    "install_safepal": "Instale a SafePal para continuar",
     "unsupported_file_format": "Formato de ficheiro não suportado",
     "wrong_password": "Palavra-passe incorreta",
     "import_wallet_with_JSON": "Importar carteira com ficheiro JSON",

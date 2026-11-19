@@ -3,7 +3,14 @@ import { create } from "zustand";
 import { networks } from "@/config/networks";
 import { DexChainId } from "@/sdk_bi/chains";
 
-export type WalletName = "metamask" | "wc" | "coinbase" | "trustWallet" | "keystore" | "safe";
+export type WalletName =
+  | "metamask"
+  | "wc"
+  | "coinbase"
+  | "trustWallet"
+  | "keystore"
+  | "safe"
+  | "safepal";
 
 interface ConnectWalletStore {
   walletName: WalletName;
