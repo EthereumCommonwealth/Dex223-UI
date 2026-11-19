@@ -82,3 +82,8 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/marginSwap.test.cjs
+
+      - name: Auto-listing field regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/whitelistAutoListing.test.cjs
