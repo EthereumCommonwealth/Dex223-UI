@@ -4,7 +4,6 @@ import {
   Address,
   encodeAbiParameters,
   encodeFunctionData,
-  getAbiItem,
   Hash,
   keccak256,
   parseUnits,
@@ -351,12 +350,16 @@ export default function useEditOrder() {
         ? [...baseActions, encodedLenderProtection]
         : baseActions;
 
+      const modifyParams = {
+        abi: MARGIN_MODULE_ABI,
+        address: MARGIN_TRADING_ADDRESS[chainId],
+        functionName: "multicall" as const,
+        args: [actionsToUpdate] as [readonly `0x${string}`[]],
+      };
+
       try {
         const modifyOrderHash = await walletClient.writeContract({
-          abi: MARGIN_MODULE_ABI,
-          address: MARGIN_TRADING_ADDRESS[chainId],
-          functionName: "multicall",
-          args: [actionsToUpdate],
+          ...modifyParams,
           account: undefined,
         });
         setStatus(EditOrderStatus.LOADING_MODIFY);
@@ -380,10 +383,7 @@ export default function useEditOrder() {
               maxFeePerGas: undefined,
               maxPriorityFeePerGas: undefined,
             },
-            params: {
-              ...stringifyObject(params),
-              abi: [getAbiItem({ name: "setOrderStatus", abi: MARGIN_MODULE_ABI })],
-            },
+            params: stringifyObject(modifyParams),
             title: {
               symbol: order.baseAsset.symbol!,
               orderId: order.id,

@@ -1,9 +1,8 @@
 import { useCallback, useMemo } from "react";
-import { Address, formatUnits, getAbiItem } from "viem";
+import { Address, formatUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import { useRefreshDepositsDataStore } from "@/app/[locale]/portfolio/components/stores/useRefreshTableStore";
-import { ERC20_ABI } from "@/config/abis/erc20";
 import { NONFUNGIBLE_POSITION_MANAGER_ABI } from "@/config/abis/nonfungiblePositionManager";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
@@ -180,10 +179,7 @@ export default function useRemoveLiquidity() {
             ...stringifyObject({ ...gasSettings, model: gasModel }),
             gas: gasToUse.toString(),
           },
-          params: {
-            ...stringifyObject(params),
-            abi: [getAbiItem({ name: "approve", abi: ERC20_ABI })],
-          },
+          params: stringifyObject(params),
           title: {
             symbol0: tokenA.symbol!,
             symbol1: tokenB.symbol!,
