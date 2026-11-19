@@ -21,6 +21,13 @@ export function safeSlippage(value: unknown): number {
 
 export function safeDeadline(value: unknown): number {
   const n = Number(value);
-  if (!Number.isFinite(n) || n < MIN_DEADLINE || n > MAX_DEADLINE) return DEFAULT_DEADLINE;
+  if (!Number.isInteger(n) || n < MIN_DEADLINE || n > MAX_DEADLINE) return DEFAULT_DEADLINE;
   return n;
+}
+
+export function deadlineSeconds(userDeadline: number): number {
+  const minutes = Number.isFinite(userDeadline) ? userDeadline : DEFAULT_DEADLINE;
+  const seconds = Math.round(minutes * 60);
+  if (!Number.isSafeInteger(seconds) || seconds < 0) return DEFAULT_DEADLINE * 60;
+  return seconds;
 }
