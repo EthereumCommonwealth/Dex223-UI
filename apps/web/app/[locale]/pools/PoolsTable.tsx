@@ -4,7 +4,7 @@ import { ServerError, ServerParseError } from "@apollo/client";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { Address } from "viem";
 
@@ -458,6 +458,10 @@ export default function PoolsTable({
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filter?.searchString, filter?.token0Address, filter?.token1Address, sorting]);
+
   const chainId = useCurrentChainId();
   const { data, loading, error, refetch } = usePoolsData({
     chainId,
@@ -533,11 +537,14 @@ export default function PoolsTable({
 
   const isLoading = loading || pricesLoading || balancesLoading || categoryLoading;
 
+  const pageCount = Math.max(1, Math.ceil(pools.length / PAGE_SIZE));
+  const safePage = Math.min(currentPage, pageCount);
+
   const currentTableData = useMemo(() => {
-    const firstPageIndex = (currentPage - 1) * PAGE_SIZE;
+    const firstPageIndex = (safePage - 1) * PAGE_SIZE;
     const lastPageIndex = firstPageIndex + PAGE_SIZE;
     return pools.slice(firstPageIndex, lastPageIndex);
-  }, [pools, currentPage]);
+  }, [pools, safePage]);
 
   return (
     <>
@@ -575,7 +582,7 @@ export default function PoolsTable({
                 isLoading={isLoading}
                 tableData={currentTableData}
                 sorting={sorting}
-                currentPage={currentPage}
+                currentPage={safePage}
                 handleSort={handleSort}
               />
             </>
@@ -591,7 +598,7 @@ export default function PoolsTable({
       <Pagination
         isLoading={isLoading}
         className="pagination-bar"
-        currentPage={currentPage}
+        currentPage={safePage}
         totalCount={pools.length}
         pageSize={PAGE_SIZE}
         onPageChange={(page) => setCurrentPage(page as number)}
