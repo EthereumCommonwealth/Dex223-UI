@@ -1,6 +1,7 @@
 import { Address, formatUnits, Hash } from "viem";
 
 import { LendingOrder, MarginPosition } from "@/app/[locale]/margin-trading/types";
+import { whitelistAutoListing } from "@/functions/whitelistAutoListing";
 import { listedLogo, TokenListLogos } from "@/hooks/useTokenListLogos";
 import { ORACLE_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
@@ -79,7 +80,8 @@ export type GqlOrder = {
   whitelist: {
     allowedForTrading: Address[];
     allowedForTradingTokens: GqlToken[];
-    autolisting: Address;
+    autoListing?: Address;
+    autolisting?: Address;
     id: string;
   };
 
@@ -187,9 +189,9 @@ export function serializeGqlOrder(
   const hasCollateralErc223 = Boolean(
     gqlOrder.collaterals?.some((addr) => collateralErc223Set.has(addr.toLowerCase())),
   );
+  const autoListingAddress = whitelistAutoListing(gqlOrder.whitelist);
   const hasAutolisting = Boolean(
-    gqlOrder.whitelist?.autolisting &&
-      gqlOrder.whitelist.autolisting.toLowerCase() !== ZERO_ADDRESS,
+    autoListingAddress && autoListingAddress.toLowerCase() !== ZERO_ADDRESS,
   );
 
   return {
@@ -216,7 +218,7 @@ export function serializeGqlOrder(
     baseAssetStandard,
     collateralAddresses: gqlOrder.collaterals,
     allowedTradingAddresses: gqlOrder.whitelist.allowedForTrading,
-    whitelistAutoListing: gqlOrder.whitelist.autolisting,
+    whitelistAutoListing: autoListingAddress,
     isErc223TradingAllowed:
       hasWhitelistedErc223 ||
       hasCollateralErc223 ||
