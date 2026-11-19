@@ -40,7 +40,9 @@ export default function PositionLiquidityCard({
       </div>
       <div className="flex items-center gap-1">
         <span className="text-16 font-medium">{amount}</span>
-        {percentage && <span className="text-secondary-text">({percentage}%)</span>}
+        {percentage !== undefined && percentage !== "" && (
+          <span className="text-secondary-text">({percentage}%)</span>
+        )}
       </div>
     </div>
   );

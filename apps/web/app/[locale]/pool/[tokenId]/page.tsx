@@ -40,6 +40,7 @@ import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { positionComposition } from "@/functions/positionComposition";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import { useCollectFeesEstimatedGas, usePositionFees } from "@/hooks/useCollectFees";
@@ -666,7 +667,7 @@ export default function PoolPage({
                       token={token0}
                       standards={token0?.isNative ? "native" : [Standard.ERC20, Standard.ERC223]}
                       amount={position?.amount0.toSignificant() || t("loading")}
-                      percentage={ratio ? (showFirst ? ratio : 100 - ratio) : t("loading")}
+                      percentage={positionComposition(ratio, showFirst).token0 ?? t("loading")}
                     />
                   </div>
                   <div className="p-4 lg:p-0 bg-quaternary-bg lg:bg-transparent rounded-3">
@@ -674,7 +675,7 @@ export default function PoolPage({
                       token={token1}
                       standards={token1?.isNative ? "native" : [Standard.ERC20, Standard.ERC223]}
                       amount={position?.amount1.toSignificant() || t("loading")}
-                      percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : t("loading")}
+                      percentage={positionComposition(ratio, showFirst).token1 ?? t("loading")}
                     />
                   </div>
                 </div>
