@@ -21,16 +21,15 @@ export default function SafePalCard() {
 
   const loading = usePreloaderTimeout({ isLoading: isPending });
 
-  console.log(connectors);
   return (
     <PickButton
       disabled={isConnecting}
       onClick={() => {
-        setName("coinbase");
-        const connectorToConnect = connectors[4];
+        setName("safepal");
+        const connectorToConnect = connectors.find((connector) => connector.id === "safepal");
 
         if (!connectorToConnect) {
-          return addToast(t("install_coinbase"), "error");
+          return addToast(t("install_safepal"), "error");
         }
 
         connectAsync({

@@ -213,6 +213,7 @@
     "install_metamask": "Install the MetaMask extension to continue",
     "install_trust": "Install Trust Wallet to continue",
     "install_coinbase": "Install Coinbase Wallet to continue",
+    "install_safepal": "Install SafePal to continue",
     "unsupported_file_format": "Unsupported file format",
     "wrong_password": "Wrong password",
     "import_wallet_with_JSON": "Import wallet with JSON file",
