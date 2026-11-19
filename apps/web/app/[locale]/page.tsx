@@ -37,6 +37,8 @@ async function getProtocolStats(): Promise<ProtocolStats | null> {
       headers: {
         "content-type": "application/json",
         authorization: `Bearer ${process.env.GRAPH_API_KEY}`,
+        origin: "https://app.dex223.io",
+        referer: "https://app.dex223.io/",
       },
       body: JSON.stringify({
         query: "{ factories(first: 1) { poolCount txCount totalVolumeUSD totalValueLockedUSD } }",
