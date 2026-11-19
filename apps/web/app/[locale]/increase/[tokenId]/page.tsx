@@ -26,6 +26,7 @@ import SelectedTokensInfo from "@/components/common/SelectedTokensInfo";
 import TokensPair from "@/components/common/TokensPair";
 import { useTransactionSettingsDialogStore } from "@/components/dialogs/stores/useTransactionSettingsDialogStore";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
+import { positionComposition } from "@/functions/positionComposition";
 import truncateMiddle from "@/functions/truncateMiddle";
 import {
   usePositionFromPositionInfo,
@@ -174,13 +175,13 @@ export default function IncreaseLiquidityPage({
                   <PositionLiquidityCard
                     token={tokenA}
                     amount={existedPosition?.amount0.toSignificant() || t("loading")}
-                    percentage={ratio ? (showFirst ? ratio : 100 - ratio) : t("loading")}
+                    percentage={positionComposition(ratio, showFirst).token0 ?? t("loading")}
                     standards={[Standard.ERC20, Standard.ERC223]} // TODO
                   />
                   <PositionLiquidityCard
                     token={tokenB}
                     amount={existedPosition?.amount1.toSignificant() || t("loading")}
-                    percentage={ratio ? (!showFirst ? ratio : 100 - ratio) : t("loading")}
+                    percentage={positionComposition(ratio, showFirst).token1 ?? t("loading")}
                     standards={[Standard.ERC20, Standard.ERC223]} // TODO
                   />
                 </div>
