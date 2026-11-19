@@ -41,6 +41,7 @@ import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
+import { unclaimedFeesUsd } from "@/functions/unclaimedFeesUsd";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import { useCollectFeesEstimatedGas, usePositionFees } from "@/hooks/useCollectFees";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -423,10 +424,7 @@ export default function PoolPage({
   }, [position?.amount0, position?.amount1, priceA, priceB]);
 
   const totalUSDFees = useMemo(() => {
-    const tokenAFeesUSD = priceA && token0FeeFormatted ? +token0FeeFormatted * priceA : 0;
-    const tokenBFeesUSD = priceB && token1FeeFormatted ? +token0FeeFormatted * priceB : 0;
-
-    return formatFloat(tokenAFeesUSD + tokenBFeesUSD);
+    return formatFloat(unclaimedFeesUsd(token0FeeFormatted, token1FeeFormatted, priceA, priceB));
   }, [priceA, priceB, token0FeeFormatted, token1FeeFormatted]);
 
   return (
