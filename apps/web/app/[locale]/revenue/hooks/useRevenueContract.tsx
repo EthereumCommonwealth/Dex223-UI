@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Address, formatUnits, Hash, zeroAddress } from "viem";
 import {
@@ -68,6 +69,7 @@ export default function useRevenueContract({
   searchAddress,
 }: RevenueContractConfig = {}) {
   const { address: connectedAddress, chainId: walletChainId } = useAccount();
+  const t = useTranslations("Revenue");
   const targetAddress = searchAddress || connectedAddress;
   const chainId = useCurrentChainId();
   const publicClient = usePublicClient();
@@ -433,6 +435,7 @@ export default function useRevenueContract({
       onHashReceive,
       onReceiptReceive,
       transactionTitle,
+      requireCorrectNetwork,
     }: {
       functionName: string;
       args?: any[];
@@ -443,7 +446,12 @@ export default function useRevenueContract({
       onHashReceive?: (hash: Hash) => void;
       onReceiptReceive?: (receipt: any) => void;
       transactionTitle?: any;
+      requireCorrectNetwork?: boolean;
     }) => {
+      if (requireCorrectNetwork && !isCorrectNetwork) {
+        throw new Error(t("switch_network"));
+      }
+
       if (!publicClient || !walletClient || !connectedAddress) {
         throw new Error("Wallet not connected");
       }
@@ -539,7 +547,16 @@ export default function useRevenueContract({
         throw error;
       }
     },
-    [publicClient, walletClient, connectedAddress, chainId, addRecentTransaction, revenueAddress],
+    [
+      publicClient,
+      walletClient,
+      connectedAddress,
+      chainId,
+      addRecentTransaction,
+      revenueAddress,
+      isCorrectNetwork,
+      t,
+    ],
   );
 
   const approve = useCallback(
@@ -728,6 +745,7 @@ export default function useRevenueContract({
     ) => {
       return executeTransaction({
         functionName: "claim",
+        requireCorrectNetwork: true,
         args: [tokenAddresses],
         gasSettings,
         customGasLimit,
@@ -748,6 +766,7 @@ export default function useRevenueContract({
     async (tokenAddress: Address, gasSettings?: CustomGasSettings, customGasLimit?: bigint) => {
       return executeTransaction({
         functionName: "withdrawDeposit",
+        requireCorrectNetwork: true,
         args: [tokenAddress],
         gasSettings,
         customGasLimit,
@@ -773,6 +792,7 @@ export default function useRevenueContract({
 
       return executeTransaction({
         functionName: "collect",
+        requireCorrectNetwork: true,
         args: [pools],
         abi: FEE_COLLECTOR_ABI,
         address: feeCollectorAddress,
