@@ -10,6 +10,7 @@ import { NONFUNGIBLE_POSITION_MANAGER_ABI } from "@/config/abis/nonfungiblePosit
 import { TOKEN_CONVERTER_ABI } from "@/config/abis/tokenConverter";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { withRefundETH } from "@/functions/refundETH";
 import { slippageToPercent } from "@/functions/slippageToPercent";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
@@ -101,6 +102,28 @@ export function useAddLiquidityParams({
         ? BigInt(amount1Desired.toString())
         : undefined;
 
+    // `value` is the most ETH the mint may use; the position manager wraps only what the pool
+    // takes. With native ETH, refundETH() closes the multicall so the rest comes back to the
+    // user in the same transaction instead of staying in the contract for anyone to claim.
+    const multicallParams = (calls: `0x${string}`[]) => {
+      const params: {
+        address: Address;
+        account: Address;
+        abi: Abi;
+        functionName: "multicall";
+        args: [`0x${string}`[]];
+        value?: bigint;
+      } = {
+        address: NONFUNGIBLE_POSITION_MANAGER_ADDRESS[chainId as DexChainId],
+        account: accountAddress,
+        abi: NONFUNGIBLE_POSITION_MANAGER_ABI,
+        functionName: "multicall" as const,
+        args: [value ? withRefundETH(calls) : calls],
+        value,
+      };
+      return params;
+    };
+
     if (addLiquidityType === ADD_LIQUIDITY_TYPE.CREATE_AND_MINT) {
       // CREATE + MINT
       const createParams = [
@@ -138,22 +161,7 @@ export function useAddLiquidityParams({
         args: [mintParams],
       });
 
-      const params: {
-        address: Address;
-        account: Address;
-        abi: Abi;
-        functionName: "multicall";
-        args: [`0x${string}`[]];
-        value?: bigint;
-      } = {
-        address: NONFUNGIBLE_POSITION_MANAGER_ADDRESS[chainId as DexChainId],
-        account: accountAddress,
-        abi: NONFUNGIBLE_POSITION_MANAGER_ABI,
-        functionName: "multicall" as const,
-        args: [[encodedCreateParams, encodedMintParams]],
-        value,
-      };
-      return params;
+      return multicallParams([encodedCreateParams, encodedMintParams]);
     } else if (addLiquidityType === ADD_LIQUIDITY_TYPE.INCREASE) {
       if (!tokenId) return null;
       // INCREASE LIQUIDITY
@@ -166,6 +174,16 @@ export function useAddLiquidityParams({
         recipient: accountAddress,
         deadline,
       };
+
+      if (value) {
+        return multicallParams([
+          encodeFunctionData({
+            abi: NONFUNGIBLE_POSITION_MANAGER_ABI,
+            functionName: "increaseLiquidity",
+            args: [increaseParams],
+          }),
+        ]);
+      }
 
       const params: {
         address: Address;
@@ -208,6 +226,16 @@ export function useAddLiquidityParams({
         recipient: accountAddress,
         deadline,
       };
+
+      if (value) {
+        return multicallParams([
+          encodeFunctionData({
+            abi: NONFUNGIBLE_POSITION_MANAGER_ABI,
+            functionName: "mint",
+            args: [mintParams],
+          }),
+        ]);
+      }
 
       const params: {
         address: Address;
