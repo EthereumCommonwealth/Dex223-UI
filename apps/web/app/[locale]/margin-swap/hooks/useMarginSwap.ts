@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { Address, parseUnits } from "viem";
+import { Address, getAbiItem, parseUnits } from "viem";
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import { useMarginSwapAmountsStore } from "@/app/[locale]/margin-swap/stores/useMarginSwapAmountsStore";
@@ -26,7 +26,12 @@ import { getTokenAddressForStandard, Standard } from "@/sdk_bi/standard";
 import { TickMath } from "@/sdk_bi/utils/tickMath";
 import { useGlobalBlockNumber } from "@/shared/hooks/useGlobalBlockNumber";
 import { _usePoolsStore } from "@/stores/usePoolsStore";
-import { useRecentTransactionsStore } from "@/stores/useRecentTransactionsStore";
+import {
+  GasFeeModel,
+  RecentTransactionTitleTemplate,
+  stringifyObject,
+  useRecentTransactionsStore,
+} from "@/stores/useRecentTransactionsStore";
 
 export function buildMarginSwapCallParams({
   positionId,
@@ -225,6 +230,42 @@ export default function useMarginSwap() {
 
       const nonce = transaction.nonce;
 
+      addRecentTransaction(
+        {
+          hash,
+          nonce,
+          chainId,
+          // What the wallet actually sent, so speed-up and cancel start from real values.
+          gas:
+            transaction.gasPrice !== undefined && transaction.maxFeePerGas === undefined
+              ? {
+                  model: GasFeeModel.LEGACY,
+                  gas: transaction.gas.toString(),
+                  gasPrice: transaction.gasPrice.toString(),
+                }
+              : {
+                  model: GasFeeModel.EIP1559,
+                  gas: transaction.gas.toString(),
+                  maxFeePerGas: transaction.maxFeePerGas?.toString(),
+                  maxPriorityFeePerGas: transaction.maxPriorityFeePerGas?.toString(),
+                },
+          params: {
+            ...stringifyObject(params),
+            abi: [getAbiItem({ name: params.functionName, abi: MARGIN_MODULE_ABI })],
+          },
+          title: {
+            template: RecentTransactionTitleTemplate.MARGIN_SWAP,
+            symbol0: tokenA.symbol!,
+            symbol1: tokenB.symbol!,
+            amount0: typedValue,
+            amount1: dependentAmount?.toSignificant(6) ?? "0",
+            logoURI0: tokenA.logoURI || "/images/tokens/placeholder.svg",
+            logoURI1: tokenB.logoURI || "/images/tokens/placeholder.svg",
+          },
+        },
+        address,
+      );
+
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
       if (receipt.status === "success") {
         _usePoolsStore.getState().invalidateAll();
@@ -242,6 +283,7 @@ export default function useMarginSwap() {
     addRecentTransaction,
     address,
     chainId,
+    dependentAmount,
     marginSwapPosition,
     minimumAmountOut,
     publicClient,

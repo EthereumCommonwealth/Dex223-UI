@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import TrustBadge, { Check, OtherListCheck, TrustRateCheck } from "@/components/badges/TrustBadge";
+import TrustBadge from "@/components/badges/TrustBadge";
+import { Token } from "@/sdk_bi/entities/token";
 
 const meta = {
   title: "Atoms/Trust Badge",
@@ -14,41 +15,52 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof TrustBadge>;
 
-export const HighTrust: Story = {
+const d223 = new Token(
+  1,
+  "0x675eb5922604F434bcaAC4B4B433D8668925DD67",
+  "0x0908078Da2935A14BC7a17770292818C85b580dd",
+  18,
+  "D223",
+  "Dex223 Token",
+);
+
+const copycat = new Token(
+  1,
+  "0x7f3a000000000000000000000000000000a9c91e",
+  "0xc0d20000000000000000000000000000005e1b77",
+  18,
+  "D223",
+  "Dex223 token",
+);
+
+export const Official: Story = {
   args: {
-    rate: {
-      [Check.DEFAULT_LIST]: TrustRateCheck.TRUE,
-      [Check.OTHER_LIST]: OtherListCheck.FOUND_IN_MORE_THAN_A_HALF,
-      [Check.SAME_NAME_IN_DEFAULT_LIST]: TrustRateCheck.FALSE,
-      [Check.SAME_NAME_IN_OTHER_LIST]: TrustRateCheck.FALSE,
-      [Check.ERC223_VERSION_EXIST]: TrustRateCheck.FALSE,
-    },
-    logoURI: "/images/example.svg",
+    token: d223,
+    trust: { level: "high", reason: "official", onCoreList: false, alsoIn: [] },
   },
 };
 
-export const MediumTrust: Story = {
+export const CoreListed: Story = {
+  args: { token: copycat, trust: { level: "high", reason: "core", onCoreList: true, alsoIn: [] } },
+};
+
+export const NotVerified: Story = {
   args: {
-    rate: {
-      [Check.DEFAULT_LIST]: TrustRateCheck.TRUE,
-      [Check.OTHER_LIST]: OtherListCheck.NOT_FOUND,
-      [Check.SAME_NAME_IN_DEFAULT_LIST]: TrustRateCheck.TRUE,
-      [Check.SAME_NAME_IN_OTHER_LIST]: TrustRateCheck.TRUE,
-      [Check.ERC223_VERSION_EXIST]: TrustRateCheck.TRUE,
-    },
-    logoURI: "/images/example.svg",
+    token: copycat,
+    trust: { level: "medium", reason: "unverified", onCoreList: false, alsoIn: [] },
   },
 };
 
-export const LowTrust: Story = {
+export const Lookalike: Story = {
   args: {
-    rate: {
-      [Check.DEFAULT_LIST]: TrustRateCheck.FALSE,
-      [Check.OTHER_LIST]: OtherListCheck.NOT_FOUND,
-      [Check.SAME_NAME_IN_DEFAULT_LIST]: TrustRateCheck.TRUE,
-      [Check.SAME_NAME_IN_OTHER_LIST]: TrustRateCheck.TRUE,
-      [Check.ERC223_VERSION_EXIST]: TrustRateCheck.TRUE,
+    token: copycat,
+    trust: {
+      level: "low",
+      reason: "lookalike",
+      official: d223,
+      match: "name_and_symbol",
+      onCoreList: false,
+      alsoIn: [],
     },
-    logoURI: "/images/example.svg",
   },
 };
