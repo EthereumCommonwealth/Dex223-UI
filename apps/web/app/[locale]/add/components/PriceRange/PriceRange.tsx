@@ -9,6 +9,7 @@ import { useRefreshTicksDataStore } from "@/app/[locale]/add/stores/useRefreshTi
 import { useZoomStateStore } from "@/app/[locale]/add/stores/useZoomStateStore";
 import Svg from "@/components/atoms/Svg";
 import IconButton, { IconButtonVariant } from "@/components/buttons/IconButton";
+import { displayedRangeLimits } from "@/functions/priceRangeLimits";
 import { getTickToPrice, tryParseTick } from "@/functions/tryParseTick";
 import { usePool } from "@/hooks/usePools";
 import { FeeAmount } from "@/sdk_bi/constants";
@@ -201,6 +202,12 @@ export const PriceRange = ({
   const inputTopSetter = isInverted ? setRightRangeTypedValue : setLeftRangeTypedValue;
   const inputBottomSetter = isInverted ? setLeftRangeTypedValue : setRightRangeTypedValue;
 
+  const rangeLimits = displayedRangeLimits(
+    isInverted,
+    Boolean(ticksAtLimit[Bound.LOWER]),
+    Boolean(ticksAtLimit[Bound.UPPER]),
+  );
+
   const inputTopBlur = (value: string) =>
     handleBlur(isInverted ? "right" : "left", value, baseToken?.wrapped, quoteToken?.wrapped);
 
@@ -298,7 +305,7 @@ export const PriceRange = ({
       />
       <PriceRangeInput
         title={t("low_price")}
-        value={ticksAtLimit[Bound.LOWER] ? "0" : (inputTopValue?.toSignificant(8) ?? "0")}
+        value={rangeLimits.lowIsZero ? "0" : (inputTopValue?.toSignificant(8) ?? "0")}
         onUserInput={inputTopSetter}
         decrement={decrementTopInput}
         increment={incrementTopInput}
@@ -310,7 +317,7 @@ export const PriceRange = ({
 
       <PriceRangeInput
         title={t("high_price")}
-        value={ticksAtLimit[Bound.UPPER] ? "∞" : (inputBottomValue?.toSignificant(8) ?? "0")}
+        value={rangeLimits.highIsInfinity ? "∞" : (inputBottomValue?.toSignificant(8) ?? "0")}
         onUserInput={inputBottomSetter}
         decrement={decrementBottomInput}
         increment={incrementBottomInput}
