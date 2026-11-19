@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { getAbiItem, parseUnits } from "viem";
+import { getAbiItem } from "viem";
 import { useAccount, usePublicClient } from "wagmi";
 
 import { useMarginWriteGas } from "@/app/[locale]/margin-trading/components/MarginGasSettings";
@@ -13,6 +13,7 @@ import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
+import { parseDecimalAmount } from "@/functions/parseDecimalAmount";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { MARGIN_TRADING_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -42,12 +43,13 @@ export default function useOrderWithdraw({
   const { addRecentTransaction } = useRecentTransactionsStore();
 
   useMarginGasEstimate("withdrawOrder", () => {
-    if (!amountToWithdraw || parseUnits(amountToWithdraw, currency.decimals) <= 0n) return;
+    const amount = parseDecimalAmount(amountToWithdraw, currency.decimals);
+    if (amount === undefined || amount <= 0n) return;
     return {
       abi: MARGIN_MODULE_ABI,
       address: MARGIN_TRADING_ADDRESS[chainId],
       functionName: "orderWithdraw",
-      args: [BigInt(order.id), parseUnits(amountToWithdraw, currency.decimals)],
+      args: [BigInt(order.id), amount],
     };
   });
 
@@ -61,13 +63,16 @@ export default function useOrderWithdraw({
       return;
     }
 
+    const amount = parseDecimalAmount(amountToWithdraw, currency.decimals ?? 18);
+    if (amount === undefined || amount <= 0n) return;
+
     setStatus(OrderWithdrawStatus.PENDING_WITHDRAW);
 
     const params = {
       abi: MARGIN_MODULE_ABI,
       address: MARGIN_TRADING_ADDRESS[chainId],
       functionName: "orderWithdraw" as const,
-      args: [BigInt(order.id), parseUnits(amountToWithdraw, currency.decimals ?? 18)] as const,
+      args: [BigInt(order.id), amount] as const,
     };
 
     try {

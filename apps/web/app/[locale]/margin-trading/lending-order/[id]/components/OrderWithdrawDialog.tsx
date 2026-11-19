@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
-import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
+import { formatEther, formatGwei, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 
 import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
@@ -27,6 +27,7 @@ import OperationStepRow, {
 } from "@/components/common/OperationStepRow";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
+import { parseDecimalAmount } from "@/functions/parseDecimalAmount";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import { Standard } from "@/sdk_bi/standard";
 
@@ -157,8 +158,12 @@ export default function OrderWithdrawDialog({
   }, [isFinalStatus, isOpen, setStatus]);
 
   const error = useMemo(() => {
-    if (parseUnits(amountToWithdraw, order.baseAsset.decimals) > order.balance)
+    if (!amountToWithdraw.trim()) return undefined;
+    const parsed = parseDecimalAmount(amountToWithdraw, order.baseAsset.decimals);
+    if (parsed === undefined) return "Please enter a valid amount";
+    if (parsed > order.balance) {
       return `Maximum withdraw amount: ${formatUnits(order.balance, order.baseAsset.decimals)} ${order.baseAsset.symbol}`;
+    }
   }, [amountToWithdraw, order.balance, order.baseAsset.decimals, order.baseAsset.symbol]);
 
   return (
