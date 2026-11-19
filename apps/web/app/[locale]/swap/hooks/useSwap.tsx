@@ -32,6 +32,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { withRefundETH } from "@/functions/refundETH";
 import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -173,11 +174,22 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
     }
 
     if (tokenA.isNative) {
+      // A swap stops at its price limit once the pool's liquidity in that direction runs out, and
+      // the router wraps only the ETH the pool took. refundETH() closes the multicall so any
+      // unused ETH comes back to the user instead of staying in the router for anyone to claim.
       return {
         address: ROUTER_ADDRESS[chainId as DexChainId],
         abi: ROUTER_ABI,
-        functionName: "exactInputSingle" as "exactInputSingle",
-        args: [routerParams],
+        functionName: "multicall" as "multicall",
+        args: [
+          withRefundETH([
+            encodeFunctionData({
+              abi: ROUTER_ABI,
+              functionName: "exactInputSingle",
+              args: [routerParams],
+            }),
+          ]),
+        ],
         value: parseUnits(typedValue, tokenA.decimals),
       };
     }

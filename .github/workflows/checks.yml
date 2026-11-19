@@ -53,6 +53,16 @@ jobs:
         working-directory: apps/web
         run: node tests/swapReceipt.test.cjs
 
+      - name: Token search trust order regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrustSearch.test.cjs
+
+      - name: Transaction deadline regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/transactionDeadline.test.cjs
+
       - name: API key proxy regressions
         if: matrix.app == 'web'
         working-directory: apps/web
@@ -73,6 +83,11 @@ jobs:
         working-directory: apps/web
         run: node tests/poolNeedsFetch.test.cjs
 
+      - name: Import from link regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/importLink.test.cjs
+
       - name: Margin deposit regressions
         if: matrix.app == 'web'
         working-directory: apps/web
@@ -83,7 +98,34 @@ jobs:
         working-directory: apps/web
         run: node tests/marginSwap.test.cjs
 
-      - name: Transaction deadline regressions
+      - name: Review swap trust gate regressions
         if: matrix.app == 'web'
         working-directory: apps/web
-        run: node tests/transactionDeadline.test.cjs
+        run: node tests/swapTrustGate.test.cjs
+
+      - name: Closed position interest regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/closedPositionInterest.test.cjs
+      - name: Native ETH refund regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/refundETH.test.cjs
+      - name: Listing contract regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/listingContracts.test.cjs
+      - name: Onramp widget message regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/onrampMessages.test.cjs
+
+      - name: USDT approval regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/usdtApproval.test.cjs
+
+      - name: Token trust regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrust.test.cjs
