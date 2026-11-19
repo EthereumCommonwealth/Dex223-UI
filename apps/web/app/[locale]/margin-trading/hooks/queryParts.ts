@@ -28,11 +28,13 @@ export const GQL_POSITION_FIELDS = `
   createdAt
   closedAt
   liquidatedAt
+  interest
   liquidator
   txClosed
   txFrozen
   txLiquidated
   collateralAmount
+  collateral
   frozenTime
   collateralToken {
     ${GQL_TOKEN_FIELDS}

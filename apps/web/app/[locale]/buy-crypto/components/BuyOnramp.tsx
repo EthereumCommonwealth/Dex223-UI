@@ -9,6 +9,7 @@ import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 
 import { FLOW_TYPE_MAP, ONRAMP_THEME, OnrampAsset, OnrampFlow } from "./onrampAssets";
+import { guardOnrampWidgetMessages } from "./onrampMessages";
 
 type TxCompletedPayload = {
   transactionHash?: string;
@@ -95,10 +96,12 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
         buildConfig() as ConstructorParameters<typeof OnrampWebSDK>[0],
       );
       sdkRef.current = instance;
+      // Only the widget's own origin may report a transaction; see onrampMessages.ts.
+      const trusted = guardOnrampWidgetMessages(instance);
 
       const handleTxEvents = (e: { type?: string; data?: TxCompletedPayload }) => {
         if (e.type === "ONRAMP_WIDGET_TX_SUCCESSFUL") {
-          onCompleted?.(e.data || {});
+          if (trusted) onCompleted?.(e.data || {});
         } else if (e.type === "ONRAMP_WIDGET_TX_FAILED") {
           setError(t("tx_failed"));
         }

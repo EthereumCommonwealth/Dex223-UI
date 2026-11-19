@@ -18,6 +18,12 @@ import PriceImpactWarning, {
   usePriceImpactAcknowledgement,
 } from "@/app/[locale]/swap/components/PriceImpactWarning";
 import SwapDetailsRow from "@/app/[locale]/swap/components/SwapDetailsRow";
+import {
+  ReviewCardAddress,
+  ReviewCardTrustBadge,
+  TrustAcknowledgement,
+  useSwapTrustGate,
+} from "@/app/[locale]/swap/components/TrustAcknowledgement";
 import { useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
 import {
   useSwapGasLimitStore,
@@ -38,11 +44,14 @@ import { networks } from "@/config/networks";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
 import { slippageToPercent } from "@/functions/slippageToPercent";
+import { canConfirmSwap, isSwapAnyway } from "@/functions/swapTrustGate";
+import { TokenTrust } from "@/functions/tokenTrust";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { CurrencyAmount } from "@/sdk_bi/entities/fractions/currencyAmount";
 import { Percent } from "@/sdk_bi/entities/fractions/percent";
+import { Token } from "@/sdk_bi/entities/token";
 import { Trade } from "@/sdk_bi/entities/trade";
 import { wrappedTokens } from "@/sdk_bi/entities/weth9";
 import { Standard } from "@/sdk_bi/standard";
@@ -83,9 +92,15 @@ function composeMarginSwapSteps(t: ReturnType<typeof useTranslations>): Operatio
 function MarginSwapActionButton({
   isVeryHighPriceImpact = false,
   isPriceImpactAcknowledged = false,
+  isTrustAckRequired = false,
+  isTrustAcknowledged = false,
+  isLookalike = false,
 }: {
   isVeryHighPriceImpact?: boolean;
   isPriceImpactAcknowledged?: boolean;
+  isTrustAckRequired?: boolean;
+  isTrustAcknowledged?: boolean;
+  isLookalike?: boolean;
 }) {
   const t = useTranslations("Swap");
   const { handleMarginSwap } = useMarginSwap();
@@ -118,26 +133,36 @@ function MarginSwapActionButton({
     );
   }
 
+  const swapAnyway = isSwapAnyway(isLookalike, isVeryHighPriceImpact);
+  const canConfirm = canConfirmSwap({
+    trustRequired: isTrustAckRequired,
+    trustAcknowledged: isTrustAcknowledged,
+    priceImpactRequired: isVeryHighPriceImpact,
+    priceImpactAcknowledged: isPriceImpactAcknowledged,
+  });
+
   return (
     <Button
-      colorScheme={isVeryHighPriceImpact ? ButtonColor.RED : ButtonColor.PURPLE}
-      disabled={isVeryHighPriceImpact && !isPriceImpactAcknowledged}
+      colorScheme={swapAnyway ? ButtonColor.RED : ButtonColor.PURPLE}
+      disabled={!canConfirm}
       onClick={() => handleMarginSwap()}
       fullWidth
     >
-      {isVeryHighPriceImpact ? t("swap_anyway") : t("confirm_margin_swap")}
+      {swapAnyway ? t("swap_anyway") : t("confirm_margin_swap")}
     </Button>
   );
 }
 
 function ReadonlyTokenAmountCard({
   token,
+  trust,
   amount,
   amountUSD,
   standard,
   title,
 }: {
   token: Currency | undefined;
+  trust: TokenTrust<Token> | undefined;
   amount: string;
   amountUSD: string | undefined;
   standard: Standard;
@@ -147,7 +172,10 @@ function ReadonlyTokenAmountCard({
 
   return (
     <div className="rounded-3 bg-tertiary-bg py-4 px-5 flex flex-col gap-1">
-      <p className="text-secondary-text text-14">{title}</p>
+      <div className="flex items-center justify-between gap-2 min-h-6">
+        <p className="text-secondary-text text-14">{title}</p>
+        <ReviewCardTrustBadge token={token} trust={trust} />
+      </div>
       <div className="flex justify-between items-center text-20">
         <span>{amount}</span>
         <div className="flex items-center gap-2">
@@ -165,7 +193,10 @@ function ReadonlyTokenAmountCard({
           )}
         </div>
       </div>
-      <p className="text-secondary-text text-14">${amountUSD}</p>
+      <div className="flex items-center justify-between gap-2">
+        <p className="text-secondary-text text-14">${amountUSD}</p>
+        <ReviewCardAddress token={token} trust={trust} standard={standard} />
+      </div>
     </div>
   );
 }
@@ -178,12 +209,27 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
     tokenAStandard,
     tokenBStandard,
     reset: resetTokens,
+    setTokenA,
+    setTokenB,
   } = useMarginSwapTokensStore();
   const { typedValue, reset: resetAmounts } = useMarginSwapAmountsStore();
   const chainId = useCurrentChainId();
 
   const { isOpen, setIsOpen } = useConfirmMarginSwapDialogStore();
   const priceImpactAck = usePriceImpactAcknowledgement(trade);
+  const trustGate = useSwapTrustGate({
+    tokenA,
+    tokenB,
+    enabled: !(tokenA && tokenB && tokenA.equals(tokenB)),
+    resetKey: [
+      tokenA?.wrapped.address0,
+      tokenAStandard,
+      tokenB?.wrapped.address0,
+      tokenBStandard,
+      typedValue,
+      trade?.outputAmount.quotient.toString(),
+    ].join(":"),
+  });
 
   const dependentAmount: CurrencyAmount<Currency> | undefined = useMemo(() => {
     return trade?.outputAmount;
@@ -340,6 +386,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
             <div className="flex flex-col gap-3">
               <ReadonlyTokenAmountCard
                 token={tokenA}
+                trust={trustGate.trustA}
                 amount={typedValue}
                 amountUSD={priceA ? formatFloat(priceA * +typedValue) : ""}
                 standard={tokenAStandard}
@@ -347,6 +394,7 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
               />
               <ReadonlyTokenAmountCard
                 token={tokenB}
+                trust={trustGate.trustB}
                 amount={output}
                 amountUSD={priceB ? formatFloat(priceB * +output) : ""}
                 standard={tokenBStandard}
@@ -424,6 +472,17 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
                 tooltipText={t("gas_limit_tooltip")}
               />
 
+              <TrustAcknowledgement
+                id="margin-swap-trust-acknowledgement"
+                gate={trustGate}
+                className="mt-2"
+                onUseOfficial={(side, official) => {
+                  // Replace that side with the official token and close, so the user sees a fresh quote.
+                  if (side === "pay") setTokenA(official);
+                  else setTokenB(official);
+                  setIsOpen(false);
+                }}
+              />
               <PriceImpactWarning trade={trade} slippage={slippage} className="mt-2" />
               <PriceImpactAcknowledgement
                 id="margin-swap-price-impact-acknowledgement"
@@ -438,6 +497,9 @@ export default function ConfirmMarginSwapDialog({ trade }: { trade: Trade<any, a
           <MarginSwapActionButton
             isVeryHighPriceImpact={priceImpactAck.required}
             isPriceImpactAcknowledged={priceImpactAck.acknowledged}
+            isTrustAckRequired={trustGate.required}
+            isTrustAcknowledged={trustGate.acknowledged}
+            isLookalike={trustGate.anyLookalike}
           />
         </div>
       </div>

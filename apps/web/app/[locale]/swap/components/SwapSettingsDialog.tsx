@@ -183,7 +183,9 @@ function SwapSettingsDialogContent({
   const [slippageType, setSlippageType] = useState<SlippageType>(_slippageType);
 
   const handleSave = useCallback(() => {
-    setDeadline(+customDeadline);
+    const minutes = Number(customDeadline);
+    if (!Number.isInteger(minutes) || minutes < 1 || minutes > 4000) return;
+    setDeadline(minutes);
 
     switch (slippageType) {
       case SlippageType.LOW:
@@ -259,7 +261,7 @@ function SwapSettingsDialogContent({
     if (customDeadline === "") {
       return t("deadline_empty");
     }
-    if (+customDeadline < 1) {
+    if (!/^\d+$/.test(customDeadline) || +customDeadline < 1) {
       return t("deadline_min");
     }
     if (+customDeadline > 4000) {
@@ -356,16 +358,22 @@ function SwapSettingsDialogContent({
 
         <div className="relative">
           <NumericFormat
-            allowedDecimalSeparators={[","]}
             className="pr-[100px] mb-0"
             value={customDeadline}
             onValueChange={(values) => {
               setCustomDeadline(values.value);
             }}
-            isError={+customDeadline > 4000 || +customDeadline < 1}
+            isAllowed={(values) => values.value === "" || /^\d+$/.test(values.value)}
+            isError={
+              customDeadline === "" ||
+              !/^\d+$/.test(customDeadline) ||
+              +customDeadline < 1 ||
+              +customDeadline > 4000
+            }
             allowNegative={false}
+            decimalScale={0}
             customInput={Input}
-            inputMode="decimal"
+            inputMode="numeric"
             colorScheme={colorScheme}
           />
           <span className="absolute right-5 top-1/2 -translate-y-1/2 text-secondary-text">
