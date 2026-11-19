@@ -7,6 +7,7 @@ import { ERC20_ABI } from "@/config/abis/erc20";
 import { ERC223_ABI } from "@/config/abis/erc223";
 import { TOKEN_CONVERTER_ABI } from "@/config/abis/tokenConverter";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useIsErc777 } from "@/hooks/useErc777";
 import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
 import { Token } from "@/sdk_bi/entities/token";
 
@@ -76,6 +77,8 @@ export default function useDerivedTokenInfo({
       enabled: !!tokenAddressToImport && isAddress(tokenAddressToImport),
     },
   });
+
+  const { isErc777, isLoading: isLoadingErc777 } = useIsErc777(tokenAddressToImport);
 
   const otherAddressFunctionName = useMemo(() => {
     if (isWrapper == null) {
@@ -173,11 +176,13 @@ export default function useDerivedTokenInfo({
       isLoadingOtherAddressFunction ||
       isLoadingOtherAddress ||
       isLoadingSymbol ||
-      isLoadingWrapper
+      isLoadingWrapper ||
+      isLoadingErc777
     );
   }, [
     enabled,
     isLoadingDecimals,
+    isLoadingErc777,
     isLoadingName,
     isLoadingOtherAddress,
     isLoadingOtherAddressFunction,
@@ -220,5 +225,5 @@ export default function useDerivedTokenInfo({
     tokenSymbol,
   ]);
 
-  return { token, isLoading: isTokenLoading };
+  return { token, isErc777, isLoading: isTokenLoading };
 }

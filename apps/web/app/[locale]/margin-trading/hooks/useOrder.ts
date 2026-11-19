@@ -1,8 +1,9 @@
 import { ApolloError, useQuery } from "@apollo/client";
 import gql from "graphql-tag";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Address } from "viem";
 
+import { collectPages } from "@/app/[locale]/margin-trading/helpers/collectPages";
 import {
   GqlOrder,
   GqlPosition,
@@ -19,6 +20,7 @@ import daysToSeconds from "@/functions/daysToSeconds";
 import { chainToApolloClient } from "@/graphql/thegraph/apollo";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useMarginModuleApolloClient from "@/hooks/useMarginModuleApolloClient";
+import { useTokenListLogos } from "@/hooks/useTokenListLogos";
 import { DexChainId } from "@/sdk_bi/chains";
 
 const queryAllOrders = gql`
@@ -36,7 +38,7 @@ const queryOwner = gql(`
   query GetOrders($owner: String!) {
     orders(where: {owner: $owner}) {
       ${GQL_ORDER_FIELDS}
-      positions {
+      positions(first: 1000, orderBy: createdAt, orderDirection: desc) {
         ${GQL_POSITION_FIELDS}
       }
     }
@@ -44,10 +46,10 @@ const queryOwner = gql(`
 `);
 
 const queryId = gql(`
-  query GetOrders($id: Int!) {
+  query GetOrders($id: Int!, $positionsSkip: Int = 0) {
     order(id: $id) {
       ${GQL_ORDER_FIELDS}
-      positions {
+      positions(first: 1000, skip: $positionsSkip, orderBy: createdAt, orderDirection: desc) {
         ${GQL_POSITION_FIELDS}
       }
     }
@@ -58,11 +60,13 @@ export function useOrder({ id }: { id: number }): {
   loading: boolean;
   order: LendingOrder | undefined;
   refetch: any;
+  error?: Error;
 } {
   const apolloClient = useMarginModuleApolloClient();
   const chainId = useCurrentChainId();
+  const logos = useTokenListLogos();
 
-  const { data, loading, refetch } = useQuery<any, any>(queryId, {
+  const { data, loading, refetch, error } = useQuery<any, any>(queryId, {
     variables: {
       id,
     },
@@ -71,20 +75,68 @@ export function useOrder({ id }: { id: number }): {
     client: apolloClient || chainToApolloClient[DexChainId.SEPOLIA],
   });
 
+  const [pages, setPages] = useState<{ source: any; positions: GqlPosition[]; error?: Error }>();
+  useEffect(() => {
+    const source = data?.order;
+    const client = apolloClient || chainToApolloClient[DexChainId.SEPOLIA];
+    if (!source || (source.positions?.length ?? 0) < 1000) return;
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | undefined;
+    const loadPositions = async () => {
+      try {
+        const positions = await collectPages<GqlPosition>(
+          source.positions,
+          async (offset) => {
+            if (cancelled) throw new Error("Order changed");
+            const result = await client.query({
+              query: queryId,
+              variables: { id, positionsSkip: offset },
+              fetchPolicy: "network-only",
+            });
+            if (!result.data?.order) throw new Error("Order could not be loaded");
+            return result.data.order.positions;
+          },
+          1000,
+        );
+        if (!cancelled) setPages({ source, positions });
+      } catch (error) {
+        if (cancelled) return;
+        setPages({ source, positions: [], error: error as Error });
+        // Apollo preserves the source object when polling returns unchanged data.
+        // Retry independently so a temporary page failure can recover in that case.
+        retryTimer = setTimeout(loadPositions, 30000);
+      }
+    };
+    void loadPositions();
+    return () => {
+      cancelled = true;
+      clearTimeout(retryTimer);
+    };
+  }, [apolloClient, data?.order, id]);
+  const completePages = pages?.source === data?.order ? pages : undefined;
+  const loadingPages = Boolean(data?.order?.positions?.length === 1000 && !completePages);
+
   const order = useMemo(() => {
-    if (!data) {
-      return data;
+    if (!data?.order) {
+      return undefined;
     }
 
     return {
-      ...serializeGqlOrder(data.order, chainId),
-      positions: data.order.positions.map((position: GqlPosition) => {
-        return serializeGqlPosition(position, chainId);
-      }),
+      ...serializeGqlOrder(data.order, chainId, logos),
+      positions: (completePages?.positions ?? data.order.positions ?? []).map(
+        (position: GqlPosition) => {
+          return serializeGqlPosition(position, chainId, logos);
+        },
+      ),
     };
-  }, [chainId, data]);
+  }, [chainId, logos, completePages?.positions, data]);
 
-  return { loading, order, refetch };
+  return {
+    loading: loading || loadingPages,
+    order: completePages?.error ? undefined : order,
+    refetch,
+    error: error ?? completePages?.error,
+  };
 }
 
 type OrdersWhere = {
@@ -138,6 +190,7 @@ export function useOrders({
 } {
   const apolloClient = useMarginModuleApolloClient();
   const chainId = useCurrentChainId();
+  const logos = useTokenListLogos();
   const requestTimeRef = useRef<number>(Date.now());
 
   const where = useMemo(() => {
@@ -221,13 +274,13 @@ export function useOrders({
 
     return data.orders.map((order: GqlOrder) => {
       return {
-        ...serializeGqlOrder(order, chainId),
+        ...serializeGqlOrder(order, chainId, logos),
         positions: order.positions.map((position: GqlPosition) => {
-          return serializeGqlPosition(position, chainId);
+          return serializeGqlPosition(position, chainId, logos);
         }),
       };
     });
-  }, [chainId, data]);
+  }, [chainId, logos, data]);
 
   const isFilterActive = Object.keys(where).some((key) => key !== "alive" && key !== "deadline_gt");
 
@@ -240,6 +293,7 @@ export function useOrdersByOwner({ owner }: { owner: Address | undefined }): {
 } {
   const apolloClient = useMarginModuleApolloClient();
   const chainId = useCurrentChainId();
+  const logos = useTokenListLogos();
 
   const { data, loading } = useQuery<any, any>(queryOwner, {
     variables: {
@@ -257,13 +311,13 @@ export function useOrdersByOwner({ owner }: { owner: Address | undefined }): {
 
     return data.orders.map((order: GqlOrder) => {
       return {
-        ...serializeGqlOrder(order, chainId),
+        ...serializeGqlOrder(order, chainId, logos),
         positions: order.positions.map((position: GqlPosition) => {
-          return serializeGqlPosition(position, chainId);
+          return serializeGqlPosition(position, chainId, logos);
         }),
       };
     });
-  }, [chainId, data]);
+  }, [chainId, logos, data]);
 
   return { loading, orders };
 }

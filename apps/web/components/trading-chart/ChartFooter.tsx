@@ -37,6 +37,7 @@ export default function ChartFooter({
   seconds,
   scaleMode,
   onScaleMode,
+  scaleLocked,
 }: {
   source: string;
   sourceShort: string;
@@ -47,6 +48,8 @@ export default function ChartFooter({
   seconds: number;
   scaleMode: ScaleMode;
   onScaleMode: (mode: ScaleMode) => void;
+  /** Why the scale cannot change right now (a comparison needs % change), if it cannot. */
+  scaleLocked?: string;
 }) {
   const t = useTranslations("TradingChart");
   const [now, setNow] = useState(() => Math.floor(Date.now() / 1000));
@@ -85,10 +88,11 @@ export default function ChartFooter({
               type="button"
               role="radio"
               aria-checked={scaleMode === mode}
-              title={title}
+              title={scaleLocked ?? title}
+              disabled={!!scaleLocked}
               onClick={() => onScaleMode(scaleMode === mode && mode !== "normal" ? "normal" : mode)}
               className={clsx(
-                "px-1.5 h-6 rounded-1 duration-200",
+                "px-1.5 h-6 rounded-1 duration-200 disabled:cursor-default",
                 scaleMode === mode ? accent.soft : "text-tertiary-text hocus:text-primary-text",
               )}
             >

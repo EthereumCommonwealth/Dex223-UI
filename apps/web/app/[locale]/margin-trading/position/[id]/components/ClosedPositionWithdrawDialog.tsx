@@ -1,8 +1,12 @@
 import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
 import { formatEther, formatGwei, formatUnits, parseUnits } from "viem";
+import { useAccount } from "wagmi";
 
-import usePositionWithdraw from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionWithdraw";
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
+import usePositionWithdraw, {
+  positionWithdrawDeliversErc223,
+} from "@/app/[locale]/margin-trading/position/[id]/hooks/usePositionWithdraw";
 import {
   PositionWithdrawStatus,
   useWithdrawPositionStatusStore,
@@ -15,6 +19,7 @@ import EmptyStateIcon from "@/components/atoms/EmptyStateIcon";
 import Svg from "@/components/atoms/Svg";
 import { InputLabel } from "@/components/atoms/TextField";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
+import Erc223ReceiveWarning from "@/components/common/Erc223ReceiveWarning";
 import OperationStepRow, {
   OperationRows,
   operationStatusToStepStatus,
@@ -23,6 +28,7 @@ import OperationStepRow, {
 import TokenInput from "@/components/common/TokenInput";
 import { IconName } from "@/config/types/IconName";
 import { formatFloat } from "@/functions/formatFloat";
+import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { Standard } from "@/sdk_bi/standard";
 
@@ -66,6 +72,10 @@ function PositionDepositActionButton({
   const { handlePositionWithdraw } = usePositionWithdraw({
     position: position,
   });
+  const tSwap = useTranslations("Swap");
+  const { address } = useAccount();
+  const canReceiveERC223 = useCanReceiveERC223(address);
+  const cannotReceive = positionWithdrawDeliversErc223(position) && !canReceiveERC223;
 
   const { status, withdrawHash } = useWithdrawPositionStatusStore();
 
@@ -91,6 +101,17 @@ function PositionDepositActionButton({
           />
         ))}
       </OperationRows>
+    );
+  }
+
+  if (cannotReceive) {
+    return (
+      <>
+        <Erc223ReceiveWarning className="mb-4" />
+        <Button disabled fullWidth>
+          {tSwap("wallet_cannot_receive_erc223")}
+        </Button>
+      </>
     );
   }
 
@@ -148,7 +169,7 @@ export default function ClosedPositionWithdrawDialog({
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("withdraw")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {isInitialStatus && (
           <>
             <InputLabel
@@ -158,7 +179,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div
@@ -173,37 +194,7 @@ export default function ClosedPositionWithdrawDialog({
                   );
                 })}
             </div>
-            <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
-              <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
-                <p className="flex flex-col text-tertiary-text">
-                  <span>{t("gas_price")}</span>
-                  <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
-                </p>
-
-                <p className="flex flex-col text-tertiary-text">
-                  <span>{t("gas_limit")}</span>
-                  <span>{329000}</span>
-                </p>
-                <p className="flex flex-col">
-                  <span className="text-tertiary-text">{t("network_fee")}</span>
-                  <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
-                </p>
-              </div>
-              <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
-                <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                  {t("cheap")}
-                </span>
-                <Button
-                  colorScheme={ButtonColor.LIGHT_GREEN}
-                  size={ButtonSize.EXTRA_SMALL}
-                  onClick={() => null}
-                  fullWidth={false}
-                  className="rounded-5"
-                >
-                  {t("edit")}
-                </Button>
-              </div>
-            </div>
+            <MarginGasSettings operation="withdrawPosition" />
           </>
         )}
 
@@ -216,7 +207,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {position.assetsWithBalances
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div
@@ -286,7 +277,7 @@ export default function ClosedPositionWithdrawDialog({
 
             <div className="rounded-2 bg-tertiary-bg p-2 flex flex-wrap gap-2">
               {withdrawnAssets
-                .filter((asset) => !!asset.balance)
+                .filter((asset) => asset.balance && asset.balance > 0n)
                 .map((assetWithBalance) => {
                   return (
                     <div

@@ -19,11 +19,17 @@ import { predictWrapperAddress } from "@/components/manage-tokens/scripts/conver
 import { ManageTokensDialogContent } from "@/components/manage-tokens/types";
 import { ERC20_ABI } from "@/config/abis/erc20";
 import { ERC223_ABI } from "@/config/abis/erc223";
+import {
+  ERC777_TOKEN_INTERFACE_HASH,
+  ERC1820_ABI,
+  ERC1820_REGISTRY_ADDRESS,
+} from "@/config/abis/erc1820";
 import { TOKEN_CONVERTER_ABI } from "@/config/abis/tokenConverter";
-import { db } from "@/db/db";
+import { addCustomToken } from "@/db/addCustomToken";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { isErc777Implementer, useIsErc777 } from "@/hooks/useErc777";
 import { useTokenLists } from "@/hooks/useTokenLists";
 import addToast from "@/other/toast";
 import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
@@ -71,12 +77,24 @@ function EmptyState({
   }
 }
 
-export function useImportToken() {
-  const tokenLists = useTokenLists();
-  const publicClient = usePublicClient();
+export type ReadTokenResult =
+  | { status: "ok"; token: Token }
+  | { status: "erc777" }
+  | { status: "not_a_token" };
 
-  const handleImport = useCallback(
-    async (tokenAddressToImport: Address, chainId: DexChainId) => {
+export function useImportToken(readChainId?: DexChainId) {
+  const publicClient = usePublicClient(readChainId ? { chainId: readChainId } : undefined);
+
+  /**
+   * Reads name, symbol, decimals, standard, the converter pair and ERC-1820 for an address and
+   * returns the token. Writes nothing: an /add link only saves from the import dialog (#139).
+   */
+  const readTokenFromChain = useCallback(
+    async (
+      tokenAddressToImport: Address,
+      chainId: DexChainId,
+      imageURL?: string,
+    ): Promise<ReadTokenResult | undefined> => {
       const calls = [
         {
           abi: ERC20_ABI,
@@ -109,19 +127,38 @@ export function useImportToken() {
           chainId,
           args: [tokenAddressToImport as Address],
         },
+        {
+          abi: ERC1820_ABI,
+          functionName: "getInterfaceImplementer",
+          address: ERC1820_REGISTRY_ADDRESS,
+          chainId,
+          args: [tokenAddressToImport as Address, ERC777_TOKEN_INTERFACE_HASH],
+        },
       ];
 
       if (!publicClient) {
         return;
       }
 
-      const res = await publicClient.multicall({ contracts: calls });
+      const res = await publicClient.multicall({ contracts: calls }).catch(() => undefined);
+      if (!res) {
+        return { status: "not_a_token" };
+      }
 
       const name = res[0].result;
       const symbol = res[1].result;
       const decimals = res[2].result;
       const standard = res[3].result;
       const isWrapper = res[4].result;
+
+      // ERC-777 tokens are not supported by the converter: never import them.
+      if (isErc777Implementer(res[5].result)) {
+        return { status: "erc777" };
+      }
+
+      if (!decimals || !name || !symbol) {
+        return { status: "not_a_token" };
+      }
 
       const otherAddressFunctionName =
         isWrapper == null
@@ -132,12 +169,17 @@ export function useImportToken() {
               : "getERC223OriginFor"
             : "predictWrapperAddress";
 
-      const predictedOtherAddress = await publicClient.readContract({
-        abi: TOKEN_CONVERTER_ABI,
-        functionName: otherAddressFunctionName!,
-        address: CONVERTER_ADDRESS[chainId],
-        args: [tokenAddressToImport as Address, standard !== 223],
-      });
+      const predictedOtherAddress = await publicClient
+        .readContract({
+          abi: TOKEN_CONVERTER_ABI,
+          functionName: otherAddressFunctionName!,
+          address: CONVERTER_ADDRESS[chainId],
+          args: [tokenAddressToImport as Address, standard !== 223],
+        })
+        .catch(() => undefined);
+      if (!predictedOtherAddress) {
+        return { status: "not_a_token" };
+      }
 
       const { erc20AddressToImport, erc223AddressToImport } =
         standard === 223
@@ -150,10 +192,7 @@ export function useImportToken() {
               erc20AddressToImport: tokenAddressToImport,
             };
 
-      if (!decimals || !name || !symbol) {
-        return;
-      }
-
+      const logoURI = imageURL?.trim();
       const token = new Token(
         chainId,
         erc20AddressToImport as Address,
@@ -161,46 +200,38 @@ export function useImportToken() {
         decimals as number,
         symbol as string,
         name as string,
-        "/images/tokens/placeholder.svg",
+        logoURI && /^(https|ipfs):\/\/\S+$/i.test(logoURI)
+          ? logoURI
+          : "/images/tokens/placeholder.svg",
       );
 
-      const currentCustomList = tokenLists?.find((t) => t.id === `custom-${chainId}`);
-
-      if (!currentCustomList) {
-        await db.tokenLists.add({
-          id: `custom-${chainId}`,
-          enabled: true,
-          chainId,
-          list: {
-            name: "Custom token list",
-            version: {
-              minor: 0,
-              major: 0,
-              patch: 0,
-            },
-            tokens: [token],
-            logoURI: "/images/token-list-placeholder.svg",
-          },
-        });
-      } else {
-        (db.tokenLists as any).update(`custom-${chainId}`, {
-          "list.tokens": [...currentCustomList.list.tokens, token],
-        });
-      }
-
-      return token;
+      return { status: "ok", token };
     },
-    [publicClient, tokenLists],
+    [publicClient],
   );
 
-  return { handleImport };
+  /** Read and save to the Custom token list (Create token and the listing page use this). */
+  const handleImport = useCallback(
+    async (tokenAddressToImport: Address, chainId: DexChainId, imageURL?: string) => {
+      const result = await readTokenFromChain(tokenAddressToImport, chainId, imageURL);
+      if (result?.status !== "ok") {
+        return;
+      }
+
+      await addCustomToken(result.token);
+
+      return result.token;
+    },
+    [readTokenFromChain],
+  );
+
+  return { handleImport, readTokenFromChain };
 }
 
 export default function ImportToken({ setContent, handleClose }: Props) {
   const t = useTranslations("ManageTokens");
   const [tokenAddressToImport, setTokenAddressToImport] = useState("");
   const chainId = useCurrentChainId();
-  const tokenLists = useTokenLists();
 
   const {
     data: tokenName,
@@ -340,8 +371,11 @@ export default function ImportToken({ setContent, handleClose }: Props) {
     return !!(custom && custom?.[0]?.list.tokens.find((v) => v.address0 === tokenAddressToImport));
   }, [custom, tokenAddressToImport]);
 
+  const { isErc777, isLoading: isLoadingErc777 } = useIsErc777(tokenAddressToImport);
+
   const isTokenLoading = useMemo(() => {
     return (
+      isLoadingErc777 ||
       isLoadingStandard ||
       isLoadingDecimals ||
       isLoadingName ||
@@ -350,6 +384,7 @@ export default function ImportToken({ setContent, handleClose }: Props) {
     );
   }, [
     isLoadingDecimals,
+    isLoadingErc777,
     isLoadingName,
     isLoadingOtherAddress,
     isLoadingOtherAddressFunction,
@@ -423,7 +458,11 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                       <div className="grid grid-cols-[1fr_auto_32px] gap-y-1">
                         <span className="text-secondary-text flex items-center gap-1">
                           {t("address")}{" "}
-                          <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />{" "}
+                          {isErc777 ? (
+                            <Badge variant={BadgeVariant.COLORED} color="red" text="ERC-777" />
+                          ) : (
+                            <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
+                          )}{" "}
                         </span>
                         <ExternalTextLink
                           text={truncateMiddle(erc20AddressToImport)}
@@ -439,34 +478,38 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                           buttonSize={IconButtonSize.SMALL}
                           text={erc20AddressToImport}
                         />
-                        <span className="text-secondary-text flex items-center gap-1">
-                          {t("address")}{" "}
-                          <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
-                        </span>
-                        {erc223AddressToImport && isErc223Exist && (
+                        {!isErc777 && (
                           <>
-                            <ExternalTextLink
-                              text={truncateMiddle(erc223AddressToImport)}
-                              href={getExplorerLink(
-                                ExplorerLinkType.ADDRESS,
-                                erc20AddressToImport,
-                                chainId,
-                              )}
-                              className="justify-between"
-                            />
-                            <IconButton
-                              variant={IconButtonVariant.COPY}
-                              buttonSize={IconButtonSize.SMALL}
-                              text={erc223AddressToImport}
-                            />
-                          </>
-                        )}
-                        {erc223AddressToImport && !isErc223Exist && (
-                          <>
-                            <span></span>
-                            <span className="text-tertiary-text text-right flex w-8 items-center justify-center">
-                              —
+                            <span className="text-secondary-text flex items-center gap-1">
+                              {t("address")}{" "}
+                              <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
                             </span>
+                            {erc223AddressToImport && isErc223Exist && (
+                              <>
+                                <ExternalTextLink
+                                  text={truncateMiddle(erc223AddressToImport)}
+                                  href={getExplorerLink(
+                                    ExplorerLinkType.ADDRESS,
+                                    erc223AddressToImport,
+                                    chainId,
+                                  )}
+                                  className="justify-between"
+                                />
+                                <IconButton
+                                  variant={IconButtonVariant.COPY}
+                                  buttonSize={IconButtonSize.SMALL}
+                                  text={erc223AddressToImport}
+                                />
+                              </>
+                            )}
+                            {erc223AddressToImport && !isErc223Exist && (
+                              <>
+                                <span></span>
+                                <span className="text-tertiary-text text-right flex w-8 items-center justify-center">
+                                  —
+                                </span>
+                              </>
+                            )}
                           </>
                         )}
                       </div>
@@ -474,7 +517,9 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                   </>
                 )}
 
-                {alreadyImported ? (
+                {isErc777 ? (
+                  <Alert text={t("erc777_warning")} type="error" />
+                ) : alreadyImported ? (
                   <Alert
                     type="info"
                     text="This token has already been imported. You cannot import the same token twice."
@@ -485,7 +530,7 @@ export default function ImportToken({ setContent, handleClose }: Props) {
               </div>
 
               <div className="flex flex-col gap-5 mt-5">
-                {!alreadyImported && (
+                {!alreadyImported && !isErc777 && (
                   <Checkbox
                     checked={checkedUnderstand}
                     handleChange={() => setCheckedUnderstand(!checkedUnderstand)}
@@ -496,7 +541,7 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                 <Button
                   fullWidth
                   size={ButtonSize.LARGE}
-                  disabled={!checkedUnderstand || alreadyImported}
+                  disabled={!checkedUnderstand || alreadyImported || isErc777}
                   onClick={async () => {
                     if (
                       chainId &&
@@ -507,10 +552,6 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                       erc20AddressToImport &&
                       erc223AddressToImport
                     ) {
-                      const currentCustomList = tokenLists?.find(
-                        (t) => t.id === `custom-${chainId}`,
-                      );
-
                       const token = new Token(
                         chainId,
                         erc20AddressToImport as Address,
@@ -521,35 +562,17 @@ export default function ImportToken({ setContent, handleClose }: Props) {
                         "/images/tokens/placeholder.svg",
                       );
 
-                      if (!currentCustomList) {
-                        await db.tokenLists.add({
-                          id: `custom-${chainId}`,
-                          enabled: true,
-                          chainId,
-                          list: {
-                            name: "Custom token list",
-                            version: {
-                              minor: 0,
-                              major: 0,
-                              patch: 0,
-                            },
-                            tokens: [token],
-                            logoURI: "/images/token-list-placeholder.svg",
-                          },
-                        });
-                      } else {
-                        (db.tokenLists as any).update(`custom-${chainId}`, {
-                          "list.tokens": [...currentCustomList.list.tokens, token],
-                        });
-                      }
+                      await addCustomToken(token);
                     }
                     setContent("default");
                     addToast(t("imported_successfully"));
                   }}
                 >
-                  {alreadyImported
-                    ? t("already_imported")
-                    : t("import_symbol", { symbol: tokenSymbol })}
+                  {isErc777
+                    ? t("token_not_supported")
+                    : alreadyImported
+                      ? t("already_imported")
+                      : t("import_symbol", { symbol: tokenSymbol })}
                 </Button>
               </div>
             </>

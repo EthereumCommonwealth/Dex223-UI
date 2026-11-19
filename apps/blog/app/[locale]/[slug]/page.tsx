@@ -1,7 +1,7 @@
 import DOMPurify from "isomorphic-dompurify";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { PropsWithChildren } from "react";
 
@@ -10,43 +10,39 @@ import { PostDetails } from "@/app/[locale]/types/Post";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import ScrollToTopButton from "@/components/buttons/ScrollToTopButton";
+import { HIDDEN_POST_IDS, POST_REDIRECTS } from "@/config/curation";
+import { resolvePost } from "@/functions/blogPosts";
 import { formatPostDate } from "@/functions/formatPostDate";
 import { EXTERNAL_LINK_REL, isExternalHref } from "@/functions/linkTarget";
+import { postPath, postUrl } from "@/functions/postUrl";
 import { Link } from "@/i18n/routing";
 
 function PostContainer({ children }: PropsWithChildren<{}>) {
   return <div className="w-full max-w-[728px] mx-auto px-4">{children}</div>;
 }
 type PostPageProps = {
-  params: Promise<{ id: string; locale: string }>;
+  params: Promise<{ slug: string; locale: string }>;
 };
 
-// Next.js memoizes this GET, so the page and its metadata share one request.
-async function fetchPost(id: string): Promise<PostDetails | null> {
-  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
-
-  if (!res.ok) {
-    return null;
-  }
-
-  const post: PostDetails = await res.json();
-  return post?.id ? post : null;
-}
-
 export async function generateMetadata({ params }: PostPageProps): Promise<Metadata> {
-  const { id, locale } = await params;
-  const post = await fetchPost(id);
+  const { slug } = await params;
+  const resolved = await resolvePost(slug);
 
-  if (!post) {
+  // Old id URLs and merged posts redirect from the page itself; they need no metadata of their own.
+  if (!resolved || resolved.legacyId || POST_REDIRECTS[resolved.post.id]) {
     return {};
   }
+  const { post } = resolved;
+  // Curated out of search (config/curation.ts): still reachable by link, but not indexed.
+  const robots = HIDDEN_POST_IDS.has(post.id) ? { index: false, follow: true } : undefined;
 
-  const url = `/${locale}/${post.id}?slug=${post.slug}`;
+  const url = postUrl(post);
   const images = post.thumbnail?.link
     ? [{ url: post.thumbnail.link, alt: post.thumbnail.alt || post.title }]
     : undefined;
 
   return {
+    robots,
     title: `${post.title} | Dex223 Blog`,
     description: post.description,
     alternates: { canonical: url },
@@ -72,21 +68,28 @@ export async function generateMetadata({ params }: PostPageProps): Promise<Metad
 }
 
 export default async function PostPage({ params }: PostPageProps) {
-  const { id, locale } = await params;
+  const { slug, locale } = await params;
   const t = await getTranslations("Post");
-  const res = await fetch(`https://api.dex223.io/v1/core/api/blog/detail/${id}`);
+  const resolved = await resolvePost(slug);
 
-  // The API answers 404 for unknown ids and 422 for anything that is not a UUID
-  // (for example /en/blog). Show the not-found page instead of an empty post.
-  if (!res.ok) {
+  // Unknown slugs and ids show the not-found page instead of an empty post.
+  if (!resolved) {
     notFound();
   }
 
-  const post: PostDetails = await res.json();
-
-  if (!post?.id) {
-    notFound();
+  // Old links (/en/<id>?slug=..., often with tracking parameters) move permanently to the
+  // post's slug URL, so their links and search ranking carry over.
+  // Merged explainers move permanently to the post they were folded into (config/curation.ts).
+  const mergedInto = POST_REDIRECTS[resolved.post.id];
+  if (mergedInto) {
+    permanentRedirect(`/en/${encodeURIComponent(mergedInto)}`);
   }
+
+  if (resolved.legacyId) {
+    permanentRedirect(postPath(resolved.post));
+  }
+
+  const { post } = resolved;
 
   // DOMPurify is a module singleton on the server: drop the hook from the previous
   // request before adding it again, or every render stacks one more copy.
@@ -248,8 +251,36 @@ export default async function PostPage({ params }: PostPageProps) {
       .replace(/<table([\s\S]*?)<\/table>/gi, '<div class="table-scroll"><table$1</table></div>'),
   });
 
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.description,
+    url: postUrl(post),
+    mainEntityOfPage: postUrl(post),
+    inLanguage: post.language_code || "en",
+    datePublished: post.createdAt,
+    dateModified: post.updatedAt,
+    image: post.thumbnail?.link || undefined,
+    keywords: post.tags?.length ? post.tags.join(", ") : undefined,
+    author: post.author
+      ? { "@type": "Person", name: post.author.username }
+      : { "@id": "https://www.dex223.io/#organization" },
+    publisher: {
+      "@type": "Organization",
+      "@id": "https://www.dex223.io/#organization",
+      name: "DEX223",
+      logo: { "@type": "ImageObject", url: "https://www.dex223.io/dex.png" },
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        // Built from the post's own fields; "<" is escaped so text cannot close the tag.
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd).replace(/</g, "\\u003c") }}
+      />
       <PostContainer>
         <div className="flex justify-between my-4 md:my-10 flex-wrap gap-y-2 ">
           <Link

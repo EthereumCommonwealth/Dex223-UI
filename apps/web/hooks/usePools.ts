@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import { POOL_INVALID_RETRY_MS, PoolFetchStatus, poolNeedsFetch } from "@/functions/poolNeedsFetch";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useFetchPoolData } from "@/hooks/useFetchPoolsData";
 import { FeeAmount } from "@/sdk_bi/constants";
@@ -18,6 +19,21 @@ export enum PoolState {
   EXISTS_WITH_NO_LIQUIDITY,
   INVALID,
   IDLE,
+}
+
+const INVALID_RETRY_MS = POOL_INVALID_RETRY_MS;
+
+function fetchStatus(status: PoolState): PoolFetchStatus {
+  switch (status) {
+    case PoolState.IDLE:
+      return "idle";
+    case PoolState.LOADING:
+      return "loading";
+    case PoolState.INVALID:
+      return "invalid";
+    default:
+      return "loaded";
+  }
 }
 
 export type PoolParams = {
@@ -95,17 +111,29 @@ export function useStorePools(poolsParams: PoolsParams): PoolsResult {
 
   const fetchPoolData = useFetchPoolData(chainId);
 
+  // A failed lookup (e.g. the subgraph rate-limited us) is retried instead of sticking.
+  const [retryTick, setRetryTick] = useState(0);
+  const hasFailedLookup = poolKeys.some((key) => key && pools[key]?.status === PoolState.INVALID);
+  useEffect(() => {
+    if (!hasFailedLookup) return;
+    const timer = setTimeout(() => setRetryTick((tick) => tick + 1), INVALID_RETRY_MS);
+    return () => clearTimeout(timer);
+  }, [hasFailedLookup, retryTick]);
+
   useDeepEffect(() => {
     poolKeys.forEach((key, index) => {
       if (!key || !addresses[key] || !addresses[key].address) return;
       const poolRecord = pools[key];
 
-      const shouldFetch =
-        !poolRecord ||
-        poolRecord.status === PoolState.IDLE ||
-        (poolRecord.lastUpdated && poolRecord.lastUpdated < Date.now() - 60000);
+      const shouldFetch = poolNeedsFetch(
+        poolRecord && {
+          status: fetchStatus(poolRecord.status),
+          lastUpdated: poolRecord.lastUpdated,
+        },
+        Date.now(),
+      );
 
-      if (shouldFetch && poolRecord?.status !== PoolState.LOADING && poolTokens[index]) {
+      if (shouldFetch && poolTokens[index]) {
         setStatus(key, PoolState.LOADING);
 
         const { token0, token1, tier } = poolTokens[index];
@@ -124,7 +152,7 @@ export function useStorePools(poolsParams: PoolsParams): PoolsResult {
           });
       }
     });
-  }, [poolKeys, setStatus, fetchPoolData, poolTokens, addresses, pools]);
+  }, [poolKeys, setStatus, fetchPoolData, poolTokens, addresses, pools, retryTick]);
 
   // Provide the result to the hook consumer:
   return useDeepMemo(() => {
@@ -132,7 +160,7 @@ export function useStorePools(poolsParams: PoolsParams): PoolsResult {
       if (!key) return [PoolState.INVALID, null];
 
       const poolRecord = pools[key];
-      if (!poolRecord) return [PoolState.NOT_EXISTS, null];
+      if (!poolRecord) return [PoolState.IDLE, null]; // not looked up yet, not "missing"
 
       switch (poolRecord.status) {
         case PoolState.EXISTS:

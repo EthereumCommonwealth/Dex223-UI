@@ -30,6 +30,12 @@ function filterPools(poolStates: PoolsResult): Pool[] {
     .map(([, pool]) => pool); // Extract the Pool objects
 }
 
+// "No pools" only once every fee tier is known not to exist. While a lookup is loading or
+// has failed (e.g. the subgraph is rate-limited) the answer is unknown, not "missing".
+function allPoolsMissing(poolStates: PoolsResult): boolean {
+  return poolStates.every(([state]) => state === PoolState.NOT_EXISTS);
+}
+
 export function useTrade() {
   return useSwapTradeStore((state) => ({
     trade: state.trade,
@@ -78,7 +84,7 @@ export function useTradeComputation() {
     }
     const valid = filterPools(pools);
     if (valid.length === 0) {
-      setError(TradeError.NO_POOLS);
+      setError(allPoolsMissing(pools) ? TradeError.NO_POOLS : null);
       setTrade(null);
       setLoading(false);
     } else {
@@ -141,7 +147,8 @@ export function useTradeComputation() {
           });
           if (!poolAddress || !client) return null;
 
-          const zeroForOne = tokenA.equals(pool.token0.wrapped);
+          // Compare wrapped tokens: a native coin never equals its pool's WETH.
+          const zeroForOne = tokenA.wrapped.equals(pool.token0.wrapped);
           const sqrtLimit = zeroForOne
             ? TickMath.MIN_SQRT_RATIO + ONE
             : TickMath.MAX_SQRT_RATIO - ONE;
@@ -248,7 +255,7 @@ export function useMarginTradeComputation() {
     }
     const valid = filterPools(pools);
     if (valid.length === 0) {
-      setError(TradeError.NO_POOLS);
+      setError(allPoolsMissing(pools) ? TradeError.NO_POOLS : null);
       setTrade(null);
       setLoading(false);
     } else {
@@ -312,7 +319,8 @@ export function useMarginTradeComputation() {
           });
           if (!poolAddress || !address || !client) return null;
 
-          const zeroForOne = tokenA.equals(pool.token0.wrapped);
+          // Compare wrapped tokens: a native coin never equals its pool's WETH.
+          const zeroForOne = tokenA.wrapped.equals(pool.token0.wrapped);
           const sqrtLimit = zeroForOne
             ? TickMath.MIN_SQRT_RATIO + ONE
             : TickMath.MAX_SQRT_RATIO - ONE;

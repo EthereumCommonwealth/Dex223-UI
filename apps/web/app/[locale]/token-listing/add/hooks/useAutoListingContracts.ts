@@ -4,8 +4,10 @@ import { useMemo } from "react";
 import { Address } from "viem";
 
 import { AutoListing } from "@/app/[locale]/token-listing/add/hooks/useAutoListing";
+import { orderListingContracts } from "@/functions/listingContracts";
 import useAutoListingApolloClient from "@/hooks/useAutoListingApolloClient";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { CORE_AUTO_LISTING_ADDRESS, FREE_AUTO_LISTING_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Token } from "@/sdk_bi/entities/token";
 
@@ -22,6 +24,9 @@ const AUTOLISTING_BLACKLIST = [
   "0x13ddc6460c705d29d37b18a906c7fe69fa9e711d",
   "0xbfbd1a95e551ba8de2dc1c84843d9df5c52619a3",
   "0xf851ffe03478f0bfebd4337287f315350cc311c2",
+  // Sepolia v3 lists (factory 0xf07c), replaced by the v4 lists on 2026-10-30
+  "0xF35AB968Eb874A56244e7df1D569F06aEf327936",
+  "0x0F81b549eE7DB363fbbb4358B9004C2AB97C7118",
   "0x063fd9a30f75c3b8a1ffb22167fc0984dfba1adf",
   "0x5c24027303865b744f2794945aee88eA56F1F5ee",
   "0x8D13f2795228aB18faeFBdF9461E7E46b5853Bc5",
@@ -37,11 +42,35 @@ const AUTOLISTING_BLACKLIST = [
   // They are bound to 0xeA0A...37eb, so a listing there does not reach the v2 pools.
   "0x83E1e7f47536515db9Ec4D7C4024e7395CD11A48",
   "0xCc46E110426958E83e9298d46a50572691065eC5",
+  // Sepolia v2 core and free autolistings, replaced with the v3 factory 0xf07c...42B9 on 2026-10-07.
+  // They are bound to 0xeA0A...37eb, so a listing there does not reach the v3 pools.
+  "0xcF08b4d75B20c2b6B2C3EF5921a60B15CE7B010a",
+  "0x5BDdb8BF9404DFBF2C45c4eEad817F5e54782734",
+  // Sepolia v4 core and free autolistings (factory 0x4EC0...3460), replaced by v5 on 2026-11-04.
+  "0x31e1ec42C4dC30E50B2791F3a8e237399c498c3b",
+  "0xe53760E2873A3103f0Cb7664C23CAA5273e6FF2e",
+  // Sepolia v5 core and free autolistings (factory 0x186a...Fd12), replaced by v6 on 2026-11-07.
+  // A listing on any of these four does not reach the v6 pools.
+  "0x0ABCb3321e0d208A0D961a6ab199339389382c06",
+  "0x87D82638eAbA509832C6027CEC76CA7BDF0D415F",
 ];
 
+// The names of Dex223's own lists. Another contract registered under one of them is left out.
+const OFFICIAL_LISTING_NAMES = ["Dex223 Core Autolisting", "Dex223 Free Auto-listing"];
+
+// The official lists are fetched by address, so other contracts cannot push them off the first
+// page: the subgraph returns contracts ordered by address, which anyone can choose.
 const query = gql(`
-  query AutoListings($first: Int!, $blacklist: [String!]) {
-    autoListings(first: $first, where: {id_not_in: $blacklist}) {
+  query AutoListings($first: Int!, $official: [String!], $exclude: [String!]) {
+    official: autoListings(where: {id_in: $official}) {
+      ...AutoListingFields
+    }
+    others: autoListings(first: $first, where: {id_not_in: $exclude}) {
+      ...AutoListingFields
+    }
+  }
+
+  fragment AutoListingFields on AutoListing {
       id
       owner
       name
@@ -70,7 +99,6 @@ const query = gql(`
           symbol
         }
       }
-    }
   }
 `);
 
@@ -135,19 +163,31 @@ function serializeAutoListing(gqlAutoListing: GqlAutoListing, chainId: DexChainI
 export default function useAutoListingContracts(): AutoListing[] | undefined {
   const chainId = useCurrentChainId();
   const client = useAutoListingApolloClient();
+  const official = useMemo(
+    () =>
+      [CORE_AUTO_LISTING_ADDRESS[chainId], FREE_AUTO_LISTING_ADDRESS[chainId]]
+        .filter(Boolean)
+        .map((address) => address.toLowerCase()),
+    [chainId],
+  );
   const autoListings = useQuery(query, {
     client,
     variables: {
       first: 10,
-      blacklist: AUTOLISTING_BLACKLIST.map((v) => v.toLowerCase()),
+      official,
+      exclude: [...AUTOLISTING_BLACKLIST.map((v) => v.toLowerCase()), ...official],
     },
   });
 
   return useMemo(() => {
-    return autoListings.data?.autoListings.map((autoListing: GqlAutoListing) =>
-      serializeAutoListing(autoListing, chainId),
-    );
-  }, [autoListings.data?.autoListings, chainId]);
+    if (!autoListings.data) return undefined;
+    return orderListingContracts<GqlAutoListing>(
+      official,
+      autoListings.data.official ?? [],
+      autoListings.data.others ?? [],
+      OFFICIAL_LISTING_NAMES,
+    ).map((autoListing) => serializeAutoListing(autoListing, chainId));
+  }, [autoListings.data, official, chainId]);
 }
 
 export function useAutoListingContract(address: Address | undefined): AutoListing | undefined {

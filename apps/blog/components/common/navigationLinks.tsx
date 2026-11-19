@@ -45,7 +45,10 @@ export const topLinks: AppLink[] = [
 export const resourceLinks = [
   { href: "https://dexaran.github.io/erc20-losses/", titleKey: "useful_losses_calculator" },
   { href: "https://dexaran.github.io/erc223/", titleKey: "useful_front_page" },
-  { href: "https://github.com/Dalcor/dex-exchange", titleKey: "useful_page_source_codes" },
+  {
+    href: "https://github.com/EthereumCommonwealth/Dex223-UI",
+    titleKey: "useful_page_source_codes",
+  },
 ] as const;
 
 export const partnerLinks = [

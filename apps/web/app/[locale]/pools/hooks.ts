@@ -1,7 +1,7 @@
 import { gql } from "@apollo/client";
 import { useQuery } from "@apollo/client";
 import { useMemo } from "react";
-import { Address } from "viem";
+import { Address, isAddress } from "viem";
 
 import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { buildTokenPriceIndex, PoolDepthBalances, TokenPriceIndex } from "@/functions/poolTvl";
@@ -128,7 +128,9 @@ export function usePoolsData({
               { token1_: { name_contains_nocase: filter.searchString } },
               { token0_: { symbol_contains_nocase: filter.searchString } },
               { token1_: { symbol_contains_nocase: filter.searchString } },
-              { id: filter.searchString.toLowerCase() },
+              ...(isAddress(filter.searchString)
+                ? [{ id: filter.searchString.toLowerCase() }]
+                : []),
             ],
           }
         : {

@@ -75,21 +75,36 @@ const getWalletBalances = async (
 export const useActiveWalletBalances = ({
   searchValue,
   setSearchValue,
+  enabled = true,
 }: {
   searchValue: string;
   setSearchValue: (value: string) => void;
+  enabled?: boolean;
 }) => {
   const chainId = useCurrentChainId();
   const { activeAddresses } = useActiveAddresses({ searchValue, setSearchValue });
   const tokens = useTokens();
-  const { balances, setAllBalances } = useWalletsBalances();
+  const { balances, setAllBalances, loadedKey, hasError, setBalanceStatus } = useWalletsBalances();
+  // Keyed by chain too, so balances read on the previous network never count as loaded.
+  const addressKey = `${chainId}:${activeAddresses
+    .map((address) => address.toLowerCase())
+    .sort()
+    .join(",")}`;
 
   useEffect(() => {
+    if (!enabled) return;
+
     let cancelled = false;
     let inFlight = false;
 
     const load = async () => {
       if (inFlight || document.visibilityState === "hidden") return;
+      if (!activeAddresses.length) {
+        if (!cancelled) {
+          setBalanceStatus({ loadedKey: "", hasError: false });
+        }
+        return;
+      }
       inFlight = true;
       try {
         const walletsBalances = await Promise.all(
@@ -98,9 +113,15 @@ export const useActiveWalletBalances = ({
           }),
         );
         // A newer run (other chain, wallets or token list) owns the store now.
-        if (!cancelled) setAllBalances(walletsBalances);
+        if (!cancelled) {
+          setAllBalances(walletsBalances);
+          setBalanceStatus({ loadedKey: addressKey, hasError: false });
+        }
       } catch {
         // Keep the last balances shown. The next refresh retries.
+        if (!cancelled) {
+          setBalanceStatus({ loadedKey: addressKey, hasError: true });
+        }
       } finally {
         inFlight = false;
       }
@@ -122,7 +143,7 @@ export const useActiveWalletBalances = ({
       document.removeEventListener("visibilitychange", onVisible);
       window.removeEventListener("focus", onVisible);
     };
-  }, [tokens, activeAddresses, chainId, setAllBalances]);
+  }, [tokens, activeAddresses, chainId, setAllBalances, setBalanceStatus, addressKey, enabled]);
 
   const tokenBalances = useMemo(() => {
     return tokens.map((token) => {
@@ -162,5 +183,13 @@ export const useActiveWalletBalances = ({
     });
   }, [tokens, balances]);
 
-  return { tokenBalances, activeAddresses };
+  const isInitialLoading = activeAddresses.length > 0 && loadedKey !== addressKey;
+
+  return {
+    tokenBalances,
+    activeAddresses,
+    isInitialLoading,
+    hasError,
+    hasBalanceData: balances.length > 0,
+  };
 };

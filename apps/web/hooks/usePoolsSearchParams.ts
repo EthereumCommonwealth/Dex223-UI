@@ -1,18 +1,23 @@
 import { useSearchParams } from "next/navigation";
 import { useLocale } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
-import { isAddress } from "viem";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { useAddLiquidityTokensStore } from "@/app/[locale]/add/stores/useAddLiquidityTokensStore";
 import { useLiquidityTierStore } from "@/app/[locale]/add/stores/useLiquidityTierStore";
-import { useImportToken } from "@/components/manage-tokens/ImportToken";
-import { IIFE } from "@/functions/iife";
+import { currencyToQueryParam, findCurrencyByQuery } from "@/functions/findCurrencyByQuery";
+import {
+  LinkTokenParam,
+  LinkTokenRequest,
+  pendingLinkTokens,
+  withoutLinkParams,
+} from "@/functions/importLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePathname } from "@/i18n/routing";
 import { DexChainId } from "@/sdk_bi/chains";
 import { FeeAmount } from "@/sdk_bi/constants";
+import { Currency } from "@/sdk_bi/entities/currency";
 
-import { useTokens } from "./useTokenLists";
+import { useSwapTokens } from "./useTokenLists";
 
 enum PoolsQueryParams {
   tokenA = "tokenA",
@@ -21,13 +26,25 @@ enum PoolsQueryParams {
   chainId = "chainId",
 }
 
+/** A link token that can be selected without asking: a native coin, Official or Core listed. */
+function isTrustedLinkToken(currency: Currency | undefined): currency is Currency {
+  if (!currency) return false;
+  if (currency.isNative) return true;
+  return currency.trust?.reason === "official" || currency.trust?.reason === "core";
+}
+
+/**
+ * Reads tokenA, tokenB, tier and chainId from /add links. A link never writes to the token lists on
+ * load (#139): a native coin or an Official or Core listed token is selected directly; anything else
+ * waits for ImportFromLinkDialog, which only saves from its Import button.
+ */
 export const usePoolsSearchParams = () => {
   const [isInitialized, setIsInitialized] = useState(false);
   const locale = useLocale();
   const _pathname = usePathname();
   const pathname = `/${locale}${_pathname}`;
   const searchParams = useSearchParams();
-  const tokens = useTokens();
+  const { tokens, isLoading: arePoolTokensLoading } = useSwapTokens();
   const _chainId = useCurrentChainId();
 
   const { tokenA, tokenB, setTokenA, setTokenB } = useAddLiquidityTokensStore();
@@ -39,13 +56,15 @@ export const usePoolsSearchParams = () => {
 
   const updatedPath = useMemo(() => {
     const params = new URLSearchParams(searchParams.toString());
-    if (tokenA?.wrapped.address0) {
-      params.set(PoolsQueryParams.tokenA, tokenA.wrapped.address0);
+    const tokenAParam = currencyToQueryParam(tokenA);
+    const tokenBParam = currencyToQueryParam(tokenB);
+    if (tokenAParam) {
+      params.set(PoolsQueryParams.tokenA, tokenAParam);
     } else {
       params.delete(PoolsQueryParams.tokenA);
     }
-    if (tokenB?.wrapped.address0) {
-      params.set(PoolsQueryParams.tokenB, tokenB.wrapped.address0);
+    if (tokenBParam) {
+      params.set(PoolsQueryParams.tokenB, tokenBParam);
     } else {
       params.delete(PoolsQueryParams.tokenB);
     }
@@ -63,15 +82,11 @@ export const usePoolsSearchParams = () => {
   }, [searchParams]);
 
   const tokenAFromList = useMemo(() => {
-    if (queryTokenA && isAddress(queryTokenA)) {
-      return tokens.find((t) => t.wrapped.address0.toLowerCase() === queryTokenA.toLowerCase());
-    }
+    return findCurrencyByQuery(tokens, queryTokenA);
   }, [queryTokenA, tokens]);
 
   const tokenBFromList = useMemo(() => {
-    if (queryTokenB && isAddress(queryTokenB)) {
-      return tokens.find((t) => t.wrapped.address0.toLowerCase() === queryTokenB.toLowerCase());
-    }
+    return findCurrencyByQuery(tokens, queryTokenB);
   }, [queryTokenB, tokens]);
 
   const queryChainId = useMemo(() => {
@@ -80,57 +95,77 @@ export const usePoolsSearchParams = () => {
       : _chainId;
   }, [_chainId, searchParams]);
 
-  const { handleImport } = useImportToken();
+  // The link as opened, shown under the token card ("From link: ...") before the URL changes.
+  const openedLink = useRef<string>("");
+  // Requests waiting for the dialog, tokenA first. The URL sync starts once they are all decided.
+  const [linkRequests, setLinkRequests] = useState<LinkTokenRequest[] | null>(null);
+  const [linkTotal, setLinkTotal] = useState(0);
 
   useEffect(() => {
-    if (!isInitialized && tokens.length > 1) {
-      IIFE(async () => {
-        if (tokenAFromList) {
-          setTokenA(tokenAFromList);
-        } else {
-          if (queryTokenA && isAddress(queryTokenA)) {
-            const token = await handleImport(queryTokenA, queryChainId);
-            if (token) {
-              setTokenA(token);
-            }
-            // setTokenA(tokenToImportA);
-          }
-        }
+    if (linkRequests !== null || tokens.length <= 1 || arePoolTokensLoading) return;
 
-        if (tokenBFromList) {
-          setTokenB(tokenBFromList);
-        } else {
-          if (queryTokenB && isAddress(queryTokenB)) {
-            const token = await handleImport(queryTokenB, queryChainId);
-            if (token) {
-              setTokenB(token);
-            }
-          }
-        }
-
-        const queryTier = parseInt(searchParams.get(PoolsQueryParams.tier) || "");
-
-        if (queryTier && Object.values(FeeAmount).includes(queryTier)) {
-          setTier(queryTier as FeeAmount);
-        }
-
-        setIsInitialized(true);
-      });
+    openedLink.current = currentPath;
+    const queryTier = parseInt(searchParams.get(PoolsQueryParams.tier) || "");
+    if (queryTier && Object.values(FeeAmount).includes(queryTier)) {
+      setTier(queryTier as FeeAmount);
     }
+
+    if (isTrustedLinkToken(tokenAFromList)) setTokenA(tokenAFromList);
+    if (isTrustedLinkToken(tokenBFromList)) setTokenB(tokenBFromList);
+
+    const requests = pendingLinkTokens(
+      {
+        tokenA: isTrustedLinkToken(tokenAFromList) ? null : queryTokenA,
+        tokenB: isTrustedLinkToken(tokenBFromList) ? null : queryTokenB,
+      },
+      queryChainId,
+    );
+    setLinkTotal(requests.length);
+    setLinkRequests(requests);
   }, [
+    arePoolTokensLoading,
+    currentPath,
+    linkRequests,
+    queryChainId,
+    queryTokenA,
+    queryTokenB,
     searchParams,
-    tokens,
+    setTier,
     setTokenA,
     setTokenB,
-    setTier,
-    isInitialized,
     tokenAFromList,
     tokenBFromList,
-    queryTokenA,
-    handleImport,
-    queryChainId,
-    queryTokenB,
+    tokens.length,
   ]);
+
+  useEffect(() => {
+    if (!isInitialized && linkRequests !== null && linkRequests.length === 0) {
+      setIsInitialized(true);
+    }
+  }, [isInitialized, linkRequests]);
+
+  /** Select a link token (Import, "Use {SYMBOL}" or "Use official {SYMBOL}"). */
+  const selectLinkToken = useCallback(
+    (param: LinkTokenParam, token: Currency) => {
+      if (param === "tokenA") setTokenA(token);
+      else setTokenB(token);
+    },
+    [setTokenA, setTokenB],
+  );
+
+  /** Cancel: nothing is saved and the parameter leaves the URL. */
+  const removeLinkParam = useCallback((param: LinkTokenParam) => {
+    window.history.replaceState(
+      null,
+      "",
+      withoutLinkParams(window.location.pathname + window.location.search, [param]),
+    );
+  }, []);
+
+  /** The dialog decided the current request; move on to the next one (tokenB after tokenA). */
+  const finishLinkRequest = useCallback(() => {
+    setLinkRequests((requests) => (requests ? requests.slice(1) : requests));
+  }, []);
 
   useEffect(() => {
     if (isInitialized) {
@@ -139,4 +174,14 @@ export const usePoolsSearchParams = () => {
       }
     }
   }, [currentPath, updatedPath, isInitialized]);
+
+  return {
+    request: linkRequests?.[0] ?? null,
+    index: linkRequests ? linkTotal - linkRequests.length + 1 : 0,
+    total: linkTotal,
+    openedLink: openedLink.current,
+    selectLinkToken,
+    removeLinkParam,
+    finishLinkRequest,
+  };
 };

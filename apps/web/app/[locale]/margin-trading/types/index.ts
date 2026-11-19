@@ -18,6 +18,8 @@ export type MarginPosition = {
   id: number;
   owner: Address;
   loanAmount: bigint;
+  /** Interest rate (bps per 30 days) fixed when the position opened; the contract charges this one. */
+  interestRateAtOpen?: number;
   loanAsset: Currency;
   deadline: number;
   assetAddresses: {
@@ -44,7 +46,10 @@ export type MarginPosition = {
   txLiquidated: Hash;
   collateralAmount: bigint;
   collateralAsset: Currency;
+  /** Exact address (ERC-20 or ERC-223 form) the position opened with; positionInitialCollateral. */
+  collateralAddress?: Address;
   initialLeverage: number;
+  frozenTime: number;
 };
 
 export type LendingOrder = {
@@ -61,6 +66,7 @@ export type LendingOrder = {
     formatted: string;
   };
   liquidationRewardAsset: Currency;
+  liquidationRewardAddress?: Address;
   liquidationRewardAssetStandard: Standard;
 
   collateralAddresses: Address[];
@@ -68,6 +74,7 @@ export type LendingOrder = {
 
   allowedTradingAssets: Currency[];
   allowedTradingAddresses: Address[];
+  whitelistAutoListing?: Address;
   isErc223TradingAllowed: boolean;
 
   interestRate: number;
@@ -75,6 +82,7 @@ export type LendingOrder = {
 
   balance: bigint;
   baseAsset: Currency;
+  baseAssetAddress?: Address;
   baseAssetStandard: Standard;
 
   positions: Omit<MarginPosition, "order">[];

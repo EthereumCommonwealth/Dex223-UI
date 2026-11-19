@@ -32,11 +32,14 @@ export default function PoolsPage() {
   const handlePick = useCallback(
     (token?: Currency, tokenPicking?: "tokenA" | "tokenB") => {
       const currentlyPickingToken = tokenPicking || currentlyPicking;
+      const isSameToken = (other?: Currency) =>
+        Boolean(token && other && token.wrapped.equals(other.wrapped));
+
       if (currentlyPickingToken === "tokenA") {
         if (!token) {
           setTokenA(undefined);
         } else {
-          if (token === tokenB) {
+          if (isSameToken(tokenB)) {
             setTokenB(tokenA);
           }
 
@@ -48,7 +51,7 @@ export default function PoolsPage() {
         if (!token) {
           setTokenB(undefined);
         } else {
-          if (token === tokenA) {
+          if (isSameToken(tokenA)) {
             setTokenA(tokenB);
           }
           setTokenB(token);

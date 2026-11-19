@@ -1,0 +1,31 @@
+# DEX223 app
+
+> The DEX223 app (app.dex223.io) is a non-custodial decentralized exchange for ERC-223 and ERC-20 tokens on Ethereum. You can swap, provide liquidity, convert tokens between ERC-20 and ERC-223 at 1:1, list a token without permission, and lend, borrow and trade on margin. You trade from your own wallet and sign every transaction yourself.
+
+The project, its token D223 and its company DEX223 DAO LLC are described at https://www.dex223.io/llms.txt.
+
+## What you can do
+
+- [Swap](https://app.dex223.io/en/swap): trade ERC-20 and ERC-223 tokens. Every pool accepts both standards, and you choose the standard for each side. ERC-223 swaps need no approval transaction.
+- [Pools](https://app.dex223.io/en/pools): browse pools and their liquidity. [Add liquidity](https://app.dex223.io/en/add) to earn the pool's trading fees (concentrated liquidity with fee tiers).
+- [Token converter](https://app.dex223.io/en/converter): convert a token between its ERC-20 and ERC-223 versions at 1:1 (EIP-7417). No protocol fee.
+- [Token listing](https://app.dex223.io/en/token-listing): list any token without permission by paying an anti-spam fee to an auto-listing contract. [Auto-listing contracts](https://app.dex223.io/en/token-listing/contracts) shows the available contracts and their fees.
+- [Create a token](https://app.dex223.io/en/create-token): deploy a new token.
+- [Margin trading](https://app.dex223.io/en/margin-trading): lend tokens on your own terms or borrow them. Borrowers trade borrowed tokens on [Margin swap](https://app.dex223.io/en/margin-swap) but cannot withdraw them. Margin trading is live on the Sepolia testnet.
+- [Statistics](https://app.dex223.io/en/statistics) and [Markets](https://app.dex223.io/en/markets): pool and token data with price charts.
+- [Revenue](https://app.dex223.io/en/revenue): protocol revenue shared with D223 holders.
+- [Interactive demo](https://app.dex223.io/en/demo): a guided walkthrough without a wallet.
+
+## Common questions
+
+- Do I need ERC-223 tokens to use it? No. Every pool accepts both standards, and the converter moves tokens between them at 1:1.
+- How do I list my token? Open Token listing, pick an auto-listing contract and confirm. No application or approval from the team is needed.
+- Is DEX223 custodial? No. DEX223 never holds your keys.
+- What does it cost? The pool's fee tier, which goes to its liquidity providers, plus network gas. Converting between ERC-20 and ERC-223 has no protocol fee.
+- Which wallets work? Any Web3 wallet, such as MetaMask or a WalletConnect wallet.
+
+## More
+
+- [DEX223 website](https://www.dex223.io)
+- [Blog](https://blog.dex223.io): development reports and articles
+- [Guidelines](https://app.dex223.io/en/guidelines)

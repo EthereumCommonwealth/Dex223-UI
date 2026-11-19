@@ -1,19 +1,19 @@
-import { ApolloClient, ApolloLink, concat, HttpLink, InMemoryCache } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
+import { ApolloClient, HttpLink, InMemoryCache } from "@apollo/client";
 import { useMemo } from "react";
 
+import { isMarginDeployed } from "@/config/modules";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { DexChainId } from "@/sdk_bi/chains";
 
 const marginModuleUrlMap: Record<DexChainId, string> = {
-  // Margin module 0x052F...Ae17 (redeployed 2026-10-10 with the oracle precision fix). Studio endpoint until the subgraph is
-  // published; then replace it with its gateway URL (https://gateway.thegraph.com/api/subgraphs/id/...).
+  // Margin module 0x052F...Ae17 (redeployed 2026-10-10). Studio URL, called directly: the
+  // margin-mainnet gateway id still points at the autolisting subgraph, so the API-key proxy
+  // would read the wrong data. Replace this with subgraphProxyPath once a margin gateway id exists.
   [DexChainId.MAINNET]:
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-mainnet/version/latest",
   [DexChainId.SEPOLIA]:
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-sepolia/version/latest",
-  [DexChainId.BSC_TESTNET]:
-    "https://api.studio.thegraph.com/query/56540/dex223-auto-listing-chapel/version/latest/",
+  [DexChainId.BSC_TESTNET]: "",
   [DexChainId.EOS]: "",
   [DexChainId.BASE]: "",
   [DexChainId.BSC]: "",
@@ -30,40 +30,41 @@ const marginModuleUrlMap: Record<DexChainId, string> = {
   [DexChainId.MANTLE]: "",
 };
 
-const authLink = setContext((_, { headers }) => {
-  // return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      Authorization: `Bearer ${process.env.NEXT_PUBLIC_AUTH_TOKEN_GQL}`,
-    },
-  };
-});
+const clients = new Map<DexChainId, ApolloClient<unknown>>();
+
+function getMarginClient(chainId: DexChainId) {
+  const uri = marginModuleUrlMap[chainId];
+  if (!uri || !isMarginDeployed(chainId)) return undefined;
+  let client = clients.get(chainId);
+  if (!client) {
+    client = new ApolloClient({
+      cache: new InMemoryCache(),
+      link: new HttpLink({ uri }),
+    });
+    clients.set(chainId, client);
+  }
+  return client;
+}
 
 export default function useMarginModuleApolloClient() {
   const chainId = useCurrentChainId();
+  return useMemo(() => getMarginClient(chainId), [chainId]);
+}
 
-  const authMiddleware = useMemo(() => {
-    return new ApolloLink((operation, forward) => {
-      operation.setContext(() => ({
-        uri: marginModuleUrlMap[chainId],
-      }));
+// The subgraph indexes a margin transaction a few seconds after it is mined, and the margin pages
+// only poll every 30 s (and serve cached results to pages opened later), so positions and lending
+// orders looked unchanged after a margin swap until a reload. Refetch every margin query now and
+// twice more while the subgraph catches up.
+const REFRESH_DELAYS_MS = [0, 4000, 12000];
 
-      return forward(operation);
-    });
-  }, [chainId]);
-
-  return useMemo(() => {
-    return new ApolloClient({
-      cache: new InMemoryCache(),
-      link: authLink.concat(
-        concat(
-          authMiddleware,
-          new HttpLink({
-            uri: marginModuleUrlMap[chainId],
-          }),
-        ),
-      ),
-    });
-  }, [authMiddleware, chainId]);
+export function refreshMarginQueries(chainId: DexChainId) {
+  const client = getMarginClient(chainId);
+  if (!client) return;
+  REFRESH_DELAYS_MS.forEach((delay) => {
+    setTimeout(() => {
+      client.refetchQueries({ include: "all" }).catch(() => {
+        // A failed refetch only leaves the old data; the 30 s poll still runs.
+      });
+    }, delay);
+  });
 }

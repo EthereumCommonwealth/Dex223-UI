@@ -107,7 +107,9 @@ export default function PositionTransactionHistoryBlock({
 
   return (
     <div className=" bg-primary-bg rounded-5  pt-4 pb-5 mb-5 flex flex-col gap-3">
-      <h3 className="text-20 text-secondary-text font-medium px-10">{t("transactions_history")}</h3>
+      <h3 className="text-20 text-secondary-text font-medium px-4 sm:px-10">
+        {t("transactions_history")}
+      </h3>
       <div className="grid rounded-2 overflow-hidden bg-table-gradient grid-cols-[minmax(50px,1.33fr),_minmax(77px,1.33fr),_minmax(87px,1.33fr),_minmax(50px,2.67fr)] pb-2">
         <div className="h-[60px] flex items-center pl-10">{t("txn_hash")}</div>
         <div className="h-[60px] flex items-center">{t("age")}</div>

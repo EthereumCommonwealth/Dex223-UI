@@ -1,0 +1,172 @@
+const BPS = 10_000n;
+const SECONDS_IN_MONTH = 30n * 24n * 60n * 60n;
+
+export function fullDurationInterest(
+  loanAmount: bigint,
+  interestRate: bigint | number | string,
+  durationSeconds: bigint | number | string,
+): bigint {
+  const rate = BigInt(interestRate);
+  const duration = BigInt(durationSeconds);
+  if (loanAmount <= 0n || rate <= 0n || duration <= 0n) {
+    return 0n;
+  }
+
+  return (loanAmount * rate * duration) / (BPS * SECONDS_IN_MONTH);
+}
+
+export function accruedCloseInterest(
+  loanAmount: bigint,
+  interestRate: bigint | number | string,
+  elapsedSeconds: bigint | number | string,
+): bigint {
+  const rate = BigInt(interestRate);
+  const elapsed = BigInt(elapsedSeconds);
+  if (loanAmount <= 0n || rate <= 0n || elapsed <= 0n) {
+    return 0n;
+  }
+
+  return (((loanAmount * rate) / BPS) * elapsed) / SECONDS_IN_MONTH;
+}
+
+/**
+ * Interest the lender earned on a closed position, for the lender's own view; undefined otherwise.
+ *
+ * Uses the rate snapshotted at open (the contract's position.interest), not the order's current rate,
+ * which the lender may have edited since. Only for positions closed normally: a liquidation can end
+ * with a shortfall, so interest alone would overstate the lender's result. The borrower's profit
+ * depends on their trades, so their view (and anyone else's) shows no figure instead of -interest.
+ */
+export function closedPositionLenderInterest(
+  position: {
+    loanAmount: bigint;
+    interestRateAtOpen?: number;
+    createdAt: number;
+    closedAt: number;
+    isClosed: boolean;
+    isLiquidated?: boolean;
+    owner: string;
+    order: { owner: string };
+  },
+  viewer: string | undefined,
+): bigint | undefined {
+  const viewerLower = viewer?.toLowerCase();
+  if (!viewerLower || viewerLower !== position.order.owner.toLowerCase()) return undefined;
+  if (viewerLower === position.owner.toLowerCase()) return undefined;
+  if (!position.isClosed || position.isLiquidated || !position.closedAt) return undefined;
+  if (position.interestRateAtOpen == null) return undefined;
+  return accruedCloseInterest(
+    position.loanAmount,
+    position.interestRateAtOpen,
+    Math.max(0, position.closedAt - position.createdAt),
+  );
+}
+
+export function liquidationLevel(
+  loanAmount: bigint,
+  interest: bigint,
+  maintenanceBps: bigint,
+): bigint {
+  return ((loanAmount + interest) * (BPS + maintenanceBps)) / BPS;
+}
+
+export function accruedLiquidationLevel(expectedBalance: bigint, maintenanceBps: bigint): bigint {
+  if (expectedBalance <= 0n) {
+    return 0n;
+  }
+
+  const numerator = expectedBalance * (BPS + maintenanceBps);
+  return (numerator + BPS - 1n) / BPS;
+}
+
+export function scaleDecimals(amount: bigint, fromDecimals: number, toDecimals: number): bigint {
+  if (fromDecimals === toDecimals) {
+    return amount;
+  }
+
+  if (fromDecimals > toDecimals) {
+    return amount / 10n ** BigInt(fromDecimals - toDecimals);
+  }
+
+  return amount * 10n ** BigInt(toDecimals - fromDecimals);
+}
+
+export function liquidationDropPercent(room: bigint, positionValue: bigint): number {
+  if (positionValue <= 0n || room <= 0n) {
+    return 0;
+  }
+
+  return Number((room * 100n + positionValue / 2n) / positionValue);
+}
+
+export function formatGroupedAmount(amount: bigint, decimals: number): string {
+  const negative = amount < 0n;
+  const absolute = negative ? -amount : amount;
+  const numeric = Number(formatUnitsSafe(absolute, decimals));
+
+  if (!Number.isFinite(numeric) || numeric === 0) {
+    return "0";
+  }
+
+  const grouped = new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+  }).format(numeric);
+
+  const formatted =
+    grouped === "0"
+      ? new Intl.NumberFormat("en-US", {
+          maximumSignificantDigits: 6,
+          notation: "standard",
+        }).format(numeric)
+      : grouped;
+
+  return negative ? `-${formatted}` : formatted;
+}
+
+function formatUnitsSafe(amount: bigint, decimals: number): string {
+  const scale = 10n ** BigInt(decimals);
+  const whole = amount / scale;
+  const fraction = amount % scale;
+  if (fraction === 0n) {
+    return whole.toString();
+  }
+
+  const fractionText = fraction.toString().padStart(decimals, "0").replace(/0+$/, "");
+  return `${whole}.${fractionText}`;
+}
+
+export function formatMaintenanceMultiplier(maintenanceBps: bigint): string {
+  const scaled = BPS + maintenanceBps;
+  const whole = scaled / BPS;
+  const fraction = scaled % BPS;
+  if (fraction === 0n) {
+    return whole.toString();
+  }
+
+  return `${whole}.${fraction.toString().padStart(4, "0").replace(/0+$/, "")}`;
+}
+
+export function formatMaintenancePercent(maintenanceBps: bigint): string {
+  const whole = maintenanceBps / 100n;
+  const fraction = maintenanceBps % 100n;
+  if (fraction === 0n) {
+    return whole.toString();
+  }
+
+  return `${whole}.${fraction.toString().padStart(2, "0").replace(/0+$/, "")}`;
+}
+
+export function formatShortDate(timestampSeconds: number): string {
+  return new Intl.DateTimeFormat("en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(new Date(timestampSeconds * 1000));
+}
+
+export function formatFrozenAt(timestampSeconds: number): string {
+  const date = new Date(timestampSeconds * 1000);
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  return `${formatShortDate(timestampSeconds)} at ${hours}:${minutes}`;
+}

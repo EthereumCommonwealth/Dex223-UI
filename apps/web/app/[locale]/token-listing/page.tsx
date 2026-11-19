@@ -85,7 +85,7 @@ export default function TokenListingPage() {
             href="/token-listing/contracts"
             image="/images/listing-cards/automatic-listing.png"
             isExternal={false}
-            buttonText={tManage("apply")}
+            buttonText={t("autolisting_cta")}
           />
           <ListingVariantCard
             heading={t("existing_heading")}

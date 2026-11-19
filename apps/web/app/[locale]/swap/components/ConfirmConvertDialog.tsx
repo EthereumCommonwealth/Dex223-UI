@@ -6,12 +6,12 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import React, { PropsWithChildren, useEffect, useMemo, useState } from "react";
 import { NumericFormat } from "react-number-format";
-import { Address, formatGwei, parseUnits } from "viem";
+import { Address, formatEther, formatGwei, parseUnits } from "viem";
 
 import SwapDetailsRow from "@/app/[locale]/swap/components/SwapDetailsRow";
 import useSwap, { useSwapStatus } from "@/app/[locale]/swap/hooks/useSwap";
+import { feePerGasWei } from "@/app/[locale]/swap/lib/feePerGasWei";
 import { useConfirmConvertDialogStore } from "@/app/[locale]/swap/stores/useConfirmConvertDialogOpened";
-import { useConfirmSwapDialogStore } from "@/app/[locale]/swap/stores/useConfirmSwapDialogOpened";
 import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
 import {
   useSwapGasLimitStore,
@@ -29,22 +29,24 @@ import DrawerDialog from "@/components/atoms/DrawerDialog";
 import EmptyStateIcon from "@/components/atoms/EmptyStateIcon";
 import Input from "@/components/atoms/Input";
 import Svg from "@/components/atoms/Svg";
+import WhyApproveHint from "@/components/atoms/WhyApproveHint";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import IconButton from "@/components/buttons/IconButton";
 import { networks } from "@/config/networks";
 import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
+import { getGasSettings } from "@/functions/gasSettings";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { CONVERTER_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { wrappedTokens } from "@/sdk_bi/entities/weth9";
 import { Standard } from "@/sdk_bi/standard";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
-import { GasFeeModel } from "@/stores/useRecentTransactionsStore";
 
 //TODO: refactor approve rows
 function ApproveRow({
@@ -97,7 +99,7 @@ function ApproveRow({
           {!isSuccess && !isPending && !isReverted && !isLoading && !isSuccessSwap && t("approve")}
           {isReverted && t("approve_failed")}
         </span>
-        {!isSuccess && <span className="text-green text-12">{t("why_do_i_have_to_approve")}</span>}
+        {!isSuccess && !isSuccessSwap && !isReverted && <WhyApproveHint />}
       </div>
       <div className="flex items-center gap-2 justify-end">
         {hash && (
@@ -208,7 +210,7 @@ function ConvertActionButton({
   const t = useTranslations("Swap");
   const { tokenA, tokenB, tokenAStandard } = useSwapTokensStore();
   const { typedValue } = useSwapAmountsStore();
-  const { setIsOpen } = useConfirmSwapDialogStore();
+  const { setIsOpen } = useConfirmConvertDialogStore();
 
   const { handleSwap } = useSwap();
 
@@ -454,7 +456,11 @@ export default function ConfirmConvertDialog() {
     isRevertedApprove,
   } = useSwapStatus();
 
-  const { status: swapStatus, setStatus: setSwapStatus } = useSwapStatusStore();
+  const {
+    status: swapStatus,
+    setStatus: setSwapStatus,
+    isReceiptUnavailable,
+  } = useSwapStatusStore();
 
   const { estimatedGas, customGasLimit } = useSwapGasLimitStore();
 
@@ -485,28 +491,29 @@ export default function ConfirmConvertDialog() {
     }
   }, [typedValue]);
 
-  const { gasPriceSettings } = useSwapGasPriceStore();
-  const { baseFee } = useGlobalFees();
+  const { gasPriceSettings, gasPriceOption } = useSwapGasPriceStore();
+  const { baseFee, priorityFee, gasPrice } = useGlobalFees();
+  const nativeCurrency = useNativeCurrency();
 
-  const computedGasSpending = useMemo(() => {
-    if (gasPriceSettings.model === GasFeeModel.LEGACY && gasPriceSettings.gasPrice) {
-      return formatFloat(formatGwei(gasPriceSettings.gasPrice));
-    }
+  const gasUnits = customGasLimit ?? estimatedGas + BigInt(30000);
 
-    if (
-      gasPriceSettings.model === GasFeeModel.EIP1559 &&
-      gasPriceSettings.maxFeePerGas &&
-      gasPriceSettings.maxPriorityFeePerGas &&
-      baseFee
-    ) {
-      const lowerFeePerGas =
-        gasPriceSettings.maxFeePerGas > baseFee ? baseFee : gasPriceSettings.maxFeePerGas;
+  const feePerGas = useMemo(() => {
+    return feePerGasWei(
+      getGasSettings({
+        baseFee,
+        chainId,
+        gasPrice,
+        priorityFee,
+        gasPriceOption,
+        gasPriceSettings,
+      }),
+      baseFee,
+    );
+  }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings, priorityFee]);
 
-      return formatFloat(formatGwei(lowerFeePerGas + gasPriceSettings.maxPriorityFeePerGas));
-    }
-
-    return "0";
-  }, [baseFee, gasPriceSettings]);
+  const computedGasSpending = feePerGas !== undefined ? formatFloat(formatGwei(feePerGas)) : "0";
+  const computedGasSpendingETH =
+    feePerGas !== undefined ? formatFloat(formatEther(feePerGas * gasUnits)) : "0";
 
   const isConversion = useMemo(() => tokenB && tokenA?.equals(tokenB), [tokenA, tokenB]);
 
@@ -517,12 +524,17 @@ export default function ConfirmConvertDialog() {
   }, [isSuccessSwap, resetAmounts, isOpen, isConversion]);
 
   useEffect(() => {
+    if (isReceiptUnavailable && !isOpen && isConversion) {
+      setSwapStatus(SwapStatus.INITIAL);
+      return;
+    }
     if ((isSuccessSwap || isRevertedSwap || isRevertedApprove) && !isOpen && isConversion) {
       setTimeout(() => {
         setSwapStatus(SwapStatus.INITIAL);
       }, 400);
     }
   }, [
+    isReceiptUnavailable,
     isConversion,
     isOpen,
     isRevertedApprove,
@@ -630,8 +642,15 @@ export default function ConfirmConvertDialog() {
                     <span className="text-secondary-text mr-1 text-14">
                       {computedGasSpending} GWEI
                     </span>{" "}
+                    {computedGasSpendingETH !== "0" && (
+                      <span className="text-secondary-text mr-1 text-14">
+                        {computedGasSpendingETH} {nativeCurrency.symbol}
+                      </span>
+                    )}{" "}
                     <span className="mr-1 text-14">
-                      {priceNative && `~$${formatFloat(priceNative * +computedGasSpending)}`}
+                      {priceNative &&
+                        computedGasSpendingETH !== "0" &&
+                        `~$${formatFloat(priceNative * +computedGasSpendingETH)}`}
                     </span>
                   </div>
                 }

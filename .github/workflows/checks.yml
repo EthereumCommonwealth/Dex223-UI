@@ -1,0 +1,131 @@
+# Typecheck and lint both apps on every PR, so errors show on the PR before Vercel's build fails on them.
+# Lint runs without --fix: it reports errors (Prettier, import order, Next rules) instead of changing files.
+# To fix lint errors locally: cd apps/<app> && yarn lint
+name: Checks
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  typecheck-lint:
+    name: ${{ matrix.app }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [web, blog]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Typecheck
+        working-directory: apps/${{ matrix.app }}
+        run: npx tsc --noEmit -p .
+
+      - name: Lint
+        working-directory: apps/${{ matrix.app }}
+        run: npx eslint -c .eslintrc.json --ext .js,.jsx,.ts,.tsx .
+
+      - name: Gas settings regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/gasSettings.test.cjs
+
+      - name: Swap receipt regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/swapReceipt.test.cjs
+
+      - name: Token search trust order regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrustSearch.test.cjs
+
+      - name: Transaction deadline regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/transactionDeadline.test.cjs
+
+      - name: API key proxy regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/apiProxies.test.cjs
+
+      - name: Margin revert reason regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/marginRevert.test.cjs
+
+      - name: ETH to wei regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/ethToWei.test.cjs
+
+      - name: Pool refetch regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/poolNeedsFetch.test.cjs
+
+      - name: Import from link regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/importLink.test.cjs
+
+      - name: Margin deposit regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/marginDeposit.test.cjs
+
+      - name: Margin swap regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/marginSwap.test.cjs
+
+      - name: Review swap trust gate regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/swapTrustGate.test.cjs
+
+      - name: Closed position interest regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/closedPositionInterest.test.cjs
+      - name: Native ETH refund regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/refundETH.test.cjs
+      - name: Listing contract regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/listingContracts.test.cjs
+      - name: Onramp widget message regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/onrampMessages.test.cjs
+
+      - name: USDT approval regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/usdtApproval.test.cjs
+
+      - name: Token trust regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrust.test.cjs

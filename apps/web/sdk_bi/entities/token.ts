@@ -1,7 +1,7 @@
 import invariant from "tiny-invariant";
 import { Address } from "viem";
 
-import { Rate } from "@/components/badges/TrustBadge";
+import type { TokenTrust } from "@/functions/tokenTrust";
 
 import { checkValidAddress, validateAndParseAddress } from "../utils/validateAndParseAddress";
 import { BaseCurrency } from "./baseCurrency";
@@ -26,7 +26,7 @@ export class Token extends BaseCurrency {
   public readonly logoURI?: string;
 
   public readonly lists?: any[];
-  public readonly rate?: Rate;
+  public readonly trust?: TokenTrust<Token>;
 
   /**
    * Relevant for fee-on-transfer (FOT) token taxes,
@@ -45,7 +45,7 @@ export class Token extends BaseCurrency {
    * @param name {@link BaseCurrency#name}
    * @param logoURI Token logotype to show in UI
    * @param lists Tokenlists token was found in
-   * @param rate Token rate depending on existence in different tokenLists
+   * @param trust Trust level from the default and Core lists (see functions/tokenTrust.ts)
    * @param bypassChecksum If true it only checks for length === 42, startsWith 0x and contains only hex characters
    * @param buyFeeBps Buy fee tax for FOT tokens, in basis points
    * @param sellFeeBps Sell fee tax for FOT tokens, in basis points
@@ -59,7 +59,7 @@ export class Token extends BaseCurrency {
     name?: string,
     logoURI?: string,
     lists?: any[],
-    rate?: Rate,
+    trust?: TokenTrust<Token>,
     bypassChecksum?: boolean,
     buyFeeBps?: bigint,
     sellFeeBps?: bigint,
@@ -82,7 +82,7 @@ export class Token extends BaseCurrency {
     this.sellFeeBps = sellFeeBps;
     this.logoURI = logoURI;
     this.lists = lists;
-    this.rate = rate;
+    this.trust = trust;
   }
 
   /**

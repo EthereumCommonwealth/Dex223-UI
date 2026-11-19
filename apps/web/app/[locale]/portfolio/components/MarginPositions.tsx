@@ -37,7 +37,7 @@ export const MarginPositions = () => {
           <div className="flex flex-col z-20">
             <div className="flex items-center gap-1">
               <span className="text-14 lg:text-16 text-secondary-text">{t("margin_balance")}</span>
-              <Tooltip iconSize={20} text={t("margin_tooltip")} />
+              <Tooltip iconSize={20} triggerLabel={t("info_label")} text={t("margin_tooltip")} />
             </div>
             <span className="text-24 lg:text-32 font-medium">{`$ ${marginBalance > 0 ? marginBalance : "—"}`}</span>
           </div>

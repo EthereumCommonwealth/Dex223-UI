@@ -1,5 +1,5 @@
 import { useTranslations } from "next-intl";
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import {
   Address,
   encodeAbiParameters,
@@ -11,6 +11,7 @@ import {
 import { useAccount, usePublicClient, useWalletClient } from "wagmi";
 
 import { useTrade } from "@/app/[locale]/swap/hooks/useTrade";
+import { readSwapReceipt, swapOutcomeFromReceipt } from "@/app/[locale]/swap/lib/readSwapReceipt";
 import { useSwapAmountsStore } from "@/app/[locale]/swap/stores/useSwapAmountsStore";
 import {
   useSwapGasLimitStore,
@@ -31,6 +32,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { withRefundETH } from "@/functions/refundETH";
 import { slippageToPercent } from "@/functions/slippageToPercent";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
@@ -50,6 +52,7 @@ import { useComputePoolAddressDex } from "@/sdk_bi/utils/computePoolAddress";
 import { TickMath } from "@/sdk_bi/utils/tickMath";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import { useConfirmInWalletAlertStore } from "@/stores/useConfirmInWalletAlertStore";
+import { _usePoolsStore } from "@/stores/usePoolsStore";
 import {
   RecentTransactionTitleTemplate,
   stringifyObject,
@@ -117,7 +120,10 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
       return null;
     }
 
-    const zeroForOne = tokenA.wrapped.address0 < tokenB.wrapped.address0;
+    // Same order as the pool's token0/token1. A plain string compare of checksummed addresses
+    // gets it wrong when letter case differs (WETH 0xb16F… vs USDC 0xFC86…).
+    const zeroForOne =
+      !tokenA.wrapped.equals(tokenB.wrapped) && tokenA.wrapped.sortsBefore(tokenB.wrapped);
 
     const sqrtPriceLimitX96 = zeroForOne
       ? TickMath.MIN_SQRT_RATIO + ONE
@@ -168,11 +174,22 @@ export function useSwapParams({ trade }: { trade: Trade<any, any, any> | null })
     }
 
     if (tokenA.isNative) {
+      // A swap stops at its price limit once the pool's liquidity in that direction runs out, and
+      // the router wraps only the ETH the pool took. refundETH() closes the multicall so any
+      // unused ETH comes back to the user instead of staying in the router for anyone to claim.
       return {
         address: ROUTER_ADDRESS[chainId as DexChainId],
         abi: ROUTER_ABI,
-        functionName: "exactInputSingle" as "exactInputSingle",
-        args: [routerParams],
+        functionName: "multicall" as "multicall",
+        args: [
+          withRefundETH([
+            encodeFunctionData({
+              abi: ROUTER_ABI,
+              functionName: "exactInputSingle",
+              args: [routerParams],
+            }),
+          ]),
+        ],
         value: parseUnits(typedValue, tokenA.decimals),
       };
     }
@@ -288,9 +305,12 @@ export function useSwapEstimatedGas({ trade }: { trade: Trade<any, any, any> | n
   const chainId = useCurrentChainId();
   const { typedValue } = useSwapAmountsStore();
 
+  const isConversion = Boolean(tokenA && tokenB && tokenA.equals(tokenB));
+  const allowanceTarget = isConversion ? CONVERTER_ADDRESS[chainId] : ROUTER_ADDRESS[chainId];
+
   const { isAllowed: isAllowedA } = useStoreAllowance({
     token: tokenA,
-    contractAddress: ROUTER_ADDRESS[chainId],
+    contractAddress: allowanceTarget,
     amountToCheck: parseUnits(typedValue, tokenA?.decimals ?? 18),
   });
 
@@ -343,7 +363,15 @@ export default function useSwap() {
     setSwapHash,
     setApproveHash,
     setErrorType,
+    setIsReceiptUnavailable,
   } = useSwapStatusStore();
+
+  // A confirmed swap moves the pool's price and liquidity; mark cached pools stale so the next
+  // quote is computed against the new state instead of the pre-swap one.
+  const invalidatePools = _usePoolsStore((state) => state.invalidateAll);
+  useEffect(() => {
+    if (swapStatus === SwapStatus.SUCCESS) invalidatePools();
+  }, [swapStatus, invalidatePools]);
 
   const { openConfirmInWalletAlert, closeConfirmInWalletAlert } = useConfirmInWalletAlertStore();
 
@@ -390,6 +418,15 @@ export default function useSwap() {
 
   const handleSwap = useCallback(
     async (amountToApprove: string) => {
+      const currentStatus = useSwapStatusStore.getState().status;
+      if (
+        currentStatus === SwapStatus.PENDING_APPROVE ||
+        currentStatus === SwapStatus.LOADING_APPROVE ||
+        currentStatus === SwapStatus.PENDING ||
+        currentStatus === SwapStatus.LOADING
+      )
+        return;
+
       if (!publicClient || !tokenA) {
         return;
       }
@@ -414,12 +451,14 @@ export default function useSwap() {
 
           let approveReceipt;
           try {
-            approveReceipt = await publicClient.waitForTransactionReceipt({
-              hash: result.hash,
-            });
+            approveReceipt = await readSwapReceipt(publicClient, result.hash);
           } catch (e) {
-            // Approve was broadcast; keep LOADING_APPROVE rather than reporting a failure.
             console.error(e);
+            approveReceipt = null;
+          }
+
+          if (!approveReceipt) {
+            setIsReceiptUnavailable(true);
             return;
           }
 
@@ -447,6 +486,20 @@ export default function useSwap() {
       openConfirmInWalletAlert(t("confirm_action_in_your_wallet_alert"));
 
       let hash;
+      let gasToUse: bigint | undefined;
+
+      const applyReceiptOutcome = (receipt: Awaited<ReturnType<typeof readSwapReceipt>>) => {
+        const outcome = swapOutcomeFromReceipt(receipt, gasToUse);
+        if (outcome === "pending") {
+          setIsReceiptUnavailable(true);
+        } else if (outcome === "success") {
+          updateAllowance();
+          setSwapStatus(SwapStatus.SUCCESS);
+        } else {
+          setSwapStatus(SwapStatus.ERROR);
+          setErrorType(outcome === "out_of_gas" ? SwapError.OUT_OF_GAS : SwapError.UNKNOWN);
+        }
+      };
 
       try {
         const estimatedGas = await publicClient.estimateContractGas({
@@ -454,7 +507,7 @@ export default function useSwap() {
           ...swapParams,
         } as any);
 
-        const gasToUse = customGasLimit ? customGasLimit : estimatedGas + BigInt(30000); // set custom gas here if user changed it
+        gasToUse = customGasLimit ? customGasLimit : estimatedGas + BigInt(30000); // set custom gas here if user changed it
 
         let _request;
         try {
@@ -485,87 +538,69 @@ export default function useSwap() {
           setSwapHash(hash);
           setSwapStatus(SwapStatus.LOADING);
 
-          const transaction = await getTransactionWithRetries({ hash, publicClient });
-          if (transaction) {
-            const nonce = transaction.nonce;
-
-            addRecentTransaction(
-              {
-                hash,
-                nonce,
-                chainId,
-                gas: {
-                  ...stringifyObject({ ...gasSettings, model: gasPriceSettings.model }),
-                  gas: gasToUse.toString(),
-                },
-                params: {
-                  ...stringifyObject(swapParams),
-                  abi: [
-                    getAbiItem({
-                      name: swapParams.functionName,
-                      abi: swapParams.abi,
-                      args: swapParams.args as any,
-                    }),
-                  ],
-                },
-                title: isConversion
-                  ? {
-                      symbol: tokenA.symbol!,
-                      template: RecentTransactionTitleTemplate.CONVERT,
-                      amount: typedValue,
-                      logoURI: tokenA?.logoURI || "/images/tokens/placeholder.svg",
-                      standard: tokenBStandard,
-                    }
-                  : {
-                      symbol0: tokenA.symbol!,
-                      symbol1: tokenB.symbol!,
-                      template: RecentTransactionTitleTemplate.SWAP,
-                      amount0: typedValue,
-                      amount1: output,
-                      logoURI0: tokenA?.logoURI || "/images/tokens/placeholder.svg",
-                      logoURI1: tokenB?.logoURI || "/images/tokens/placeholder.svg",
-                    },
-              },
-              address,
-            );
-
-            let receipt;
-            try {
-              receipt = await publicClient.waitForTransactionReceipt({ hash });
-            } catch (e) {
-              // The tx was broadcast; a receipt-wait failure (RPC timeout, replacement) does not
-              // mean it failed. Keep LOADING and let the recent-transaction tracker settle it.
-              console.error(e);
-              return;
-            }
-            updateAllowance();
-            if (receipt.status === "success") {
-              setSwapStatus(SwapStatus.SUCCESS);
-            }
-
-            if (receipt.status === "reverted") {
-              setSwapStatus(SwapStatus.ERROR);
-
-              const ninetyEightPercent = (gasToUse * BigInt(98)) / BigInt(100);
-
-              if (receipt.gasUsed >= ninetyEightPercent && receipt.gasUsed <= gasToUse) {
-                setErrorType(SwapError.OUT_OF_GAS);
-              } else {
-                setErrorType(SwapError.UNKNOWN);
-              }
-            }
+          // Record the broadcast even if the RPC cannot return transaction metadata yet.
+          let transaction;
+          try {
+            transaction = await getTransactionWithRetries({ hash, publicClient });
+          } catch (error) {
+            console.error(error);
           }
+          const nonce = transaction?.nonce;
+
+          addRecentTransaction(
+            {
+              hash,
+              nonce,
+              chainId,
+              gas: {
+                ...stringifyObject({ ...gasSettings, model: gasPriceSettings.model }),
+                gas: gasToUse.toString(),
+              },
+              params: {
+                ...stringifyObject(swapParams),
+                abi: [
+                  getAbiItem({
+                    name: swapParams.functionName,
+                    abi: swapParams.abi,
+                    args: swapParams.args as any,
+                  }),
+                ],
+              },
+              title: isConversion
+                ? {
+                    symbol: tokenA.symbol!,
+                    template: RecentTransactionTitleTemplate.CONVERT,
+                    amount: typedValue,
+                    logoURI: tokenA?.logoURI || "/images/tokens/placeholder.svg",
+                    standard: tokenBStandard,
+                  }
+                : {
+                    symbol0: tokenA.symbol!,
+                    symbol1: tokenB.symbol!,
+                    template: RecentTransactionTitleTemplate.SWAP,
+                    amount0: typedValue,
+                    amount1: output,
+                    logoURI0: tokenA?.logoURI || "/images/tokens/placeholder.svg",
+                    logoURI1: tokenB?.logoURI || "/images/tokens/placeholder.svg",
+                  },
+            },
+            address,
+          );
+
+          applyReceiptOutcome(await readSwapReceipt(publicClient, hash));
         } else {
           setSwapStatus(SwapStatus.INITIAL);
         }
       } catch (e) {
         console.error(e);
+        closeConfirmInWalletAlert();
         if (hash) {
-          // Already broadcast: don't report failure for a tx that may still succeed.
+          setSwapHash(hash);
+          setSwapStatus(SwapStatus.LOADING);
+          applyReceiptOutcome(await readSwapReceipt(publicClient, hash, e));
           return;
         }
         addToast("Error while executing contract", "error");
-        closeConfirmInWalletAlert();
         setSwapStatus(SwapStatus.INITIAL);
       }
     },
@@ -597,6 +632,7 @@ export default function useSwap() {
       tokenBStandard,
       updateAllowance,
       setErrorType,
+      setIsReceiptUnavailable,
     ],
   );
 

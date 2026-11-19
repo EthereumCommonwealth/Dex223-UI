@@ -1,5 +1,5 @@
 import Checkbox from "@repo/ui/checkbox";
-import { Formik } from "formik";
+import { Formik, useFormikContext } from "formik";
 import React, { useMemo, useState } from "react";
 
 import ConfirmCreateTokenDialog from "@/app/[locale]/create-token/components/ConfirmCreateTokenDialog";
@@ -26,6 +26,7 @@ import NetworkFeeConfigDialog from "@/components/dialogs/NetworkFeeConfigDialog"
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { getFormattedGasPrice } from "@/functions/gasSettings";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import { ERC223_TOKEN_DEPLOYER_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 
 import {
@@ -65,11 +66,19 @@ function getCreateTokenSchema(t: ReturnType<typeof useTranslations>) {
   });
 }
 
+function CreateTokenGasEstimator() {
+  const { values } = useFormikContext<typeof initialCreateTokenSettings>();
+  useCreateTokenEstimatedGas(values);
+  return null;
+}
+
 export default function CreateTokenForm() {
   const chainId = useCurrentChainId();
+  const isDeployerAvailable = ERC223_TOKEN_DEPLOYER_ADDRESS[chainId] !== ZERO_ADDRESS;
   const { isOpen, setIsOpen } = useCreateTokenDialogStore();
   const [createTokenSettings, setCreateTokenSettings] = useState(initialCreateTokenSettings);
-  const { isConnected } = useAccount();
+  const { isConnected, chainId: walletChainId } = useAccount();
+  const isWalletChainMatched = walletChainId === chainId;
 
   const t = useTranslations("CreateToken");
   const tWallet = useTranslations("Wallet");
@@ -100,15 +109,19 @@ export default function CreateTokenForm() {
     });
   }, [baseFee, chainId, gasPrice, gasPriceOption, gasPriceSettings]);
 
-  useCreateTokenEstimatedGas(createTokenSettings);
-
   return (
     <>
       <Formik
         initialValues={createTokenSettings}
         onSubmit={(values) => {
+          if (!isDeployerAvailable || !isWalletChainMatched) return;
+
+          setCreateTokenSettings({
+            ...values,
+            name: values.name.trim(),
+            symbol: values.symbol.trim(),
+          });
           setIsOpen(true);
-          setCreateTokenSettings(values);
         }}
         validationSchema={getCreateTokenSchema(t)}
       >
@@ -119,6 +132,7 @@ export default function CreateTokenForm() {
               props.handleSubmit();
             }}
           >
+            <CreateTokenGasEstimator />
             <div className="flex flex-col gap-1 mb-3">
               <TextField
                 label={t("token_name")}
@@ -182,7 +196,9 @@ export default function CreateTokenForm() {
             {isConnected ? (
               <Button
                 disabled={
-                  Object.keys(props.touched).length > 0 && Object.keys(props.errors).length > 0
+                  !isDeployerAvailable ||
+                  !isWalletChainMatched ||
+                  (Object.keys(props.touched).length > 0 && Object.keys(props.errors).length > 0)
                 }
                 fullWidth
               >

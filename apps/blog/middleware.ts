@@ -14,7 +14,8 @@ export const config = {
     "/(en|es|zh|ko|fr|pt|ru)/:path*",
 
     // Enable redirects that add missing locales
-    // (e.g. `/pathnames` -> `/en/pathnames`)
-    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static).*)",
+    // (e.g. `/pathnames` -> `/en/pathnames`). API routes and root text files (robots.txt, the
+    // IndexNow key) are served as they are.
+    "/((?!_next|_vercel|favicon.ico|images|robots.txt|sitemap.xml|static|api|.*\\.txt).*)",
   ],
 };

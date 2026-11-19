@@ -5,20 +5,49 @@ import Skeleton from "@repo/ui/skeleton";
 import Tooltip from "@repo/ui/tooltip";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { SkeletonTheme } from "react-loading-skeleton";
 
 import { SearchInput } from "@/components/atoms/Input";
 import Svg from "@/components/atoms/Svg";
 import Button, { ButtonSize } from "@/components/buttons/Button";
+import { PositionInfo, usePositionFromPositionInfo } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
 
+import {
+  combineUsd,
+  formatPortfolioUsd,
+  PortfolioPrices,
+  positionValueUsd,
+  usePortfolioPrices,
+} from "../../lib/usd";
 import { useActiveWalletsPositions } from "../../stores/positions.hooks";
 import { WalletPositions } from "../../stores/useWalletsPosotions";
 import {
   LiquidityPositionsDesktopTable,
   LiquidityPositionsMobileTable,
 } from "./LiquidityPositionsTabe";
+
+function PositionValueReporter({
+  positionInfo,
+  prices,
+  onValue,
+}: {
+  positionInfo: PositionInfo;
+  prices: PortfolioPrices;
+  onValue: (id: string, value: number | null) => void;
+}) {
+  const position = usePositionFromPositionInfo(positionInfo);
+  const id = positionInfo.tokenId?.toString() ?? "";
+  const value = positionValueUsd(prices, position);
+
+  useEffect(() => {
+    if (!id) return;
+    onValue(id, value);
+  }, [id, onValue, value]);
+
+  return null;
+}
 
 export const LiquidityPositions = ({
   addressSearch,
@@ -35,9 +64,32 @@ export const LiquidityPositions = ({
     searchValue: addressSearch,
     setSearchValue: setAddressSearch,
   });
+  const prices = usePortfolioPrices();
+  const [positionValues, setPositionValues] = useState<Record<string, number | null | undefined>>(
+    {},
+  );
+  const onPositionValue = useCallback((id: string, value: number | null) => {
+    setPositionValues((current) => (current[id] === value ? current : { ...current, [id]: value }));
+  }, []);
+  const positionIds = walletsPositions.flatMap((wallet) =>
+    wallet.positions
+      .map((position) => position.tokenId?.toString())
+      .filter((id): id is string => Boolean(id)),
+  );
+  const reportedValues = positionIds.map((id) => positionValues[id]);
+  // No price index (unanchored chain or unsupported network) means no dollar value, even for zero.
+  const liquidityTotalUsd =
+    loading || !prices
+      ? null
+      : positionIds.length === 0
+        ? 0
+        : reportedValues.some((value) => value === undefined)
+          ? null
+          : combineUsd(reportedValues.map((value) => (value === undefined ? null : value)));
+  const walletsWithPositions = walletsPositions.filter((wallet) => wallet.positions.length > 0);
 
   const currentTableData: WalletPositions[] = searchValue
-    ? walletsPositions
+    ? walletsWithPositions
         .map((value) => {
           const positions = value.positions.filter(({ tokenId }) => {
             if (!tokenId) return false;
@@ -50,10 +102,20 @@ export const LiquidityPositions = ({
           };
         })
         .filter((value) => !!value)
-    : walletsPositions;
+    : walletsWithPositions;
 
   return (
     <>
+      {walletsPositions.flatMap((wallet) =>
+        wallet.positions.map((position) => (
+          <PositionValueReporter
+            key={position.tokenId?.toString()}
+            positionInfo={position}
+            prices={prices}
+            onValue={onPositionValue}
+          />
+        )),
+      )}
       <div className="mt-5 grid lg:grid-cols-2 gap-5">
         <div className="flex items-center justify-between bg-gradient-card-blue-light-fill rounded-3 px-4 md:px-5 py-2.5 md:py-3 lg:px-5 lg:py-6 w-full relative overflow-hidden">
           <div className="flex flex-col ">
@@ -80,9 +142,15 @@ export const LiquidityPositions = ({
                   <span className="text-14 lg:text-16 text-secondary-text">
                     {t("provided_liq_balance")}
                   </span>
-                  <Tooltip iconSize={20} text={t("liquidity_tooltip")} />
+                  <Tooltip
+                    iconSize={20}
+                    triggerLabel={t("info_label")}
+                    text={t("liquidity_tooltip")}
+                  />
                 </div>
-                <span className="text-24 lg:text-32 font-medium">$ —</span>
+                <span className="text-24 lg:text-32 font-medium">
+                  {formatPortfolioUsd(liquidityTotalUsd)}
+                </span>
               </>
             )}
             <Image
@@ -137,7 +205,7 @@ export const LiquidityPositions = ({
               </Button>
             </Link>
 
-            {currentTableData.length > 0 && (
+            {(currentTableData.length > 0 || searchValue.length > 0) && (
               <SearchInput
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
@@ -160,7 +228,7 @@ export const LiquidityPositions = ({
             <LiquidityPositionsDesktopTable tableData={currentTableData} isLoading={loading} />
             <LiquidityPositionsMobileTable tableData={currentTableData} />
           </>
-        ) : Boolean(searchValue) ? (
+        ) : Boolean(searchValue) && !loading ? (
           <div className="flex flex-col justify-center items-center h-full min-h-[340px] bg-primary-bg rounded-5 gap-1 bg-empty-not-found-pools bg-right-top bg-no-repeat max-md:bg-size-180">
             <span className="text-secondary-text">{t("liq_not_found")}</span>
           </div>

@@ -13,7 +13,7 @@ import Badge, { BadgeVariant } from "@/components/badges/Badge";
 import Button, { ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize, IconButtonVariant } from "@/components/buttons/IconButton";
 import ManageTokenItem from "@/components/manage-tokens/ManageTokenItem";
-import { db } from "@/db/db";
+import { addCustomToken } from "@/db/addCustomToken";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import { filterTokens } from "@/functions/searchTokens";
 import truncateMiddle from "@/functions/truncateMiddle";
@@ -42,7 +42,11 @@ export default function TokensTab({
     return tokensSearchValue ? [filterTokens(tokensSearchValue, tokens), true] : [tokens, false];
   }, [tokens, tokensSearchValue]);
 
-  const { token: derivedToken, isLoading } = useDerivedTokenInfo({
+  const {
+    token: derivedToken,
+    isErc777,
+    isLoading,
+  } = useDerivedTokenInfo({
     tokenAddressToImport: tokensSearchValue as Address,
     enabled: !!tokensSearchValue && isAddress(tokensSearchValue) && filteredTokens.length === 0,
   });
@@ -62,7 +66,6 @@ export default function TokensTab({
       : [0, 0];
 
   const [checkedUnderstand, setCheckedUnderstand] = useState<boolean>(false);
-  const tokenLists = useTokenLists();
 
   const custom = useTokenLists(true);
 
@@ -179,7 +182,11 @@ export default function TokensTab({
                   <div className="grid grid-cols-[1fr_auto_32px] gap-y-1">
                     <span className="text-secondary-text flex items-center gap-1">
                       {t("address")}{" "}
-                      <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />{" "}
+                      {isErc777 ? (
+                        <Badge variant={BadgeVariant.COLORED} color="red" text="ERC-777" />
+                      ) : (
+                        <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC20} />
+                      )}{" "}
                     </span>
                     <ExternalTextLink
                       text={truncateMiddle(derivedToken.address0)}
@@ -195,26 +202,30 @@ export default function TokensTab({
                       buttonSize={IconButtonSize.SMALL}
                       text={derivedToken.address0}
                     />
-                    <span className="text-secondary-text flex items-center gap-1">
-                      {t("address")}{" "}
-                      <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
-                    </span>
-                    {derivedToken.address1 && derivedToken.address1 && (
+                    {!isErc777 && (
                       <>
-                        <ExternalTextLink
-                          text={truncateMiddle(derivedToken.address1)}
-                          href={getExplorerLink(
-                            ExplorerLinkType.ADDRESS,
-                            derivedToken.address1,
-                            chainId,
-                          )}
-                          className="justify-between"
-                        />
-                        <IconButton
-                          variant={IconButtonVariant.COPY}
-                          buttonSize={IconButtonSize.SMALL}
-                          text={derivedToken.address1}
-                        />
+                        <span className="text-secondary-text flex items-center gap-1">
+                          {t("address")}{" "}
+                          <Badge variant={BadgeVariant.STANDARD} standard={Standard.ERC223} />
+                        </span>
+                        {derivedToken.address1 && derivedToken.address1 && (
+                          <>
+                            <ExternalTextLink
+                              text={truncateMiddle(derivedToken.address1)}
+                              href={getExplorerLink(
+                                ExplorerLinkType.ADDRESS,
+                                derivedToken.address1,
+                                chainId,
+                              )}
+                              className="justify-between"
+                            />
+                            <IconButton
+                              variant={IconButtonVariant.COPY}
+                              buttonSize={IconButtonSize.SMALL}
+                              text={derivedToken.address1}
+                            />
+                          </>
+                        )}
                       </>
                     )}
                     {/*{erc223AddressToImport && !isErc223Exist && (*/}
@@ -230,7 +241,9 @@ export default function TokensTab({
               </>
             )}
 
-            {alreadyImported ? (
+            {isErc777 ? (
+              <Alert text={t("erc777_warning")} type="error" />
+            ) : alreadyImported ? (
               <Alert
                 type="info"
                 text="This token has already been imported. You cannot import the same token twice."
@@ -241,7 +254,7 @@ export default function TokensTab({
           </div>
 
           <div className="flex flex-col gap-5 mt-5">
-            {!alreadyImported && (
+            {!alreadyImported && !isErc777 && (
               <Checkbox
                 checked={checkedUnderstand}
                 handleChange={() => setCheckedUnderstand(!checkedUnderstand)}
@@ -252,40 +265,19 @@ export default function TokensTab({
             <Button
               fullWidth
               size={ButtonSize.LARGE}
-              disabled={!checkedUnderstand}
+              disabled={!checkedUnderstand || isErc777}
               onClick={async () => {
                 if (chainId && derivedToken) {
-                  const currentCustomList = tokenLists?.find((t) => t.id === `custom-${chainId}`);
-
-                  if (!currentCustomList) {
-                    await db.tokenLists.add({
-                      id: `custom-${chainId}`,
-                      enabled: true,
-                      chainId,
-                      list: {
-                        name: "Custom token list",
-                        version: {
-                          minor: 0,
-                          major: 0,
-                          patch: 0,
-                        },
-                        tokens: [derivedToken],
-                        logoURI: "/images/token-list-placeholder.svg",
-                      },
-                    });
-                  } else {
-                    (db.tokenLists as any).update(`custom-${chainId}`, {
-                      "list.tokens": [...currentCustomList.list.tokens, derivedToken],
-                    });
-                  }
+                  await addCustomToken(derivedToken);
+                  addToast(t("imported_successfully"));
                 }
-                // setContent("default");
-                addToast(t("imported_successfully"));
               }}
             >
-              {alreadyImported
-                ? t("already_imported")
-                : t("import_symbol", { symbol: derivedToken.symbol })}
+              {isErc777
+                ? t("token_not_supported")
+                : alreadyImported
+                  ? t("already_imported")
+                  : t("import_symbol", { symbol: derivedToken.symbol })}
             </Button>
           </div>
         </div>

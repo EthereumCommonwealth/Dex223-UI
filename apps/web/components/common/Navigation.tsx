@@ -212,11 +212,7 @@ function NavigationMoreDropdown() {
   const locale = useLocale();
   const pathname = usePathname();
   const { setIsOpen } = useFeedbackDialogStore();
-  const {
-    setIsOpen: setManageTokensOpen,
-    setActiveTab: setManageTokensActiveTab,
-    setContent: setManageTokensContent,
-  } = useManageTokensDialogStore();
+  const openTokenLists = useManageTokensDialogStore((state) => state.openTokenLists);
 
   const active = useMemo(() => {
     return MORE_MENU_ROUTES.some((route) => isRouteActive(pathname, route));
@@ -311,9 +307,7 @@ function NavigationMoreDropdown() {
               handleClose={() => setSubmenuOpened(false)}
               handleClick={(e) => {
                 e.preventDefault();
-                setManageTokensContent("default");
-                setManageTokensActiveTab(0);
-                setManageTokensOpen(true);
+                openTokenLists();
               }}
             />
             <MobileLink
@@ -368,7 +362,7 @@ function NavigationMoreDropdown() {
               text={t("useful_front_page")}
             />
             <MoreExternalRow
-              href="https://github.com/Dalcor/dex-exchange"
+              href="https://github.com/EthereumCommonwealth/Dex223-UI"
               text={t("useful_page_source_codes")}
             />
             <div className="mt-3 pt-3 border-t border-secondary-border">

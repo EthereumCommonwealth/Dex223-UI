@@ -17,6 +17,7 @@ import {
 } from "@/app/[locale]/margin-trading/lending-order/[id]/helpers/getStepTexts";
 import { AssetsPreview } from "@/app/[locale]/margin-trading/lending-order/create/components/AssetsPreview";
 import LendingOrderDetailsRow from "@/app/[locale]/margin-trading/lending-order/create/components/LendingOrderDetailsRow";
+import { positionDurationSeconds } from "@/app/[locale]/margin-trading/lending-order/create/helpers/positionDurationSeconds";
 import useCreateOrder, {
   useCreateOrderParams,
 } from "@/app/[locale]/margin-trading/lending-order/create/hooks/useCreateOrder";
@@ -252,7 +253,6 @@ export default function ReviewCreateOrderDialog({
     loanAmount,
     liquidationFeeToken,
     liquidationFeeForLiquidator,
-    liquidationFeeForLender,
     liquidationMode,
     minimumBorrowingAmount,
     orderCurrencyLimit,
@@ -276,7 +276,7 @@ export default function ReviewCreateOrderDialog({
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("create_lending_order")} />
 
-      <div className="card-spacing-x card-spacing-b min-w-[600px]">
+      <div className="card-spacing-x card-spacing-b w-full md:w-auto md:min-w-[600px]">
         {status !== CreateOrderStatus.ERROR_CONFIRM_ORDER &&
           status !== CreateOrderStatus.ERROR_APPROVE &&
           status !== CreateOrderStatus.SUCCESS && (
@@ -359,13 +359,10 @@ export default function ReviewCreateOrderDialog({
               <LendingOrderDetailsRow
                 title={t("interest_entire_period")}
                 value={
-                  interestRatePerMonth && period.lendingOrderDeadline
+                  interestRatePerMonth && period.positionDuration
                     ? calculatePeriodInterestRate(
                         +interestRatePerMonth * 100,
-                        Math.max(
-                          0,
-                          (new Date(period.lendingOrderDeadline).getTime() - Date.now()) / 1000,
-                        ),
+                        positionDurationSeconds(period.positionDuration),
                       )
                     : "—"
                 }
@@ -374,18 +371,12 @@ export default function ReviewCreateOrderDialog({
               <LendingOrderDetailsRow
                 title={t("receive_entire_period")}
                 value={
-                  interestRatePerMonth &&
-                  period.lendingOrderDeadline &&
-                  loanAmount &&
-                  loanToken?.symbol
+                  interestRatePerMonth && period.positionDuration && loanAmount && loanToken?.symbol
                     ? (() => {
                         const _loanAmount = parseFloat(loanAmount);
                         const interestRate = calculatePeriodInterestRateNum(
                           +interestRatePerMonth * 100,
-                          Math.max(
-                            0,
-                            (new Date(period.lendingOrderDeadline).getTime() - Date.now()) / 1000,
-                          ),
+                          positionDurationSeconds(period.positionDuration),
                         );
 
                         if (isNaN(_loanAmount) || isNaN(interestRate)) return "—";
@@ -453,11 +444,7 @@ export default function ReviewCreateOrderDialog({
                 value={`${liquidationFeeForLiquidator} ${liquidationFeeToken?.symbol}`}
                 tooltipText={t("fee_for_liquidator_tooltip")}
               />
-              <LendingOrderDetailsRow
-                title={t("fee_for_lender")}
-                value={`${liquidationFeeForLender} ${liquidationFeeToken?.symbol}`}
-                tooltipText={t("fee_for_lender_tooltip")}
-              />
+
               <LendingOrderDetailsRow
                 title={t("liquidation_price_source")}
                 value={

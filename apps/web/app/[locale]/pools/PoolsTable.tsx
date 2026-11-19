@@ -1,5 +1,6 @@
 import "react-loading-skeleton/dist/skeleton.css";
 
+import { ServerError, ServerParseError } from "@apollo/client";
 import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
@@ -15,6 +16,7 @@ import Button, { ButtonColor, ButtonSize, ButtonVariant } from "@/components/but
 import { SortingType } from "@/components/buttons/IconButton";
 import Pagination from "@/components/common/Pagination";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { formatNumberKilos } from "@/functions/formatFloat";
 import { computePoolTVL } from "@/functions/poolTvl";
 import truncateMiddle from "@/functions/truncateMiddle";
@@ -437,7 +439,8 @@ export default function PoolsTable({
     searchString?: string;
   };
 }) {
-  const [sorting, setSorting] = useState<SortingType>(SortingType.NONE);
+  // Largest pools first, by the TVL the rows show.
+  const [sorting, setSorting] = useState<SortingType>(SortingType.DESCENDING);
   const t = useTranslations("Liquidity");
 
   const handleSort = useCallback(() => {
@@ -459,10 +462,16 @@ export default function PoolsTable({
   const chainId = useCurrentChainId();
   const { data, loading, error, refetch } = usePoolsData({
     chainId,
-    orderDirection: undefined, //sorting],
+    // Without a direction the subgraph orders by TVL ascending, so empty pools came first.
+    orderDirection: "desc",
     filter,
   });
   const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(chainId);
+  // The Graph's WAF answers some search text (e.g. "or 1=1") with a 403 before the
+  // query runs. Treat that as no matching pools instead of a load failure.
+  const searchBlocked =
+    Boolean(filter?.searchString) &&
+    (error?.networkError as ServerError | ServerParseError | undefined)?.statusCode === 403;
 
   const poolAddresses = useMemo(
     () =>
@@ -493,6 +502,7 @@ export default function PoolsTable({
   // A chip that stops applying (wallet disconnected, chain switched) falls back to "All".
   const activeCategory = availableCategories.includes(category) ? category : "all";
 
+  const subgraphFallback = getUSDAnchorTokens(chainId).length === 0;
   const pools: any[] = useMemo(() => {
     // The subgraph also prices every pool with one global price per token, which overstates
     // any pool trading away from that price - see computePoolTVL. Chains with no stablecoin
@@ -507,12 +517,21 @@ export default function PoolsTable({
           balance0: balances?.token0.formatted,
           balance1: balances?.token1.formatted,
           priceIndex,
+          subgraphFallback,
         }),
       };
     });
 
     return localSorting(activeCategory === "all" ? pools : pools.filter(matchesCategory), sorting);
-  }, [data?.pools, onChainBalances, priceIndex, sorting, activeCategory, matchesCategory]);
+  }, [
+    data?.pools,
+    onChainBalances,
+    priceIndex,
+    subgraphFallback,
+    sorting,
+    activeCategory,
+    matchesCategory,
+  ]);
 
   const isLoading = loading || pricesLoading || balancesLoading || categoryLoading;
 
@@ -535,7 +554,7 @@ export default function PoolsTable({
           </div>
         )}
         <>
-          {error && pools.length === 0 ? (
+          {error && !searchBlocked && pools.length === 0 ? (
             <div className="min-h-[340px] bg-primary-bg flex flex-col gap-4 items-center justify-center w-full rounded-5 px-4 text-center">
               <p className="text-secondary-text">{t("pools_load_error")}</p>
               <Button

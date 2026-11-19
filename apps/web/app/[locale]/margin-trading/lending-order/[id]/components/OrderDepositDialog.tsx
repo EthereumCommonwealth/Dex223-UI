@@ -2,13 +2,16 @@ import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import { useTranslations } from "next-intl";
 import React, { useEffect, useMemo, useState } from "react";
-import { formatEther, formatGwei, parseUnits } from "viem";
+import { formatEther, formatGwei } from "viem";
 
+import MarginGasSettings from "@/app/[locale]/margin-trading/components/MarginGasSettings";
 import {
   getApproveTextMap,
   getTransferTextMap,
 } from "@/app/[locale]/margin-trading/lending-order/[id]/helpers/getStepTexts";
-import useOrderDeposit from "@/app/[locale]/margin-trading/lending-order/[id]/hooks/useOrderDeposit";
+import useOrderDeposit, {
+  safeParseDepositUnits,
+} from "@/app/[locale]/margin-trading/lending-order/[id]/hooks/useOrderDeposit";
 import {
   OrderDepositStatus,
   useDepositOrderStatusStore,
@@ -221,46 +224,57 @@ export default function OrderDepositDialog({
     }
   }, [isOpen, setStatus, status]);
 
+  const activeBalance = useMemo(
+    () =>
+      order.baseAsset.isNative || order.baseAssetStandard === Standard.ERC20
+        ? tokenA0Balance
+        : tokenA1Balance,
+    [order.baseAsset.isNative, order.baseAssetStandard, tokenA0Balance, tokenA1Balance],
+  );
+
+  const parsedDepositAmount = useMemo(
+    () => safeParseDepositUnits(amountToDeposit, order.baseAsset.decimals),
+    [amountToDeposit, order.baseAsset.decimals],
+  );
+  const parsedApproveAmount = useMemo(
+    () => safeParseDepositUnits(amountToApprove, order.baseAsset.decimals),
+    [amountToApprove, order.baseAsset.decimals],
+  );
+  const isApproveBelowDeposit = Boolean(
+    parsedDepositAmount !== null &&
+      (parsedApproveAmount === null || parsedApproveAmount < parsedDepositAmount),
+  );
+
   const error = useMemo(() => {
-    if (
-      tokenA0Balance &&
-      parseUnits(amountToDeposit, order.baseAsset.decimals) > tokenA0Balance.value
-    ) {
+    if (!amountToDeposit.trim()) {
+      return undefined;
+    }
+    if (parsedDepositAmount === null || parsedDepositAmount <= 0n) {
+      return t("deposit_amount_required");
+    }
+    if (activeBalance && parsedDepositAmount > activeBalance.value) {
       return t("available_balance_value", {
         amount:
-          tokenA0Balance && Boolean(tokenA0Balance.value)
-            ? formatFloat(tokenA0Balance.formatted)
-            : 0,
+          activeBalance && Boolean(activeBalance.value) ? formatFloat(activeBalance.formatted) : 0,
         symbol: order.baseAsset.symbol,
       });
     }
 
     return undefined;
-  }, [amountToDeposit, order.baseAsset.decimals, order.baseAsset.symbol, t, tokenA0Balance]);
+  }, [activeBalance, amountToDeposit, order.baseAsset.symbol, parsedDepositAmount, t]);
 
   const currentBalance = useMemo(() => {
-    if (
-      tokenA0Balance &&
-      Boolean(tokenA0Balance.value) &&
-      order.baseAssetStandard === Standard.ERC20
-    ) {
-      return formatFloat(tokenA0Balance.formatted);
-    }
-    if (
-      tokenA1Balance &&
-      Boolean(tokenA1Balance.value) &&
-      order.baseAssetStandard === Standard.ERC223
-    ) {
-      return formatFloat(tokenA1Balance.formatted);
+    if (activeBalance && Boolean(activeBalance.value)) {
+      return formatFloat(activeBalance.formatted);
     }
 
     return "0";
-  }, [order.baseAssetStandard, tokenA0Balance, tokenA1Balance]);
+  }, [activeBalance]);
 
   return (
     <DrawerDialog isOpen={isOpen} setIsOpen={setIsOpen}>
       <DialogHeader onClose={() => setIsOpen(false)} title={t("deposit")} />
-      <div className="w-[600px] card-spacing-x card-spacing-b">
+      <div className="w-full md:w-[600px] card-spacing-x card-spacing-b">
         {status === OrderDepositStatus.INITIAL ? (
           <>
             <p className="text-secondary-text mb-4">{t("deposit_hint")}</p>
@@ -273,10 +287,11 @@ export default function OrderDepositDialog({
               onChange={(e) => {
                 const value = e.target.value;
                 setAmountToDeposit(value);
+                const nextDeposit = safeParseDepositUnits(value, order.baseAsset.decimals);
                 if (
-                  parseUnits(value, order.baseAsset.decimals) >
-                    parseUnits(amountToApprove, order.baseAsset.decimals) ||
-                  !isAmountToApproveModified
+                  !isAmountToApproveModified ||
+                  (nextDeposit !== null &&
+                    (parsedApproveAmount === null || nextDeposit > parsedApproveAmount))
                 ) {
                   setAmountToApprove(value);
                   setAmountToApproveModified(false);
@@ -293,8 +308,7 @@ export default function OrderDepositDialog({
               <div
                 className={clsx(
                   "bg-tertiary-bg rounded-3 flex justify-between items-center px-5 py-2 min-h-12 mt-4 gap-5",
-                  parseUnits(amountToApprove, order.baseAsset.decimals) <
-                    parseUnits(amountToDeposit, order.baseAsset.decimals) && "pb-[26px]",
+                  isApproveBelowDeposit && "pb-[26px]",
                 )}
               >
                 <div className="flex items-center gap-1 text-secondary-text whitespace-nowrap">
@@ -310,10 +324,7 @@ export default function OrderDepositDialog({
                     <div className="flex-grow">
                       <div className="relative w-full flex-grow">
                         <Input
-                          isError={
-                            parseUnits(amountToApprove, order.baseAsset.decimals) <
-                            parseUnits(amountToDeposit, order.baseAsset.decimals)
-                          }
+                          isError={isApproveBelowDeposit}
                           className="h-8 pl-3"
                           value={amountToApprove}
                           onChange={(e) => setAmountToApprove(e.target.value)}
@@ -323,8 +334,7 @@ export default function OrderDepositDialog({
                           {order.baseAsset.symbol}
                         </span>
                       </div>
-                      {parseUnits(amountToApprove, order.baseAsset.decimals) <
-                        parseUnits(amountToDeposit, order.baseAsset.decimals) && (
+                      {isApproveBelowDeposit && (
                         <span className="text-red-light absolute text-12 translate-y-0.5">
                           {t("approve_must_be_higher", { amount: amountToDeposit })}
                         </span>
@@ -341,10 +351,7 @@ export default function OrderDepositDialog({
                     </Button>
                   ) : (
                     <Button
-                      disabled={
-                        parseUnits(amountToApprove, order.baseAsset.decimals) <
-                        parseUnits(amountToDeposit, order.baseAsset.decimals)
-                      }
+                      disabled={isApproveBelowDeposit}
                       size={ButtonSize.EXTRA_SMALL}
                       colorScheme={ButtonColor.LIGHT_GREEN}
                       onClick={() => {
@@ -358,37 +365,7 @@ export default function OrderDepositDialog({
                 </div>
               </div>
             ) : null}
-            <div className="mt-5 bg-tertiary-bg px-5 py-2 mb-5 flex justify-between items-center rounded-3 flex-col xs:flex-row">
-              <div className="text-12 xs:text-14 flex items-center gap-8 justify-between xs:justify-start max-xs:w-full">
-                <p className="flex flex-col text-tertiary-text">
-                  <span>{t("gas_price")}</span>
-                  <span> {formatFloat(formatGwei(BigInt(0)))} GWEI</span>
-                </p>
-
-                <p className="flex flex-col text-tertiary-text">
-                  <span>{t("gas_limit")}</span>
-                  <span>{329000}</span>
-                </p>
-                <p className="flex flex-col">
-                  <span className="text-tertiary-text">{t("network_fee")}</span>
-                  <span>{formatFloat(formatEther(BigInt(0) * BigInt(0), "wei"))} ETH</span>
-                </p>
-              </div>
-              <div className="grid grid-cols-[auto_1fr] xs:flex xs:items-center gap-2 w-full xs:w-auto mt-2 xs:mt-0">
-                <span className="flex items-center justify-center px-2 text-14 rounded-20 font-500 text-secondary-text border border-secondary-border max-xs:h-8">
-                  {t("cheap")}
-                </span>
-                <Button
-                  colorScheme={ButtonColor.LIGHT_GREEN}
-                  size={ButtonSize.EXTRA_SMALL}
-                  onClick={() => null}
-                  fullWidth={false}
-                  className="rounded-5"
-                >
-                  {t("edit")}
-                </Button>
-              </div>
-            </div>
+            <MarginGasSettings operation="depositOrder" />
           </>
         ) : (
           <>
@@ -455,7 +432,13 @@ export default function OrderDepositDialog({
         )}
 
         <OrderDepositActionButton
-          disabled={isEditApproveActive || !amountToDeposit || !!error}
+          disabled={
+            isEditApproveActive ||
+            !amountToDeposit ||
+            !parsedDepositAmount ||
+            parsedDepositAmount <= 0n ||
+            !!error
+          }
           order={order}
           amountToApprove={amountToApprove}
           amountToDeposit={amountToDeposit}

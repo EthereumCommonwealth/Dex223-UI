@@ -9,6 +9,7 @@ import Svg from "@/components/atoms/Svg";
 import TokenLogo from "@/components/atoms/TokenLogo";
 import { NotFoundError, useCoin } from "@/components/markets/api";
 import CoinChart from "@/components/markets/CoinChart";
+import OrderBookCard from "@/components/markets/OrderBookCard";
 import { Bar } from "@/components/trading-chart/datafeed/types";
 import { compact, formatPercent, formatPrice } from "@/components/trading-chart/format";
 import { Link } from "@/i18n/routing";
@@ -130,6 +131,7 @@ export default function CoinPage({ params }: { params: Promise<{ coinId: string 
                 value={price}
               />
             </div>
+            {coin?.binance_symbol && <OrderBookCard pair={coin.binance_symbol} />}
             <div className="bg-primary-bg rounded-5 p-5 flex flex-col gap-3 text-14">
               <StatRow label={t("market_cap")} value={usdCompact(coin?.market_cap)} />
               <StatRow label={t("fdv")} value={usdCompact(coin?.fdv)} />

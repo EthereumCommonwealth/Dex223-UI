@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://blog.dex223.io/sitemap.xml

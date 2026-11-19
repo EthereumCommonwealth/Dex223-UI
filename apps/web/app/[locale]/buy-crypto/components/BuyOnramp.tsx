@@ -9,6 +9,7 @@ import Button, { ButtonColor, ButtonSize } from "@/components/buttons/Button";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 
 import { FLOW_TYPE_MAP, ONRAMP_THEME, OnrampAsset, OnrampFlow } from "./onrampAssets";
+import { guardOnrampWidgetMessages } from "./onrampMessages";
 
 type TxCompletedPayload = {
   transactionHash?: string;
@@ -64,19 +65,11 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       config.merchantRecognitionId = address;
     }
 
-    if (flow === "buy" && asset.coinCode) {
+    if (asset.coinCode) {
       config.coinCode = asset.coinCode;
       config.defaultCoinCode = asset.coinCode;
       if (asset.network) {
         config.network = asset.network;
-      }
-    }
-
-    if (flow === "sell" && asset.coinCode) {
-      config.sellCoinCode = asset.coinCode;
-      config.defaultSellCoinCode = asset.coinCode;
-      if (asset.network) {
-        config.sellNetwork = asset.network;
       }
     }
 
@@ -103,10 +96,12 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
         buildConfig() as ConstructorParameters<typeof OnrampWebSDK>[0],
       );
       sdkRef.current = instance;
+      // Only the widget's own origin may report a transaction; see onrampMessages.ts.
+      const trusted = guardOnrampWidgetMessages(instance);
 
       const handleTxEvents = (e: { type?: string; data?: TxCompletedPayload }) => {
         if (e.type === "ONRAMP_WIDGET_TX_COMPLETED") {
-          onCompleted?.(e.data || {});
+          if (trusted) onCompleted?.(e.data || {});
         } else if (e.type === "ONRAMP_WIDGET_TX_FAILED") {
           setError(t("tx_failed"));
         }
@@ -142,7 +137,9 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       ? asset.coinCode
         ? t("cta_buy_asset", { symbol: asset.symbol })
         : t("cta_buy_any")
-      : t("cta_sell");
+      : asset.coinCode
+        ? t("cta_sell_asset", { symbol: asset.symbol })
+        : t("cta_sell");
 
   return (
     <div className="w-full flex flex-col gap-3">
@@ -162,7 +159,9 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       >
         {label}
       </Button>
-      <p className="text-12 text-secondary-text text-center">{t("wallet_destination_hint")}</p>
+      <p className="text-12 text-secondary-text text-center">
+        {t(flow === "sell" ? "wallet_source_hint" : "wallet_destination_hint")}
+      </p>
     </div>
   );
 }
