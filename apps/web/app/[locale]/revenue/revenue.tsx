@@ -7,7 +7,7 @@ import Tooltip from "@repo/ui/tooltip";
 import clsx from "clsx";
 import Image from "next/image";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { Address, formatUnits, isAddress } from "viem";
 import { useAccount } from "wagmi";
@@ -22,7 +22,7 @@ import { durationMessageKey, formatDuration } from "@/functions/formatDuration";
 import { formatFloat } from "@/functions/formatFloat";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { useTokens } from "@/hooks/useTokenLists";
+import { useTokenLists, useTokens } from "@/hooks/useTokenLists";
 import { Token } from "@/sdk_bi/entities/token";
 import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
 
@@ -79,9 +79,26 @@ export function Revenue() {
   const { address } = useAccount();
   const [selectedTokens, setSelectedTokens] = useState<Set<string>>(new Set());
   const chainId = useCurrentChainId();
-  const [selectedTokenLists, setSelectedTokenLists] = useState<Set<TokenListId>>(
-    new Set([`default-${chainId}` as TokenListId]),
-  );
+  const tokenLists = useTokenLists();
+  const listsTouched = useRef(false);
+  const previousChainId = useRef(chainId);
+  const [selectedTokenLists, setSelectedTokenLists] = useState<Set<TokenListId>>(new Set());
+
+  useEffect(() => {
+    if (previousChainId.current !== chainId) {
+      previousChainId.current = chainId;
+      listsTouched.current = false;
+    }
+    if (listsTouched.current || !tokenLists?.length) {
+      return;
+    }
+    setSelectedTokenLists(new Set(tokenLists.flatMap((list) => (list.id ? [list.id] : []))));
+  }, [chainId, tokenLists]);
+
+  const handleTokenListSelection = (next: Set<TokenListId>) => {
+    listsTouched.current = true;
+    setSelectedTokenLists(next);
+  };
   const {
     openDialog,
     reopenDialog: reopenStakeDialog,
@@ -539,7 +556,7 @@ export function Revenue() {
             <div className="w-full xl:w-auto min-w-0">
               <TokenListDropdown
                 selectedOptions={selectedTokenLists}
-                onSelectionChange={setSelectedTokenLists}
+                onSelectionChange={handleTokenListSelection}
                 placeholder={t("select_token_lists")}
                 searchPlaceholder={t("search_list_name")}
                 className="w-full xl:w-auto"
