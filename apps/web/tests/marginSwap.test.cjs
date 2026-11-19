@@ -116,7 +116,9 @@ const marginSwapMocks = {
   },
   "@/app/[locale]/swap/hooks/useTrade": { useMarginTrade: () => ({}) },
   "@/config/modules": { isMarginDeployed: () => true, MARGIN_TRADING_ADDRESS: {} },
-  "@/functions/getTransactionWithRetries": { getTransactionWithRetries: async () => ({}) },
+  "@/functions/getTransactionWithRetries": {
+    getTransactionWithRetries: async () => ({ nonce: 0, gas: 0n }),
+  },
   "@/functions/slippageToPercent": { slippageToPercent: () => ({}) },
   "@/hooks/useCurrentChainId": { default: () => 1 },
   "@/hooks/useMarginModuleApolloClient": { refreshMarginQueries: async () => {} },
@@ -133,6 +135,10 @@ const marginSwapMocks = {
   "@/shared/hooks/useGlobalBlockNumber": { useGlobalBlockNumber: () => ({ blockNumber: 1n }) },
   "@/stores/usePoolsStore": { _usePoolsStore: { getState: () => ({ invalidateAll: () => {} }) } },
   "@/stores/useRecentTransactionsStore": {
+    GasFeeModel: { EIP1559: 0, LEGACY: 1 },
+    RecentTransactionTitleTemplate: { MARGIN_SWAP: 20 },
+    stringifyObject: (obj) =>
+      JSON.parse(JSON.stringify(obj, (_k, v) => (typeof v === "bigint" ? v.toString() : v))),
     useRecentTransactionsStore: () => ({}),
   },
 };
@@ -342,6 +348,126 @@ test("getPositionTradePair and standard helpers preserve ERC-223 balances and al
   assert.equal(pair.tokenAStandard, Standard.ERC223);
   assert.equal(pair.tokenB.symbol, "USDT");
   assert.equal(pair.tokenBStandard, Standard.ERC223);
+});
+
+test("getPositionAllowedOutputStandard honors ERC-223-only collateralAddresses and useMarginSwap records MARGIN_SWAP recent transaction", async () => {
+  const positionWithErc223Collateral = {
+    id: 99,
+    loanAsset: tokenLoan,
+    collateralAsset: tokenCollateral,
+    collateralAddress: tokenCollateral.address1,
+    assets: [tokenLoan, tokenCollateral],
+    assetAddresses: [{ address: tokenLoan.address0, balance: 100n, assetId: 0 }],
+    assetsWithBalances: [{ asset: tokenLoan, balance: 100n }],
+    order: {
+      baseAsset: tokenLoan,
+      baseAssetStandard: Standard.ERC20,
+      allowedTradingAssets: [],
+      allowedTradingAddresses: [],
+      // The order accepts both standards; the position opened with the ERC-223 one.
+      collateralAddresses: [tokenCollateral.address0, tokenCollateral.address1],
+    },
+  };
+
+  assert.equal(
+    getPositionAllowedOutputStandard(positionWithErc223Collateral, tokenCollateral),
+    Standard.ERC223,
+  );
+  // Opened with the ERC-20 form: ERC-20, even though the order also lists the ERC-223 address.
+  assert.equal(
+    getPositionAllowedOutputStandard(
+      { ...positionWithErc223Collateral, collateralAddress: tokenCollateral.address0 },
+      tokenCollateral,
+    ),
+    Standard.ERC20,
+  );
+
+  const recorded = [];
+  const txHash = "0x" + "ab".repeat(32);
+  const { default: useMarginSwapHook } = load("app/[locale]/margin-swap/hooks/useMarginSwap.ts", {
+    ...marginSwapMocks,
+    wagmi: {
+      useAccount: () => ({ address: "0x1111111111111111111111111111111111111111" }),
+      usePublicClient: () => ({
+        readContract: async () => [tokenLoan.address0, tokenCollateral.address1],
+        waitForTransactionReceipt: async () => ({ status: "success" }),
+      }),
+      useWalletClient: () => ({
+        data: { writeContract: async () => txHash },
+      }),
+    },
+    "@/app/[locale]/margin-swap/stores/useMarginSwapPositionStore": {
+      useMarginSwapPositionStore: () => ({ marginSwapPositionId: 99 }),
+    },
+    "@/app/[locale]/margin-trading/hooks/useMarginPosition": {
+      default: () => ({
+        loading: false,
+        position: positionWithErc223Collateral,
+        refetch: () => {},
+      }),
+    },
+    "@/app/[locale]/margin-swap/stores/useMarginSwapTokensStore": {
+      useMarginSwapTokensStore: () => ({
+        tokenA: tokenLoan,
+        tokenB: tokenCollateral,
+        tokenAStandard: Standard.ERC20,
+        tokenBStandard: Standard.ERC223,
+      }),
+    },
+    "@/app/[locale]/margin-swap/stores/useMarginSwapAmountsStore": {
+      useMarginSwapAmountsStore: () => ({ typedValue: "10" }),
+    },
+    "@/app/[locale]/margin-swap/stores/useMarginSwapSettingsStore": {
+      useMarginSwapSettingsStore: () => ({ slippage: 0.5, deadline: 20 }),
+    },
+    "@/app/[locale]/margin-swap/stores/useMarginSwapStatusStore": {
+      MarginSwapStatus: { PENDING_SWAP: 1, LOADING_SWAP: 2, SUCCESS: 3, ERROR_SWAP: 4 },
+      useMarginSwapStatusStore: () => ({
+        setStatus: () => {},
+        setMarginSwapHash: () => {},
+      }),
+    },
+    "@/app/[locale]/swap/hooks/useTrade": {
+      useMarginTrade: () => ({
+        trade: {
+          outputAmount: { toSignificant: () => "9.95" },
+          minimumAmountOut: () => ({ quotient: 990n }),
+          swaps: [{ route: { pools: [{ fee: 3000 }] } }],
+        },
+      }),
+    },
+    "@/functions/getTransactionWithRetries": {
+      getTransactionWithRetries: async () => ({
+        nonce: 17,
+        gas: 210_000n,
+        maxFeePerGas: 3_000_000_000n,
+        maxPriorityFeePerGas: 1_000_000_000n,
+      }),
+    },
+    "@/sdk_bi/addresses": {
+      MARGIN_TRADING_ADDRESS: { 1: marginModuleAddress },
+    },
+    "@/stores/useRecentTransactionsStore": {
+      ...marginSwapMocks["@/stores/useRecentTransactionsStore"],
+      useRecentTransactionsStore: () => ({
+        addRecentTransaction: (tx, account) => recorded.push({ tx, account }),
+      }),
+    },
+  });
+
+  tokenLoan.sortsBefore = () => true;
+  const { handleMarginSwap } = useMarginSwapHook();
+  await handleMarginSwap();
+
+  assert.equal(recorded.length, 1);
+  assert.equal(recorded[0].tx.hash, txHash);
+  assert.equal(recorded[0].tx.nonce, 17);
+  assert.equal(recorded[0].tx.gas.gas, "210000");
+  assert.equal(recorded[0].tx.gas.maxFeePerGas, "3000000000");
+  assert.equal(recorded[0].tx.title.symbol0, "USDT");
+  assert.equal(recorded[0].tx.title.symbol1, "WBTC");
+  assert.equal(recorded[0].tx.title.amount0, "10");
+  assert.equal(recorded[0].tx.title.amount1, "9.95");
 });
 
 test("PositionCloseDialog checks order.baseAssetStandard balance and allows closing when baseAssetAmount === expectedBalance", () => {
