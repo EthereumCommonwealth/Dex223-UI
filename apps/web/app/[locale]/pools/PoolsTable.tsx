@@ -439,7 +439,8 @@ export default function PoolsTable({
     searchString?: string;
   };
 }) {
-  const [sorting, setSorting] = useState<SortingType>(SortingType.NONE);
+  // Largest pools first, by the TVL the rows show.
+  const [sorting, setSorting] = useState<SortingType>(SortingType.DESCENDING);
   const t = useTranslations("Liquidity");
 
   const handleSort = useCallback(() => {
@@ -461,7 +462,8 @@ export default function PoolsTable({
   const chainId = useCurrentChainId();
   const { data, loading, error, refetch } = usePoolsData({
     chainId,
-    orderDirection: undefined, //sorting],
+    // Without a direction the subgraph orders by TVL ascending, so empty pools came first.
+    orderDirection: "desc",
     filter,
   });
   const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(chainId);
