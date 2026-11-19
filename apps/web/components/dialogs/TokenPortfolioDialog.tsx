@@ -9,6 +9,7 @@ import ScrollbarContainer from "@/components/atoms/ScrollbarContainer";
 import Svg from "@/components/atoms/Svg";
 import TokenListLogo, { TokenListLogoType } from "@/components/atoms/TokenListLogo";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
+import TrustBadge from "@/components/badges/TrustBadge";
 import IconButton, {
   IconButtonSize,
   IconButtonVariant,
@@ -17,7 +18,7 @@ import IconButton, {
 import { useTokenPortfolioDialogStore } from "@/components/dialogs/stores/useTokenPortfolioDialogStore";
 import { TokenListId } from "@/db/db";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
-import { useTokenLists } from "@/hooks/useTokenLists";
+import { useTokenLists, useTokenTrust } from "@/hooks/useTokenLists";
 import { Token } from "@/sdk_bi/entities/token";
 import { Standard } from "@/sdk_bi/standard";
 import { useManageTokensDialogStore } from "@/stores/useManageTokensDialogStore";
@@ -104,13 +105,17 @@ export function TokenPortfolioDialogContent({
   onManageListAction?: () => void;
 }) {
   const t = useTranslations("ManageTokens");
+  const trust = useTokenTrust(token);
 
   return (
     <div className="w-full md:w-[600px]">
       <div className="px-4 pb-5 md:px-10 flex flex-col gap-2">
-        <div className="flex justify-between">
+        <div className="flex justify-between items-center">
           <span className="text-secondary-text">{t("symbol")}</span>
-          <span>{token.symbol}</span>
+          <span className="flex items-center gap-2">
+            {token.symbol}
+            <TrustBadge token={token} trust={trust} />
+          </span>
         </div>
         <div className="grid grid-cols-[1fr_auto_32px] gap-x-2 -mr-1 gap-y-1">
           <span className="text-secondary-text flex items-center gap-1">
