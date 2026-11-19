@@ -18,7 +18,7 @@ import { SearchInput } from "@/components/atoms/Input";
 import ScrollbarContainer from "@/components/atoms/ScrollbarContainer";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
-import { Check, rateToScore, TrustMarker, TrustRateCheck } from "@/components/badges/TrustBadge";
+import { TrustAddress, TrustRowMarker } from "@/components/badges/TrustBadge";
 import Button, { ButtonSize } from "@/components/buttons/Button";
 import IconButton, { IconButtonSize, IconButtonVariant } from "@/components/buttons/IconButton";
 import { TokenPortfolioDialogContent } from "@/components/dialogs/TokenPortfolioDialog";
@@ -27,6 +27,7 @@ import { clsxMerge } from "@/functions/clsxMerge";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import { filterTokens } from "@/functions/searchTokens";
+import { lookalikeGroups, sortByTrust } from "@/functions/tokenTrustSearch";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDerivedTokenInfo from "@/hooks/useDerivedTokenInfo";
@@ -61,28 +62,6 @@ interface Props {
   availableTokens?: Currency[];
 }
 
-function FoundInOtherListMarker() {
-  return (
-    <Tooltip
-      text="There is a token with a same name but different address"
-      renderTrigger={(ref, refProps) => {
-        return (
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="rounded-full p-0.5 bg-primary-bg group-hocus:bg-tertiary-bg duration-200"
-            ref={ref.setReference}
-            {...refProps}
-          >
-            <div className="rounded-full p-0.5 flex items-center gap-1 cursor-pointer text-12 text-orange bg-orange-bg">
-              <Svg size={20} iconName="duplicate-found" />
-            </div>
-          </div>
-        );
-      }}
-    />
-  );
-}
-
 function Erc777Badge() {
   const t = useTranslations("ManageTokens");
 
@@ -103,13 +82,16 @@ function TokenRow({
   handlePick,
   setTokenForPortfolio,
   unsupported = false,
+  isMobile = false,
 }: {
   currency: Currency;
   handlePick: (currency: Currency) => void;
   setTokenForPortfolio: (currency: Currency) => void;
   unsupported?: boolean;
+  isMobile?: boolean;
 }) {
   const t = useTranslations("ManageTokens");
+  const tTrust = useTranslations("TrustRating");
   const { isConnected } = useAccount();
 
   const { toggleToken, isTokenPinned, pinnedTokens } = usePinnedTokensStore((s) => ({
@@ -123,17 +105,6 @@ function TokenRow({
   const {
     balance: { erc20Balance, erc223Balance },
   } = useTokenBalances(isTokenPinned ? currency : undefined);
-
-  const scoreObj = useMemo((): [number, boolean] | undefined => {
-    if (currency.isToken && currency.rate) {
-      return [
-        rateToScore(currency.rate),
-        currency.rate[Check.SAME_NAME_IN_OTHER_LIST] === TrustRateCheck.TRUE,
-      ];
-    }
-
-    return;
-  }, [currency]);
 
   const { price } = useUSDPrice(isTokenPinned ? currency.wrapped.address0 : undefined);
 
@@ -180,49 +151,40 @@ function TokenRow({
             alt=""
           />
         </div>
-        <div className="w-full">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center md:gap-x-2 flex-wrap">
-              <div className="flex items-center w-[120px] md:gap-2 md:w-[256px]">
-                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden">
+        <div className="w-full min-w-0">
+          <div className="flex items-center justify-between w-full gap-2">
+            <div className="flex flex-col gap-0.5 min-w-0">
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-16 font-medium">
                   {currency.name}
                 </span>
-                <div className="flex relative items-center">
-                  {scoreObj && (
-                    <>
-                      {scoreObj[0] < 20 && (
-                        <>
-                          {currency.isToken && currency.rate && (
-                            <TrustMarker rate={currency?.rate} totalScore={scoreObj[0]} />
-                          )}
-                        </>
-                      )}
-                      {scoreObj[1] && (
-                        <div className={scoreObj[0] < 20 ? "-ml-2.5" : ""}>
-                          <FoundInOtherListMarker />
-                        </div>
-                      )}
-                    </>
-                  )}
-                </div>
+                {currency.isToken && <TrustRowMarker token={currency} trust={currency.trust} />}
               </div>
-
-              {totalUSDBalance ? (
-                <span className="block w-full text-primary-text text-12 md:hidden">
-                  ${formatFloat(totalUSDBalance)}
+              <div className="flex items-center gap-1.5 min-w-0 text-14">
+                {unsupported && <Erc777Badge />}
+                <span className="text-secondary-text whitespace-nowrap overflow-hidden overflow-ellipsis max-w-[100px]">
+                  {currency.symbol}
                 </span>
-              ) : (
-                <span className="w-full ">
-                  <span className="w-[100px] whitespace-nowrap overflow-hidden overflow-ellipsis block text-secondary-text text-12  md:hidden">
-                    {currency.symbol}
+                {currency.isNative ? (
+                  <span className="text-tertiary-text whitespace-nowrap">
+                    {tTrust("native_coin")}
                   </span>
-                </span>
-              )}
+                ) : (
+                  <>
+                    <span className="text-tertiary-text">·</span>
+                    <TrustAddress
+                      address={currency.address0}
+                      chainId={currency.chainId}
+                      showExplorer={!isMobile}
+                    />
+                  </>
+                )}
+              </div>
             </div>
 
             <div className={clsx("items-center gap-1", unsupported ? "hidden" : "flex")}>
               {totalUSDBalance ? (
-                <span className="text-primary-text text-12 hidden md:inline pr-2.5">
+                <span className="text-primary-text text-14 md:text-16 font-medium pr-1 md:pr-2.5 whitespace-nowrap">
                   ${formatFloat(totalUSDBalance)}
                 </span>
               ) : null}
@@ -235,7 +197,7 @@ function TokenRow({
                         onClick={(e) => e.stopPropagation()}
                         ref={ref.setReference}
                         {...refProps}
-                        className="flex gap-0.5 items-center text-secondary-text text-14 cursor-pointer w-10"
+                        className="max-md:hidden flex gap-0.5 items-center text-secondary-text text-14 cursor-pointer w-10"
                       >
                         {currency.lists?.length || 1}
                         <Svg className="text-tertiary-text" iconName="list" />
@@ -244,10 +206,11 @@ function TokenRow({
                   }}
                 />
               ) : (
-                <span className="block w-10" />
+                <span className="max-md:hidden block w-10" />
               )}
               {currency.isToken ? (
                 <IconButton
+                  className="max-md:hidden"
                   iconName="details"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -255,7 +218,7 @@ function TokenRow({
                   }}
                 />
               ) : (
-                <span className="block w-10" />
+                <span className="max-md:hidden block w-10" />
               )}
               <IconButton
                 iconName={isTokenPinned ? "pin-fill" : "pin"}
@@ -275,17 +238,7 @@ function TokenRow({
             )}
           </div>
 
-          <div className="auto-cols-fr grid-flow-col gap-2 hidden md:grid min-h-4">
-            {unsupported ? (
-              <span className="flex items-center gap-1">
-                <Erc777Badge />
-                <span className="text-secondary-text text-12">{currency.symbol}</span>
-              </span>
-            ) : (
-              (!isTokenPinned || (!erc20Balance && !erc223Balance)) && (
-                <span className="text-secondary-text text-12">{currency.symbol}</span>
-              )
-            )}
+          <div className="auto-cols-fr grid-flow-col gap-2 hidden md:grid empty:hidden mt-0.5">
             {erc20Balance && currency.isNative && (
               <div className="flex items-center gap-1">
                 <Badge size="small" variant={BadgeVariant.COLORED} text="Native" />
@@ -314,8 +267,7 @@ function TokenRow({
         </div>
       </div>
 
-      <div className="auto-cols-fr grid grid-flow-col gap-2 md:hidden mt-1">
-        {unsupported && <Erc777Badge />}
+      <div className="auto-cols-fr grid grid-flow-col gap-2 md:hidden mt-1 empty:hidden">
         {erc20Balance && currency.isNative && (
           <div className="flex items-center gap-1">
             <Badge size="small" variant={BadgeVariant.COLORED} text="Native" />
@@ -456,6 +408,7 @@ function PickTokenDialogContent({
   const currencies = useTokens();
   const tokens = availableTokens || currencies;
   const t = useTranslations("ManageTokens");
+  const tTrust = useTranslations("TrustRating");
   const chainId = useCurrentChainId();
   const { tokens: pinnedTokensAddresses, toggleToken } = usePinnedTokensStore();
   const parentRef = React.useRef(null);
@@ -474,9 +427,18 @@ function PickTokenDialogContent({
 
   const [tokensSearchValue, setTokensSearchValue] = useState("");
 
+  // Search results are ordered by trust level: Official, Core listed, Not verified, Lookalike (#135).
   const [filteredTokens, isTokenFilterActive] = useMemo(() => {
-    return tokensSearchValue ? [filterTokens(tokensSearchValue, tokens), true] : [tokens, false];
+    return tokensSearchValue
+      ? [sortByTrust(filterTokens(tokensSearchValue, tokens)), true]
+      : [tokens, false];
   }, [tokens, tokensSearchValue]);
+
+  // A Warning alert above the results for each official token that has lookalikes among them.
+  const lookalikeWarnings = useMemo(
+    () => (isTokenFilterActive ? lookalikeGroups(filteredTokens) : []),
+    [filteredTokens, isTokenFilterActive],
+  );
 
   const {
     token: derivedToken,
@@ -663,6 +625,20 @@ function PickTokenDialogContent({
                     )}
                   </div>
                 </div>
+                {lookalikeWarnings.length > 0 && (
+                  <div className="card-spacing-x flex flex-col gap-2 pt-3">
+                    {lookalikeWarnings.map(({ official, count }) => (
+                      <Alert
+                        key={official.address0}
+                        type="warning"
+                        text={tTrust("lookalike_search_warning", {
+                          count,
+                          symbol: official.symbol ?? "",
+                        })}
+                      />
+                    ))}
+                  </div>
+                )}
                 {Boolean(filteredTokens.length) && (
                   <div
                     className={clsxMerge(
@@ -721,6 +697,7 @@ function PickTokenDialogContent({
                                   }
                                   currency={token}
                                   unsupported={isUnsupported(token)}
+                                  isMobile={isMobile}
                                 />
                               );
                             })}

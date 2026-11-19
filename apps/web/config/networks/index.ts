@@ -1,6 +1,6 @@
 import { DexChainId } from "@/sdk_bi/chains";
 
-const networkInfo: Record<DexChainId, { name: string; symbol: string; logo: string }> = {
+export const networkInfo: Record<DexChainId, { name: string; symbol: string; logo: string }> = {
   [DexChainId.MAINNET]: {
     name: "Ethereum",
     symbol: "ETH",

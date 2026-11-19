@@ -1,8 +1,9 @@
 import useDeepMemo from "@/hooks/useDeepMemo";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { deadlineSeconds } from "@/stores/settingsValidation";
 
 export default function useTransactionDeadline(userDeadline: number): bigint {
-  const ttl = userDeadline * 60;
+  const ttl = deadlineSeconds(userDeadline);
 
   const { timestamp } = useGlobalFees();
 
