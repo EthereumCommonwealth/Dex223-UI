@@ -82,3 +82,8 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/marginSwap.test.cjs
+
+      - name: Listable pool regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/isListablePool.test.cjs

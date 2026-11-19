@@ -51,11 +51,12 @@ import { ERC20_ABI } from "@/config/abis/erc20";
 import { baseFeeMultipliers, SCALING_FACTOR } from "@/config/constants/baseFeeMultipliers";
 import { formatFloat } from "@/functions/formatFloat";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
+import { isListablePoolState } from "@/functions/isListablePool";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useIsErc777 } from "@/hooks/useErc777";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
-import { PoolState, useStorePools } from "@/hooks/usePools";
+import { useStorePools } from "@/hooks/usePools";
 import { useTokens } from "@/hooks/useTokenLists";
 import { Link, useRouter } from "@/i18n/routing";
 import { FeeAmount } from "@/sdk_bi/constants";
@@ -208,12 +209,7 @@ export default function ListTokenPage() {
   );
 
   const pool = useMemo(() => {
-    return pools.find(
-      (pool) =>
-        pool[0] !== PoolState.NOT_EXISTS &&
-        pool[0] !== PoolState.INVALID &&
-        pool[0] !== PoolState.IDLE,
-    );
+    return pools.find((pool) => isListablePoolState(pool[0]));
   }, [pools]);
 
   // const pool = usePool({ currencyA: tokenA, currencyB: tokenB, tier: FeeAmount.MEDIUM });
