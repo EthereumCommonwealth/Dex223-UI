@@ -1,10 +1,18 @@
 "use client";
 
+import { useMemo } from "react";
+import { Address } from "viem";
+
+import { usePoolPriceIndex } from "@/app/[locale]/pools/hooks";
 import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
 import TokenLogo from "@/components/atoms/TokenLogo";
 import { FEE_AMOUNT_DETAIL } from "@/config/constants/liquidityFee";
+import { getUSDAnchorTokens } from "@/config/constants/usdAnchors";
 import { formatNumberKilos } from "@/functions/formatFloat";
+import { computePoolTVL } from "@/functions/poolTvl";
+import { usePoolsOnChainBalances } from "@/hooks/usePoolOnChainBalances";
 import { Link } from "@/i18n/routing";
+import { DexChainId } from "@/sdk_bi/chains";
 import { FeeAmount } from "@/sdk_bi/constants";
 
 export default function PoolRows({
@@ -17,6 +25,17 @@ export default function PoolRows({
   tvlLabel: string;
 }) {
   const tokenMeta = useTokenMeta();
+  const dexChainId = chainId as DexChainId;
+  const poolAddresses = useMemo(
+    () => pools.map((pool) => pool.id).filter(Boolean) as Address[],
+    [pools],
+  );
+  const { balances, isLoading: balancesLoading } = usePoolsOnChainBalances({
+    poolAddresses,
+    chainId: dexChainId,
+  });
+  const { priceIndex, loading: pricesLoading } = usePoolPriceIndex(dexChainId);
+  const subgraphFallback = getUSDAnchorTokens(dexChainId).length === 0;
 
   return (
     <div className="divide-y divide-secondary-border">
@@ -26,6 +45,17 @@ export default function PoolRows({
         const feeLabel =
           FEE_AMOUNT_DETAIL[pool.feeTier as FeeAmount]?.label ??
           String(Number(pool.feeTier) / 10000);
+        const onChain = balances[pool.id?.toLowerCase()];
+        const tvl =
+          pricesLoading || balancesLoading || !onChain
+            ? undefined
+            : computePoolTVL({
+                pool,
+                balance0: onChain?.token0.formatted,
+                balance1: onChain?.token1.formatted,
+                priceIndex,
+                subgraphFallback,
+              });
 
         return (
           <Link
@@ -50,7 +80,7 @@ export default function PoolRows({
             </div>
             <div className="text-right shrink-0">
               <div className="text-14 md:text-16 font-medium">
-                ${formatNumberKilos(Number(pool.totalValueLockedUSD))}
+                {tvl === undefined ? "—" : `$${formatNumberKilos(tvl)}`}
               </div>
               <div className="text-12 text-secondary-text">{tvlLabel}</div>
             </div>

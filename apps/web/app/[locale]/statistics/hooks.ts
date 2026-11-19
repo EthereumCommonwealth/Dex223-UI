@@ -120,6 +120,10 @@ export const TokenDetailDocument = gql`
       feeTier
       totalValueLockedUSD
       totalValueLockedETH
+      totalValueLockedToken0
+      totalValueLockedToken1
+      token0Price
+      token1Price
       volumeUSD
       token0 {
         id
