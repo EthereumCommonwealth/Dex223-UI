@@ -129,3 +129,8 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/tokenTrust.test.cjs
+
+      - name: Unclaimed fee dollar regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/unclaimedFeesUsd.test.cjs
