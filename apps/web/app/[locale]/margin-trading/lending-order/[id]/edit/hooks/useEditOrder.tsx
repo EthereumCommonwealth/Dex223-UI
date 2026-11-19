@@ -36,6 +36,7 @@ import { LendingOrder } from "@/app/[locale]/margin-trading/types";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
+import { leverageUint8 } from "@/functions/leverageUint8";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
@@ -181,7 +182,7 @@ export function useEditOrderRequest(order: LendingOrder | undefined, liveValues?
         BigInt(Math.round(Number(period.positionDuration) * 24 * 60 * 60)),
         parseUnits(minimumBorrowingAmount.toString(), loanToken.decimals),
         Number(orderCurrencyLimit),
-        leverage,
+        leverageUint8(leverage),
         ORACLE_ADDRESS[chainId],
         parseUnits(liquidationFeeForLiquidator, liquidationFeeToken.decimals),
         liquidationFeeToken.isNative ? ZERO_ADDRESS : liquidationFeeToken.wrapped.address0,
@@ -313,7 +314,7 @@ export default function useEditOrder() {
           BigInt(Math.round(Number(period.positionDuration) * 24 * 60 * 60)), // _duration
           parseUnits(minimumBorrowingAmount.toString(), loanToken.decimals), // _minLoan
           Number(orderCurrencyLimit), // _currencyLimit
-          leverage, // _leverage
+          leverageUint8(leverage), // _leverage
           ORACLE_ADDRESS[chainId], // _oracle
           parseUnits(liquidationFeeForLiquidator, liquidationFeeToken.decimals), // _liquidationRewardAmount
           liquidationFeeToken.isNative ? ZERO_ADDRESS : liquidationFeeToken.wrapped.address0, // _liquidationRewardAsset
