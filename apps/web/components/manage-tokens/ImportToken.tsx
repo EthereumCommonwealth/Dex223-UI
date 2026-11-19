@@ -77,11 +77,24 @@ function EmptyState({
   }
 }
 
-export function useImportToken() {
-  const publicClient = usePublicClient();
+export type ReadTokenResult =
+  | { status: "ok"; token: Token }
+  | { status: "erc777" }
+  | { status: "not_a_token" };
 
-  const handleImport = useCallback(
-    async (tokenAddressToImport: Address, chainId: DexChainId, imageURL?: string) => {
+export function useImportToken(readChainId?: DexChainId) {
+  const publicClient = usePublicClient(readChainId ? { chainId: readChainId } : undefined);
+
+  /**
+   * Reads name, symbol, decimals, standard, the converter pair and ERC-1820 for an address and
+   * returns the token. Writes nothing: an /add link only saves from the import dialog (#139).
+   */
+  const readTokenFromChain = useCallback(
+    async (
+      tokenAddressToImport: Address,
+      chainId: DexChainId,
+      imageURL?: string,
+    ): Promise<ReadTokenResult | undefined> => {
       const calls = [
         {
           abi: ERC20_ABI,
@@ -127,7 +140,10 @@ export function useImportToken() {
         return;
       }
 
-      const res = await publicClient.multicall({ contracts: calls });
+      const res = await publicClient.multicall({ contracts: calls }).catch(() => undefined);
+      if (!res) {
+        return { status: "not_a_token" };
+      }
 
       const name = res[0].result;
       const symbol = res[1].result;
@@ -137,7 +153,11 @@ export function useImportToken() {
 
       // ERC-777 tokens are not supported by the converter: never import them.
       if (isErc777Implementer(res[5].result)) {
-        return;
+        return { status: "erc777" };
+      }
+
+      if (!decimals || !name || !symbol) {
+        return { status: "not_a_token" };
       }
 
       const otherAddressFunctionName =
@@ -149,12 +169,17 @@ export function useImportToken() {
               : "getERC223OriginFor"
             : "predictWrapperAddress";
 
-      const predictedOtherAddress = await publicClient.readContract({
-        abi: TOKEN_CONVERTER_ABI,
-        functionName: otherAddressFunctionName!,
-        address: CONVERTER_ADDRESS[chainId],
-        args: [tokenAddressToImport as Address, standard !== 223],
-      });
+      const predictedOtherAddress = await publicClient
+        .readContract({
+          abi: TOKEN_CONVERTER_ABI,
+          functionName: otherAddressFunctionName!,
+          address: CONVERTER_ADDRESS[chainId],
+          args: [tokenAddressToImport as Address, standard !== 223],
+        })
+        .catch(() => undefined);
+      if (!predictedOtherAddress) {
+        return { status: "not_a_token" };
+      }
 
       const { erc20AddressToImport, erc223AddressToImport } =
         standard === 223
@@ -166,10 +191,6 @@ export function useImportToken() {
               erc223AddressToImport: predictedOtherAddress,
               erc20AddressToImport: tokenAddressToImport,
             };
-
-      if (!decimals || !name || !symbol) {
-        return;
-      }
 
       const logoURI = imageURL?.trim();
       const token = new Token(
@@ -184,14 +205,27 @@ export function useImportToken() {
           : "/images/tokens/placeholder.svg",
       );
 
-      await addCustomToken(token);
-
-      return token;
+      return { status: "ok", token };
     },
     [publicClient],
   );
 
-  return { handleImport };
+  /** Read and save to the Custom token list (Create token and the listing page use this). */
+  const handleImport = useCallback(
+    async (tokenAddressToImport: Address, chainId: DexChainId, imageURL?: string) => {
+      const result = await readTokenFromChain(tokenAddressToImport, chainId, imageURL);
+      if (result?.status !== "ok") {
+        return;
+      }
+
+      await addCustomToken(result.token);
+
+      return result.token;
+    },
+    [readTokenFromChain],
+  );
+
+  return { handleImport, readTokenFromChain };
 }
 
 export default function ImportToken({ setContent, handleClose }: Props) {

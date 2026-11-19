@@ -22,6 +22,8 @@ export type GqlToken = {
 export type GqlPosition = {
   id: number;
   owner: Address;
+  /** Interest rate snapshotted when the position opened (bps per 30 days); the order's may change. */
+  interest?: string | null;
   loanAmount: bigint;
   baseAssetToken: GqlToken;
   deadline: number;
@@ -44,6 +46,8 @@ export type GqlPosition = {
   txFrozen: Hash;
   txLiquidated: Hash;
   collateralToken: GqlToken;
+  /** Exact collateral address the position opened with (the contract's positionInitialCollateral). */
+  collateral?: Address | null;
   collateralAmount: bigint;
   leverage: number;
   frozenTime?: string | number | null;
@@ -251,8 +255,10 @@ export function serializeGqlPosition(
     closedAt,
     collateralAmount,
     collateralToken,
+    collateral,
     leverage,
     frozenTime,
+    interest,
     ...rest
   } = gqlPosition;
 
@@ -260,6 +266,7 @@ export function serializeGqlPosition(
     ...rest,
     closedAt: +closedAt,
     liquidatedAt: +liquidatedAt,
+    interestRateAtOpen: interest != null ? Number(interest) : undefined,
     createdAt: +createdAt,
     loanAmount: BigInt(loanAmount),
     loanAsset: gqlTokenToCurrency(baseAssetToken, chainId, logos),
@@ -282,6 +289,7 @@ export function serializeGqlPosition(
       };
     }),
     collateralAsset: gqlTokenToCurrency(collateralToken, chainId, logos),
+    collateralAddress: collateral ?? undefined,
     collateralAmount: BigInt(collateralAmount),
     initialLeverage: +leverage,
     frozenTime: frozenTime ? Number(frozenTime) : 0,
