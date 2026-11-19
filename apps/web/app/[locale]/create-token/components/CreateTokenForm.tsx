@@ -28,6 +28,7 @@ import { getFormattedGasPrice } from "@/functions/gasSettings";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { ERC223_TOKEN_DEPLOYER_ADDRESS, ZERO_ADDRESS } from "@/sdk_bi/addresses";
 import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
+import { GasOption } from "@/stores/factories/createGasPriceStore";
 
 import {
   useCreateTokenGasLimitStore,
@@ -187,7 +188,13 @@ export default function CreateTokenForm() {
             </div>
 
             <GasSettingsBlock
-              gasPriceOption={gasPriceOption}
+              gasOption={
+                gasPriceOption === GasOption.FAST
+                  ? "fast"
+                  : gasPriceOption === GasOption.CUSTOM
+                    ? "custom"
+                    : "cheap"
+              }
               customGasLimit={customGasLimit}
               estimatedGas={estimatedGas}
               formattedGasPrice={formattedGasPrice}

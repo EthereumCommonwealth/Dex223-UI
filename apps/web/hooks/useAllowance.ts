@@ -10,7 +10,6 @@ import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
-import { MAX_SAFE_INTEGER, MAX_VALUE } from "@/sdk_bi/utils/sqrt";
 import {
   GasFeeModel,
   RecentTransactionTitleTemplate,
@@ -179,37 +178,40 @@ export function useStoreAllowance({
         }
       };
 
-      // USDT can't rewrite existing allowance, so we have to manually revoke allowance
-      // to 0 before we can attach an allowance. This flag check if token can rewrite allowance,
-      // that in this case with USDT results to true
-      const isNotAvailableToRewriteAllowance =
-        token.address0.toLowerCase() === USDT_ADDRESS_ERC_20.toLowerCase();
+      const isMainnetUsdt = token.address0.toLowerCase() === USDT_ADDRESS_ERC_20.toLowerCase();
 
-      if (!isAllowed && currentAllowanceData !== BigInt(0) && isNotAvailableToRewriteAllowance) {
-        const revokeParams = { ...params, args: [contractAddress, BigInt(0)] };
-
-        //we are calling the same approve with 0 as amount to approve
-        const hash = await walletClient.writeContract({
-          ...revokeParams,
-          ...(customGasSettings || {}),
-          gas: await approveGas(BigInt(0)),
-          account: undefined,
-        });
-
-        // we wait until first function is ready so we are sure that second one will write
-        // await publicClient.waitForTransactionReceipt({ hash });
+      if (!isAllowed && currentAllowanceData !== BigInt(0) && isMainnetUsdt) {
+        try {
+          const hash = await walletClient.writeContract({
+            ...params,
+            args: [contractAddress, BigInt(0)],
+            ...(customGasSettings || {}),
+            gas: await approveGas(BigInt(0)),
+            account: undefined,
+          });
+          const receipt = await publicClient.waitForTransactionReceipt({ hash });
+          if (receipt.status !== "success") {
+            return { success: false as const };
+          }
+        } catch (e) {
+          console.log(e);
+          if ((e as any)?.name !== "UserRejectedRequestError" && !/rejected/i.test(String(e))) {
+            addToast((e as any)?.shortMessage || String(e), "error");
+          }
+          return { success: false as const };
+        }
       }
 
       try {
         let hash;
 
         try {
-          if (isNotAvailableToRewriteAllowance) {
+          if (isMainnetUsdt) {
             hash = await walletClient.writeContract({
               ...params,
               ...(customGasSettings || {}),
-              args: [contractAddress!, MAX_SAFE_INTEGER],
-              gas: await approveGas(MAX_SAFE_INTEGER),
+              args: [contractAddress!, amountToApprove],
+              gas: await approveGas(amountToApprove),
               account: undefined,
             });
           } else {

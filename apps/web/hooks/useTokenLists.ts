@@ -2,10 +2,11 @@ import { useLiveQuery } from "dexie-react-hooks";
 import { useMemo } from "react";
 import { Address } from "viem";
 
-import { Check, OtherListCheck, Rate, TrustRateCheck } from "@/components/badges/TrustBadge";
 import { db, TokenList, TokenListId } from "@/db/db";
+import { getTokenTrust, TokenTrust } from "@/functions/tokenTrust";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { usePoolTokens } from "@/hooks/usePoolTokens";
+import { CORE_AUTO_LISTING_ADDRESS } from "@/sdk_bi/addresses";
 import { DexChainId } from "@/sdk_bi/chains";
 import { Currency } from "@/sdk_bi/entities/currency";
 import { NativeCoin } from "@/sdk_bi/entities/ether";
@@ -16,149 +17,21 @@ export async function fetchTokenList(url: string) {
   return await data.json();
 }
 
-function getDefaultListCheckResult(
+/**
+ * Trust level of a token from the user's lists (#140). Pass every list for the chain, enabled or
+ * not: only the default list and the current Core autolisting can confirm a token.
+ */
+export function tokenTrustFromLists(
   token: Token,
   tokenLists: TokenList[],
   chainId: DexChainId,
-): Pick<Rate, Check.DEFAULT_LIST> {
-  const defaultTokenList = tokenLists.find((t) => t.id === `default-${chainId}`);
-
-  const isTokenInDefaultList =
-    defaultTokenList &&
-    defaultTokenList.list.tokens.find(
-      (t) => t.address0.toLowerCase() === token.address0.toLowerCase(),
-    );
-  return {
-    [Check.DEFAULT_LIST]: isTokenInDefaultList ? TrustRateCheck.TRUE : TrustRateCheck.FALSE,
-  };
-}
-
-function getOtherListCheckResult(
-  token: Token,
-  tokenLists: TokenList[],
-  chainId: DexChainId,
-): Pick<Rate, Check.OTHER_LIST> | undefined {
-  if (tokenLists.length === 1) {
-    return;
-  }
-
-  let timesTokenFoundInAllLists = 0;
-
-  tokenLists.forEach((tokenList) => {
-    if (
-      tokenList.list.tokens.find(
-        (t) =>
-          t.address0.toLowerCase() === token.address0.toLowerCase() &&
-          t.address1.toLowerCase() === token.address1.toLowerCase() &&
-          t.name?.toLowerCase() === token.name?.toLowerCase(),
-      )
-    ) {
-      timesTokenFoundInAllLists++;
-    }
-  });
-
-  if (timesTokenFoundInAllLists > tokenLists.length / 2) {
-    return { [Check.OTHER_LIST]: OtherListCheck.FOUND_IN_MORE_THAN_A_HALF };
-  }
-
-  if (timesTokenFoundInAllLists >= 2) {
-    return { [Check.OTHER_LIST]: OtherListCheck.FOUND_IN_ONE };
-  }
-
-  return { [Check.OTHER_LIST]: OtherListCheck.NOT_FOUND };
-}
-
-function getSameNameInDefaultListCheckResult(
-  token: Token,
-  tokenLists: TokenList[],
-  chainId: DexChainId,
-): Pick<Rate, Check.SAME_NAME_IN_DEFAULT_LIST> {
-  const defaultTokenList = tokenLists.find((t) => t.id === `default-${chainId}`);
-
-  if (defaultTokenList) {
-    const isDifferentTokenWithSameNameInDefaultList = defaultTokenList.list.tokens.find(
-      (t) => t.address0.toLowerCase() !== token.address0.toLowerCase() && t.name === token.name,
-    );
-
-    if (isDifferentTokenWithSameNameInDefaultList) {
-      return { [Check.SAME_NAME_IN_DEFAULT_LIST]: TrustRateCheck.TRUE };
-    }
-  }
-
-  return {
-    [Check.SAME_NAME_IN_DEFAULT_LIST]: TrustRateCheck.FALSE,
-  };
-}
-
-function getSameNameInOtherListsCheckResult(
-  token: Token,
-  tokenLists: TokenList[],
-  chainId: DexChainId,
-): Pick<Rate, Check.SAME_NAME_IN_OTHER_LIST> | undefined {
-  const tokensWithSameAddress: Token[] = [];
-  const defaultTokenList = tokenLists.find((t) => t.id === `default-${chainId}`);
-  if (
-    defaultTokenList?.list.tokens.find(
-      (t) =>
-        t.address0.toLowerCase() === token.address0.toLowerCase() &&
-        t.name?.toLowerCase() === token.name?.toLowerCase(),
-    )
-  ) {
-    return;
-  }
-
-  const otherTokenLists = tokenLists.filter((t) => t.id !== `default-${chainId}`);
-
-  otherTokenLists.map((otherTokenList) => {
-    const tokenWithSameAddress = otherTokenList.list.tokens.find(
-      (t) => t.address0.toLowerCase() === token.address0.toLowerCase(),
-    );
-    if (tokenWithSameAddress) {
-      tokensWithSameAddress.push(tokenWithSameAddress);
-    }
-  });
-
-  const isDifferentTokenWithSameNameInOtherList = tokensWithSameAddress.find(
-    (t) => t.name?.toLowerCase() !== token.name?.toLowerCase(),
-  );
-
-  if (isDifferentTokenWithSameNameInOtherList) {
-    return { [Check.SAME_NAME_IN_OTHER_LIST]: TrustRateCheck.TRUE };
-  }
-
-  return {
-    [Check.SAME_NAME_IN_OTHER_LIST]: TrustRateCheck.FALSE,
-  };
-}
-
-function getERC223VersionExistsCheckResult(token: Token): Pick<Rate, Check.ERC223_VERSION_EXIST> {
-  if (token.address1) {
-    return { [Check.ERC223_VERSION_EXIST]: TrustRateCheck.TRUE };
-  }
-
-  return {
-    [Check.ERC223_VERSION_EXIST]: TrustRateCheck.FALSE,
-  };
-}
-
-function getTokenRate(token: Token, tokenLists: TokenList[], chainId: DexChainId): Rate {
-  const defaultListCheck = getDefaultListCheckResult(token, tokenLists, chainId);
-  const otherListCheck = getOtherListCheckResult(token, tokenLists, chainId);
-  const sameNameInDefaultListCheck = getSameNameInDefaultListCheckResult(
+): TokenTrust<Token> {
+  return getTokenTrust<Token, TokenList>(
     token,
     tokenLists,
     chainId,
+    CORE_AUTO_LISTING_ADDRESS[chainId],
   );
-  const sameNameInOtherListsCheck = getSameNameInOtherListsCheckResult(token, tokenLists, chainId);
-  const erc223VersionExists = getERC223VersionExistsCheckResult(token);
-
-  return {
-    ...defaultListCheck,
-    ...otherListCheck,
-    ...sameNameInDefaultListCheck,
-    ...sameNameInOtherListsCheck,
-    ...erc223VersionExists,
-  };
 }
 
 export function useTokenLists(onlyCustom: boolean = false) {
@@ -202,6 +75,22 @@ function hasRealLogo(logoURI: string | undefined | null): boolean {
   return !!logoURI && logoURI !== LOGO_PLACEHOLDER;
 }
 
+/** Real logos from the given lists, keyed by lowercased ERC-20 and ERC-223 address. */
+export function logosFromLists(lists: TokenList[]): Map<string, string> {
+  const logos = new Map<string, string>();
+  lists.forEach((list) =>
+    list.list.tokens.forEach((token) => {
+      const logo = formatIPFS(token.logoURI);
+      if (!hasRealLogo(logo)) return;
+      for (const address of [token.address0, token.address1]) {
+        const key = address?.toLowerCase();
+        if (key && !logos.has(key)) logos.set(key, logo!);
+      }
+    }),
+  );
+  return logos;
+}
+
 export function useTokens(onlyCustom: boolean = false): Currency[] {
   const tokenLists = useTokenLists(onlyCustom);
   const chainId = useCurrentChainId();
@@ -218,7 +107,7 @@ export function useTokens(onlyCustom: boolean = false): Currency[] {
         const fill = (array: Token[], id: TokenListId) =>
           array.forEach((item) => {
             const lowercaseAddress = item.address0.toLowerCase() as Address;
-            const rate = getTokenRate(item, tokenLists, item.chainId);
+            const trust = tokenTrustFromLists(item, tokenLists, item.chainId);
             const existing = map.get(lowercaseAddress);
 
             const isFromMain = id === mainListId;
@@ -246,7 +135,7 @@ export function useTokens(onlyCustom: boolean = false): Currency[] {
                 item.name || "Unknown",
                 logoURI,
                 existing ? Array.from(new Set([...(existing.token.lists || []), id])) : [id],
-                rate,
+                trust,
               ),
               logoSourceId: shouldOverwriteLogo ? id : existing.logoSourceId,
             });
@@ -260,7 +149,27 @@ export function useTokens(onlyCustom: boolean = false): Currency[] {
       };
 
       const tokensArrays = tokenLists.filter((list) => list.enabled);
-      const _t = inspect(...tokensArrays);
+      const fallbackLogos = logosFromLists(tokenLists.filter((list) => !list.enabled));
+      // A token whose enabled lists carry no image (the autolisting lists never do) takes the logo
+      // from any other list the user has, e.g. the custom list holding the image set at Create
+      // token. Logos are cosmetic, so a disabled list may still supply one.
+      const _t = inspect(...tokensArrays).map((token) => {
+        if (hasRealLogo(token.logoURI)) return token;
+        const logo = fallbackLogos.get(token.address0.toLowerCase());
+        return logo
+          ? new Token(
+              token.chainId,
+              token.address0,
+              token.address1,
+              token.decimals,
+              token.symbol || "Unknown",
+              token.name || "Unknown",
+              logo,
+              token.lists,
+              token.trust,
+            )
+          : token;
+      });
 
       return onlyCustom ? _t : [native, ..._t];
     }
@@ -277,8 +186,8 @@ export function useTokens(onlyCustom: boolean = false): Currency[] {
 
 // Tokens for the swap form: everything from the enabled lists, plus any token that has a pool on
 // this chain's factory but is in none of those lists. Without the second part, a pair shown on the
-// Pools page (and linked from its Swap button) can be impossible to pick. Pool-only tokens are
-// rated against the lists like any other token, so they carry the usual low-trust warning.
+// Pools page (and linked from its Swap button) can be impossible to pick. Pool-only tokens get a
+// trust level from the lists like any other token, so they show as Not verified or Lookalike.
 export function useSwapTokens(): { tokens: Currency[]; isLoading: boolean } {
   const tokens = useTokens();
   const tokenLists = useTokenLists();
@@ -303,7 +212,7 @@ export function useSwapTokens(): { tokens: Currency[]; isLoading: boolean } {
             t.name,
             t.logoURI,
             [],
-            getTokenRate(t, tokenLists || [], t.chainId),
+            tokenTrustFromLists(t, tokenLists || [], t.chainId),
           ),
       );
 
@@ -311,4 +220,26 @@ export function useSwapTokens(): { tokens: Currency[]; isLoading: boolean } {
   }, [poolTokens, tokenLists, tokens]);
 
   return { tokens: swapTokens, isLoading };
+}
+
+/**
+ * Trust level of the given currency, from the same lists as the token picker, so a token never
+ * looks trusted in one place and not in another. Native coins have none. Undefined while the lists
+ * load.
+ */
+export function useTokenTrust(
+  currency: Currency | undefined | null,
+): TokenTrust<Token> | undefined {
+  const tokenLists = useTokenLists();
+  const chainId = useCurrentChainId();
+
+  return useMemo(() => {
+    if (!currency || currency.isNative) return undefined;
+    // The lists in the database are the current network's; a token from another network keeps the
+    // trust it was given where it was read.
+    if (!tokenLists || currency.chainId !== chainId) {
+      return currency.trust;
+    }
+    return tokenTrustFromLists(currency, tokenLists, chainId);
+  }, [chainId, currency, tokenLists]);
 }
