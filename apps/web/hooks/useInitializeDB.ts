@@ -7,6 +7,7 @@ import { Address } from "viem";
 import { db, TokenListId } from "@/db/db";
 import { defaultLists } from "@/db/lists";
 import { IIFE } from "@/functions/iife";
+import { collectPages } from "@/functions/subgraphPages";
 import useAutoListingApolloClient from "@/hooks/useAutoListingApolloClient";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
@@ -65,7 +66,26 @@ const query = gql(`
       name
       lastUpdated
       totalTokens
-      tokens {
+      tokens(first: 1000, orderBy: id) {
+        timestamp
+        token {
+          addressERC20
+          addressERC223
+          name
+          symbol
+          decimals
+          numberAdditions
+        }
+      }
+    }
+  }
+`);
+
+// Tokens of one autolisting past the first page, in the same order (bounty #172).
+const queryListingTokensPage = gql(`
+  query AutoListingTokensPage($id: ID!, $skip: Int!) {
+    autoListing(id: $id) {
+      tokens(first: 1000, skip: $skip, orderBy: id) {
         timestamp
         token {
           addressERC20
@@ -106,6 +126,10 @@ export function useAutoListingUpdater() {
 
   const [checkLastUpdated] = useLazyQuery(queryLastUpdated, { client });
   const [getAutoListings] = useLazyQuery(query, { client });
+  const [getListingTokensPage] = useLazyQuery(queryListingTokensPage, {
+    client,
+    fetchPolicy: "no-cache",
+  });
 
   const getMeta = useCallback(
     (address: Address): [TokenListId, string] => {
@@ -191,6 +215,16 @@ export function useAutoListingUpdater() {
       if (resultData && resultData.length) {
         for (let i = 0; i < resultData.length; i++) {
           const [id, name] = getMeta(resultData[i].id);
+          const listedTokens = await collectPages(
+            resultData[i].tokens,
+            Number(resultData[i].totalTokens),
+            async (skip) => {
+              const page = await getListingTokensPage({
+                variables: { id: resultData[i].id, skip },
+              });
+              return page.data?.autoListing?.tokens;
+            },
+          );
 
           await db.tokenLists.put(
             {
@@ -205,7 +239,7 @@ export function useAutoListingUpdater() {
                   minor: 0,
                   patch: 1,
                 },
-                tokens: resultData[i].tokens.map(({ token }: any) => {
+                tokens: listedTokens.map(({ token }: any) => {
                   return new Token(
                     chainId,
                     token.addressERC20,
@@ -225,5 +259,5 @@ export function useAutoListingUpdater() {
         }
       }
     });
-  }, [allAutoListings, chainId, checkLastUpdated, getAutoListings, getMeta]);
+  }, [allAutoListings, chainId, checkLastUpdated, getAutoListings, getListingTokensPage, getMeta]);
 }
