@@ -51,7 +51,7 @@ const MultipleClaimDialog = () => {
     useClaimDialogStore();
   const chainId = useCurrentChainId();
   const { openConfirmInWalletAlert, closeConfirmInWalletAlert } = useConfirmInWalletAlertStore();
-  const { claim, refetchUserData, canUnstake, unstakeCountdown } = useRevenueContract();
+  const { claim, refetchUserData } = useRevenueContract();
   const claimRecentTransaction = useRecentTransactionByHash(data?.claimTransactionHash);
   const { handleSpeedUp } = useTransactionSpeedUpDialogStore();
 
@@ -167,15 +167,6 @@ const MultipleClaimDialog = () => {
 
   const handleClaim = async () => {
     try {
-      if (!canUnstake) {
-        setError(
-          unstakeCountdown
-            ? `Rewards stay locked for ${unstakeCountdown} after the last stake.`
-            : t("rewards_locked"),
-        );
-        return;
-      }
-
       const tokenAddresses = tokens.flatMap((token) =>
         (token.claimAddresses ?? []).filter((a) => isAddress(a)),
       ) as Address[];
@@ -347,13 +338,9 @@ const MultipleClaimDialog = () => {
         size={ButtonSize.LARGE}
         colorScheme={ButtonColor.GREEN}
         onClick={handleClaim}
-        disabled={!canUnstake || cannotReceive}
+        disabled={cannotReceive}
       >
-        {cannotReceive
-          ? tSwap("wallet_cannot_receive_erc223")
-          : canUnstake
-            ? t("claim_action")
-            : t("claim_locked")}
+        {cannotReceive ? tSwap("wallet_cannot_receive_erc223") : t("claim_action")}
       </Button>
     </div>
   );
