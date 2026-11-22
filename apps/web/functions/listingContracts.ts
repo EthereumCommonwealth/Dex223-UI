@@ -1,8 +1,16 @@
 type NamedListing = { id: string; name: string };
 
-/** A listing contract name compared without case, spaces or punctuation ("Auto-listing" = "Autolisting"). */
+/**
+ * A listing contract name compared without case, spaces or punctuation ("Auto-listing" = "Autolisting").
+ * NFKC first, so fullwidth letters ("Ｄｅｘ２２３") count as the letters they are drawn as instead of
+ * being deleted. Invisible characters are deleted with the punctuation. Letters of other scripts
+ * that look Latin are still deleted, not folded; that needs the Unicode confusables table.
+ */
 export function normalizeListingName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]/g, "");
+  return name
+    .normalize("NFKC")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
 }
 
 /**
