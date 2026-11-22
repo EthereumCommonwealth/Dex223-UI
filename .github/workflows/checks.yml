@@ -88,10 +88,20 @@ jobs:
         working-directory: apps/web
         run: node tests/poolNeedsFetch.test.cjs
 
+      - name: Subgraph page size regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/subgraphPages.test.cjs
+
       - name: Import from link regressions
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/importLink.test.cjs
+
+      - name: Safe Send recipient regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/safeSendRecipient.test.cjs
 
       - name: Margin deposit regressions
         if: matrix.app == 'web'
@@ -112,6 +122,11 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/closedPositionInterest.test.cjs
+
+      - name: Revenue claim lock regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/revenueClaimUnlocked.test.cjs
       - name: Native ETH refund regressions
         if: matrix.app == 'web'
         working-directory: apps/web

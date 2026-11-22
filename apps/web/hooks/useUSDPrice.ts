@@ -3,6 +3,7 @@ import gql from "graphql-tag";
 import { useEffect, useMemo, useState } from "react";
 import { Address } from "viem";
 
+import { latestDayPrice, pricesByToken } from "@/functions/subgraphPages";
 import { apolloClient } from "@/graphql/thegraph/apollo";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useUSDPriceStore } from "@/stores/useUSDPriceStore";
@@ -11,7 +12,7 @@ const queryPrice = gql(`
   query USDPrice($address: String!) {
     token(id: $address) {
       name
-      tokenDayData {
+      tokenDayData(first: 1, orderBy: date, orderDirection: desc) {
         priceUSD
       }
     }
@@ -20,7 +21,7 @@ const queryPrice = gql(`
 
 const queryPrices = gql(`
   query USDPrices {
-  tokens {
+  tokens(first: 1000) {
     id
     tokenDayData(first: 1, orderBy: date, orderDirection: desc) {
       priceUSD
@@ -48,15 +49,8 @@ export const useUSDPrice = (tokenAddress: Address | undefined) => {
       try {
         const priceData = await getPrices();
 
-        const pricesObj: Record<string, number> = {};
-
-        priceData.data?.tokens.forEach(
-          (token: { id: string; tokenDayData: { priceUSD: number }[] }) => {
-            const price = token?.tokenDayData[0].priceUSD;
-            const address = token?.id;
-            pricesObj[address] = price;
-          },
-        );
+        // A token without a day row (no mint yet) is skipped instead of failing the whole load.
+        const pricesObj = pricesByToken(priceData.data?.tokens);
 
         console.log(pricesObj);
         setPrices(pricesObj);
@@ -83,12 +77,10 @@ export const useUSDPrice = (tokenAddress: Address | undefined) => {
       try {
         const priceData = await getPrice({ variables: { address: tokenAddress.toLowerCase() } });
 
-        if (priceData.data?.token) {
-          const price =
-            priceData.data.token?.tokenDayData[priceData.data.token?.tokenDayData.length - 1]
-              .priceUSD;
+        const price = latestDayPrice(priceData.data?.token);
+        if (price !== undefined && price !== null) {
           setError(null);
-          setPrice(tokenAddress.toLowerCase(), price);
+          setPrice(tokenAddress.toLowerCase(), Number(price));
         } else {
           setError("Token price not found");
         }
