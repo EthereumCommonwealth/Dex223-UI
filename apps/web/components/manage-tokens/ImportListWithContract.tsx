@@ -29,7 +29,7 @@ const query = gql(`
       name
       lastUpdated
       totalTokens
-      tokens {
+      tokens(first: 1000, orderBy: id) {
         timestamp
         token {
           addressERC20
