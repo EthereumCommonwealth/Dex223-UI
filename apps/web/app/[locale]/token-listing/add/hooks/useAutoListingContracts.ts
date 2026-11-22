@@ -89,7 +89,7 @@ const query = gql(`
         }
         price
       }
-      tokens {
+      tokens(first: 1000, orderBy: id) {
         token {
           addressERC20
           addressERC223
