@@ -67,10 +67,23 @@ export interface TokenTrust<T extends TrustTokenLike = TrustTokenLike> {
 
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
 
-/** Compare names and symbols: Unicode NFKC, trimmed, inner spaces collapsed, lowercase. */
+/**
+ * Characters a font draws as nothing: zero width space and joiners, word joiner, soft hyphen, BOM,
+ * bidi controls, variation selectors, Hangul fillers, tag characters (Unicode
+ * Default_Ignorable_Code_Point). "USDT" followed by U+200B is drawn as "USDT", so it must compare as
+ * "USDT" (bounty #168, #169).
+ */
+const INVISIBLE = /\p{Default_Ignorable_Code_Point}/gu;
+
+/**
+ * Compare names and symbols: Unicode NFKC, invisible characters removed, trimmed, inner spaces
+ * collapsed, lowercase. Letters of other scripts that look Latin (Cyrillic "Т", Greek "Τ") are not
+ * folded here; that needs the Unicode confusables table.
+ */
 export function normalizeTokenText(value: string | null | undefined): string {
   if (!value) return "";
-  return value.normalize("NFKC").trim().replace(/\s+/g, " ").toLowerCase();
+  // NFKC first: it maps some characters (halfwidth Hangul filler U+FFA0) to invisible ones.
+  return value.normalize("NFKC").replace(INVISIBLE, "").trim().replace(/\s+/g, " ").toLowerCase();
 }
 
 function addressKeys(token: TrustTokenLike): string[] {

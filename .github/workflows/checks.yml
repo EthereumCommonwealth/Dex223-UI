@@ -58,6 +58,11 @@ jobs:
         working-directory: apps/web
         run: node tests/tokenTrustSearch.test.cjs
 
+      - name: Token trust invisible character regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/tokenTrustInvisible.test.cjs
+
       - name: Transaction deadline regressions
         if: matrix.app == 'web'
         working-directory: apps/web
