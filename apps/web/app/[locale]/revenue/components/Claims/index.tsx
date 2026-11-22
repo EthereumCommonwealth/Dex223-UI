@@ -29,7 +29,6 @@ import { useGlobalFees } from "@/shared/hooks/useGlobalFees";
 import ForwardIcon from "../../../../../../../packages/ui/src/icons/ForwardIcon";
 import MultipleClaimDialog from "../../dialogs/MultipleClaimDialog";
 import SingleClaimDialog from "../../dialogs/SingleClaimDialog";
-import useRevenueContract from "../../hooks/useRevenueContract";
 import { useClaimDialogStore } from "../../stores/useClaimDialogStore";
 import {
   useClaimGasLimitStore,
@@ -64,8 +63,6 @@ export const Claims = ({
   } = useClaimDialogStore();
 
   const chainId = useCurrentChainId();
-  const { canUnstake, unstakeCountdown } = useRevenueContract();
-  const claimLocked = !canUnstake;
   const { estimatedGas, customGasLimit, setEstimatedGas, setCustomGasLimit } =
     useClaimGasLimitStore();
   const [isOpenedFee, setIsOpenedFee] = useState(false);
@@ -117,7 +114,6 @@ export const Claims = ({
   };
 
   const handleClaimSingle = (token: any) => {
-    if (claimLocked) return;
     const selectedTokensData = [
       {
         id: token.id,
@@ -148,7 +144,6 @@ export const Claims = ({
   };
 
   const handleClaimSelected = () => {
-    if (claimLocked) return;
     const selectedTokensData = tableData
       .filter((item: any) => selectedTokens.has(item.id))
       .map((item: any) => ({
@@ -205,11 +200,6 @@ export const Claims = ({
     <>
       <SingleClaimDialog />
       <MultipleClaimDialog />
-      {claimLocked && unstakeCountdown ? (
-        <p className="text-14 text-secondary-text px-1 pb-3">
-          {t("claims_locked_for", { time: unstakeCountdown })}
-        </p>
-      ) : null}
 
       {/* Desktop version */}
       <div className="hidden xl:flex xl:flex-col rounded-3 h-[640px] bg-table-gradient">
@@ -399,10 +389,7 @@ export const Claims = ({
                         size={ButtonSize.MEDIUM}
                         onClick={() => handleClaimSingle(o)}
                         disabled={
-                          claimLocked ||
-                          selectedTokens.size > 0 ||
-                          hasClaimInProgress ||
-                          !o.claimAddresses?.length
+                          selectedTokens.size > 0 || hasClaimInProgress || !o.claimAddresses?.length
                         }
                       >
                         {t("claim_action")}
@@ -469,7 +456,7 @@ export const Claims = ({
                     size={ButtonSize.SMALL}
                     onClick={handleClaimSelected}
                     className="!rounded-[8px]"
-                    disabled={claimLocked || hasClaimInProgress || selectedCount > 15}
+                    disabled={hasClaimInProgress || selectedCount > 15}
                   >
                     {hasClaimInProgress ? (
                       <div className="flex items-center gap-2">
@@ -575,7 +562,7 @@ export const Claims = ({
                       colorScheme={ButtonColor.GREEN}
                       size={ButtonSize.MEDIUM}
                       onClick={handleClaimSelected}
-                      disabled={claimLocked || hasClaimInProgress || selectedCount > 15}
+                      disabled={hasClaimInProgress || selectedCount > 15}
                       className="w-full h-10 !px-0"
                     >
                       {hasClaimInProgress ? (
@@ -697,10 +684,7 @@ export const Claims = ({
                       colorScheme={ButtonColor.GREEN}
                       size={ButtonSize.MEDIUM}
                       disabled={
-                        claimLocked ||
-                        selectedTokens.size > 0 ||
-                        hasClaimInProgress ||
-                        !o.claimAddresses?.length
+                        selectedTokens.size > 0 || hasClaimInProgress || !o.claimAddresses?.length
                       }
                       onClick={() => handleClaimSingle(o)}
                     >
