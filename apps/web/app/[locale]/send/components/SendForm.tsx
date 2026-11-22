@@ -22,13 +22,19 @@ import {
   SAFE_SEND_TOKENS,
   safeSendRouterAbi,
   SEPOLIA_CHAIN_ID,
-  TOKEN_RECEIVED_SELECTOR,
   tokenBySymbol,
-  tokenReceivedAbi,
 } from "@/app/[locale]/send/config";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/buttons/Button";
+import { checkSafeSendRecipient, type RecipientCheckClient } from "@/functions/safeSendRecipient";
 import { Link } from "@/i18n/routing";
+import {
+  CONVERTER_ADDRESS,
+  MARGIN_TRADING_ADDRESS,
+  NONFUNGIBLE_POSITION_MANAGER_ADDRESS,
+  ROUTER_ADDRESS,
+} from "@/sdk_bi/addresses";
+import { DexChainId } from "@/sdk_bi/chains";
 
 type Hold = "223" | "20";
 type Mode = "send" | "pay" | "invoice";
@@ -119,24 +125,29 @@ export default function SendForm({ mode }: { mode: Mode }) {
 
   /**
    * A contract recipient must accept the token, or an ERC-223 transfer reverts. Ask the
-   * recipient directly, as the token would, before the user signs anything.
+   * recipient directly, as the token would, before the user signs anything. A DEX223 contract
+   * that keeps ERC-223 transfers as deposits of the sender (swap router, position manager, margin
+   * module) is refused too: on the ERC-20 path the sender is SafeSendRouter and the deposit can
+   * never be withdrawn (bounty #171).
    */
   async function recipientAccepts(recipient: Address, value: bigint, data: Hex) {
     if (!publicClient || !address) return true;
-    const code = await publicClient.getCode({ address: recipient });
-    if (!code || code === "0x") return true;
-    try {
-      const { result } = await publicClient.simulateContract({
-        address: recipient,
-        abi: tokenReceivedAbi,
-        functionName: "tokenReceived",
-        args: [address, value, data],
-        account: token.erc223,
-      });
-      return result === TOKEN_RECEIVED_SELECTOR;
-    } catch {
-      return false;
-    }
+    const verdict = await checkSafeSendRecipient(publicClient as unknown as RecipientCheckClient, {
+      recipient,
+      user: address,
+      token223: token.erc223,
+      value,
+      data,
+      viaRouter: hold === "20",
+      router: SAFE_SEND_ROUTER,
+      depositHolders: [
+        ROUTER_ADDRESS[DexChainId.SEPOLIA],
+        NONFUNGIBLE_POSITION_MANAGER_ADDRESS[DexChainId.SEPOLIA],
+        MARGIN_TRADING_ADDRESS[DexChainId.SEPOLIA],
+      ],
+      returnsToSender: [CONVERTER_ADDRESS[DexChainId.SEPOLIA]],
+    });
+    return verdict === "accepts";
   }
 
   const payLink = useMemo(() => {
