@@ -32,6 +32,12 @@ export function volume1d(poolDayData: PoolDayData[] | undefined): number | undef
   return latest ? toNumber(latest.volumeUSD) : 0;
 }
 
+export function fees1d(poolDayData: PoolDayData[] | undefined): number | undefined {
+  if (!Array.isArray(poolDayData)) return undefined;
+  const latest = latestDay(poolDayData);
+  return latest ? toNumber(latest.feesUSD) : 0;
+}
+
 // Sum of the day buckets that fall inside the last 7 calendar days (UTC, the subgraph's
 // day boundary). Days without swaps have no bucket, so an empty window is a real $0.
 export function volume7d(poolDayData: PoolDayData[] | undefined): number | undefined {

@@ -149,3 +149,8 @@ jobs:
         if: matrix.app == 'web'
         working-directory: apps/web
         run: node tests/tokenTrust.test.cjs
+
+      - name: Pool day metric regressions
+        if: matrix.app == 'web'
+        working-directory: apps/web
+        run: node tests/poolDayMetrics.test.cjs

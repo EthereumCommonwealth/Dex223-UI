@@ -9,6 +9,7 @@ import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import { useMediaQuery } from "react-responsive";
 import { Address } from "viem";
 
+import { fees1d, volume1d } from "@/app/[locale]/pools/poolMetrics";
 import Container from "@/components/atoms/Container";
 import Svg from "@/components/atoms/Svg";
 import Badge, { BadgeVariant } from "@/components/badges/Badge";
@@ -385,11 +386,11 @@ export default function ExplorePoolPage({
               </div>
               <div className="flex flex-col gap-1 bg-tertiary-bg rounded-[12px] px-5 pb-[10px] pt-3.5 w-full">
                 <span className="text-secondary-text text-14 lg:text-16">{t("day_volume")}</span>
-                <span className="text-20 lg:text-24 font-medium">{`$${formatNumberKilos(pool?.poolDayData?.[0]?.volumeUSD || 0)}`}</span>
+                <span className="text-20 lg:text-24 font-medium">{`$${formatNumberKilos(volume1d(pool?.poolDayData) ?? 0)}`}</span>
               </div>
               <div className="flex flex-col gap-1 bg-tertiary-bg rounded-[12px] px-5 pb-[10px] pt-3.5 w-full">
                 <span className="text-secondary-text text-14 lg:text-16">{t("day_fees")}</span>
-                <span className="text-20 lg:text-24 font-medium">{`$${formatNumberKilos(pool?.poolDayData?.[0]?.feesUSD || 0)}`}</span>
+                <span className="text-20 lg:text-24 font-medium">{`$${formatNumberKilos(fees1d(pool?.poolDayData) ?? 0)}`}</span>
               </div>
             </div>
           )}
