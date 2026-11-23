@@ -59,7 +59,7 @@ export default function SecondStep({
     <Formik
       initialValues={secondStepValues}
       validationSchema={object({
-        leverage: number().required().min(1).max(100),
+        leverage: number().integer().required().min(1).max(100),
         minimumBorrowingAmount: number()
           .required("This field is required")
           .moreThan(
@@ -99,7 +99,7 @@ export default function SecondStep({
             isNumeric
             max={100}
             min={1}
-            decimalScale={4}
+            decimalScale={0}
             label={t("leverage")}
             placeholder={t("leverage")}
             internalText="x"

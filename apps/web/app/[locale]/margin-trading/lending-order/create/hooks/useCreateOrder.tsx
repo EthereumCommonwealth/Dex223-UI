@@ -33,6 +33,7 @@ import { ERC223_ABI } from "@/config/abis/erc223";
 import { MARGIN_MODULE_ABI } from "@/config/abis/marginModule";
 import { isMarginDeployed } from "@/config/modules";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
+import { leverageUint8 } from "@/functions/leverageUint8";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import addToast from "@/other/toast";
@@ -175,7 +176,7 @@ export function useCreateOrderRequest(liveValues?: ThirdStepValues) {
           asset: getTokenAddressForStandard(loanToken, loanTokenStandard),
           deadline: Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000),
           currencyLimit: Number(orderCurrencyLimit),
-          leverage,
+          leverage: leverageUint8(leverage),
           oracle: ORACLE_ADDRESS[chainId],
           collateral: collateralTokens.flatMap((token) => {
             if (tradingTokens.includeERC223Trading) {
@@ -337,7 +338,7 @@ export default function useCreateOrder() {
             asset: getTokenAddressForStandard(loanToken, loanTokenStandard),
             deadline: Math.floor(new Date(period.lendingOrderDeadline).getTime() / 1000),
             currencyLimit: Number(orderCurrencyLimit),
-            leverage,
+            leverage: leverageUint8(leverage),
             oracle: ORACLE_ADDRESS[chainId],
             collateral: collateralTokens.flatMap((token) => {
               if (tradingTokens.includeERC223Trading) {
