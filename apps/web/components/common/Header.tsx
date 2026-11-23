@@ -1,5 +1,6 @@
 "use client";
 
+import Alert from "@repo/ui/alert";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import { MouseEvent, useLayoutEffect, useRef, useState } from "react";
@@ -13,6 +14,7 @@ import NetworkPicker from "@/components/common/NetworkPicker";
 import TokenListsSettings from "@/components/common/TokenListsSettings";
 import AccountDialog from "@/components/dialogs/AccountDialog";
 import { useMintTestTokensDialogStore } from "@/components/dialogs/stores/useMintTestTokensDialogStore";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { useRecentTransactionTracking } from "@/hooks/useRecentTransactionTracking";
 import { Link, usePathname } from "@/i18n/routing";
 import { useDemoWalletDialogStore } from "@/stores/useDemoWalletDialogStore";
@@ -55,6 +57,8 @@ function useCompactWhenCrowded(ref: React.RefObject<HTMLDivElement | null>, loca
 export default function Header() {
   useRecentTransactionTracking();
   const t = useTranslations("MintTest");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
 
   const { handleOpen } = useMintTestTokensDialogStore();
   const rowRef = useRef<HTMLDivElement>(null);
@@ -119,6 +123,29 @@ export default function Header() {
           </div>
         </Container>
       </header>
+      {isTradingPaused && (
+        <Container gutter={false} className="px-4 md:px-5 pt-3 md:pt-4 max-w-[1920px]">
+          <Alert
+            type="info"
+            text={
+              <span>
+                {tPause.rich("banner", {
+                  link: (chunks) => (
+                    <a
+                      href="https://test-app.dex223.io"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-green hocus:underline"
+                    >
+                      {chunks}
+                    </a>
+                  ),
+                })}
+              </span>
+            }
+          />
+        </Container>
+      )}
       {process.env.NEXT_PUBLIC_ENV === "development" && (
         <div className="pt-2.5 md:pt-2 md:pb-2 pb-4 bg-gradient-to-r from-green-bg to-green-bg/0">
           <Container gutter={false} className="flex h-full items-center px-5 max-w-[1920px]">

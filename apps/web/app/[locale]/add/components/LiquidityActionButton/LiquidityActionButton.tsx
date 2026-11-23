@@ -7,6 +7,7 @@ import Button, { ButtonSize, ButtonVariant } from "@/components/buttons/Button";
 import { useConnectWalletDialogStateStore } from "@/components/dialogs/stores/useConnectWalletStore";
 import { AllowanceStatus } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import useRevoke from "@/hooks/useRevoke";
 import useWithdraw from "@/hooks/useWithdraw";
 import { NONFUNGIBLE_POSITION_MANAGER_ADDRESS } from "@/sdk_bi/addresses";
@@ -64,6 +65,8 @@ const LiquidityStatusNotifier = ({
 export const LiquidityActionButton = ({ increase = false }: { increase?: boolean }) => {
   const t = useTranslations("Liquidity");
   const tWallet = useTranslations("Wallet");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
   const { setIsOpen } = useConfirmLiquidityDialogStore();
 
   const {
@@ -231,6 +234,14 @@ export const LiquidityActionButton = ({ increase = false }: { increase?: boolean
   const isSufficientBalance = useMemo(() => {
     return isSufficientBalanceA && isSufficientBalanceB;
   }, [isSufficientBalanceA, isSufficientBalanceB]);
+
+  if (isTradingPaused) {
+    return (
+      <Button fullWidth disabled>
+        {tPause("button")}
+      </Button>
+    );
+  }
 
   if (!isConnected) {
     return (

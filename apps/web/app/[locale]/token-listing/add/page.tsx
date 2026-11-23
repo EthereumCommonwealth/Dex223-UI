@@ -54,6 +54,7 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import { useIsErc777 } from "@/hooks/useErc777";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { PoolState, useStorePools } from "@/hooks/usePools";
 import { useTokens } from "@/hooks/useTokenLists";
@@ -76,6 +77,8 @@ function OpenConfirmListTokenButton({
   const tWallet = useTranslations("Wallet");
   const t = useTranslations("Swap");
   const tListing = useTranslations("TokenListing");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
   const { isConnected } = useAccount();
 
   const { tokenA, tokenB } = useListTokensStore();
@@ -83,6 +86,14 @@ function OpenConfirmListTokenButton({
   const { setIsOpen: setConfirmListTokenDialogOpened } = useConfirmListTokenDialogStore();
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
   const { status } = useListTokenStatusStore();
+
+  if (isTradingPaused) {
+    return (
+      <Button size={ButtonSize.EXTRA_LARGE} tabletSize={ButtonSize.LARGE} fullWidth disabled>
+        {tPause("button")}
+      </Button>
+    );
+  }
 
   if (!isConnected) {
     return (

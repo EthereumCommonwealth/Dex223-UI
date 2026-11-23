@@ -52,6 +52,7 @@ import { canConfirmSwap, isSwapAnyway } from "@/functions/swapTrustGate";
 import { TokenTrust } from "@/functions/tokenTrust";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { useUSDPrice } from "@/hooks/useUSDPrice";
 import { ROUTER_ADDRESS } from "@/sdk_bi/addresses";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -257,6 +258,16 @@ function SwapActionButton({
   } = useSwapStatus();
 
   const { swapHash, approveHash, errorType } = useSwapStatusStore();
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
+
+  if (isTradingPaused) {
+    return (
+      <Button fullWidth disabled>
+        {tPause("button")}
+      </Button>
+    );
+  }
 
   if (!tokenA || !tokenB) {
     return (

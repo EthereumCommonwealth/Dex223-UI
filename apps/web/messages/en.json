@@ -2492,5 +2492,9 @@
     "unknown": "The transaction was rejected by the contract.",
     "contract_code": "Contract code {code}",
     "view_transaction": "View transaction"
+  },
+  "TradingPause": {
+    "banner": "Trading on Ethereum is paused until the DEX223 relaunch on new contracts. You can still remove liquidity, collect fees, convert tokens and claim rewards. To try the exchange, use <link>test-app.dex223.io</link> on Sepolia.",
+    "button": "Paused on Ethereum"
   }
 }

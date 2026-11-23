@@ -12,6 +12,7 @@ import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries
 import { IIFE } from "@/functions/iife";
 import { withRefundETH } from "@/functions/refundETH";
 import { slippageToPercent } from "@/functions/slippageToPercent";
+import { isTradingPaused } from "@/functions/tradingPause";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
 import useTransactionDeadline from "@/hooks/useTransactionDeadline";
@@ -371,7 +372,8 @@ export const useAddLiquidity = ({
         !walletClient ||
         !accountAddress ||
         !chainId ||
-        !addLiquidityParams
+        !addLiquidityParams ||
+        isTradingPaused(chainId)
       ) {
         return;
       }
