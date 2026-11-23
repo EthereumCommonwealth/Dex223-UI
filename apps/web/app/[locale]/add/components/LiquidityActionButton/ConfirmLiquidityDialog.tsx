@@ -22,6 +22,7 @@ import { formatFloat } from "@/functions/formatFloat";
 import { getChainSymbol } from "@/functions/getChainSymbol";
 import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { usePositionPrices, usePositionRangeStatus } from "@/hooks/usePositions";
 import { Link } from "@/i18n/routing";
 import { Currency } from "@/sdk_bi/entities/currency";
@@ -85,6 +86,8 @@ const ApproveDialog = ({
 }) => {
   const t = useTranslations("Liquidity");
   const tSwap = useTranslations("Swap");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
 
   const { setIsOpen } = useConfirmLiquidityDialogStore();
   const { setStatus } = useAddLiquidityStatusStore();
@@ -283,6 +286,10 @@ const ApproveDialog = ({
           >
             Preview liquidity
           </Button>
+        ) : isTradingPaused ? (
+          <Button fullWidth disabled>
+            {tPause("button")}
+          </Button>
         ) : (
           <Button
             onClick={() =>
@@ -318,6 +325,8 @@ const MintDialog = ({
 }) => {
   const tSwap = useTranslations("Swap");
   const t = useTranslations("Liquidity");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
   const { baseToken, quoteToken, invertPrice, toggleInvertPrice } = useDerivedTokens();
 
   const [showFirst, setShowFirst] = useState(invertPrice);
@@ -602,6 +611,10 @@ const MintDialog = ({
               <Preloader size={20} color="green" type="linear" />
             </span>
           </div>
+        ) : isTradingPaused ? (
+          <Button fullWidth disabled>
+            {tPause("button")}
+          </Button>
         ) : (
           <Button
             onClick={() => {

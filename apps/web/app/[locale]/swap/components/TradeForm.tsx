@@ -44,6 +44,7 @@ import { getDefaultStandard } from "@/functions/getDefaultStandard";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCanReceiveERC223 from "@/hooks/useCanReceiveERC223";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { usePoolBalances } from "@/hooks/usePoolBalances";
 import useTokenBalances from "@/hooks/useTokenBalances";
@@ -85,6 +86,17 @@ function OpenConfirmDialogButton({
   const { isLoadingSwap, isLoadingApprove, isPendingApprove, isPendingSwap } = useSwapStatus();
   const { setIsOpened: setWalletConnectOpened } = useConnectWalletDialogStateStore();
   const { error } = useTrade();
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
+
+  // Conversion between the ERC-20 and ERC-223 forms of one token is not a trade and stays open.
+  if (isTradingPaused && !(tokenA && tokenB && tokenA.equals(tokenB))) {
+    return (
+      <Button fullWidth disabled size={ActionButtonSize} mobileSize={MobileActionButtonSize}>
+        {tPause("button")}
+      </Button>
+    );
+  }
 
   if (!isConnected) {
     return (

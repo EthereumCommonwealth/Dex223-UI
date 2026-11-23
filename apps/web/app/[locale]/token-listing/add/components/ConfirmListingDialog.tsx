@@ -36,6 +36,7 @@ import getExplorerLink, { ExplorerLinkType } from "@/functions/getExplorerLink";
 import truncateMiddle from "@/functions/truncateMiddle";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
+import useIsTradingPaused from "@/hooks/useIsTradingPaused";
 import { useNativeCurrency } from "@/hooks/useNativeCurrency";
 import { DexChainId } from "@/sdk_bi/chains";
 import { ADDRESS_ZERO } from "@/sdk_bi/constants";
@@ -108,6 +109,8 @@ function ListTokensActionButton({
   disabled: boolean;
 }) {
   const t = useTranslations("TokenListing");
+  const tPause = useTranslations("TradingPause");
+  const isTradingPaused = useIsTradingPaused();
   const { status, approveHash, listTokenHash } = useListTokenStatusStore();
 
   const hashes = useMemo(() => {
@@ -143,6 +146,14 @@ function ListTokensActionButton({
           ),
         )}
       </OperationRows>
+    );
+  }
+
+  if (isTradingPaused) {
+    return (
+      <Button disabled fullWidth>
+        {tPause("button")}
+      </Button>
     );
   }
 
