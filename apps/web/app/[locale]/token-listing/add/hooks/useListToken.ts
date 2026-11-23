@@ -30,6 +30,7 @@ import { ROUTER_ABI } from "@/config/abis/router";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { isTradingPaused } from "@/functions/tradingPause";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
@@ -263,7 +264,13 @@ export default function useListToken() {
 
   const handleList = useCallback(
     async (amountToApprove: string) => {
-      if (!poolAddress || !walletClient || (!paymentToken && !isFree) || !publicClient) {
+      if (
+        !poolAddress ||
+        !walletClient ||
+        (!paymentToken && !isFree) ||
+        !publicClient ||
+        isTradingPaused(chainId)
+      ) {
         return;
       }
 
