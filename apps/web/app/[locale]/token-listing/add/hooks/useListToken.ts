@@ -30,10 +30,11 @@ import { ROUTER_ABI } from "@/config/abis/router";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
+import { isListablePoolState } from "@/functions/isListablePool";
 import { useStoreAllowance } from "@/hooks/useAllowance";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
 import useDeepEffect from "@/hooks/useDeepEffect";
-import { PoolState, useStorePools } from "@/hooks/usePools";
+import { useStorePools } from "@/hooks/usePools";
 import { DexChainId } from "@/sdk_bi/chains";
 import { ADDRESS_ZERO, FeeAmount } from "@/sdk_bi/constants";
 import { Token } from "@/sdk_bi/entities/token";
@@ -61,12 +62,7 @@ function useListParams() {
   );
 
   const pool = useMemo(() => {
-    return pools.find(
-      (pool) =>
-        pool[0] !== PoolState.NOT_EXISTS &&
-        pool[0] !== PoolState.INVALID &&
-        pool[0] !== PoolState.IDLE,
-    );
+    return pools.find((pool) => isListablePoolState(pool[0]));
   }, [pools]);
 
   const { poolAddress } = useComputePoolAddressDex({
@@ -194,12 +190,7 @@ export default function useListToken() {
   );
 
   const pool = useMemo(() => {
-    return pools.find(
-      (pool) =>
-        pool[0] !== PoolState.NOT_EXISTS &&
-        pool[0] !== PoolState.INVALID &&
-        pool[0] !== PoolState.IDLE,
-    );
+    return pools.find((pool) => isListablePoolState(pool[0]));
   }, [pools]);
 
   const { poolAddress } = useComputePoolAddressDex({
