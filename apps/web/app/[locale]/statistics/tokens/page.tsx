@@ -3,7 +3,9 @@
 import { useTranslations } from "next-intl";
 import React, { useMemo } from "react";
 
+import { usePoolPriceIndex } from "@/app/[locale]/pools/hooks";
 import StatisticsShell from "@/app/[locale]/statistics/components/StatisticsShell";
+import { formatUsd, tokenPriceUsd, tokenTvlUsd } from "@/app/[locale]/statistics/formatLiquidity";
 import { useTokensData } from "@/app/[locale]/statistics/hooks";
 import { useTokenMeta } from "@/app/[locale]/statistics/tokenMeta";
 import TokenLogo from "@/components/atoms/TokenLogo";
@@ -14,6 +16,7 @@ import { Link } from "@/i18n/routing";
 export default function StatisticsTokensPage() {
   const t = useTranslations("Statistics");
   const chainId = useCurrentChainId();
+  const { priceIndex } = usePoolPriceIndex(chainId);
   const tokenMeta = useTokenMeta();
   const { data, loading, error } = useTokensData(chainId, 50);
   const tokens = useMemo(() => data?.tokens ?? [], [data?.tokens]);
@@ -41,7 +44,12 @@ export default function StatisticsTokensPage() {
             <div className="divide-y divide-secondary-border">
               {tokens.map((token: any, index: number) => {
                 const meta = tokenMeta(token);
-                const price = Number(token.tokenDayData?.[0]?.priceUSD ?? 0);
+                const price = tokenPriceUsd(
+                  priceIndex,
+                  token.id,
+                  token.tokenDayData?.[0]?.priceUSD,
+                );
+                const tvl = tokenTvlUsd(priceIndex, token);
 
                 return (
                   <Link
@@ -60,13 +68,15 @@ export default function StatisticsTokensPage() {
                       </div>
                     </div>
                     <div className="text-right text-14">
-                      ${formatNumberKilos(Number(token.totalValueLockedUSD))}
+                      {tvl ? formatUsd(tvl) : t("usd_unavailable")}
                     </div>
                     <div className="hidden md:block text-right text-14">
-                      ${formatNumberKilos(Number(token.volumeUSD))}
+                      {Number(token.volumeUSD) > 0
+                        ? `$${formatNumberKilos(Number(token.volumeUSD))}`
+                        : "—"}
                     </div>
                     <div className="hidden md:block text-right text-14">
-                      {price > 0 ? `$${formatNumberKilos(price)}` : "—"}
+                      {price ? formatUsd(price) : t("usd_unavailable")}
                     </div>
                   </Link>
                 );
