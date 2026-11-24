@@ -3,12 +3,14 @@ import { useMemo } from "react";
 
 import { isMarginDeployed } from "@/config/modules";
 import useCurrentChainId from "@/hooks/useCurrentChainId";
-import { subgraphProxyPath } from "@/lib/subgraphTargets";
 import { DexChainId } from "@/sdk_bi/chains";
 
 const marginModuleUrlMap: Record<DexChainId, string> = {
-  // Gateway subgraph: queried through our server, which holds the API key.
-  [DexChainId.MAINNET]: subgraphProxyPath("margin-mainnet"),
+  // Margin module 0x052F...Ae17 (redeployed 2026-10-10). Studio URL, called directly: the
+  // margin-mainnet gateway id still points at the autolisting subgraph, so the API-key proxy
+  // would read the wrong data. Replace this with subgraphProxyPath once a margin gateway id exists.
+  [DexChainId.MAINNET]:
+    "https://api.studio.thegraph.com/query/1760635/dex-223-margin-mainnet/version/latest",
   [DexChainId.SEPOLIA]:
     "https://api.studio.thegraph.com/query/1760635/dex-223-margin-sepolia/version/latest",
   [DexChainId.BSC_TESTNET]: "",
