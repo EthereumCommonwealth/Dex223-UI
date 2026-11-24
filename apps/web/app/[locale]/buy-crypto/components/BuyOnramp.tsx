@@ -100,7 +100,7 @@ export default function BuyOnramp({ appId, flow, asset, onCompleted }: BuyOnramp
       const trusted = guardOnrampWidgetMessages(instance);
 
       const handleTxEvents = (e: { type?: string; data?: TxCompletedPayload }) => {
-        if (e.type === "ONRAMP_WIDGET_TX_COMPLETED") {
+        if (e.type === "ONRAMP_WIDGET_TX_SUCCESSFUL") {
           if (trusted) onCompleted?.(e.data || {});
         } else if (e.type === "ONRAMP_WIDGET_TX_FAILED") {
           setError(t("tx_failed"));
