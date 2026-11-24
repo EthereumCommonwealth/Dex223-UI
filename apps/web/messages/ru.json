@@ -187,6 +187,7 @@
     "install_metamask": "Установите расширение MetaMask, чтобы продолжить",
     "install_trust": "Установите Trust Wallet, чтобы продолжить",
     "install_coinbase": "Установите Coinbase, чтобы продолжить",
+    "install_safepal": "Установите SafePal, чтобы продолжить",
     "unsupported_file_format": "Неподдерживаемый формат файла",
     "wrong_password": "Неверный пароль",
     "import_wallet_with_JSON": "Импортировать кошелёк из JSON-файла",

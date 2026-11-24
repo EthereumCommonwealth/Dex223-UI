@@ -93,6 +93,23 @@ export const config = createConfig({
     injected({
       target: "trust",
     }),
+    injected({
+      target: {
+        id: "safepal",
+        name: "SafePal",
+        provider(window) {
+          if (!window) return undefined;
+          const view = window as Window & {
+            safepalProvider?: { isSafePal?: boolean };
+            ethereum?: { isSafePal?: boolean };
+          };
+          // The extension object is an EIP-1193 provider. The flag is only used to find it.
+          if (view.safepalProvider?.isSafePal) return view.safepalProvider as any;
+          if (view.ethereum?.isSafePal) return view.ethereum as any;
+          return undefined;
+        },
+      },
+    }),
   ],
   ssr: true,
   storage: createStorage({
