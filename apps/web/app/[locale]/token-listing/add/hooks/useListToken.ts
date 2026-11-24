@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo } from "react";
 import {
   BaseError,
   ContractFunctionRevertedError,
-  getAbiItem,
   parseUnits,
   UserRejectedRequestError,
 } from "viem";
@@ -26,7 +25,6 @@ import {
 } from "@/app/[locale]/token-listing/add/stores/useListTokenStatusStore";
 import { usePaymentTokenStore } from "@/app/[locale]/token-listing/add/stores/usePaymentTokenStore";
 import { AUTO_LISTING_ABI } from "@/config/abis/autolisting";
-import { ROUTER_ABI } from "@/config/abis/router";
 import { getGasSettings } from "@/functions/gasSettings";
 import { getTransactionWithRetries } from "@/functions/getTransactionWithRetries";
 import { IIFE } from "@/functions/iife";
@@ -363,10 +361,7 @@ export default function useListToken() {
                   ...stringifyObject({ ...gasSettings, model: GasFeeModel.EIP1559 }),
                   gas: gasToUse.toString(),
                 },
-                params: {
-                  ...stringifyObject(listParams),
-                  abi: [getAbiItem({ name: "exactInputSingle", abi: ROUTER_ABI })],
-                },
+                params: stringifyObject(listParams),
                 title:
                   tokensToList.length === 2
                     ? {

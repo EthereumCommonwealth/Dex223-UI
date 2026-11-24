@@ -403,10 +403,7 @@ export default function useCreateOrder() {
             maxFeePerGas: undefined,
             maxPriorityFeePerGas: undefined,
           },
-          params: {
-            ...stringifyObject(multicallParams),
-            abi: [getAbiItem({ name: "orderDepositWETH9", abi: MARGIN_MODULE_ABI })],
-          },
+          params: stringifyObject(multicallParams),
           title: {
             symbol: params.loanToken.symbol!,
             template: RecentTransactionTitleTemplate.CREATE_LENDING_ORDER,
