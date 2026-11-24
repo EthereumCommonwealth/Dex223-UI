@@ -501,10 +501,15 @@ export default function BorrowPage({
     const collateralRequired = parseUnits(values.collateralAmount || "0", collateralDecimals);
     const feeRequired = order.liquidationRewardAmount.value;
 
-    const collateralBalance = token0Balance?.value;
-    const feeBalance = feeToken0Balance?.value;
+    const collateralStandard = values.collateralTokenStandard ?? Standard.ERC20;
+    const feeStandard = order.liquidationRewardAssetStandard;
+    const collateralBalance =
+      collateralStandard === Standard.ERC223 ? token1Balance?.value : token0Balance?.value;
+    const feeBalance =
+      feeStandard === Standard.ERC223 ? feeToken1Balance?.value : feeToken0Balance?.value;
 
-    const isSameToken = collateralToken.equals(order.liquidationRewardAsset);
+    const isSameToken =
+      collateralToken.equals(order.liquidationRewardAsset) && collateralStandard === feeStandard;
 
     if (isSameToken) {
       if (!collateralBalance) return t("insufficient_balance");
@@ -524,11 +529,14 @@ export default function BorrowPage({
     return undefined;
   }, [
     feeToken0Balance?.value,
+    feeToken1Balance?.value,
     order,
     t,
     token0Balance?.value,
+    token1Balance?.value,
     values.collateralAmount,
     values.collateralToken,
+    values.collateralTokenStandard,
   ]);
 
   const [leverageInput, setLeverageInput] = useState(() => values.leverage.toString());
