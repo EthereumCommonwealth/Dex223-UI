@@ -178,6 +178,9 @@ export function useStoreAllowance({
         }
       };
 
+      // Mainnet USDT reverts when a non-zero allowance is changed to another non-zero
+      // value. Reset it to 0 and wait until that transaction is mined before approving
+      // the amount from the dialog. Other tokens keep the single approval below.
       const isMainnetUsdt = token.address0.toLowerCase() === USDT_ADDRESS_ERC_20.toLowerCase();
 
       if (!isAllowed && currentAllowanceData !== BigInt(0) && isMainnetUsdt) {
