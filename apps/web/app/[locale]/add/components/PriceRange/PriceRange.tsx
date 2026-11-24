@@ -402,8 +402,8 @@ export const PriceRange = ({
             </div>
           </div>
           <LiquidityChartRangeInput
-            currencyA={tokenA}
-            currencyB={tokenB}
+            currencyA={baseToken}
+            currencyB={quoteToken}
             feeAmount={tier}
             ticksAtLimit={ticksAtLimit}
             price={
